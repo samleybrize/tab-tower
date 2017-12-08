@@ -22,7 +22,7 @@ async function getTabs() {
     return tabs;
 }
 
-async function refresh() {
+async function refresh(e) {
     const tabs = await getTabs();
     const tabListElement = document.querySelector("#tabList tbody");
     
@@ -32,7 +32,6 @@ async function refresh() {
 
     for (const tab of tabs) {
         // TODO favicon may not exists, or fail to load
-        const idElement = document.createElement('td');
         const titleElement = document.createElement('td');
         const incognitoElement = document.createElement('td');
         const faviconElement = document.createElement('td');
@@ -47,20 +46,42 @@ async function refresh() {
         linkElement.textContent = tab.title;
         titleElement.appendChild(linkElement);
 
-        idElement.textContent = tab.id;
         incognitoElement.textContent = tab.incognito ? 'Yes' : 'No';
 
         const row = document.createElement('tr');
         row.setAttribute('data-index', tab.index);
-        row.appendChild(idElement);
+        row.setAttribute('data-id', tab.id);
         row.appendChild(faviconElement);
         row.appendChild(titleElement);
         row.appendChild(incognitoElement);
 
+        const registerButton = document.createElement('a');
+        registerButton.textContent = 'Register';
+        registerButton.addEventListener('mouseup', (event) => {
+            let element = event.target;
+
+            while ((element = element.parentElement) && null == element.getAttribute('data-id'));
+
+            if (null == element) {
+                console.error('Unable to find a tab id');
+            }
+
+            console.log(element.getAttribute('data-id')); // TODO
+        });
+        const registerElement = document.createElement('td');
+        registerElement.appendChild(registerButton);
+        row.appendChild(registerElement);
+
         tabListElement.appendChild(row);
-        console.log(row);
     }
 }
 
-// TODO refresh when a tab change
+browser.tabs.onCreated.addListener(refresh);
+browser.tabs.onMoved.addListener(refresh);
+browser.tabs.onUpdated.addListener(refresh);
+
+browser.tabs.onRemoved.addListener((event) => {
+    document.querySelector(`#tabList tbody [data-id='${event}']`).remove();
+});
+
 refresh();

@@ -1,6 +1,25 @@
+const savedTabList = [];
+const savedTabIdList = [];
+
 async function getTabs() {
+    const {tabList, tabIdList} = await getOpenedTabs();
+    console.log(savedTabList); // TODO
+
+    for (const tab of savedTabList) {
+        if (tabIdList.indexOf(tab.id) >= 0) {
+            continue;
+        }
+
+        tabList.push(tab);
+    }
+
+    return tabList;
+}
+
+async function getOpenedTabs() {
     const rawTabs = await browser.tabs.query({});
-    const tabs = [];
+    const tabList = [];
+    const tabIdList = [];
 
     for (const tab of rawTabs) {
         const tabUrl = tab.url;
@@ -9,20 +28,26 @@ async function getTabs() {
             continue;
         }
 
-        tabs.push({
+        tabIdList.push(tab.id);
+        tabList.push({
             id: tab.id,
             index: tab.index,
             title: tab.title,
-            incognito: tab.incognito,
+            isIncognito: tab.incognito,
             url: tab.url,
             faviconUrl: tab.favIconUrl,
+            isOpened: true,
+            isSaved: savedTabIdList.indexOf(tab.id) >= 0,
         });
     }
 
-    return tabs;
+    return {
+        tabList: tabList,
+        tabIdList: tabIdList,
+    };
 }
 
-async function refresh(e) {
+async function refresh() {
     const tabs = await getTabs();
     const tabListElement = document.querySelector("#tabList tbody");
     
@@ -35,6 +60,8 @@ async function refresh(e) {
         const titleElement = document.createElement('td');
         const incognitoElement = document.createElement('td');
         const faviconElement = document.createElement('td');
+        const openedElement = document.createElement('td');
+        const registerElement = document.createElement('td');
 
         const faviconImageElement = document.createElement('img');
         faviconImageElement.src = tab.faviconUrl;
@@ -46,7 +73,9 @@ async function refresh(e) {
         linkElement.textContent = tab.title;
         titleElement.appendChild(linkElement);
 
-        incognitoElement.textContent = tab.incognito ? 'Yes' : 'No';
+        incognitoElement.textContent = tab.isIncognito ? 'Yes' : 'No';
+        openedElement.textContent = tab.isOpened ? 'Yes' : 'No';
+        openedElement.classList.add('isOpened');
 
         const row = document.createElement('tr');
         row.setAttribute('data-index', tab.index);
@@ -54,23 +83,29 @@ async function refresh(e) {
         row.appendChild(faviconElement);
         row.appendChild(titleElement);
         row.appendChild(incognitoElement);
-
-        const registerButton = document.createElement('a');
-        registerButton.textContent = 'Register';
-        registerButton.addEventListener('mouseup', (event) => {
-            let element = event.target;
-
-            while ((element = element.parentElement) && null == element.getAttribute('data-id'));
-
-            if (null == element) {
-                console.error('Unable to find a tab id');
-            }
-
-            console.log(element.getAttribute('data-id')); // TODO
-        });
-        const registerElement = document.createElement('td');
-        registerElement.appendChild(registerButton);
+        row.appendChild(openedElement);
         row.appendChild(registerElement);
+
+        if (!tab.isSaved) {
+            const registerButton = document.createElement('a');
+            registerButton.textContent = 'Register';
+            registerButton.addEventListener('mouseup', (event) => {
+                let element = event.target;
+
+                while ((element = element.parentElement) && null == element.getAttribute('data-id'));
+
+                if (null == element) {
+                    console.error('Unable to find a tab id');
+                }
+
+                tab.isSaved = true;
+                savedTabList.push(tab);
+                savedTabIdList.push(tab.id);
+                refresh();
+            });
+
+            registerElement.appendChild(registerButton);
+        }
 
         tabListElement.appendChild(row);
     }
@@ -81,7 +116,17 @@ browser.tabs.onMoved.addListener(refresh);
 browser.tabs.onUpdated.addListener(refresh);
 
 browser.tabs.onRemoved.addListener((event) => {
-    document.querySelector(`#tabList tbody [data-id='${event}']`).remove();
+    const tabId = event;
+    const i = savedTabIdList.indexOf(tabId);
+
+    if (i >= 0) {
+        savedTabList[i].isOpened = false;
+        document.querySelector(`#tabList tbody tr[data-id='${tabId}'] .isOpened`).textContent = 'No';
+
+        return;
+    }
+
+    document.querySelector(`#tabList tbody [data-id='${tabId}']`).remove();
 });
 
 refresh();

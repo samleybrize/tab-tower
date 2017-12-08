@@ -1,0 +1,29 @@
+{
+  "name": "tab-tower",
+  "version": "1.0.0",
+  "main": "dist/src/main.js",
+  "license": "MIT",
+  "devDependencies": {
+    "awesome-typescript-loader": "^3.4.1",
+    "concurrently": "^3.5.1",
+    "node-sass": "^4.7.2",
+    "sass-lint": "^1.12.1",
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.2",
+    "web-ext": "^2.2.2",
+    "web-ext-types": "^1.1.1",
+    "webpack": "^3.10.0"
+  },
+  "scripts": {
+    "start": "web-ext --ignore-files=src -- run",
+    "build": "npm run build-ts && npm run build-sass",
+    "build-ts": "webpack",
+    "build-sass": "node-sass src/scss/main.scss dist/css/style.css --source-map true",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"web-ext,TypeScript,Sass\" \"npm run start\" \"npm run watch-ts\" \"npm run watch-sass\"",
+    "watch-ts": "webpack --watch",
+    "watch-sass": "node-sass -w src/scss/main.scss dist/css/style.css --source-map true",
+    "lint": "npm run lint-ts && npm run lint-sass",
+    "lint-ts": "tslint -p tsconfig.json --type-check './src/**/*.ts'",
+    "lint-sass": "sass-lint -v -q"
+  }
+}

@@ -1,13 +1,13 @@
 {
     "manifest_version": 2,
-    "name": "Tab Manager",
+    "name": "Tab Tower",
     "version": "1.0",
     "description": "Description",
     "icons": {
         "48": "icons/border-48.png"
     },
     "background": {
-        "scripts": ["background.js"]
+        "scripts": ["dist/js/background.js"]
     },
     "permissions": [
         "activeTab",

@@ -1,5 +1,5 @@
 browser.tabs.create({
     active: true,
     index: 0,
-    url: '/index.html',
+    url: '/ui/tab-manager.html',
 });

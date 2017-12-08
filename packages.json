@@ -1,0 +1,12 @@
+{
+  "name": "tab-tower",
+  "version": "1.0.0",
+  "main": "dist/src/main.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node dist/src/app/server.js",
+    "build": "tsc",
+    "watch": "nodemon",
+    "lint": "tslint -p tsconfig.json --type-check './src/**/*.ts' './test/**/*.ts'"
+  }
+}

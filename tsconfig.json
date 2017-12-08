@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "module": "umd",
+        "target": "es5",
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "outDir": "dist/js",
+        "sourceMap": true,
+        "lib": [
+            "dom",
+            "es2015"
+        ],
+        "baseUrl": ".",
+        "typeRoots": ["node_modules/@types", "node_modules/web-ext-types"]
+    },
+    "exclude": [
+        "dist",
+        "node_modules"
+    ]
+}

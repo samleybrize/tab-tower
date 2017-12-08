@@ -19,7 +19,7 @@
     "build": "npm run build-ts && npm run build-sass",
     "build-ts": "webpack",
     "build-sass": "node-sass src/scss/main.scss dist/css/style.css --source-map true",
-    "watch": "concurrently -k -p \"[{name}]\" -n \"web-ext,TypeScript,Sass\" \"npm run start\" \"npm run watch-ts\" \"npm run watch-sass\"",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Sass\" \"npm run watch-ts\" \"npm run watch-sass\"",
     "watch-ts": "webpack --watch",
     "watch-sass": "node-sass -w src/scss/main.scss dist/css/style.css --source-map true",
     "lint": "npm run lint-ts && npm run lint-sass",

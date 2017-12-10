@@ -24,9 +24,9 @@ module.exports = [
         },
     },
     {
-        entry: './src/typescript/tab-manager.ts',
+        entry: './src/typescript/tab-tower.ts',
         output: {
-            filename: 'tab-manager.js',
+            filename: 'tab-tower.js',
             path: path.resolve(__dirname, 'dist/js'),
         },
         resolve: {

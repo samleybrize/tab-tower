@@ -10,6 +10,8 @@ import { InMemoryTabPersister } from './tab/persister/in-memory-tab-persister';
 import { Tab } from './tab/tab';
 import { OpenedTabView } from './view/opened-tab-view';
 
+const defaultFaviconUrl = '/ui/images/default-favicon.svg';
+
 function main() {
     const eventBus = new EventBus();
 
@@ -17,7 +19,7 @@ function main() {
     const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
     const openedTabRetriever = new OpenedTabRetriever(followedTabRetriever);
 
-    const openedTabView = new OpenedTabView(openedTabRetriever, document.querySelector('#openedTabList'));
+    const openedTabView = new OpenedTabView(openedTabRetriever, document.querySelector('#openedTabList'), defaultFaviconUrl);
 
     const nativeEventConverter = new NativeEventConverter(eventBus);
     nativeEventConverter.init();

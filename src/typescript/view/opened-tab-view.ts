@@ -10,7 +10,7 @@ export class OpenedTabView {
     private tbodyElement: HTMLElement;
     private tabList: Tab[];
 
-    constructor(private openedTabRetriever: OpenedTabRetriever, containerElement: HTMLElement) {
+    constructor(private openedTabRetriever: OpenedTabRetriever, containerElement: HTMLElement, private defaultFaviconUrl: string) {
         if (null == containerElement) {
             throw new Error('null container element received');
         }
@@ -89,9 +89,16 @@ export class OpenedTabView {
     }
 
     private createFaviconCell(tab: Tab): HTMLElement {
-        // TODO favicon may not exists, or fail to load (=> show a dotted empty square)
         const faviconImage = document.createElement('img');
-        faviconImage.src = tab.faviconUrl;
+
+        if (null == tab.faviconUrl) {
+            faviconImage.src = this.defaultFaviconUrl;
+        } else {
+            faviconImage.src = tab.faviconUrl;
+            faviconImage.addEventListener('error', (event) => {
+                faviconImage.src = this.defaultFaviconUrl;
+            });
+        }
 
         const faviconCell = document.createElement('td');
         faviconCell.appendChild(faviconImage);

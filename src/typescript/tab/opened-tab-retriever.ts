@@ -41,10 +41,15 @@ export class OpenedTabRetriever {
     }
 
     async getById(id: number): Promise<Tab> {
-        const rawTab = await browser.tabs.get(id);
+        let rawTab: browser.tabs.Tab;
 
-        if (null == rawTab) {
-            return;
+        try {
+            console.log('a'); // TODO
+            rawTab = await browser.tabs.get(id);
+            console.log('b'); // TODO
+        } catch (error) {
+            console.log('c'); // TODO
+            return null;
         }
 
         const openedFollowedTabs = await this.followedTabRetriever.getOpenedTabs();

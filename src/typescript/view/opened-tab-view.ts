@@ -4,6 +4,7 @@ import { TabMoved } from '../tab/event/tab-moved';
 import { TabUpdated } from '../tab/event/tab-updated';
 import { OpenedTabRetriever } from '../tab/opened-tab-retriever';
 import { Tab } from '../tab/tab';
+import { sleep } from '../utils/sleep';
 
 export class OpenedTabView {
     private tbodyElement: HTMLElement;
@@ -109,6 +110,7 @@ export class OpenedTabView {
         const openIndicatorCell = document.createElement('td');
         openIndicatorCell.textContent = tab.isOpened ? 'Yes' : 'No';
         openIndicatorCell.classList.add('opened');
+        openIndicatorCell.classList.add('openIndicator');
 
         return openIndicatorCell;
     }
@@ -151,12 +153,7 @@ export class OpenedTabView {
     onTabClose(event: TabClosed): Promise<void> {
         for (const tab of this.tabList) {
             if (event.tabId == tab.id) {
-                const tabRow = this.tbodyElement.querySelector(`tr[data-id='${tab.id}']`);
-                tabRow.textContent = 'Closing';
-                tabRow.classList.remove('opened');
-                tabRow.classList.add('closing');
-                tabRow.remove();
-
+                this.markTabAsClosing(tab);
                 this.markTabAsClosedWhenEffectivellyClosed(tab);
 
                 break;
@@ -166,12 +163,40 @@ export class OpenedTabView {
         return;
     }
 
-    private async markTabAsClosedWhenEffectivellyClosed(tab: Tab) {
-        tab.markAsClosing();
+    private markTabAsClosing(tab: Tab) {
+        const tabCell = this.getTabRow(tab).querySelector('.openIndicator');
+        tabCell.textContent = 'Closing';
+        tabCell.classList.remove('opened');
+        tabCell.classList.remove('closed');
+        tabCell.classList.add('closing');
 
-        // TODO browser.tabs.get() with setTimeout (+max number of retries?)
-        // TODO tab.markAsClosed();
-        // TODO update tab indexes
+        tab.markAsClosing();
+    }
+
+    private getTabRow(tab: Tab): HTMLTableRowElement {
+        return this.tbodyElement.querySelector(`tr[data-id='${tab.id}']`);
+    }
+
+    private async markTabAsClosedWhenEffectivellyClosed(tab: Tab) {
+        const tabId = tab.id;
+
+        while (true) {
+            if (null === await this.openedTabRetriever.getById(tabId)) {
+                this.markTabAsClosed(tab);
+                // TODO update tab indexes
+
+                break;
+            }
+
+            await sleep(100);
+        }
+    }
+
+    private markTabAsClosed(tab: Tab) {
+        const tabRow = this.getTabRow(tab);
+        tabRow.remove();
+
+        tab.markAsClosed();
     }
 
     onTabMove(event: TabMoved): Promise<void> {

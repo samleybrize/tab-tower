@@ -11,13 +11,14 @@ import { Tab } from './tab/tab';
 import { OpenedTabView } from './view/opened-tab-view';
 
 const defaultFaviconUrl = '/ui/images/default-favicon.svg';
+const currentUrl = location.href;
 
 function main() {
     const eventBus = new EventBus();
 
     const inMemoryTabPersister = new InMemoryTabPersister();
     const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
-    const openedTabRetriever = new OpenedTabRetriever(followedTabRetriever);
+    const openedTabRetriever = new OpenedTabRetriever(followedTabRetriever, [currentUrl]);
 
     const openedTabView = new OpenedTabView(openedTabRetriever, document.querySelector('#openedTabList'), defaultFaviconUrl);
 

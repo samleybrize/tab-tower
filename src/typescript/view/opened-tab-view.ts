@@ -77,9 +77,9 @@ export class OpenedTabView {
     }
 
     private createTitleCell(tab: Tab): HTMLElement {
+        // TODO click sends to the opened tab
         const linkElement = document.createElement('a');
         linkElement.href = tab.url;
-        linkElement.target = '_blank';
         linkElement.textContent = tab.title;
 
         const titleCell = document.createElement('td');
@@ -185,25 +185,21 @@ export class OpenedTabView {
     }
 
     private async markTabAsClosedWhenEffectivellyClosed(tab: Tab) {
+        // TODO move to OpenedTabRetriever
+        // TODO = ability to mark tab id as closed, then getAll() and get() will ignore it
+        // TODO = list of closed tab ids is purged with a setTimeout()
         const tabId = tab.id;
 
         while (true) {
             if (null === await this.openedTabRetriever.getById(tabId)) {
-                this.markTabAsClosed(tab);
-                // TODO update tab indexes
+                await sleep(100);
+                this.refresh();
 
                 break;
             }
 
             await sleep(100);
         }
-    }
-
-    private markTabAsClosed(tab: Tab) {
-        const tabRow = this.getTabRow(tab);
-        tabRow.remove();
-
-        tab.markAsClosed();
     }
 
     onTabMove(event: TabMoved): Promise<void> {

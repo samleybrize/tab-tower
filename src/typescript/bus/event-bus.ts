@@ -39,8 +39,12 @@ export class EventBus {
             return;
         }
 
+        const promises: Array<Promise<any>> = [];
+
         for (const eventHandler of eventHandlerList) {
-            await eventHandler(event);
+            promises.push(eventHandler(event));
         }
+
+        await Promise.all(promises);
     }
 }

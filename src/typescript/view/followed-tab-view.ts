@@ -1,19 +1,16 @@
 import { CommandBus } from '../bus/command-bus';
-import { FollowTab } from '../tab/command/follow-tab';
 import { TabClosed } from '../tab/event/tab-closed';
-import { TabCreated } from '../tab/event/tab-created';
 import { TabFollowed } from '../tab/event/tab-followed';
 import { TabMoved } from '../tab/event/tab-moved';
 import { TabUpdated } from '../tab/event/tab-updated';
-import { OpenedTabRetriever } from '../tab/opened-tab-retriever';
+import { FollowedTabRetriever } from '../tab/followed-tab-retriever';
 import { Tab } from '../tab/tab';
 
-export class OpenedTabView {
+export class FollowedTabView {
     private tbodyElement: HTMLElement;
 
     constructor(
-        private openedTabRetriever: OpenedTabRetriever,
-        private commandBus: CommandBus,
+        private followedTabRetriever: FollowedTabRetriever,
         containerElement: HTMLElement,
         private defaultFaviconUrl: string,
     ) {
@@ -43,7 +40,7 @@ export class OpenedTabView {
     }
 
     async refresh() {
-        const tabList = await this.openedTabRetriever.getAll();
+        const tabList = await this.followedTabRetriever.getAll();
 
         this.removeAllTabsFromListElement();
 
@@ -147,55 +144,51 @@ export class OpenedTabView {
     private createFollowCell(tab: Tab): HTMLElement {
         const followCell = document.createElement('td');
 
-        if (!tab.isFollowed) {
-            const registerButton = document.createElement('a');
-            registerButton.textContent = 'Follow';
-            registerButton.setAttribute('data-tab-id', '' + tab.id);
-            registerButton.addEventListener('mouseup', (event) => {
-                if (!(event.target instanceof Element)) {
-                    return;
-                }
+        const registerButton = document.createElement('a');
+        registerButton.textContent = 'Unfollow';
+        registerButton.setAttribute('data-tab-id', '' + tab.id);
+        registerButton.addEventListener('mouseup', (event) => {
+            if (!(event.target instanceof Element)) {
+                return;
+            }
 
-                if (null == event.target.getAttribute('data-tab-id')) {
-                    console.error('Unable to find a tab id');
+            if (null == event.target.getAttribute('data-tab-id')) {
+                console.error('Unable to find a tab id');
 
-                    return;
-                }
+                return;
+            }
 
-                this.commandBus.handle(new FollowTab(tab));
-            });
+            // this.commandBus.handle(new UnfollowTab(tab));
+        });
 
-            followCell.appendChild(registerButton);
-        }
+        followCell.appendChild(registerButton);
 
         return followCell;
     }
 
-    onTabCreate(event: TabCreated): Promise<void> {
-        this.refresh();
-
-        return;
-    }
-
     onTabClose(event: TabClosed): Promise<void> {
+        // TODO
         this.refresh();
 
         return;
     }
 
     onTabMove(event: TabMoved): Promise<void> {
+        // TODO
         this.refresh();
 
         return;
     }
 
     onTabUpdate(event: TabUpdated): Promise<void> {
+        // TODO
         this.refresh();
 
         return;
     }
 
     onTabFollow(event: TabFollowed): Promise<void> {
+        // TODO
         this.refresh();
 
         return;

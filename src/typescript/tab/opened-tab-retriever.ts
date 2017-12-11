@@ -1,11 +1,10 @@
 import { TabClosing } from './event/tab-closing';
 import { FollowedTabRetriever } from './followed-tab-retriever';
 import { Tab } from './tab';
-import { setTimeout, clearTimeout } from 'timers';
 
 export class OpenedTabRetriever {
     private ignoredTabIdList: number[] = [];
-    private ignoredTabIdListPurgeTimeoutReference: NodeJS.Timer = null;
+    private ignoredTabIdListPurgeTimeoutReference: number = null;
 
     constructor(private followedTabRetriever: FollowedTabRetriever, private ignoredUrls: string[]) {
     }

@@ -1,6 +1,7 @@
 import { EventBus } from './bus/event-bus';
 import { NativeEventConverter } from './tab/event/native-event-converter';
 import { TabClosed } from './tab/event/tab-closed';
+import { TabClosing } from './tab/event/tab-closing';
 import { TabCreated } from './tab/event/tab-created';
 import { TabMoved } from './tab/event/tab-moved';
 import { TabUpdated } from './tab/event/tab-updated';
@@ -26,6 +27,7 @@ function main() {
     nativeEventConverter.init();
 
     eventBus.subscribe(TabClosed, openedTabView.onTabClose, openedTabView);
+    eventBus.subscribe(TabClosing, openedTabRetriever.onTabClosing, openedTabRetriever);
     eventBus.subscribe(TabCreated, openedTabView.onTabCreate, openedTabView);
     eventBus.subscribe(TabMoved, openedTabView.onTabMove, openedTabView);
     eventBus.subscribe(TabUpdated, openedTabView.onTabUpdate, openedTabView);

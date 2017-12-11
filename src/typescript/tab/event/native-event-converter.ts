@@ -1,5 +1,6 @@
 import { EventBus } from '../../bus/event-bus';
 import { TabClosed } from './tab-closed';
+import { TabClosing } from './tab-closing';
 import { TabCreated } from './tab-created';
 import { TabMoved } from './tab-moved';
 import { TabUpdated } from './tab-updated';
@@ -26,8 +27,9 @@ export class NativeEventConverter {
         this.eventBus.publish(new TabCreated());
     }
 
-    onTabClose(tabId: number, removeInfo: any) {
-        this.eventBus.publish(new TabClosed(tabId));
+    async onTabClose(tabId: number, removeInfo: any) {
+        await this.eventBus.publish(new TabClosed(tabId));
+        this.eventBus.publish(new TabClosing(tabId));
     }
 
     onTabMove(tabId: number, moveInfo: any) {

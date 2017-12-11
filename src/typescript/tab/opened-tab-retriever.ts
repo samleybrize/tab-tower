@@ -1,7 +1,12 @@
+import { TabClosing } from './event/tab-closing';
 import { FollowedTabRetriever } from './followed-tab-retriever';
 import { Tab } from './tab';
+import { setTimeout, clearTimeout } from 'timers';
 
 export class OpenedTabRetriever {
+    private ignoredTabIdList: number[] = [];
+    private ignoredTabIdListPurgeTimeoutReference: NodeJS.Timer = null;
+
     constructor(private followedTabRetriever: FollowedTabRetriever, private ignoredUrls: string[]) {
     }
 
@@ -11,7 +16,6 @@ export class OpenedTabRetriever {
         const tabList: Tab[] = [];
 
         for (const rawTab of rawTabs) {
-            console.log(rawTab); // TODO
             const tab = this.createTab(rawTab, openedFollowedTabs);
 
             if (null == tab) {
@@ -25,7 +29,7 @@ export class OpenedTabRetriever {
     }
 
     private createTab(rawTab: browser.tabs.Tab, openedFollowedTabs: Map<number, Tab>): Tab {
-        if (this.isUrlIgnored(rawTab.url) || null == rawTab.id || null == rawTab.index) {
+        if (this.isUrlIgnored(rawTab.url) || this.isTabIdIgnored(rawTab.id) || null == rawTab.id || null == rawTab.index) {
             return;
         }
 
@@ -45,10 +49,19 @@ export class OpenedTabRetriever {
         return 0 == url.indexOf('about:') || this.ignoredUrls.indexOf(url) >= 0;
     }
 
+    private isTabIdIgnored(tabId: number) {
+        return this.ignoredTabIdList.indexOf(tabId) >= 0;
+    }
+
     async getById(id: number): Promise<Tab> {
+        if (this.isTabIdIgnored(id)) {
+            return null;
+        }
+
         let rawTab: browser.tabs.Tab;
 
         try {
+            // a not found id throws an error
             rawTab = await browser.tabs.get(id);
         } catch (error) {
             return null;
@@ -57,5 +70,22 @@ export class OpenedTabRetriever {
         const openedFollowedTabs = await this.followedTabRetriever.getOpenedTabs();
 
         return this.createTab(rawTab, openedFollowedTabs);
+    }
+
+    onTabClosing(event: TabClosing): Promise<void> {
+        this.ignoredTabIdList.push(event.tabId);
+
+        if (this.ignoredTabIdListPurgeTimeoutReference) {
+            clearTimeout(this.ignoredTabIdListPurgeTimeoutReference);
+            this.ignoredTabIdListPurgeTimeoutReference = null;
+        }
+
+        this.ignoredTabIdListPurgeTimeoutReference = setTimeout(this.purgeIgnoredTabIdList.bind(this), 60000);
+
+        return;
+    }
+
+    private purgeIgnoredTabIdList() {
+        this.ignoredTabIdList = [];
     }
 }

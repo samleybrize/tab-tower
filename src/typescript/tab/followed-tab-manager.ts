@@ -6,7 +6,6 @@ import { TabOpenState } from '../tab/tab-open-state';
 import { FollowTab } from './command/follow-tab';
 import { OpenTabMoved } from './event/open-tab-moved';
 import { OpenTabUpdated } from './event/open-tab-updated';
-import { TabClosed } from './event/tab-closed';
 import { TabFollowed } from './event/tab-followed';
 import { TabPersister } from './persister/tab-persister';
 
@@ -24,8 +23,8 @@ export class FollowedTabManager {
 
         const tabFollowState = this.createTabFollowStateFromOpenState(command.tab.openState);
         tab.followState = tabFollowState;
-        this.tabPersister.add(tabFollowState);
-        this.eventBus.publish(new TabFollowed(command.tab));
+        this.tabPersister.persist(tabFollowState);
+        this.eventBus.publish(new TabFollowed(tab));
     }
 
     private createTabFollowStateFromOpenState(openState: TabOpenState): TabFollowState {
@@ -41,19 +40,25 @@ export class FollowedTabManager {
         return followState;
     }
 
-    // onTabClose(event: TabClosed): Promise<void> {
-    //     // TODO mark the tab as closed
-    // }
+    async onOpenTabMove(event: OpenTabMoved): Promise<void> {
+        const tabFollowState = await this.tabPersister.getByIndex(event.tabOpenState.index);
 
-    // onOpenTabMove(event: OpenTabMoved): Promise<void> {
-    //     // TODO update tab index
-    // }
+        if (tabFollowState) {
+            tabFollowState.openIndex = event.tabOpenState.index;
+            await this.tabPersister.persist(tabFollowState);
+        }
+    }
 
-    // onOpenTabUpdate(event: OpenTabUpdated): Promise<void> {
-    //     // TODO update title, url, favicon url, reader mode?, private mode?
-    // }
+    async onOpenTabUpdate(event: OpenTabUpdated): Promise<void> {
+        const tabFollowState = await this.tabPersister.getByIndex(event.tabOpenState.index);
 
-    // onTabFollow(event: TabFollowed): Promise<void> {
-    //     // TODO persist tab
-    // }
+        if (tabFollowState) {
+            tabFollowState.title = event.tabOpenState.title;
+            tabFollowState.url = event.tabOpenState.url;
+            tabFollowState.faviconUrl = event.tabOpenState.faviconUrl;
+            tabFollowState.isInReaderMode = event.tabOpenState.isInReaderMode;
+
+            await this.tabPersister.persist(tabFollowState);
+        }
+    }
 }

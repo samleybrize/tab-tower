@@ -1043,6 +1043,25 @@ declare namespace browser.tabs {
         url?: string,
     }): Promise<Tab>;
 
+    export interface RemoveInfo {
+        windowId: number;
+        isWindowClosing: boolean;
+    }
+    export interface MoveInfo {
+        windowId: number;
+        fromIndex: number;
+        toIndex: number;
+    }
+    export interface UpdateInfo {
+        status?: string;
+        url?: string;
+        pinned?: boolean;
+        audible?: boolean;
+        mutedInfo?: MutedInfo;
+        favIconUrl?: string;
+        title?: string;
+    }
+
     const onActivated: Listener<{ tabId: number, windowId: number }>;
     const onAttached: EvListener<(tabId: number, attachInfo: {
         newWindowId: number,
@@ -1054,25 +1073,10 @@ declare namespace browser.tabs {
         oldPosition: number,
     }) => void>;
     const onHighlighted: Listener<{ windowId: number, tabIds: number[] }>;
-    const onMoved: EvListener<(tabId: number, moveInfo: {
-        windowId: number,
-        fromIndex: number,
-        toIndex: number,
-    }) => void>;
-    const onRemoved: EvListener<(tabId: number, removeInfo: {
-        windowId: number,
-        isWindowClosing: boolean,
-    }) => void>;
+    const onMoved: EvListener<(tabId: number, moveInfo: MoveInfo) => void>;
+    const onRemoved: EvListener<(tabId: number, removeInfo: RemoveInfo) => void>;
     const onReplaced: EvListener<(addedTabId: number, removedTabId: number) => void>;
-    const onUpdated: EvListener<(tabId: number, updateInfo: {
-        status?: string,
-        url?: string,
-        pinned?: boolean,
-        audible?: boolean,
-        mutedInfo?: MutedInfo,
-        favIconUrl?: string,
-        title?: string,
-    }, tab: Tab) => void>;
+    const onUpdated: EvListener<(tabId: number, updateInfo: UpdateInfo, tab: Tab) => void>;
     const onZoomChanged: Listener<{
         tabId: number,
         oldZoomFactor: number,

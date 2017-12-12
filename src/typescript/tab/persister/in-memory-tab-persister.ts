@@ -12,6 +12,7 @@ export class InMemoryTabPersister implements TabPersister {
         // TODO optimize
         for (const followedTab of this.tabList) {
             if (followedTab.openIndex == index) {
+                // TODO return a copy
                 return followedTab;
             }
         }
@@ -19,8 +20,8 @@ export class InMemoryTabPersister implements TabPersister {
         return null;
     }
 
-    async add(tab: TabFollowState): Promise<void> {
-        // TODO do not add if already in memory
+    async persist(tab: TabFollowState): Promise<void> {
+        // TODO update if already in memory, else add
         this.tabList.push(tab);
     }
 }

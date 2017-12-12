@@ -1,5 +1,4 @@
 import { CommandBus } from '../bus/command-bus';
-import { OpenTabMoved } from '../tab/event/open-tab-moved';
 import { OpenTabUpdated } from '../tab/event/open-tab-updated';
 import { TabClosed } from '../tab/event/tab-closed';
 import { TabFollowed } from '../tab/event/tab-followed';
@@ -39,7 +38,7 @@ export class FollowedTabView {
         return table;
     }
 
-    async refresh() {
+    async init() {
         const tabList = await this.tabRetriever.getFollowedTabs();
 
         this.removeAllTabsFromListElement();
@@ -85,8 +84,8 @@ export class FollowedTabView {
 
         const tabId = tab.isOpened ? tab.openState.id : null;
         const row = document.createElement('tr');
-        row.setAttribute('data-index', '' + tabId);
-        row.setAttribute('data-id', '' + tab.followState.id);
+        row.setAttribute('data-open-tab-id', '' + tabId);
+        row.setAttribute('data-follow-id', '' + tab.followState.id);
         row.appendChild(faviconCell);
         row.appendChild(titleCell);
         row.appendChild(incognitoCell);
@@ -99,10 +98,11 @@ export class FollowedTabView {
     private createTitleCell(tab: Tab): HTMLElement {
         // TODO click sends to the opened tab
         const linkElement = document.createElement('a');
-        linkElement.href = tab.followState.url;
+        linkElement.setAttribute('data-url', tab.followState.url);
         linkElement.textContent = tab.followState.title;
 
         const titleCell = document.createElement('td');
+        titleCell.classList.add('title');
         titleCell.appendChild(linkElement);
 
         return titleCell;
@@ -148,7 +148,8 @@ export class FollowedTabView {
         const tabId = tab.isOpened ? tab.openState.id : null;
         const registerButton = document.createElement('a');
         registerButton.textContent = 'Unfollow';
-        registerButton.setAttribute('data-tab-id', '' + tabId);
+        registerButton.setAttribute('data-open-tab-id', '' + tabId);
+        registerButton.setAttribute('data-follow-id', '' + tab.followState.id);
         registerButton.addEventListener('mouseup', (event) => {
             if (!(event.target instanceof Element)) {
                 return;
@@ -168,31 +169,31 @@ export class FollowedTabView {
         return followCell;
     }
 
-    onTabClose(event: TabClosed): Promise<void> {
-        // TODO
-        this.refresh();
+    async onTabClose(event: TabClosed): Promise<void> {
+        const tabRow = this.getTabRowByOpenTabId(event.tabId);
 
-        return;
+        if (tabRow) {
+            // TODO call createOpenIndicatorCell
+            tabRow.querySelector('.openIndicator').textContent = 'No';
+        }
     }
 
-    onOpenTabMove(event: OpenTabMoved): Promise<void> {
-        // TODO
-        this.refresh();
-
-        return;
+    private getTabRowByOpenTabId(openTabId: number): HTMLTableRowElement {
+        return this.tbodyElement.querySelector(`tr[data-open-tab-id="${openTabId}"]`);
     }
 
-    onOpenTabUpdate(event: OpenTabUpdated): Promise<void> {
-        // TODO
-        this.refresh();
+    async onOpenTabUpdate(event: OpenTabUpdated): Promise<void> {
+        const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
-        return;
+        if (tabRow) {
+            const linkElement = tabRow.querySelector('.title a');
+            linkElement.textContent = event.tabOpenState.title;
+            linkElement.setAttribute('data-url', event.tabOpenState.url);
+        }
     }
 
-    onTabFollow(event: TabFollowed): Promise<void> {
-        // TODO
-        this.refresh();
-
-        return;
+    async onTabFollow(event: TabFollowed): Promise<void> {
+        const row = this.createTabRow(event.tab);
+        this.tbodyElement.appendChild(row);
     }
 }

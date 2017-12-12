@@ -2,17 +2,18 @@ import { CommandBus } from './bus/command-bus';
 import { EventBus } from './bus/event-bus';
 import { FollowTab } from './tab/command/follow-tab';
 import { NativeEventConverter } from './tab/event/native-event-converter';
+import { OpenTabMoved } from './tab/event/open-tab-moved';
+import { OpenTabUpdated } from './tab/event/open-tab-updated';
 import { TabClosed } from './tab/event/tab-closed';
 import { TabClosing } from './tab/event/tab-closing';
-import { TabCreated } from './tab/event/tab-created';
 import { TabFollowed } from './tab/event/tab-followed';
-import { TabMoved } from './tab/event/tab-moved';
-import { TabUpdated } from './tab/event/tab-updated';
+import { TabOpened } from './tab/event/tab-opened';
 import { FollowedTabManager } from './tab/followed-tab-manager';
 import { FollowedTabRetriever } from './tab/followed-tab-retriever';
 import { OpenedTabRetriever } from './tab/opened-tab-retriever';
 import { InMemoryTabPersister } from './tab/persister/in-memory-tab-persister';
 import { Tab } from './tab/tab';
+import { TabRetriever } from './tab/tab-retriever';
 import { FollowedTabView } from './view/followed-tab-view';
 import { OpenedTabView } from './view/opened-tab-view';
 
@@ -26,10 +27,11 @@ function main() {
     const inMemoryTabPersister = new InMemoryTabPersister();
     const followedTabManager = new FollowedTabManager(inMemoryTabPersister, eventBus);
     const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
-    const openedTabRetriever = new OpenedTabRetriever(followedTabRetriever, [currentUrl]);
+    const openedTabRetriever = new OpenedTabRetriever([currentUrl]);
+    const tabRetriever = new TabRetriever(followedTabRetriever, openedTabRetriever);
 
-    const followedTabView = new FollowedTabView(followedTabRetriever, document.querySelector('#followedTabList'), defaultFaviconUrl);
-    const openedTabView = new OpenedTabView(openedTabRetriever, commandBus, document.querySelector('#openedTabList'), defaultFaviconUrl);
+    const followedTabView = new FollowedTabView(tabRetriever, document.querySelector('#followedTabList'), defaultFaviconUrl);
+    const openedTabView = new OpenedTabView(tabRetriever, commandBus, document.querySelector('#openedTabList'), defaultFaviconUrl);
 
     const nativeEventConverter = new NativeEventConverter(eventBus);
     nativeEventConverter.init();
@@ -39,13 +41,13 @@ function main() {
     eventBus.subscribe(TabClosed, followedTabView.onTabClose, followedTabView);
     eventBus.subscribe(TabClosed, openedTabView.onTabClose, openedTabView);
     eventBus.subscribe(TabClosing, openedTabRetriever.onTabClosing, openedTabRetriever);
-    eventBus.subscribe(TabCreated, openedTabView.onTabCreate, openedTabView);
+    eventBus.subscribe(TabOpened, openedTabView.onTabOpen, openedTabView);
     eventBus.subscribe(TabFollowed, followedTabView.onTabFollow, followedTabView);
     eventBus.subscribe(TabFollowed, openedTabView.onTabFollow, openedTabView);
-    eventBus.subscribe(TabMoved, followedTabView.onTabMove, followedTabView);
-    eventBus.subscribe(TabMoved, openedTabView.onTabMove, openedTabView);
-    eventBus.subscribe(TabUpdated, followedTabView.onTabUpdate, followedTabView);
-    eventBus.subscribe(TabUpdated, openedTabView.onTabUpdate, openedTabView);
+    eventBus.subscribe(OpenTabMoved, followedTabView.onOpenTabMove, followedTabView);
+    eventBus.subscribe(OpenTabMoved, openedTabView.onOpenTabMove, openedTabView);
+    eventBus.subscribe(OpenTabUpdated, followedTabView.onOpenTabUpdate, followedTabView);
+    eventBus.subscribe(OpenTabUpdated, openedTabView.onOpenTabUpdate, openedTabView);
 
     followedTabView.refresh();
     openedTabView.refresh();

@@ -1,9 +1,9 @@
 import { EventBus } from '../../bus/event-bus';
+import { OpenTabMoved } from './open-tab-moved';
+import { OpenTabUpdated } from './open-tab-updated';
 import { TabClosed } from './tab-closed';
 import { TabClosing } from './tab-closing';
-import { TabCreated } from './tab-created';
-import { TabMoved } from './tab-moved';
-import { TabUpdated } from './tab-updated';
+import { TabOpened } from './tab-opened';
 
 export class NativeEventConverter {
     private isInited = false;
@@ -19,14 +19,13 @@ export class NativeEventConverter {
         this.isInited = true;
         browser.tabs.onCreated.addListener(this.onTabCreate.bind(this));
         browser.tabs.onRemoved.addListener(this.onTabClose.bind(this));
-        browser.tabs.onMoved.addListener(this.onTabMove.bind(this));
-        browser.tabs.onUpdated.addListener(this.onTabUpdate.bind(this));
+        browser.tabs.onMoved.addListener(this.onOpenTabMove.bind(this));
+        browser.tabs.onUpdated.addListener(this.onOpenTabUpdate.bind(this));
     }
 
     onTabCreate(nativeTab: browser.tabs.Tab) {
         // TODO retrieve tab
-        // TODO TabOpened
-        this.eventBus.publish(new TabCreated());
+        this.eventBus.publish(new TabOpened());
     }
 
     async onTabClose(tabId: number, removeInfo: any) {
@@ -34,15 +33,13 @@ export class NativeEventConverter {
         this.eventBus.publish(new TabClosing(tabId));
     }
 
-    onTabMove(tabId: number, moveInfo: any) {
+    onOpenTabMove(tabId: number, moveInfo: any) {
         // TODO retrieve tab
-        // TODO OpenTabMoved
-        this.eventBus.publish(new TabMoved());
+        this.eventBus.publish(new OpenTabMoved());
     }
 
-    onTabUpdate(tabId: number, updateInfo: any) {
+    onOpenTabUpdate(tabId: number, updateInfo: any) {
         // TODO retrieve tab
-        // TODO OpenTabUpdated
-        this.eventBus.publish(new TabUpdated());
+        this.eventBus.publish(new OpenTabUpdated());
     }
 }

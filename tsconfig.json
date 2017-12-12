@@ -11,7 +11,7 @@
             "es2015"
         ],
         "baseUrl": ".",
-        "typeRoots": ["node_modules/@types", "node_modules/web-ext-types"]
+        "typeRoots": ["node_modules/@types", "src/typescript/definitions/webextension.d.ts"]
     },
     "exclude": [
         "dist",

@@ -1,21 +1,19 @@
 import { TabClosing } from './event/tab-closing';
-import { FollowedTabRetriever } from './followed-tab-retriever';
-import { Tab } from './tab';
+import { TabOpenState } from './tab-open-state';
 
 export class OpenedTabRetriever {
     private ignoredTabIdList: number[] = [];
     private ignoredTabIdListPurgeTimeoutReference: number = null;
 
-    constructor(private followedTabRetriever: FollowedTabRetriever, private ignoredUrls: string[]) {
+    constructor(private ignoredUrls: string[]) {
     }
 
-    async getAll(): Promise<Tab[]> {
-        const openedFollowedTabs = await this.followedTabRetriever.getOpenedTabs();
+    async getAll(): Promise<TabOpenState[]> {
         const rawTabs = await browser.tabs.query({});
-        const tabList: Tab[] = [];
+        const tabList: TabOpenState[] = [];
 
         for (const rawTab of rawTabs) {
-            const tab = this.createTab(rawTab, openedFollowedTabs);
+            const tab = this.createTab(rawTab);
 
             if (null == tab) {
                 continue;
@@ -27,19 +25,19 @@ export class OpenedTabRetriever {
         return tabList;
     }
 
-    private createTab(rawTab: browser.tabs.Tab, openedFollowedTabs: Map<number, Tab>): Tab {
+    private createTab(rawTab: browser.tabs.Tab): TabOpenState {
         if (this.isUrlIgnored(rawTab.url) || this.isTabIdIgnored(rawTab.id) || null == rawTab.id || null == rawTab.index) {
             return;
         }
 
-        const tab = new Tab();
+        const tab = new TabOpenState();
         tab.id = rawTab.id;
         tab.index = rawTab.index;
         tab.title = rawTab.title;
         tab.isIncognito = rawTab.incognito;
+        tab.isInReaderMode = rawTab.isInReaderMode;
         tab.url = rawTab.url;
         tab.faviconUrl = rawTab.favIconUrl;
-        tab.isFollowed = openedFollowedTabs.has(rawTab.id);
 
         return tab;
     }
@@ -52,7 +50,7 @@ export class OpenedTabRetriever {
         return this.ignoredTabIdList.indexOf(tabId) >= 0;
     }
 
-    async getById(id: number): Promise<Tab> {
+    async getById(id: number): Promise<TabOpenState> {
         if (this.isTabIdIgnored(id)) {
             return null;
         }
@@ -66,9 +64,20 @@ export class OpenedTabRetriever {
             return null;
         }
 
-        const openedFollowedTabs = await this.followedTabRetriever.getOpenedTabs();
+        return this.createTab(rawTab);
+    }
 
-        return this.createTab(rawTab, openedFollowedTabs);
+    async getByIndex(index: number): Promise<TabOpenState> {
+        // TODO optimize
+        const rawTabList = await browser.tabs.query({});
+
+        for (const rawTab of rawTabList) {
+            if (rawTab.index == index) {
+                return this.createTab(rawTab);
+            }
+        }
+
+        return null;
     }
 
     onTabClosing(event: TabClosing): Promise<void> {

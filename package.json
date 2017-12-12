@@ -4,6 +4,7 @@
   "main": "dist/src/main.js",
   "license": "MIT",
   "devDependencies": {
+    "@types/uuid": "^3.4.3",
     "awesome-typescript-loader": "^3.4.1",
     "concurrently": "^3.5.1",
     "node-sass": "^4.7.2",
@@ -11,7 +12,6 @@
     "tslint": "^5.8.0",
     "typescript": "^2.6.2",
     "web-ext": "^2.2.2",
-    "web-ext-types": "^1.1.1",
     "webpack": "^3.10.0"
   },
   "scripts": {
@@ -25,5 +25,8 @@
     "lint": "npm run lint-ts && npm run lint-sass",
     "lint-ts": "tslint -p tsconfig.json --type-check './src/**/*.ts'",
     "lint-sass": "sass-lint -v -q"
+  },
+  "dependencies": {
+    "uuid": "^3.1.0"
   }
 }

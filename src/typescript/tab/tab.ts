@@ -1,23 +1,15 @@
+import { TabFollowState } from './tab-follow-state';
+import { TabOpenState } from './tab-open-state';
+
 export class Tab {
-    id: number = null;
-    index: number = null;
-    title: string = null;
-    isIncognito: boolean = false;
-    url: string = null;
-    faviconUrl: string = null;
-    isFollowed: boolean = false;
+    openState: TabOpenState = null;
+    followState: TabFollowState = null;
 
     get isOpened(): boolean {
-        return null !== this.index;
+        return null !== this.openState;
     }
 
-    markAsOpened(id: number, index: number) {
-        this.id = id;
-        this.index = index;
-    }
-
-    markAsClosed() {
-        this.id = null;
-        this.index = null;
+    get isFollowed(): boolean {
+        return null !== this.followState;
     }
 }

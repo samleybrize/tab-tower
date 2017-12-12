@@ -1,26 +1,15 @@
 import { TabPersister } from './persister/tab-persister';
-import { Tab } from './tab';
+import { TabFollowState } from './tab-follow-state';
 
 export class FollowedTabRetriever {
     constructor(private tabPersister: TabPersister) {
     }
 
-    async getAll(): Promise<Tab[]> {
+    async getAll(): Promise<TabFollowState[]> {
         return this.tabPersister.getAll();
     }
 
-    async getOpenedTabs(): Promise<Map<number, Tab>> {
-        const tabList = await this.getAll();
-        const tabMap: Map<number, Tab> = new Map();
-
-        for (const tab of tabList) {
-            if (!tab.isOpened) {
-                continue;
-            }
-
-            tabMap.set(tab.id, tab);
-        }
-
-        return tabMap;
+    async getByIndex(index: number): Promise<TabFollowState> {
+        return this.tabPersister.getByIndex(index);
     }
 }

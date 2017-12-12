@@ -1,16 +1,16 @@
 import { CommandBus } from '../bus/command-bus';
+import { OpenTabMoved } from '../tab/event/open-tab-moved';
+import { OpenTabUpdated } from '../tab/event/open-tab-updated';
 import { TabClosed } from '../tab/event/tab-closed';
 import { TabFollowed } from '../tab/event/tab-followed';
-import { TabMoved } from '../tab/event/tab-moved';
-import { TabUpdated } from '../tab/event/tab-updated';
-import { FollowedTabRetriever } from '../tab/followed-tab-retriever';
 import { Tab } from '../tab/tab';
+import { TabRetriever } from '../tab/tab-retriever';
 
 export class FollowedTabView {
     private tbodyElement: HTMLElement;
 
     constructor(
-        private followedTabRetriever: FollowedTabRetriever,
+        private tabRetriever: TabRetriever,
         containerElement: HTMLElement,
         private defaultFaviconUrl: string,
     ) {
@@ -40,7 +40,7 @@ export class FollowedTabView {
     }
 
     async refresh() {
-        const tabList = await this.followedTabRetriever.getAll();
+        const tabList = await this.tabRetriever.getFollowedTabs();
 
         this.removeAllTabsFromListElement();
 
@@ -83,9 +83,10 @@ export class FollowedTabView {
         const openIndicatorCell = this.createOpenIndicatorCell(tab);
         const followCell = this.createFollowCell(tab);
 
+        const tabId = tab.isOpened ? tab.openState.id : null;
         const row = document.createElement('tr');
-        row.setAttribute('data-index', '' + tab.index);
-        row.setAttribute('data-id', '' + tab.id);
+        row.setAttribute('data-index', '' + tabId);
+        row.setAttribute('data-id', '' + tab.followState.id);
         row.appendChild(faviconCell);
         row.appendChild(titleCell);
         row.appendChild(incognitoCell);
@@ -98,8 +99,8 @@ export class FollowedTabView {
     private createTitleCell(tab: Tab): HTMLElement {
         // TODO click sends to the opened tab
         const linkElement = document.createElement('a');
-        linkElement.href = tab.url;
-        linkElement.textContent = tab.title;
+        linkElement.href = tab.followState.url;
+        linkElement.textContent = tab.followState.title;
 
         const titleCell = document.createElement('td');
         titleCell.appendChild(linkElement);
@@ -110,10 +111,10 @@ export class FollowedTabView {
     private createFaviconCell(tab: Tab): HTMLElement {
         const faviconImage = document.createElement('img');
 
-        if (null == tab.faviconUrl) {
+        if (null == tab.followState.faviconUrl) {
             faviconImage.src = this.defaultFaviconUrl;
         } else {
-            faviconImage.src = tab.faviconUrl;
+            faviconImage.src = tab.followState.faviconUrl;
             faviconImage.addEventListener('error', (event) => {
                 faviconImage.src = this.defaultFaviconUrl;
             });
@@ -127,7 +128,7 @@ export class FollowedTabView {
 
     private createIncognitoCell(tab: Tab): HTMLElement {
         const incognitoCell = document.createElement('td');
-        incognitoCell.textContent = tab.isIncognito ? 'Yes' : 'No';
+        incognitoCell.textContent = tab.followState.isIncognito ? 'Yes' : 'No';
 
         return incognitoCell;
     }
@@ -144,9 +145,10 @@ export class FollowedTabView {
     private createFollowCell(tab: Tab): HTMLElement {
         const followCell = document.createElement('td');
 
+        const tabId = tab.isOpened ? tab.openState.id : null;
         const registerButton = document.createElement('a');
         registerButton.textContent = 'Unfollow';
-        registerButton.setAttribute('data-tab-id', '' + tab.id);
+        registerButton.setAttribute('data-tab-id', '' + tabId);
         registerButton.addEventListener('mouseup', (event) => {
             if (!(event.target instanceof Element)) {
                 return;
@@ -173,14 +175,14 @@ export class FollowedTabView {
         return;
     }
 
-    onTabMove(event: TabMoved): Promise<void> {
+    onOpenTabMove(event: OpenTabMoved): Promise<void> {
         // TODO
         this.refresh();
 
         return;
     }
 
-    onTabUpdate(event: TabUpdated): Promise<void> {
+    onOpenTabUpdate(event: OpenTabUpdated): Promise<void> {
         // TODO
         this.refresh();
 

@@ -6,6 +6,12 @@
   version "8.0.57"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.57.tgz#e5d8b4dc112763e35cfc51988f4f38da3c486d99"
 
+"@types/uuid@^3.4.3":
+  version "3.4.3"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-3.4.3.tgz#121ace265f5569ce40f4f6d0ff78a338c732a754"
+  dependencies:
+    "@types/node" "*"
+
 JSONSelect@0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/JSONSelect/-/JSONSelect-0.2.1.tgz#415418a526d33fe31d74b4defa3c836d485ec203"
@@ -5203,10 +5209,6 @@ wcwidth@^1.0.0:
   resolved "https://registry.yarnpkg.com/wcwidth/-/wcwidth-1.0.1.tgz#f0b0dcf915bc5ff1528afadb2c0e17b532da2fe8"
   dependencies:
     defaults "^1.0.3"
-
-web-ext-types@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/web-ext-types/-/web-ext-types-1.1.1.tgz#0612b14fb21e516b154fb10db9fd8e092ad20c56"
 
 web-ext@^2.2.2:
   version "2.2.2"

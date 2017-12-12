@@ -24,6 +24,8 @@ export class NativeEventConverter {
     }
 
     onTabCreate(nativeTab: browser.tabs.Tab) {
+        // TODO retrieve tab
+        // TODO TabOpened
         this.eventBus.publish(new TabCreated());
     }
 
@@ -33,10 +35,14 @@ export class NativeEventConverter {
     }
 
     onTabMove(tabId: number, moveInfo: any) {
+        // TODO retrieve tab
+        // TODO OpenTabMoved
         this.eventBus.publish(new TabMoved());
     }
 
     onTabUpdate(tabId: number, updateInfo: any) {
+        // TODO retrieve tab
+        // TODO OpenTabUpdated
         this.eventBus.publish(new TabUpdated());
     }
 }

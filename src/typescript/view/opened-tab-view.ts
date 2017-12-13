@@ -1,7 +1,8 @@
 import { CommandBus } from '../bus/command-bus';
 import { FollowTab } from '../tab/command/follow-tab';
-import { OpenTabMoved } from '../tab/event/open-tab-moved';
 import { OpenTabFaviconUrlUpdated } from '../tab/event/open-tab-favicon-url-updated';
+import { OpenTabMoved } from '../tab/event/open-tab-moved';
+import { OpenTabReaderModeStateUpdated } from '../tab/event/open-tab-reader-mode-state-updated';
 import { OpenTabTitleUpdated } from '../tab/event/open-tab-title-updated';
 import { OpenTabUrlUpdated } from '../tab/event/open-tab-url-updated';
 import { TabClosed } from '../tab/event/tab-closed';
@@ -35,6 +36,7 @@ export class OpenedTabView {
                 <th></th>
                 <th>Title</th>
                 <th>Incognito</th>
+                <th>Reader mode</th>
                 <th>Opened</th>
                 <th></th>
             </thead>
@@ -85,6 +87,7 @@ export class OpenedTabView {
         const titleCell = this.createTitleCell(tab);
         const faviconCell = this.createFaviconCell(tab);
         const incognitoCell = this.createIncognitoCell(tab);
+        const readerModeCell = this.createReaderModeCell(tab);
         const openIndicatorCell = this.createOpenIndicatorCell(tab);
         const followCell = this.createFollowCell(tab);
 
@@ -94,6 +97,7 @@ export class OpenedTabView {
         row.appendChild(faviconCell);
         row.appendChild(titleCell);
         row.appendChild(incognitoCell);
+        row.appendChild(readerModeCell);
         row.appendChild(openIndicatorCell);
         row.appendChild(followCell);
 
@@ -135,6 +139,13 @@ export class OpenedTabView {
         incognitoCell.textContent = tab.openState.isIncognito ? 'Yes' : 'No';
 
         return incognitoCell;
+    }
+
+    private createReaderModeCell(tab: Tab): HTMLElement {
+        const readerModeCell = document.createElement('td');
+        readerModeCell.textContent = tab.openState.isInReaderMode ? 'Yes' : 'No';
+
+        return readerModeCell;
     }
 
     private createOpenIndicatorCell(tab: Tab): HTMLElement {
@@ -204,6 +215,12 @@ export class OpenedTabView {
     }
 
     onOpenTabUrlUpdate(event: OpenTabUrlUpdated): Promise<void> {
+        this.refresh();
+
+        return;
+    }
+
+    onOpenTabReaderModeStateUpdate(event: OpenTabReaderModeStateUpdated): Promise<void> {
         this.refresh();
 
         return;

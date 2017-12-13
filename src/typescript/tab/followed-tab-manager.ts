@@ -4,8 +4,9 @@ import { EventBus } from '../bus/event-bus';
 import { TabFollowState } from '../tab/tab-follow-state';
 import { TabOpenState } from '../tab/tab-open-state';
 import { FollowTab } from './command/follow-tab';
-import { OpenTabMoved } from './event/open-tab-moved';
 import { OpenTabFaviconUrlUpdated } from './event/open-tab-favicon-url-updated';
+import { OpenTabMoved } from './event/open-tab-moved';
+import { OpenTabReaderModeStateUpdated } from './event/open-tab-reader-mode-state-updated';
 import { OpenTabTitleUpdated } from './event/open-tab-title-updated';
 import { OpenTabUrlUpdated } from './event/open-tab-url-updated';
 import { TabFollowed } from './event/tab-followed';
@@ -84,5 +85,14 @@ export class FollowedTabManager {
         }
     }
 
-    // TODO onOpenTabReaderModeUpdate
+    async onOpenTabReaderModeStateUpdate(event: OpenTabReaderModeStateUpdated): Promise<void> {
+        const tabFollowState = await this.tabPersister.getByIndex(event.tabOpenState.index);
+
+        if (tabFollowState) {
+            // TODO
+            tabFollowState.isInReaderMode = event.tabOpenState.isInReaderMode;
+
+            await this.tabPersister.persist(tabFollowState);
+        }
+    }
 }

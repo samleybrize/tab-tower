@@ -50,10 +50,15 @@ export class NativeEventHandler {
 
         if (updateInfo.url) {
             this.openedTabManager.updateUrl(tabOpenState, updateInfo.url);
+
+            if (0 == updateInfo.url.indexOf('about:reader?')) {
+                this.openedTabManager.updateReaderModeState(tabOpenState, true);
+            } else {
+                this.openedTabManager.updateReaderModeState(tabOpenState, false);
+            }
         }
 
-        // TODO favicon url may be null to indicate that there is not
-        if (updateInfo.favIconUrl) {
+        if (undefined !== updateInfo.favIconUrl) {
             this.openedTabManager.updateFaviconUrl(tabOpenState, updateInfo.favIconUrl);
         }
     }

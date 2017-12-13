@@ -1,6 +1,7 @@
 import { EventBus } from '../bus/event-bus';
-import { OpenTabMoved } from './event/open-tab-moved';
 import { OpenTabFaviconUrlUpdated } from './event/open-tab-favicon-url-updated';
+import { OpenTabMoved } from './event/open-tab-moved';
+import { OpenTabReaderModeStateUpdated } from './event/open-tab-reader-mode-state-updated';
 import { OpenTabTitleUpdated } from './event/open-tab-title-updated';
 import { OpenTabUrlUpdated } from './event/open-tab-url-updated';
 import { TabClosed } from './event/tab-closed';
@@ -40,6 +41,13 @@ export class OpenedTabManager {
 
         tabOpenState.url = newUrl;
         this.eventBus.publish(new OpenTabUrlUpdated(tabOpenState, oldUrl));
+    }
+
+    async updateReaderModeState(tabOpenState: TabOpenState, newReaderModeState: boolean) {
+        const oldReaderModeState = tabOpenState.isInReaderMode;
+
+        tabOpenState.isInReaderMode = newReaderModeState;
+        this.eventBus.publish(new OpenTabReaderModeStateUpdated(tabOpenState, oldReaderModeState));
     }
 
     async updateFaviconUrl(tabOpenState: TabOpenState, newFaviconUrl: string) {

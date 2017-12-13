@@ -6,6 +6,7 @@ export class OpenedTabRetriever {
     private ignoredTabIdListPurgeTimeoutReference: number = null;
 
     constructor(private ignoredUrls: string[]) {
+        this.ignoredUrls.push('about:blank');
     }
 
     async getAll(): Promise<TabOpenState[]> {
@@ -35,7 +36,7 @@ export class OpenedTabRetriever {
         tab.index = rawTab.index;
         tab.title = rawTab.title;
         tab.isIncognito = rawTab.incognito;
-        tab.isInReaderMode = rawTab.isInReaderMode;
+        tab.isInReaderMode = (0 == rawTab.url.indexOf('about:reader?'));
         tab.url = rawTab.url;
         tab.faviconUrl = rawTab.favIconUrl;
 
@@ -43,7 +44,7 @@ export class OpenedTabRetriever {
     }
 
     private isUrlIgnored(url: string) {
-        return 0 == url.indexOf('about:') || this.ignoredUrls.indexOf(url) >= 0;
+        return this.ignoredUrls.indexOf(url) >= 0;
     }
 
     private isTabIdIgnored(tabId: number) {

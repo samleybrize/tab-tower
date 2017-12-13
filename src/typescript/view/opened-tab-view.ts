@@ -1,7 +1,9 @@
 import { CommandBus } from '../bus/command-bus';
 import { FollowTab } from '../tab/command/follow-tab';
 import { OpenTabMoved } from '../tab/event/open-tab-moved';
-import { OpenTabUpdated } from '../tab/event/open-tab-updated';
+import { OpenTabFaviconUrlUpdated } from '../tab/event/open-tab-favicon-url-updated';
+import { OpenTabTitleUpdated } from '../tab/event/open-tab-title-updated';
+import { OpenTabUrlUpdated } from '../tab/event/open-tab-url-updated';
 import { TabClosed } from '../tab/event/tab-closed';
 import { TabFollowed } from '../tab/event/tab-followed';
 import { TabOpened } from '../tab/event/tab-opened';
@@ -189,7 +191,19 @@ export class OpenedTabView {
         return;
     }
 
-    onOpenTabUpdate(event: OpenTabUpdated): Promise<void> {
+    onOpenTabFaviconUrlUpdate(event: OpenTabFaviconUrlUpdated): Promise<void> {
+        this.refresh();
+
+        return;
+    }
+
+    onOpenTabTitleUpdate(event: OpenTabTitleUpdated): Promise<void> {
+        this.refresh();
+
+        return;
+    }
+
+    onOpenTabUrlUpdate(event: OpenTabUrlUpdated): Promise<void> {
         this.refresh();
 
         return;

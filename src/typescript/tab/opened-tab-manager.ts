@@ -1,6 +1,8 @@
 import { EventBus } from '../bus/event-bus';
 import { OpenTabMoved } from './event/open-tab-moved';
-import { OpenTabUpdated } from './event/open-tab-updated';
+import { OpenTabFaviconUrlUpdated } from './event/open-tab-favicon-url-updated';
+import { OpenTabTitleUpdated } from './event/open-tab-title-updated';
+import { OpenTabUrlUpdated } from './event/open-tab-url-updated';
 import { TabClosed } from './event/tab-closed';
 import { TabClosing } from './event/tab-closing';
 import { TabOpened } from './event/tab-opened';
@@ -26,24 +28,24 @@ export class OpenedTabManager {
         this.eventBus.publish(new OpenTabMoved(tabOpenState, oldIndex));
     }
 
-    async update(
-        tabOpenState: TabOpenState,
-        newTitle: string,
-        newUrl: string,
-        newFavIconUrl: string,
-    ) {
+    async updateTitle(tabOpenState: TabOpenState, newTitle: string) {
         const oldTitle = tabOpenState.title;
-        const oldUrl = tabOpenState.url;
-        const oldFaviconUrl = tabOpenState.faviconUrl;
 
         tabOpenState.title = newTitle;
+        this.eventBus.publish(new OpenTabTitleUpdated(tabOpenState, oldTitle));
+    }
+
+    async updateUrl(tabOpenState: TabOpenState, newUrl: string) {
+        const oldUrl = tabOpenState.url;
+
         tabOpenState.url = newUrl;
-        tabOpenState.faviconUrl = newFavIconUrl;
-        this.eventBus.publish(new OpenTabUpdated(
-            tabOpenState,
-            oldTitle,
-            oldUrl,
-            oldFaviconUrl,
-        ));
+        this.eventBus.publish(new OpenTabUrlUpdated(tabOpenState, oldUrl));
+    }
+
+    async updateFaviconUrl(tabOpenState: TabOpenState, newFaviconUrl: string) {
+        const oldFaviconUrl = tabOpenState.faviconUrl;
+
+        tabOpenState.faviconUrl = newFaviconUrl;
+        this.eventBus.publish(new OpenTabFaviconUrlUpdated(tabOpenState, oldFaviconUrl));
     }
 }

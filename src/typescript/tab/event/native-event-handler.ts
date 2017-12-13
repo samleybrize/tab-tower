@@ -38,15 +38,23 @@ export class NativeEventHandler {
     }
 
     async onNativeTabUpdate(tabId: number, updateInfo: browser.tabs.UpdateInfo) {
-        const tab = await this.openedTabRetriever.getById(tabId);
+        const tabOpenState = await this.openedTabRetriever.getById(tabId);
 
-        if (tab) {
-            this.openedTabManager.update(
-                tab,
-                updateInfo.title,
-                updateInfo.url,
-                updateInfo.favIconUrl,
-            );
+        if (null == tabOpenState) {
+            return;
+        }
+
+        if (updateInfo.title) {
+            this.openedTabManager.updateTitle(tabOpenState, updateInfo.title);
+        }
+
+        if (updateInfo.url) {
+            this.openedTabManager.updateUrl(tabOpenState, updateInfo.url);
+        }
+
+        // TODO favicon url may be null to indicate that there is not
+        if (updateInfo.favIconUrl) {
+            this.openedTabManager.updateFaviconUrl(tabOpenState, updateInfo.favIconUrl);
         }
     }
 }

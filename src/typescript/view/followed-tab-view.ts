@@ -1,5 +1,7 @@
 import { CommandBus } from '../bus/command-bus';
-import { OpenTabUpdated } from '../tab/event/open-tab-updated';
+import { OpenTabFaviconUrlUpdated } from '../tab/event/open-tab-favicon-url-updated';
+import { OpenTabTitleUpdated } from '../tab/event/open-tab-title-updated';
+import { OpenTabUrlUpdated } from '../tab/event/open-tab-url-updated';
 import { TabClosed } from '../tab/event/tab-closed';
 import { TabFollowed } from '../tab/event/tab-followed';
 import { Tab } from '../tab/tab';
@@ -121,6 +123,7 @@ export class FollowedTabView {
         }
 
         const faviconCell = document.createElement('td');
+        faviconCell.classList.add('favicon');
         faviconCell.appendChild(faviconImage);
 
         return faviconCell;
@@ -182,12 +185,29 @@ export class FollowedTabView {
         return this.tbodyElement.querySelector(`tr[data-open-tab-id="${openTabId}"]`);
     }
 
-    async onOpenTabUpdate(event: OpenTabUpdated): Promise<void> {
+    async onOpenTabFaviconUrlUpdate(event: OpenTabFaviconUrlUpdated): Promise<void> {
+        const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
+
+        if (tabRow) {
+            const faviconElement = tabRow.querySelector('.favicon img') as HTMLImageElement;
+            faviconElement.src = event.tabOpenState.faviconUrl;
+        }
+    }
+
+    async onOpenTabTitleUpdate(event: OpenTabTitleUpdated): Promise<void> {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
             const linkElement = tabRow.querySelector('.title a');
             linkElement.textContent = event.tabOpenState.title;
+        }
+    }
+
+    async onOpenTabUrlUpdate(event: OpenTabUrlUpdated): Promise<void> {
+        const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
+
+        if (tabRow) {
+            const linkElement = tabRow.querySelector('.title a');
             linkElement.setAttribute('data-url', event.tabOpenState.url);
         }
     }

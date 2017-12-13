@@ -5,7 +5,9 @@ import { TabFollowState } from '../tab/tab-follow-state';
 import { TabOpenState } from '../tab/tab-open-state';
 import { FollowTab } from './command/follow-tab';
 import { OpenTabMoved } from './event/open-tab-moved';
-import { OpenTabUpdated } from './event/open-tab-updated';
+import { OpenTabFaviconUrlUpdated } from './event/open-tab-favicon-url-updated';
+import { OpenTabTitleUpdated } from './event/open-tab-title-updated';
+import { OpenTabUrlUpdated } from './event/open-tab-url-updated';
 import { TabFollowed } from './event/tab-followed';
 import { TabPersister } from './persister/tab-persister';
 
@@ -49,16 +51,38 @@ export class FollowedTabManager {
         }
     }
 
-    async onOpenTabUpdate(event: OpenTabUpdated): Promise<void> {
+    async onOpenTabFaviconUrlUpdate(event: OpenTabFaviconUrlUpdated): Promise<void> {
         const tabFollowState = await this.tabPersister.getByIndex(event.tabOpenState.index);
 
         if (tabFollowState) {
-            tabFollowState.title = event.tabOpenState.title;
-            tabFollowState.url = event.tabOpenState.url;
+            // TODO
             tabFollowState.faviconUrl = event.tabOpenState.faviconUrl;
-            tabFollowState.isInReaderMode = event.tabOpenState.isInReaderMode;
 
             await this.tabPersister.persist(tabFollowState);
         }
     }
+
+    async onOpenTabTitleUpdate(event: OpenTabTitleUpdated): Promise<void> {
+        const tabFollowState = await this.tabPersister.getByIndex(event.tabOpenState.index);
+
+        if (tabFollowState) {
+            // TODO
+            tabFollowState.title = event.tabOpenState.title;
+
+            await this.tabPersister.persist(tabFollowState);
+        }
+    }
+
+    async onOpenTabUrlUpdate(event: OpenTabUrlUpdated): Promise<void> {
+        const tabFollowState = await this.tabPersister.getByIndex(event.tabOpenState.index);
+
+        if (tabFollowState) {
+            // TODO
+            tabFollowState.url = event.tabOpenState.url;
+
+            await this.tabPersister.persist(tabFollowState);
+        }
+    }
+
+    // TODO onOpenTabReaderModeUpdate
 }

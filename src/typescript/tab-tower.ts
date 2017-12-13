@@ -3,7 +3,9 @@ import { EventBus } from './bus/event-bus';
 import { FollowTab } from './tab/command/follow-tab';
 import { NativeEventHandler } from './tab/event/native-event-handler';
 import { OpenTabMoved } from './tab/event/open-tab-moved';
-import { OpenTabUpdated } from './tab/event/open-tab-updated';
+import { OpenTabFaviconUrlUpdated } from './tab/event/open-tab-favicon-url-updated';
+import { OpenTabTitleUpdated } from './tab/event/open-tab-title-updated';
+import { OpenTabUrlUpdated } from './tab/event/open-tab-url-updated';
 import { TabClosed } from './tab/event/tab-closed';
 import { TabClosing } from './tab/event/tab-closing';
 import { TabFollowed } from './tab/event/tab-followed';
@@ -47,8 +49,12 @@ function main() {
     eventBus.subscribe(TabFollowed, followedTabView.onTabFollow, followedTabView);
     eventBus.subscribe(TabFollowed, openedTabView.onTabFollow, openedTabView);
     eventBus.subscribe(OpenTabMoved, openedTabView.onOpenTabMove, openedTabView);
-    eventBus.subscribe(OpenTabUpdated, followedTabView.onOpenTabUpdate, followedTabView);
-    eventBus.subscribe(OpenTabUpdated, openedTabView.onOpenTabUpdate, openedTabView);
+    eventBus.subscribe(OpenTabFaviconUrlUpdated, followedTabView.onOpenTabFaviconUrlUpdate, followedTabView);
+    eventBus.subscribe(OpenTabFaviconUrlUpdated, openedTabView.onOpenTabFaviconUrlUpdate, openedTabView);
+    eventBus.subscribe(OpenTabTitleUpdated, followedTabView.onOpenTabTitleUpdate, followedTabView);
+    eventBus.subscribe(OpenTabTitleUpdated, openedTabView.onOpenTabTitleUpdate, openedTabView);
+    eventBus.subscribe(OpenTabUrlUpdated, followedTabView.onOpenTabUrlUpdate, followedTabView);
+    eventBus.subscribe(OpenTabUrlUpdated, openedTabView.onOpenTabUrlUpdate, openedTabView);
 
     followedTabView.init();
     openedTabView.refresh();

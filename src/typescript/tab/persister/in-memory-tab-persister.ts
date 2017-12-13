@@ -28,8 +28,8 @@ export class InMemoryTabPersister implements TabPersister {
     async remove(tabFollowStateToRemove: TabFollowState): Promise<void> {
         // TODO optimize
         for (const arrayIndex of this.tabList.keys()) {
-            if (this.tabList[arrayIndex].id == tabFollowStateToRemove.id) {
-                delete this.tabList[arrayIndex];
+            if (this.tabList[arrayIndex] && this.tabList[arrayIndex].id == tabFollowStateToRemove.id) {
+                this.tabList.splice(arrayIndex, 1);
 
                 return;
             }

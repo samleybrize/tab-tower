@@ -28,7 +28,7 @@ export class FollowedTabManager {
 
         const tabFollowState = this.createTabFollowStateFromOpenState(command.tab.openState);
         tab.followState = tabFollowState;
-        this.tabPersister.persist(tabFollowState);
+        await this.tabPersister.persist(tabFollowState);
         this.eventBus.publish(new TabFollowed(tab));
     }
 
@@ -52,8 +52,10 @@ export class FollowedTabManager {
             return;
         }
 
-        this.tabPersister.remove(tab.followState);
-        this.eventBus.publish(new TabUnfollowed(tab));
+        await this.tabPersister.remove(tab.followState);
+        const oldFollowState = tab.followState;
+        tab.followState = null;
+        this.eventBus.publish(new TabUnfollowed(tab, oldFollowState));
     }
 
     async onOpenTabMove(event: OpenTabMoved): Promise<void> {

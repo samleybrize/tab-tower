@@ -1,5 +1,6 @@
 import { CommandBus } from '../bus/command-bus';
 import { FollowTab } from '../tab/command/follow-tab';
+import { UnfollowTab } from '../tab/command/unfollow-tab';
 import { OpenTabFaviconUrlUpdated } from '../tab/event/open-tab-favicon-url-updated';
 import { OpenTabMoved } from '../tab/event/open-tab-moved';
 import { OpenTabReaderModeStateUpdated } from '../tab/event/open-tab-reader-mode-state-updated';
@@ -162,24 +163,23 @@ export class OpenedTabView {
         const followCell = document.createElement('td');
 
         if (!tab.isFollowed) {
-            const registerButton = document.createElement('a');
-            registerButton.textContent = 'Follow';
-            registerButton.setAttribute('data-tab-id', '' + tab.openState.id);
-            registerButton.addEventListener('mouseup', (event) => {
-                if (!(event.target instanceof Element)) {
-                    return;
-                }
-
-                if (null == event.target.getAttribute('data-tab-id')) {
-                    console.error('Unable to find a tab id');
-
-                    return;
-                }
-
+            const followButton = document.createElement('a');
+            followButton.textContent = 'Follow';
+            followButton.setAttribute('data-tab-id', '' + tab.openState.id);
+            followButton.addEventListener('mouseup', (event) => {
                 this.commandBus.handle(new FollowTab(tab));
             });
 
-            followCell.appendChild(registerButton);
+            followCell.appendChild(followButton);
+        } else {
+            const followButton = document.createElement('a');
+            followButton.textContent = 'Unfollow';
+            followButton.setAttribute('data-tab-id', '' + tab.openState.id);
+            followButton.addEventListener('mouseup', (event) => {
+                this.commandBus.handle(new UnfollowTab(tab));
+            });
+
+            followCell.appendChild(followButton);
         }
 
         return followCell;

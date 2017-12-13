@@ -162,25 +162,19 @@ export class FollowedTabView {
         const followCell = document.createElement('td');
 
         const tabId = tab.isOpened ? tab.openState.id : null;
-        const registerButton = document.createElement('a');
-        registerButton.textContent = 'Unfollow';
-        registerButton.setAttribute('data-open-tab-id', '' + tabId);
-        registerButton.setAttribute('data-follow-id', '' + tab.followState.id);
-        registerButton.addEventListener('mouseup', (event) => {
+        const unfollowButton = document.createElement('a');
+        unfollowButton.textContent = 'Unfollow';
+        unfollowButton.setAttribute('data-open-tab-id', '' + tabId);
+        unfollowButton.setAttribute('data-follow-id', '' + tab.followState.id);
+        unfollowButton.addEventListener('mouseup', (event) => {
             if (!(event.target instanceof Element)) {
-                return;
-            }
-
-            if (null == event.target.getAttribute('data-tab-id')) {
-                console.error('Unable to find a tab id');
-
                 return;
             }
 
             this.commandBus.handle(new UnfollowTab(tab));
         });
 
-        followCell.appendChild(registerButton);
+        followCell.appendChild(unfollowButton);
 
         return followCell;
     }
@@ -243,7 +237,7 @@ export class FollowedTabView {
     }
 
     async onTabUnfollow(event: TabUnfollowed): Promise<void> {
-        const followedTabRow = this.tbodyElement.querySelector(`tr[data-follow-id="${event.tab.followState.id}"]`);
+        const followedTabRow = this.tbodyElement.querySelector(`tr[data-follow-id="${event.oldTabFollowState.id}"]`);
 
         if (followedTabRow) {
             followedTabRow.remove();

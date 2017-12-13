@@ -4,12 +4,14 @@ import { EventBus } from '../bus/event-bus';
 import { TabFollowState } from '../tab/tab-follow-state';
 import { TabOpenState } from '../tab/tab-open-state';
 import { FollowTab } from './command/follow-tab';
+import { UnfollowTab } from './command/unfollow-tab';
 import { OpenTabFaviconUrlUpdated } from './event/open-tab-favicon-url-updated';
 import { OpenTabMoved } from './event/open-tab-moved';
 import { OpenTabReaderModeStateUpdated } from './event/open-tab-reader-mode-state-updated';
 import { OpenTabTitleUpdated } from './event/open-tab-title-updated';
 import { OpenTabUrlUpdated } from './event/open-tab-url-updated';
 import { TabFollowed } from './event/tab-followed';
+import { TabUnfollowed } from './event/tab-unfollowed';
 import { TabPersister } from './persister/tab-persister';
 
 // TODO rename
@@ -41,6 +43,17 @@ export class FollowedTabManager {
         followState.openIndex = openState.index;
 
         return followState;
+    }
+
+    async unfollowTab(command: FollowTab) {
+        const tab = command.tab;
+
+        if (!tab.isFollowed) {
+            return;
+        }
+
+        this.tabPersister.remove(tab.followState);
+        this.eventBus.publish(new TabUnfollowed(tab));
     }
 
     async onOpenTabMove(event: OpenTabMoved): Promise<void> {

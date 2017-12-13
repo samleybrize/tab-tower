@@ -4,4 +4,5 @@ export interface TabPersister {
     getAll(): Promise<TabFollowState[]>;
     getByIndex(index: number): Promise<TabFollowState>;
     persist(tab: TabFollowState): Promise<void>;
+    remove(tab: TabFollowState): Promise<void>;
 }

@@ -20,8 +20,19 @@ export class InMemoryTabPersister implements TabPersister {
         return null;
     }
 
-    async persist(tab: TabFollowState): Promise<void> {
+    async persist(tabFollowState: TabFollowState): Promise<void> {
         // TODO update if already in memory, else add
-        this.tabList.push(tab);
+        this.tabList.push(tabFollowState);
+    }
+
+    async remove(tabFollowStateToRemove: TabFollowState): Promise<void> {
+        // TODO optimize
+        for (const arrayIndex of this.tabList.keys()) {
+            if (this.tabList[arrayIndex].id == tabFollowStateToRemove.id) {
+                delete this.tabList[arrayIndex];
+
+                return;
+            }
+        }
     }
 }

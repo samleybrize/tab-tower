@@ -8,6 +8,7 @@ import { OpenTabUrlUpdated } from '../tab/event/open-tab-url-updated';
 import { TabClosed } from '../tab/event/tab-closed';
 import { TabFollowed } from '../tab/event/tab-followed';
 import { TabOpened } from '../tab/event/tab-opened';
+import { TabUnfollowed } from '../tab/event/tab-unfollowed';
 import { Tab } from '../tab/tab';
 import { TabRetriever } from '../tab/tab-retriever';
 
@@ -227,6 +228,12 @@ export class OpenedTabView {
     }
 
     onTabFollow(event: TabFollowed): Promise<void> {
+        this.refresh();
+
+        return;
+    }
+
+    onTabUnfollow(event: TabUnfollowed): Promise<void> {
         this.refresh();
 
         return;

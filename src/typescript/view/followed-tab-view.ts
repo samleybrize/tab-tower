@@ -1,18 +1,22 @@
 import { CommandBus } from '../bus/command-bus';
+import { UnfollowTab } from '../tab/command/unfollow-tab';
 import { OpenTabFaviconUrlUpdated } from '../tab/event/open-tab-favicon-url-updated';
 import { OpenTabReaderModeStateUpdated } from '../tab/event/open-tab-reader-mode-state-updated';
 import { OpenTabTitleUpdated } from '../tab/event/open-tab-title-updated';
 import { OpenTabUrlUpdated } from '../tab/event/open-tab-url-updated';
 import { TabClosed } from '../tab/event/tab-closed';
 import { TabFollowed } from '../tab/event/tab-followed';
+import { TabUnfollowed } from '../tab/event/tab-unfollowed';
 import { Tab } from '../tab/tab';
 import { TabRetriever } from '../tab/tab-retriever';
 
 export class FollowedTabView {
     private tbodyElement: HTMLElement;
+    private noTabRow: HTMLElement;
 
     constructor(
         private tabRetriever: TabRetriever,
+        private commandBus: CommandBus,
         containerElement: HTMLElement,
         private defaultFaviconUrl: string,
     ) {
@@ -44,11 +48,11 @@ export class FollowedTabView {
 
     async init() {
         const tabList = await this.tabRetriever.getFollowedTabs();
-
-        this.removeAllTabsFromListElement();
+        this.noTabRow = this.createNoTabRow();
+        this.tbodyElement.appendChild(this.noTabRow);
 
         if (0 == tabList.length) {
-            this.addNoTabRow();
+            this.noTabRow.classList.remove('transparent');
 
             return;
         }
@@ -63,20 +67,17 @@ export class FollowedTabView {
         }
     }
 
-    private removeAllTabsFromListElement() {
-        while (this.tbodyElement.firstChild) {
-            this.tbodyElement.removeChild(this.tbodyElement.firstChild);
-        }
-    }
-
-    private addNoTabRow() {
+    private createNoTabRow() {
         const cell = document.createElement('td');
         cell.setAttribute('colspan', '5');
         cell.textContent = 'No tab';
 
         const row = document.createElement('tr');
+        row.classList.add('transparent');
+        row.classList.add('noTabRow');
         row.appendChild(cell);
-        this.tbodyElement.appendChild(row);
+
+        return row;
     }
 
     private createTabRow(tab: Tab): HTMLElement {
@@ -176,7 +177,7 @@ export class FollowedTabView {
                 return;
             }
 
-            // this.commandBus.handle(new UnfollowTab(tab));
+            this.commandBus.handle(new UnfollowTab(tab));
         });
 
         followCell.appendChild(registerButton);
@@ -237,5 +238,16 @@ export class FollowedTabView {
     async onTabFollow(event: TabFollowed): Promise<void> {
         const row = this.createTabRow(event.tab);
         this.tbodyElement.appendChild(row);
+
+        this.noTabRow.classList.add('transparent');
+    }
+
+    async onTabUnfollow(event: TabUnfollowed): Promise<void> {
+        const followedTabRow = this.tbodyElement.querySelector(`tr[data-follow-id="${event.tab.followState.id}"]`);
+
+        if (followedTabRow) {
+            followedTabRow.remove();
+            this.noTabRow.classList.remove('transparent');
+        }
     }
 }

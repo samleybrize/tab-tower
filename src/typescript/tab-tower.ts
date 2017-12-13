@@ -1,6 +1,7 @@
 import { CommandBus } from './bus/command-bus';
 import { EventBus } from './bus/event-bus';
 import { FollowTab } from './tab/command/follow-tab';
+import { UnfollowTab } from './tab/command/unfollow-tab';
 import { NativeEventHandler } from './tab/event/native-event-handler';
 import { OpenTabFaviconUrlUpdated } from './tab/event/open-tab-favicon-url-updated';
 import { OpenTabMoved } from './tab/event/open-tab-moved';
@@ -11,6 +12,7 @@ import { TabClosed } from './tab/event/tab-closed';
 import { TabClosing } from './tab/event/tab-closing';
 import { TabFollowed } from './tab/event/tab-followed';
 import { TabOpened } from './tab/event/tab-opened';
+import { TabUnfollowed } from './tab/event/tab-unfollowed';
 import { FollowedTabManager } from './tab/followed-tab-manager';
 import { FollowedTabRetriever } from './tab/followed-tab-retriever';
 import { OpenedTabManager } from './tab/opened-tab-manager';
@@ -35,13 +37,14 @@ function main() {
     const openedTabRetriever = new OpenedTabRetriever([currentUrl]);
     const tabRetriever = new TabRetriever(followedTabRetriever, openedTabRetriever);
 
-    const followedTabView = new FollowedTabView(tabRetriever, document.querySelector('#followedTabList'), defaultFaviconUrl);
+    const followedTabView = new FollowedTabView(tabRetriever, commandBus, document.querySelector('#followedTabList'), defaultFaviconUrl);
     const openedTabView = new OpenedTabView(tabRetriever, commandBus, document.querySelector('#openedTabList'), defaultFaviconUrl);
 
     const nativeEventHandler = new NativeEventHandler(openedTabManager, openedTabRetriever);
     nativeEventHandler.init();
 
     commandBus.register(FollowTab, followedTabManager.followTab, followedTabManager);
+    commandBus.register(UnfollowTab, followedTabManager.unfollowTab, followedTabManager);
 
     eventBus.subscribe(TabClosed, followedTabView.onTabClose, followedTabView);
     eventBus.subscribe(TabClosed, openedTabView.onTabClose, openedTabView);
@@ -63,6 +66,8 @@ function main() {
     eventBus.subscribe(OpenTabUrlUpdated, followedTabManager.onOpenTabUrlUpdate, followedTabManager);
     eventBus.subscribe(OpenTabUrlUpdated, followedTabView.onOpenTabUrlUpdate, followedTabView);
     eventBus.subscribe(OpenTabUrlUpdated, openedTabView.onOpenTabUrlUpdate, openedTabView);
+    eventBus.subscribe(TabUnfollowed, followedTabView.onTabUnfollow, followedTabView);
+    eventBus.subscribe(TabUnfollowed, openedTabView.onTabUnfollow, openedTabView);
 
     followedTabView.init();
     openedTabView.refresh();

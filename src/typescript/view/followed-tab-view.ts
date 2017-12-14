@@ -86,7 +86,7 @@ export class FollowedTabView {
         const incognitoCell = this.createIncognitoCell(tab);
         const readerModeCell = this.createReaderModeCell(tab);
         const openIndicatorCell = this.createOpenIndicatorCell(tab);
-        const followCell = this.createFollowCell(tab);
+        const followCell = this.createUnfollowCell(tab);
 
         const tabId = tab.isOpened ? tab.openState.id : null;
         const row = document.createElement('tr');
@@ -158,13 +158,12 @@ export class FollowedTabView {
         return openIndicatorCell;
     }
 
-    private createFollowCell(tab: Tab): HTMLElement {
+    private createUnfollowCell(tab: Tab): HTMLElement {
         const followCell = document.createElement('td');
 
         const tabId = tab.isOpened ? tab.openState.id : null;
         const registerButton = document.createElement('a');
         registerButton.textContent = 'Unfollow';
-        registerButton.setAttribute('data-open-tab-id', '' + tabId);
         registerButton.setAttribute('data-follow-id', '' + tab.followState.id);
         registerButton.addEventListener('mouseup', (event) => {
             if (!(event.target instanceof Element)) {

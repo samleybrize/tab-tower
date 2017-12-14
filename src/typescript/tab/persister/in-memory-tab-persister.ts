@@ -20,6 +20,18 @@ export class InMemoryTabPersister implements TabPersister {
         return null;
     }
 
+    async getByFollowId(followId: string): Promise<TabFollowState> {
+        // TODO optimize
+        for (const followedTab of this.tabList) {
+            if (followedTab.id == followId) {
+                // TODO return a copy
+                return followedTab;
+            }
+        }
+
+        return null;
+    }
+
     async persist(tabFollowState: TabFollowState): Promise<void> {
         // TODO update if already in memory, else add
         this.tabList.push(tabFollowState);

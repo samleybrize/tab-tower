@@ -1,6 +1,8 @@
 import { CommandBus } from './bus/command-bus';
 import { EventBus } from './bus/event-bus';
+import { FocusTab } from './tab/command/focus-tab';
 import { FollowTab } from './tab/command/follow-tab';
+import { OpenTab } from './tab/command/open-tab';
 import { UnfollowTab } from './tab/command/unfollow-tab';
 import { NativeEventHandler } from './tab/event/native-event-handler';
 import { OpenTabFaviconUrlUpdated } from './tab/event/open-tab-favicon-url-updated';
@@ -43,10 +45,13 @@ function main() {
     const nativeEventHandler = new NativeEventHandler(openedTabManager, openedTabRetriever);
     nativeEventHandler.init();
 
+    commandBus.register(FocusTab, openedTabManager.focusTab, followedTabManager);
     commandBus.register(FollowTab, followedTabManager.followTab, followedTabManager);
+    commandBus.register(OpenTab, openedTabManager.openTab, followedTabManager);
     commandBus.register(UnfollowTab, followedTabManager.unfollowTab, followedTabManager);
 
     eventBus.subscribe(TabClosed, followedTabView.onTabClose, followedTabView);
+    eventBus.subscribe(TabClosed, followedTabManager.onTabClose, followedTabManager);
     eventBus.subscribe(TabClosed, openedTabView.onTabClose, openedTabView);
     eventBus.subscribe(TabClosing, openedTabRetriever.onTabClosing, openedTabRetriever);
     eventBus.subscribe(TabOpened, openedTabView.onTabOpen, openedTabView);

@@ -1,4 +1,6 @@
 import { CommandBus } from '../bus/command-bus';
+import { FocusTab } from '../tab/command/focus-tab';
+import { OpenTab } from '../tab/command/open-tab';
 import { UnfollowTab } from '../tab/command/unfollow-tab';
 import { OpenTabFaviconUrlUpdated } from '../tab/event/open-tab-favicon-url-updated';
 import { OpenTabReaderModeStateUpdated } from '../tab/event/open-tab-reader-mode-state-updated';
@@ -92,6 +94,8 @@ export class FollowedTabView {
         const row = document.createElement('tr');
         row.setAttribute('data-open-tab-id', '' + tabId);
         row.setAttribute('data-follow-id', '' + tab.followState.id);
+        row.setAttribute('data-url', '' + tab.followState.url);
+        row.setAttribute('data-reader-mode', tab.followState.isInReaderMode ? '1' : '');
         row.appendChild(faviconCell);
         row.appendChild(titleCell);
         row.appendChild(incognitoCell);
@@ -103,10 +107,21 @@ export class FollowedTabView {
     }
 
     private createTitleCell(tab: Tab): HTMLElement {
-        // TODO click sends to the opened tab
         const linkElement = document.createElement('a');
         linkElement.setAttribute('data-url', tab.followState.url);
         linkElement.textContent = tab.followState.title;
+        linkElement.addEventListener('mouseup', (event) => {
+            const row = this.tbodyElement.querySelector(`tr[data-follow-id="${tab.followState.id}"]`);
+            const openTabId = +row.getAttribute('data-open-tab-id');
+
+            if (openTabId) {
+                this.commandBus.handle(new FocusTab(openTabId));
+            } else {
+                const url = row.getAttribute('data-url');
+                const readerMode = !!row.getAttribute('data-reader-mode');
+                this.commandBus.handle(new OpenTab(url, readerMode));
+            }
+        });
 
         const titleCell = document.createElement('td');
         titleCell.classList.add('title');
@@ -184,6 +199,7 @@ export class FollowedTabView {
         if (tabRow) {
             // TODO call createOpenIndicatorCell
             tabRow.querySelector('.openIndicator').textContent = 'No';
+            tabRow.setAttribute('data-open-tab-id', '');
         }
     }
 
@@ -215,6 +231,8 @@ export class FollowedTabView {
         if (tabRow) {
             const linkElement = tabRow.querySelector('.title a');
             linkElement.setAttribute('data-url', event.tabOpenState.url);
+
+            tabRow.setAttribute('data-url', '' + event.tabOpenState.url);
         }
     }
 
@@ -225,6 +243,8 @@ export class FollowedTabView {
             // TODO call createReaderModeCell
             const readerModeElement = tabRow.querySelector('.readerMode');
             readerModeElement.textContent = event.tabOpenState.isInReaderMode ? 'Yes' : 'No';
+
+            tabRow.setAttribute('data-reader-mode', event.tabOpenState.isInReaderMode ? '1' : '');
         }
     }
 

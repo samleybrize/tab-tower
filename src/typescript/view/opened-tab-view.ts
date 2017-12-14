@@ -1,4 +1,5 @@
 import { CommandBus } from '../bus/command-bus';
+import { FocusTab } from '../tab/command/focus-tab';
 import { FollowTab } from '../tab/command/follow-tab';
 import { UnfollowTab } from '../tab/command/unfollow-tab';
 import { OpenTabFaviconUrlUpdated } from '../tab/event/open-tab-favicon-url-updated';
@@ -107,10 +108,12 @@ export class OpenedTabView {
     }
 
     private createTitleCell(tab: Tab): HTMLElement {
-        // TODO click sends to the opened tab
         const linkElement = document.createElement('a');
-        linkElement.href = tab.openState.url;
+        linkElement.setAttribute('data-url', tab.openState.url);
         linkElement.textContent = tab.openState.title;
+        linkElement.addEventListener('mouseup', (event) => {
+            this.commandBus.handle(new FocusTab(tab.openState.id));
+        });
 
         const titleCell = document.createElement('td');
         titleCell.appendChild(linkElement);

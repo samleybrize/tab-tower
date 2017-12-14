@@ -1,4 +1,6 @@
 import { EventBus } from '../bus/event-bus';
+import { FocusTab } from './command/focus-tab';
+import { OpenTab } from './command/open-tab';
 import { OpenTabFaviconUrlUpdated } from './event/open-tab-favicon-url-updated';
 import { OpenTabMoved } from './event/open-tab-moved';
 import { OpenTabReaderModeStateUpdated } from './event/open-tab-reader-mode-state-updated';
@@ -14,6 +16,25 @@ export class OpenedTabManager {
     constructor(private eventBus: EventBus) {
     }
 
+    async openTab(command: OpenTab) {
+        const tab = await browser.tabs.create({
+            active: false,
+            url: command.url,
+        });
+
+        if (command.readerMode) {
+            browser.tabs.toggleReaderMode(tab.id);
+        }
+
+        // TODO associate with the followed tab
+        // TODO publish a TabOpened event?
+    }
+
+    async focusTab(command: FocusTab) {
+        browser.tabs.update(command.tabId, {active: true});
+    }
+
+    // TODO rename
     async open(tabOpenState: TabOpenState) {
         this.eventBus.publish(new TabOpened(tabOpenState));
     }

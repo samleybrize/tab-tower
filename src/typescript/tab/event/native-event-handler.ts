@@ -21,6 +21,7 @@ export class NativeEventHandler {
     }
 
     async onNativeTabCreate(nativeTab: browser.tabs.Tab) {
+        console.log('aze'); // TODO
         const tabOpenState = await this.openedTabRetriever.getById(nativeTab.id);
         this.openedTabManager.open(tabOpenState);
     }
@@ -52,13 +53,18 @@ export class NativeEventHandler {
         }
 
         if (updateInfo.url) {
-            this.openedTabManager.updateUrl(tabOpenState, updateInfo.url);
+            let url = updateInfo.url;
 
             if (0 == updateInfo.url.indexOf('about:reader?')) {
                 this.openedTabManager.updateReaderModeState(tabOpenState, true);
+
+                url = new URL(url).searchParams.get('url');
+                url = decodeURI(url);
             } else {
                 this.openedTabManager.updateReaderModeState(tabOpenState, false);
             }
+
+            this.openedTabManager.updateUrl(tabOpenState, url);
         }
 
         if (undefined !== updateInfo.favIconUrl) {

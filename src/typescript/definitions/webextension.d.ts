@@ -980,6 +980,7 @@ declare namespace browser.tabs {
         pinned?: boolean,
         // deprecated: selected: boolean,
         url?: string,
+        openInReaderMode?: boolean,
         windowId?: number,
     }): Promise<Tab>;
     function captureVisibleTab(
@@ -1032,6 +1033,7 @@ declare namespace browser.tabs {
     // deprecated: function sendRequest(): x;
     function setZoom(tabId: number|undefined, zoomFactor: number): Promise<void>;
     function setZoomSettings(tabId: number|undefined, zoomSettings: ZoomSettings): Promise<void>;
+    function toggleReaderMode(tabId: number|undefined): Promise<void>;
     function update(tabId: number|undefined, updateProperties: {
         active?: boolean,
         // unsupported: autoDiscardable?: boolean,

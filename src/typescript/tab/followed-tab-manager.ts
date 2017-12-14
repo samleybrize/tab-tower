@@ -10,12 +10,15 @@ import { OpenTabMoved } from './event/open-tab-moved';
 import { OpenTabReaderModeStateUpdated } from './event/open-tab-reader-mode-state-updated';
 import { OpenTabTitleUpdated } from './event/open-tab-title-updated';
 import { OpenTabUrlUpdated } from './event/open-tab-url-updated';
+import { TabClosed } from './event/tab-closed';
 import { TabFollowed } from './event/tab-followed';
 import { TabUnfollowed } from './event/tab-unfollowed';
 import { TabPersister } from './persister/tab-persister';
 
 // TODO rename
 export class FollowedTabManager {
+    private tabIdFollowIdAssociation = new Map<number, string>();
+
     constructor(private tabPersister: TabPersister, private eventBus: EventBus) {
     }
 
@@ -42,6 +45,8 @@ export class FollowedTabManager {
         followState.faviconUrl = openState.faviconUrl;
         followState.openIndex = openState.index;
 
+        this.tabIdFollowIdAssociation.set(openState.id, followState.id);
+
         return followState;
     }
 
@@ -56,6 +61,24 @@ export class FollowedTabManager {
         const oldFollowState = tab.followState;
         tab.followState = null;
         this.eventBus.publish(new TabUnfollowed(tab, oldFollowState));
+    }
+
+    async onTabClose(event: TabClosed): Promise<void> {
+        const followId = this.tabIdFollowIdAssociation.get(event.tabId);
+        this.tabIdFollowIdAssociation.delete(event.tabId);
+
+        if (null == followId) {
+            return;
+        }
+
+        const tabFollowState = await this.tabPersister.getByFollowId(followId);
+
+        if (null == tabFollowState) {
+            return;
+        }
+
+        tabFollowState.openIndex = null;
+        this.tabPersister.persist(tabFollowState);
     }
 
     async onOpenTabMove(event: OpenTabMoved): Promise<void> {

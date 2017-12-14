@@ -8,7 +8,7 @@ export class InMemoryTabPersister implements TabPersister {
         return this.tabList;
     }
 
-    async getByIndex(index: number): Promise<TabFollowState> {
+    async getByOpenIndex(index: number): Promise<TabFollowState> {
         // TODO optimize
         for (const followedTab of this.tabList) {
             if (followedTab.openIndex == index) {

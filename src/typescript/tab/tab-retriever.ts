@@ -14,7 +14,7 @@ export class TabRetriever {
         for (const openedTab of openedTabList) {
             const tab = new Tab();
             tab.openState = openedTab;
-            tab.followState = await this.followedTabRetriever.getByIndex(openedTab.index);
+            tab.followState = await this.followedTabRetriever.getByOpenIndex(openedTab.index);
             tabList.push(tab);
         }
 

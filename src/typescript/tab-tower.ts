@@ -10,6 +10,7 @@ import { OpenTabMoved } from './tab/event/open-tab-moved';
 import { OpenTabReaderModeStateUpdated } from './tab/event/open-tab-reader-mode-state-updated';
 import { OpenTabTitleUpdated } from './tab/event/open-tab-title-updated';
 import { OpenTabUrlUpdated } from './tab/event/open-tab-url-updated';
+import { OpenedTabAssociatedToFollowedTab } from './tab/event/opened-tab-associated-to-followed-tab';
 import { TabClosed } from './tab/event/tab-closed';
 import { TabClosing } from './tab/event/tab-closing';
 import { TabFollowed } from './tab/event/tab-followed';
@@ -21,6 +22,7 @@ import { OpenedTabManager } from './tab/opened-tab-manager';
 import { OpenedTabRetriever } from './tab/opened-tab-retriever';
 import { InMemoryTabPersister } from './tab/persister/in-memory-tab-persister';
 import { Tab } from './tab/tab';
+import { TabOpener } from './tab/tab-opener';
 import { TabRetriever } from './tab/tab-retriever';
 import { FollowedTabView } from './view/followed-tab-view';
 import { OpenedTabView } from './view/opened-tab-view';
@@ -37,6 +39,7 @@ function main() {
     const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
     const openedTabManager = new OpenedTabManager(eventBus);
     const openedTabRetriever = new OpenedTabRetriever([currentUrl]);
+    const tabOpener = new TabOpener(openedTabManager, openedTabRetriever, followedTabManager, followedTabRetriever);
     const tabRetriever = new TabRetriever(followedTabRetriever, openedTabRetriever);
 
     const followedTabView = new FollowedTabView(tabRetriever, commandBus, document.querySelector('#followedTabList'), defaultFaviconUrl);
@@ -47,7 +50,7 @@ function main() {
 
     commandBus.register(FocusTab, openedTabManager.focusTab, followedTabManager);
     commandBus.register(FollowTab, followedTabManager.followTab, followedTabManager);
-    commandBus.register(OpenTab, openedTabManager.openTab, followedTabManager);
+    commandBus.register(OpenTab, tabOpener.openTab, tabOpener);
     commandBus.register(UnfollowTab, followedTabManager.unfollowTab, followedTabManager);
 
     eventBus.subscribe(TabClosed, followedTabView.onTabClose, followedTabView);
@@ -57,6 +60,8 @@ function main() {
     eventBus.subscribe(TabOpened, openedTabView.onTabOpen, openedTabView);
     eventBus.subscribe(TabFollowed, followedTabView.onTabFollow, followedTabView);
     eventBus.subscribe(TabFollowed, openedTabView.onTabFollow, openedTabView);
+    eventBus.subscribe(OpenedTabAssociatedToFollowedTab, followedTabView.onAssociateOpenedTabToFollowedTab, followedTabView);
+    eventBus.subscribe(OpenedTabAssociatedToFollowedTab, openedTabView.onAssociateOpenedTabToFollowedTab, openedTabView);
     eventBus.subscribe(OpenTabMoved, followedTabManager.onOpenTabMove, followedTabManager);
     eventBus.subscribe(OpenTabMoved, openedTabView.onOpenTabMove, openedTabView);
     eventBus.subscribe(OpenTabFaviconUrlUpdated, followedTabManager.onOpenTabFaviconUrlUpdate, followedTabManager);

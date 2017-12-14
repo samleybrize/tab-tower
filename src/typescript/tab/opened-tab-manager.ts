@@ -16,18 +16,17 @@ export class OpenedTabManager {
     constructor(private eventBus: EventBus) {
     }
 
-    async openTab(command: OpenTab) {
+    async openTab(url: string, readerMode: boolean) {
         const tab = await browser.tabs.create({
             active: false,
-            url: command.url,
+            url,
         });
 
-        if (command.readerMode) {
-            browser.tabs.toggleReaderMode(tab.id);
+        if (readerMode) {
+            await browser.tabs.toggleReaderMode(tab.id);
         }
 
-        // TODO associate with the followed tab
-        // TODO publish a TabOpened event?
+        return tab.id;
     }
 
     async focusTab(command: FocusTab) {

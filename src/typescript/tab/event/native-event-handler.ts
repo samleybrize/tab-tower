@@ -21,7 +21,6 @@ export class NativeEventHandler {
     }
 
     async onNativeTabCreate(nativeTab: browser.tabs.Tab) {
-        console.log('aze'); // TODO
         const tabOpenState = await this.openedTabRetriever.getById(nativeTab.id);
         this.openedTabManager.open(tabOpenState);
     }

@@ -6,6 +6,7 @@ import { OpenTabFaviconUrlUpdated } from '../tab/event/open-tab-favicon-url-upda
 import { OpenTabReaderModeStateUpdated } from '../tab/event/open-tab-reader-mode-state-updated';
 import { OpenTabTitleUpdated } from '../tab/event/open-tab-title-updated';
 import { OpenTabUrlUpdated } from '../tab/event/open-tab-url-updated';
+import { OpenedTabAssociatedToFollowedTab } from '../tab/event/opened-tab-associated-to-followed-tab';
 import { TabClosed } from '../tab/event/tab-closed';
 import { TabFollowed } from '../tab/event/tab-followed';
 import { TabUnfollowed } from '../tab/event/tab-unfollowed';
@@ -119,7 +120,7 @@ export class FollowedTabView {
             } else {
                 const url = row.getAttribute('data-url');
                 const readerMode = !!row.getAttribute('data-reader-mode');
-                this.commandBus.handle(new OpenTab(url, readerMode));
+                this.commandBus.handle(new OpenTab(url, readerMode, tab.followState.id));
             }
         });
 
@@ -152,6 +153,7 @@ export class FollowedTabView {
     private createIncognitoCell(tab: Tab): HTMLElement {
         const incognitoCell = document.createElement('td');
         incognitoCell.textContent = tab.followState.isIncognito ? 'Yes' : 'No';
+        incognitoCell.classList.add('incognito');
 
         return incognitoCell;
     }
@@ -193,7 +195,7 @@ export class FollowedTabView {
         return followCell;
     }
 
-    async onTabClose(event: TabClosed): Promise<void> {
+    async onTabClose(event: TabClosed) {
         const tabRow = this.getTabRowByOpenTabId(event.tabId);
 
         if (tabRow) {
@@ -207,7 +209,7 @@ export class FollowedTabView {
         return this.tbodyElement.querySelector(`tr[data-open-tab-id="${openTabId}"]`);
     }
 
-    async onOpenTabFaviconUrlUpdate(event: OpenTabFaviconUrlUpdated): Promise<void> {
+    async onOpenTabFaviconUrlUpdate(event: OpenTabFaviconUrlUpdated) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -216,7 +218,7 @@ export class FollowedTabView {
         }
     }
 
-    async onOpenTabTitleUpdate(event: OpenTabTitleUpdated): Promise<void> {
+    async onOpenTabTitleUpdate(event: OpenTabTitleUpdated) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -225,7 +227,7 @@ export class FollowedTabView {
         }
     }
 
-    async onOpenTabUrlUpdate(event: OpenTabUrlUpdated): Promise<void> {
+    async onOpenTabUrlUpdate(event: OpenTabUrlUpdated) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -236,7 +238,7 @@ export class FollowedTabView {
         }
     }
 
-    async onOpenTabReaderModeStateUpdate(event: OpenTabReaderModeStateUpdated): Promise<void> {
+    async onOpenTabReaderModeStateUpdate(event: OpenTabReaderModeStateUpdated) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -248,19 +250,38 @@ export class FollowedTabView {
         }
     }
 
-    async onTabFollow(event: TabFollowed): Promise<void> {
+    async onTabFollow(event: TabFollowed) {
         const row = this.createTabRow(event.tab);
         this.tbodyElement.appendChild(row);
 
         this.noTabRow.classList.add('transparent');
     }
 
-    async onTabUnfollow(event: TabUnfollowed): Promise<void> {
+    async onTabUnfollow(event: TabUnfollowed) {
         const followedTabRow = this.tbodyElement.querySelector(`tr[data-follow-id="${event.oldTabFollowState.id}"]`);
 
         if (followedTabRow) {
             followedTabRow.remove();
             this.noTabRow.classList.remove('transparent');
+        }
+    }
+
+    async onAssociateOpenedTabToFollowedTab(event: OpenedTabAssociatedToFollowedTab) {
+        const followedTabRow = this.tbodyElement.querySelector(`tr[data-follow-id="${event.tabFollowState.id}"]`);
+
+        if (followedTabRow) {
+            followedTabRow.setAttribute('data-open-tab-id', '' + event.tabOpenState.id);
+            followedTabRow.setAttribute('data-url', '' + event.tabOpenState.url);
+            followedTabRow.setAttribute('data-reader-mode', event.tabOpenState.isInReaderMode ? '1' : '');
+
+            (followedTabRow.querySelector('.favicon img') as HTMLImageElement).src = event.tabOpenState.faviconUrl;
+            (followedTabRow.querySelector('.readerMode') as HTMLImageElement).textContent = event.tabOpenState.isInReaderMode ? 'Yes' : 'No';
+            (followedTabRow.querySelector('.incognito') as HTMLImageElement).textContent = event.tabOpenState.isIncognito ? 'Yes' : 'No';
+            (followedTabRow.querySelector('.openIndicator') as HTMLImageElement).textContent = 'Yes';
+
+            const titleElement = followedTabRow.querySelector('.title a') as HTMLImageElement;
+            titleElement.textContent = event.tabOpenState.title;
+            titleElement.setAttribute('data-url', event.tabOpenState.url);
         }
     }
 }

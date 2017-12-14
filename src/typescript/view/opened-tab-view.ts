@@ -7,6 +7,7 @@ import { OpenTabMoved } from '../tab/event/open-tab-moved';
 import { OpenTabReaderModeStateUpdated } from '../tab/event/open-tab-reader-mode-state-updated';
 import { OpenTabTitleUpdated } from '../tab/event/open-tab-title-updated';
 import { OpenTabUrlUpdated } from '../tab/event/open-tab-url-updated';
+import { OpenedTabAssociatedToFollowedTab } from '../tab/event/opened-tab-associated-to-followed-tab';
 import { TabClosed } from '../tab/event/tab-closed';
 import { TabFollowed } from '../tab/event/tab-followed';
 import { TabOpened } from '../tab/event/tab-opened';
@@ -237,6 +238,12 @@ export class OpenedTabView {
     }
 
     onTabUnfollow(event: TabUnfollowed): Promise<void> {
+        this.refresh();
+
+        return;
+    }
+
+    onAssociateOpenedTabToFollowedTab(event: OpenedTabAssociatedToFollowedTab): Promise<void> {
         this.refresh();
 
         return;

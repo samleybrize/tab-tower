@@ -30,10 +30,13 @@ export class NativeEventHandler {
     }
 
     async onNativeTabMove(tabId: number, moveInfo: browser.tabs.MoveInfo) {
-        const tabOpenState = await this.openedTabRetriever.getById(tabId);
+        const tabOpenStateList = await this.openedTabRetriever.getAll();
+        const minIndex = Math.min(moveInfo.fromIndex, moveInfo.toIndex);
 
-        if (tabOpenState) {
-            this.openedTabManager.move(tabOpenState, moveInfo.toIndex);
+        for (const tabOpenState of tabOpenStateList) {
+            if (tabOpenState.index >= minIndex) {
+                this.openedTabManager.move(tabOpenState, tabOpenState.index);
+            }
         }
     }
 

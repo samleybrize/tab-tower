@@ -7,6 +7,42 @@ table img {
     height: 16px;
 }
 
-.noTabRow.transparent {
-    display: none;
+table {
+    width: 100%;
+
+    tbody tr:nth-child(even) {
+        background: silver;
+    }
+
+    td {
+        padding: 5px;
+    }
+
+    .favicon {
+        width: 1px;
+
+        img {
+            vertical-align: middle;
+        }
+    }
+
+    .incognito,
+    .openIndicator,
+    .readerMode,
+    .follow {
+        text-align: center;
+    }
+
+    .title a {
+        display: block;
+    }
+
+    .noTabRow {
+        text-align: center;
+        background: #ff9f9f;
+
+        &.transparent {
+            display: none;
+        }
+    }
 }

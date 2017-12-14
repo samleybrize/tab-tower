@@ -110,6 +110,7 @@ export class FollowedTabView {
     private createTitleCell(tab: Tab): HTMLElement {
         const linkElement = document.createElement('a');
         linkElement.setAttribute('data-url', tab.followState.url);
+        linkElement.setAttribute('title', tab.followState.url);
         linkElement.textContent = tab.followState.title;
         linkElement.addEventListener('mouseup', (event) => {
             const row = this.tbodyElement.querySelector(`tr[data-follow-id="${tab.followState.id}"]`);
@@ -176,7 +177,8 @@ export class FollowedTabView {
     }
 
     private createUnfollowCell(tab: Tab): HTMLElement {
-        const followCell = document.createElement('td');
+        const unfollowCell = document.createElement('td');
+        unfollowCell.classList.add('follow');
 
         const tabId = tab.isOpened ? tab.openState.id : null;
         const unfollowButton = document.createElement('a');
@@ -190,9 +192,9 @@ export class FollowedTabView {
             this.commandBus.handle(new UnfollowTab(tab));
         });
 
-        followCell.appendChild(unfollowButton);
+        unfollowCell.appendChild(unfollowButton);
 
-        return followCell;
+        return unfollowCell;
     }
 
     async onTabClose(event: TabClosed) {
@@ -233,6 +235,7 @@ export class FollowedTabView {
         if (tabRow) {
             const linkElement = tabRow.querySelector('.title a');
             linkElement.setAttribute('data-url', event.tabOpenState.url);
+            linkElement.setAttribute('title', event.tabOpenState.url);
 
             tabRow.setAttribute('data-url', '' + event.tabOpenState.url);
         }
@@ -282,6 +285,7 @@ export class FollowedTabView {
             const titleElement = followedTabRow.querySelector('.title a') as HTMLImageElement;
             titleElement.textContent = event.tabOpenState.title;
             titleElement.setAttribute('data-url', event.tabOpenState.url);
+            titleElement.setAttribute('title', event.tabOpenState.url);
         }
     }
 }

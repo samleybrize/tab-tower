@@ -17,6 +17,7 @@ import { TabRetriever } from '../tab/tab-retriever';
 
 export class OpenedTabView {
     private tbodyElement: HTMLElement;
+    private noTabRow: HTMLElement;
 
     constructor(
         private tabRetriever: TabRetriever,
@@ -54,9 +55,11 @@ export class OpenedTabView {
         const tabList = await this.tabRetriever.getOpenedTabs();
 
         this.removeAllTabsFromListElement();
+        this.noTabRow = this.createNoTabRow();
+        this.tbodyElement.appendChild(this.noTabRow);
 
         if (0 == tabList.length) {
-            this.addNoTabRow();
+            this.noTabRow.classList.remove('transparent');
 
             return;
         }
@@ -77,14 +80,17 @@ export class OpenedTabView {
         }
     }
 
-    private addNoTabRow() {
+    private createNoTabRow() {
         const cell = document.createElement('td');
         cell.setAttribute('colspan', '5');
         cell.textContent = 'No tab';
 
         const row = document.createElement('tr');
+        row.classList.add('transparent');
+        row.classList.add('noTabRow');
         row.appendChild(cell);
-        this.tbodyElement.appendChild(row);
+
+        return row;
     }
 
     private createTabRow(tab: Tab): HTMLElement {
@@ -111,12 +117,14 @@ export class OpenedTabView {
     private createTitleCell(tab: Tab): HTMLElement {
         const linkElement = document.createElement('a');
         linkElement.setAttribute('data-url', tab.openState.url);
+        linkElement.setAttribute('title', tab.openState.url);
         linkElement.textContent = tab.openState.title;
         linkElement.addEventListener('mouseup', (event) => {
             this.commandBus.handle(new FocusTab(tab.openState.id));
         });
 
         const titleCell = document.createElement('td');
+        titleCell.classList.add('title');
         titleCell.appendChild(linkElement);
 
         return titleCell;
@@ -135,6 +143,7 @@ export class OpenedTabView {
         }
 
         const faviconCell = document.createElement('td');
+        faviconCell.classList.add('favicon');
         faviconCell.appendChild(faviconImage);
 
         return faviconCell;
@@ -142,6 +151,7 @@ export class OpenedTabView {
 
     private createIncognitoCell(tab: Tab): HTMLElement {
         const incognitoCell = document.createElement('td');
+        incognitoCell.classList.add('incognito');
         incognitoCell.textContent = tab.openState.isIncognito ? 'Yes' : 'No';
 
         return incognitoCell;
@@ -149,6 +159,7 @@ export class OpenedTabView {
 
     private createReaderModeCell(tab: Tab): HTMLElement {
         const readerModeCell = document.createElement('td');
+        readerModeCell.classList.add('readerMode');
         readerModeCell.textContent = tab.openState.isInReaderMode ? 'Yes' : 'No';
 
         return readerModeCell;
@@ -165,6 +176,7 @@ export class OpenedTabView {
 
     private createFollowCell(tab: Tab): HTMLElement {
         const followCell = document.createElement('td');
+        followCell.classList.add('follow');
 
         if (!tab.isFollowed) {
             const followButton = document.createElement('a');

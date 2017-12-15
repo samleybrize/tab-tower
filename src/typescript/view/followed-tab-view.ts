@@ -36,12 +36,13 @@ export class FollowedTabView {
         const table = document.createElement('table');
         table.innerHTML = `
             <thead>
-                <th></th>
-                <th>Title</th>
-                <th>Incognito</th>
-                <th>Reader mode</th>
-                <th>Opened</th>
-                <th></th>
+                <tr>
+                    <th>Title</th>
+                    <th>Incognito</th>
+                    <th>Reader mode</th>
+                    <th>Opened</th>
+                    <th></th>
+                </tr>
             </thead>
             <tbody></tbody>
         `;
@@ -84,36 +85,50 @@ export class FollowedTabView {
     }
 
     private createTabRow(tab: Tab): HTMLElement {
-        const titleCell = this.createTitleCell(tab);
-        const faviconCell = this.createFaviconCell(tab);
-        const incognitoCell = this.createIncognitoCell(tab);
-        const readerModeCell = this.createReaderModeCell(tab);
-        const openIndicatorCell = this.createOpenIndicatorCell(tab);
-        const followCell = this.createUnfollowCell(tab);
-
-        const tabId = tab.isOpened ? tab.openState.id : null;
         const row = document.createElement('tr');
-        row.setAttribute('data-open-tab-id', '' + tabId);
+
+        const titleCell = this.createTitleCell(tab, row);
+        const incognitoCell = this.createCell('incognitoIndicator');
+        const readerModeCell = this.createCell('readerModeIndicator');
+        const openIndicatorCell = this.createCell('openIndicator');
+        const actionsCell = this.createCell('actions');
+        this.addUnfollowButton(actionsCell, tab);
+
         row.setAttribute('data-follow-id', '' + tab.followState.id);
-        row.setAttribute('data-url', '' + tab.followState.url);
-        row.setAttribute('data-reader-mode', tab.followState.isInReaderMode ? '1' : '');
-        row.appendChild(faviconCell);
         row.appendChild(titleCell);
         row.appendChild(incognitoCell);
         row.appendChild(readerModeCell);
         row.appendChild(openIndicatorCell);
-        row.appendChild(followCell);
+        row.appendChild(actionsCell);
+
+        const tabOpenId = tab.isOpened ? tab.openState.id : null;
+        this.updateTabFavicon(row, tab.followState.faviconUrl);
+        this.updateTabIncognitoState(row, tab.followState.isIncognito);
+        this.updateTabOpenState(row, tab.isOpened, tabOpenId);
+        this.updateTabReaderModeState(row, tab.followState.isInReaderMode);
+        this.updateTabTitle(row, tab.followState.title);
+        this.updateTabUrl(row, tab.followState.url);
 
         return row;
     }
 
-    private createTitleCell(tab: Tab): HTMLElement {
+    private createCell(className?: string): HTMLElement {
+        const cell = document.createElement('td');
+
+        if (className) {
+            cell.classList.add(className);
+        }
+
+        return cell;
+    }
+
+    private createTitleCell(tab: Tab, row: HTMLElement): HTMLElement {
         const linkElement = document.createElement('a');
-        linkElement.setAttribute('data-url', tab.followState.url);
-        linkElement.setAttribute('title', tab.followState.url);
-        linkElement.textContent = tab.followState.title;
+        linkElement.innerHTML = `
+            <img />
+            <span></span>
+        `;
         linkElement.addEventListener('mouseup', (event) => {
-            const row = this.tbodyElement.querySelector(`tr[data-follow-id="${tab.followState.id}"]`);
             const openTabId = +row.getAttribute('data-open-tab-id');
 
             if (openTabId) {
@@ -124,85 +139,65 @@ export class FollowedTabView {
                 this.commandBus.handle(new OpenTab(url, readerMode, tab.followState.id));
             }
         });
+        linkElement.querySelector('img').addEventListener('error', (event) => {
+            (event.target as HTMLImageElement).src = this.defaultFaviconUrl;
+        });
 
-        const titleCell = document.createElement('td');
-        titleCell.classList.add('title');
-        titleCell.appendChild(linkElement);
+        const cell = this.createCell('title');
+        cell.appendChild(linkElement);
 
-        return titleCell;
+        return cell;
     }
 
-    private createFaviconCell(tab: Tab): HTMLElement {
-        const faviconImage = document.createElement('img');
-
-        if (null == tab.followState.faviconUrl) {
-            faviconImage.src = this.defaultFaviconUrl;
-        } else {
-            faviconImage.src = tab.followState.faviconUrl;
-            faviconImage.addEventListener('error', (event) => {
-                faviconImage.src = this.defaultFaviconUrl;
-            });
-        }
-
-        const faviconCell = document.createElement('td');
-        faviconCell.classList.add('favicon');
-        faviconCell.appendChild(faviconImage);
-
-        return faviconCell;
-    }
-
-    private createIncognitoCell(tab: Tab): HTMLElement {
-        const incognitoCell = document.createElement('td');
-        incognitoCell.textContent = tab.followState.isIncognito ? 'Yes' : 'No';
-        incognitoCell.classList.add('incognito');
-
-        return incognitoCell;
-    }
-
-    private createReaderModeCell(tab: Tab): HTMLElement {
-        const readerModeCell = document.createElement('td');
-        readerModeCell.textContent = tab.followState.isInReaderMode ? 'Yes' : 'No';
-        readerModeCell.classList.add('readerMode');
-
-        return readerModeCell;
-    }
-
-    private createOpenIndicatorCell(tab: Tab): HTMLElement {
-        const openIndicatorCell = document.createElement('td');
-        openIndicatorCell.textContent = tab.isOpened ? 'Yes' : 'No';
-        openIndicatorCell.classList.add('opened');
-        openIndicatorCell.classList.add('openIndicator');
-
-        return openIndicatorCell;
-    }
-
-    private createUnfollowCell(tab: Tab): HTMLElement {
-        const unfollowCell = document.createElement('td');
-        unfollowCell.classList.add('follow');
-
+    private addUnfollowButton(cell: HTMLElement, tab: Tab) {
         const unfollowButton = document.createElement('a');
         unfollowButton.textContent = 'Unfollow';
         unfollowButton.setAttribute('data-follow-id', '' + tab.followState.id);
         unfollowButton.addEventListener('mouseup', (event) => {
-            if (!(event.target instanceof Element)) {
-                return;
-            }
-
             this.commandBus.handle(new UnfollowTab(tab));
         });
 
-        unfollowCell.appendChild(unfollowButton);
+        cell.appendChild(unfollowButton);
+    }
 
-        return unfollowCell;
+    private updateTabTitle(row: HTMLElement, title: string) {
+        row.querySelector('.title a span').textContent = title;
+    }
+
+    private updateTabFavicon(row: HTMLElement, faviconUrl: string) {
+        const faviconElement = row.querySelector('.title a img') as HTMLImageElement;
+
+        if (null == faviconUrl) {
+            faviconElement.src = this.defaultFaviconUrl;
+        } else {
+            faviconElement.src = faviconUrl;
+        }
+    }
+
+    private updateTabUrl(row: HTMLElement, url: string) {
+        row.setAttribute('data-url', '' + url);
+        row.querySelector('.title a').setAttribute('data-url', '' + url);
+    }
+
+    private updateTabOpenState(row: HTMLElement, isOpened: boolean, tabId: number) {
+        row.setAttribute('data-open-tab-id', '' + tabId);
+        row.querySelector('.openIndicator').textContent = isOpened ? 'Yes' : 'No';
+    }
+
+    private updateTabReaderModeState(row: HTMLElement, isInReaderMode: boolean) {
+        row.setAttribute('data-reader-mode', isInReaderMode ? '1' : '');
+        row.querySelector('.incognitoIndicator').textContent = isInReaderMode ? 'Yes' : 'No';
+    }
+
+    private updateTabIncognitoState(row: HTMLElement, isIncognito: boolean) {
+        row.querySelector('.readerModeIndicator').textContent = isIncognito ? 'Yes' : 'No';
     }
 
     async onTabClose(event: TabClosed) {
         const tabRow = this.getTabRowByOpenTabId(event.tabId);
 
         if (tabRow) {
-            // TODO call createOpenIndicatorCell
-            tabRow.querySelector('.openIndicator').textContent = 'No';
-            tabRow.setAttribute('data-open-tab-id', '');
+            this.updateTabOpenState(tabRow, false, null);
         }
     }
 
@@ -214,8 +209,7 @@ export class FollowedTabView {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
-            const faviconElement = tabRow.querySelector('.favicon img') as HTMLImageElement;
-            faviconElement.src = event.tabOpenState.faviconUrl;
+            this.updateTabFavicon(tabRow, event.tabOpenState.faviconUrl);
         }
     }
 
@@ -223,8 +217,7 @@ export class FollowedTabView {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
-            const linkElement = tabRow.querySelector('.title a');
-            linkElement.textContent = event.tabOpenState.title;
+            this.updateTabTitle(tabRow, event.tabOpenState.title);
         }
     }
 
@@ -232,11 +225,7 @@ export class FollowedTabView {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
-            const linkElement = tabRow.querySelector('.title a');
-            linkElement.setAttribute('data-url', event.tabOpenState.url);
-            linkElement.setAttribute('title', event.tabOpenState.url);
-
-            tabRow.setAttribute('data-url', '' + event.tabOpenState.url);
+            this.updateTabUrl(tabRow, event.tabOpenState.url);
         }
     }
 
@@ -244,11 +233,7 @@ export class FollowedTabView {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
-            // TODO call createReaderModeCell
-            const readerModeElement = tabRow.querySelector('.readerMode');
-            readerModeElement.textContent = event.tabOpenState.isInReaderMode ? 'Yes' : 'No';
-
-            tabRow.setAttribute('data-reader-mode', event.tabOpenState.isInReaderMode ? '1' : '');
+            this.updateTabReaderModeState(tabRow, event.tabOpenState.isInReaderMode);
         }
     }
 
@@ -264,27 +249,26 @@ export class FollowedTabView {
 
         if (followedTabRow) {
             followedTabRow.remove();
+            this.showNoTabRowIfTableIsEmpty();
+        }
+    }
+
+    private showNoTabRowIfTableIsEmpty() {
+        if (this.tbodyElement.querySelectorAll('tr').length <= 1) {
             this.noTabRow.classList.remove('transparent');
         }
     }
 
     async onAssociateOpenedTabToFollowedTab(event: OpenedTabAssociatedToFollowedTab) {
-        const followedTabRow = this.tbodyElement.querySelector(`tr[data-follow-id="${event.tabFollowState.id}"]`);
+        const followedTabRow: HTMLElement = this.tbodyElement.querySelector(`tr[data-follow-id="${event.tabFollowState.id}"]`);
 
         if (followedTabRow) {
-            followedTabRow.setAttribute('data-open-tab-id', '' + event.tabOpenState.id);
-            followedTabRow.setAttribute('data-url', '' + event.tabOpenState.url);
-            followedTabRow.setAttribute('data-reader-mode', event.tabOpenState.isInReaderMode ? '1' : '');
-
-            (followedTabRow.querySelector('.favicon img') as HTMLImageElement).src = event.tabOpenState.faviconUrl;
-            (followedTabRow.querySelector('.readerMode') as HTMLImageElement).textContent = event.tabOpenState.isInReaderMode ? 'Yes' : 'No';
-            (followedTabRow.querySelector('.incognito') as HTMLImageElement).textContent = event.tabOpenState.isIncognito ? 'Yes' : 'No';
-            (followedTabRow.querySelector('.openIndicator') as HTMLImageElement).textContent = 'Yes';
-
-            const titleElement = followedTabRow.querySelector('.title a') as HTMLImageElement;
-            titleElement.textContent = event.tabOpenState.title;
-            titleElement.setAttribute('data-url', event.tabOpenState.url);
-            titleElement.setAttribute('title', event.tabOpenState.url);
+            this.updateTabFavicon(followedTabRow, event.tabOpenState.faviconUrl);
+            this.updateTabIncognitoState(followedTabRow, event.tabOpenState.isIncognito);
+            this.updateTabOpenState(followedTabRow, true, event.tabOpenState.id);
+            this.updateTabReaderModeState(followedTabRow, event.tabOpenState.isInReaderMode);
+            this.updateTabTitle(followedTabRow, event.tabOpenState.title);
+            this.updateTabUrl(followedTabRow, event.tabOpenState.url);
         }
     }
 }

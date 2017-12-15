@@ -4,7 +4,6 @@ import { FocusTab } from './tab/command/focus-tab';
 import { FollowTab } from './tab/command/follow-tab';
 import { OpenTab } from './tab/command/open-tab';
 import { UnfollowTab } from './tab/command/unfollow-tab';
-import { NativeEventHandler } from './tab/event/native-event-handler';
 import { OpenTabFaviconUrlUpdated } from './tab/event/open-tab-favicon-url-updated';
 import { OpenTabMoved } from './tab/event/open-tab-moved';
 import { OpenTabReaderModeStateUpdated } from './tab/event/open-tab-reader-mode-state-updated';
@@ -18,6 +17,7 @@ import { TabOpened } from './tab/event/tab-opened';
 import { TabUnfollowed } from './tab/event/tab-unfollowed';
 import { FollowedTabManager } from './tab/followed-tab-manager';
 import { FollowedTabRetriever } from './tab/followed-tab-retriever';
+import { NativeTabEventHandler } from './tab/native-tab-event-handler';
 import { OpenedTabManager } from './tab/opened-tab-manager';
 import { OpenedTabRetriever } from './tab/opened-tab-retriever';
 import { InMemoryTabPersister } from './tab/persister/in-memory-tab-persister';
@@ -45,7 +45,7 @@ function main() {
     const followedTabView = new FollowedTabView(tabRetriever, commandBus, document.querySelector('#followedTabList'), defaultFaviconUrl);
     const openedTabView = new OpenedTabView(tabRetriever, commandBus, document.querySelector('#openedTabList'), defaultFaviconUrl);
 
-    const nativeEventHandler = new NativeEventHandler(openedTabManager, openedTabRetriever);
+    const nativeEventHandler = new NativeTabEventHandler(openedTabManager, openedTabRetriever);
     nativeEventHandler.init();
 
     commandBus.register(FocusTab, openedTabManager.focusTab, followedTabManager);

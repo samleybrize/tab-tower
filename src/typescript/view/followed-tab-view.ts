@@ -180,7 +180,6 @@ export class FollowedTabView {
         const unfollowCell = document.createElement('td');
         unfollowCell.classList.add('follow');
 
-        const tabId = tab.isOpened ? tab.openState.id : null;
         const unfollowButton = document.createElement('a');
         unfollowButton.textContent = 'Unfollow';
         unfollowButton.setAttribute('data-follow-id', '' + tab.followState.id);

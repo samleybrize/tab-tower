@@ -69,8 +69,7 @@ export class OpenedTabRetriever {
     }
 
     async getByIndex(index: number): Promise<TabOpenState> {
-        // TODO optimize
-        const rawTabList = await browser.tabs.query({});
+        const rawTabList = await browser.tabs.query({index});
 
         for (const rawTab of rawTabList) {
             if (rawTab.index == index) {

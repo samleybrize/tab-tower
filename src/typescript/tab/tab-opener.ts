@@ -36,7 +36,7 @@ export class TabOpener {
             await sleep(100);
             const openedTab = await browser.tabs.get(tabId);
 
-            if ('complete' == openedTab.status) {
+            if ('complete' == openedTab.status && 'about:blank' != openedTab.url) {
                 break;
             }
         }

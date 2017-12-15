@@ -1,8 +1,7 @@
-import { OpenedTabManager } from '../opened-tab-manager';
-import { OpenedTabRetriever } from '../opened-tab-retriever';
-import { TabOpenState } from '../tab-open-state';
+import { OpenedTabManager } from './opened-tab-manager';
+import { OpenedTabRetriever } from './opened-tab-retriever';
 
-export class NativeEventHandler {
+export class NativeTabEventHandler {
     private isInited = false;
 
     constructor(private openedTabManager: OpenedTabManager, private openedTabRetriever: OpenedTabRetriever) {
@@ -22,11 +21,11 @@ export class NativeEventHandler {
 
     async onNativeTabCreate(nativeTab: browser.tabs.Tab) {
         const tabOpenState = await this.openedTabRetriever.getById(nativeTab.id);
-        this.openedTabManager.open(tabOpenState);
+        this.openedTabManager.nativeTabOpened(tabOpenState);
     }
 
     onNativeTabClose(tabId: number, removeInfo: browser.tabs.RemoveInfo) {
-        this.openedTabManager.close(tabId);
+        this.openedTabManager.nativeTabClosed(tabId);
     }
 
     async onNativeTabMove(tabId: number, moveInfo: browser.tabs.MoveInfo) {
@@ -35,7 +34,7 @@ export class NativeEventHandler {
 
         for (const tabOpenState of tabOpenStateList) {
             if (tabOpenState.index >= minIndex) {
-                this.openedTabManager.move(tabOpenState, tabOpenState.index);
+                this.openedTabManager.nativeTabMoved(tabOpenState, tabOpenState.index);
             }
         }
     }
@@ -48,26 +47,26 @@ export class NativeEventHandler {
         }
 
         if (updateInfo.title) {
-            this.openedTabManager.updateTitle(tabOpenState, updateInfo.title);
+            this.openedTabManager.nativeTabTitleUpdated(tabOpenState, updateInfo.title);
         }
 
         if (updateInfo.url) {
             let url = updateInfo.url;
 
             if (0 == updateInfo.url.indexOf('about:reader?')) {
-                this.openedTabManager.updateReaderModeState(tabOpenState, true);
+                this.openedTabManager.nativeTabReaderModeStateUpdated(tabOpenState, true);
 
                 url = new URL(url).searchParams.get('url');
                 url = decodeURI(url);
             } else {
-                this.openedTabManager.updateReaderModeState(tabOpenState, false);
+                this.openedTabManager.nativeTabReaderModeStateUpdated(tabOpenState, false);
             }
 
-            this.openedTabManager.updateUrl(tabOpenState, url);
+            this.openedTabManager.nativeTabUrlUpdated(tabOpenState, url);
         }
 
         if (undefined !== updateInfo.favIconUrl) {
-            this.openedTabManager.updateFaviconUrl(tabOpenState, updateInfo.favIconUrl);
+            this.openedTabManager.nativeTabFaviconUrlUpdated(tabOpenState, updateInfo.favIconUrl);
         }
     }
 }

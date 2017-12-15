@@ -4,7 +4,6 @@ import { EventBus } from '../bus/event-bus';
 import { TabFollowState } from '../tab/tab-follow-state';
 import { TabOpenState } from '../tab/tab-open-state';
 import { FollowTab } from './command/follow-tab';
-import { UnfollowTab } from './command/unfollow-tab';
 import { OpenTabFaviconUrlUpdated } from './event/open-tab-favicon-url-updated';
 import { OpenTabMoved } from './event/open-tab-moved';
 import { OpenTabReaderModeStateUpdated } from './event/open-tab-reader-mode-state-updated';
@@ -25,8 +24,7 @@ export class FollowedTabManager {
 
     async associateOpenedTab(tabFollowState: TabFollowState, tabOpenState: TabOpenState) {
         this.associateOpenedTabWithoutPersistingNorEvent(tabFollowState, tabOpenState);
-        // TODO this.tabPersister.setOpenIndex(followId, openIndex)
-        await this.tabPersister.persist(tabFollowState);
+        await this.tabPersister.setOpenIndex(tabFollowState.id, tabFollowState.openIndex);
 
         this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(tabOpenState, tabFollowState));
     }
@@ -96,17 +94,14 @@ export class FollowedTabManager {
         }
 
         tabFollowState.openIndex = null;
-        // TODO this.tabPersister.setOpenIndex(followId, null)
-        this.tabPersister.persist(tabFollowState);
+        await this.tabPersister.setOpenIndex(tabFollowState.id, null);
     }
 
     async onOpenTabMove(event: OpenTabMoved): Promise<void> {
         const tabFollowState = await this.tabPersister.getByOpenIndex(event.tabOpenState.index);
 
         if (tabFollowState) {
-            tabFollowState.openIndex = event.tabOpenState.index;
-            // TODO this.tabPersister.setOpenIndex(followId, openIndex)
-            await this.tabPersister.persist(tabFollowState);
+            await this.tabPersister.setOpenIndex(tabFollowState.id, event.tabOpenState.index);
         }
     }
 
@@ -114,10 +109,7 @@ export class FollowedTabManager {
         const tabFollowState = await this.tabPersister.getByOpenIndex(event.tabOpenState.index);
 
         if (tabFollowState) {
-            // TODO this.tabPersister.setFaviconUrl(followId, faviconUrl)
-            tabFollowState.faviconUrl = event.tabOpenState.faviconUrl;
-
-            await this.tabPersister.persist(tabFollowState);
+            await this.tabPersister.setFaviconUrl(tabFollowState.id, event.tabOpenState.faviconUrl);
         }
     }
 
@@ -125,10 +117,7 @@ export class FollowedTabManager {
         const tabFollowState = await this.tabPersister.getByOpenIndex(event.tabOpenState.index);
 
         if (tabFollowState) {
-            // TODO this.tabPersister.setTitle(followId, title)
-            tabFollowState.title = event.tabOpenState.title;
-
-            await this.tabPersister.persist(tabFollowState);
+            await this.tabPersister.setTitle(tabFollowState.id, event.tabOpenState.title);
         }
     }
 
@@ -136,10 +125,7 @@ export class FollowedTabManager {
         const tabFollowState = await this.tabPersister.getByOpenIndex(event.tabOpenState.index);
 
         if (tabFollowState) {
-            // TODO this.tabPersister.setUrl(followId, url)
-            tabFollowState.url = event.tabOpenState.url;
-
-            await this.tabPersister.persist(tabFollowState);
+            await this.tabPersister.setUrl(tabFollowState.id, event.tabOpenState.url);
         }
     }
 
@@ -147,10 +133,7 @@ export class FollowedTabManager {
         const tabFollowState = await this.tabPersister.getByOpenIndex(event.tabOpenState.index);
 
         if (tabFollowState) {
-            // TODO this.tabPersister.setReaderMode(followId, readerMode)
-            tabFollowState.isInReaderMode = event.tabOpenState.isInReaderMode;
-
-            await this.tabPersister.persist(tabFollowState);
+            await this.tabPersister.setReaderMode(tabFollowState.id, event.tabOpenState.isInReaderMode);
         }
     }
 }

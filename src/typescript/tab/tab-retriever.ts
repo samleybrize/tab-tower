@@ -8,7 +8,6 @@ export class TabRetriever {
 
     async getOpenedTabs(): Promise<Tab[]> {
         const openedTabList = await this.openedTabRetriever.getAll();
-        const followedTabList = await this.followedTabRetriever.getAll();
         const tabList: Tab[] = [];
 
         for (const openedTab of openedTabList) {
@@ -22,7 +21,6 @@ export class TabRetriever {
     }
 
     async getFollowedTabs(): Promise<Tab[]> {
-        const openedTabList = await this.openedTabRetriever.getAll();
         const followedTabList = await this.followedTabRetriever.getAll();
         const tabList: Tab[] = [];
 

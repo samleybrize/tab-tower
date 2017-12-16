@@ -1,13 +1,13 @@
 import { sleep } from '../utils/sleep';
 import { OpenTab } from './command/open-tab';
-import { FollowedTabManager } from './followed-tab-manager';
+import { FollowedTabModifier } from './followed-tab-modifier';
 import { FollowedTabRetriever } from './followed-tab-retriever';
 import { OpenedTabRetriever } from './opened-tab-retriever';
 
 export class TabOpener {
     constructor(
         private openedTabRetriever: OpenedTabRetriever,
-        private followedTabManager: FollowedTabManager,
+        private followedTabManager: FollowedTabModifier,
         private followedTabRetriever: FollowedTabRetriever,
     ) {
     }

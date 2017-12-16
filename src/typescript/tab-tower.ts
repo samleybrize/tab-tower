@@ -15,10 +15,10 @@ import { TabClosing } from './tab/event/tab-closing';
 import { TabFollowed } from './tab/event/tab-followed';
 import { TabOpened } from './tab/event/tab-opened';
 import { TabUnfollowed } from './tab/event/tab-unfollowed';
-import { FollowedTabManager } from './tab/followed-tab-manager';
+import { FollowedTabModifier } from './tab/followed-tab-modifier';
 import { FollowedTabRetriever } from './tab/followed-tab-retriever';
 import { NativeTabEventHandler } from './tab/native-tab-event-handler';
-import { OpenedTabManager } from './tab/opened-tab-manager';
+import { OpenedTabModifier } from './tab/opened-tab-modifier';
 import { OpenedTabRetriever } from './tab/opened-tab-retriever';
 import { InMemoryTabPersister } from './tab/persister/in-memory-tab-persister';
 import { TabOpener } from './tab/tab-opener';
@@ -34,9 +34,9 @@ function main() {
     const eventBus = new EventBus();
 
     const inMemoryTabPersister = new InMemoryTabPersister();
-    const followedTabManager = new FollowedTabManager(inMemoryTabPersister, eventBus);
+    const followedTabManager = new FollowedTabModifier(inMemoryTabPersister, eventBus);
     const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
-    const openedTabManager = new OpenedTabManager();
+    const openedTabManager = new OpenedTabModifier();
     const openedTabRetriever = new OpenedTabRetriever([currentUrl]);
     const tabOpener = new TabOpener(openedTabRetriever, followedTabManager, followedTabRetriever);
     const tabRetriever = new TabRetriever(followedTabRetriever, openedTabRetriever);

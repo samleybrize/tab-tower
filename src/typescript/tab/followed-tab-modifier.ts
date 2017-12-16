@@ -16,8 +16,7 @@ import { TabFollowed } from './event/tab-followed';
 import { TabUnfollowed } from './event/tab-unfollowed';
 import { TabPersister } from './persister/tab-persister';
 
-// TODO rename
-export class FollowedTabManager {
+export class FollowedTabModifier {
     private openTabIdFollowIdAssociation = new Map<number, string>();
 
     constructor(private tabPersister: TabPersister, private eventBus: EventBus) {

@@ -1,7 +1,6 @@
 import { FocusTab } from './command/focus-tab';
 
-// TODO rename
-export class OpenedTabManager {
+export class OpenedTabModifier {
     async focusTab(command: FocusTab) {
         browser.tabs.update(command.tabId, {active: true});
     }

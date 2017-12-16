@@ -2,7 +2,6 @@ import { TabOpenState } from './tab-open-state';
 
 export class OpenedTabRetriever {
     constructor(private ignoredUrls: string[]) {
-        this.ignoredUrls.push('about:blank');
     }
 
     async getAll(): Promise<TabOpenState[]> {

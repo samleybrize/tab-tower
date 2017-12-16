@@ -129,7 +129,7 @@ export class OpenedTabView {
             <img />
             <span></span>
         `;
-        linkElement.addEventListener('mouseup', (event) => {
+        linkElement.addEventListener('click', (event) => {
             const tabId = +row.getAttribute('data-tab-id');
 
             if (tabId) {
@@ -150,7 +150,7 @@ export class OpenedTabView {
         const followButton = document.createElement('a');
         followButton.textContent = 'Follow';
         followButton.classList.add('followButton');
-        followButton.addEventListener('mouseup', async (event) => {
+        followButton.addEventListener('click', async (event) => {
             const upToDateTab = await this.tabRetriever.getByOpenId(tabOpenState.id);
             this.commandBus.handle(new FollowTab(upToDateTab));
         });
@@ -162,7 +162,7 @@ export class OpenedTabView {
         const unfollowButton = document.createElement('a');
         unfollowButton.textContent = 'Unfollow';
         unfollowButton.classList.add('unfollowButton');
-        unfollowButton.addEventListener('mouseup', async (event) => {
+        unfollowButton.addEventListener('click', async (event) => {
             const upToDateTab = await this.tabRetriever.getByOpenId(tabOpenState.id);
             this.commandBus.handle(new UnfollowTab(upToDateTab));
         });

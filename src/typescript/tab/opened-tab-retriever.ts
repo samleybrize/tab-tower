@@ -27,7 +27,7 @@ export class OpenedTabRetriever {
     }
 
     private createTab(rawTab: browser.tabs.Tab): TabOpenState {
-        if (this.isUrlIgnored(rawTab.url) || this.isTabIdIgnored(rawTab.id) || null == rawTab.id || null == rawTab.index) {
+        if (this.isUrlIgnored(rawTab.url) || this.isTabIdIgnored(rawTab.id) || null === rawTab.id || null === rawTab.index) {
             return;
         }
 

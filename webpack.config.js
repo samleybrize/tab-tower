@@ -24,7 +24,11 @@ module.exports = [
         },
     },
     {
-        entry: './src/typescript/tab-tower.ts',
+        entry: [
+            './node_modules/jquery/dist/jquery.min.js',
+            './node_modules/materialize-css/dist/js/materialize.min.js',
+            './src/typescript/tab-tower.ts'
+        ],
         output: {
             filename: 'tab-tower.js',
             path: path.resolve(__dirname, 'dist/js'),

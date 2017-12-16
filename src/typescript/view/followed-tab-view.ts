@@ -34,13 +34,15 @@ export class FollowedTabView {
 
     private createTable(containerElement: HTMLElement): HTMLTableElement {
         const table = document.createElement('table');
+        table.classList.add('bordered');
+        table.classList.add('highlight');
         table.innerHTML = `
             <thead>
                 <tr>
                     <th>Title</th>
-                    <th>Incognito</th>
-                    <th>Reader mode</th>
-                    <th>Opened</th>
+                    <th class="incognitoIndicator">Incognito</th>
+                    <th class="readerModeIndicator">Reader mode</th>
+                    <th class="openIndicator">Opened</th>
                     <th></th>
                 </tr>
             </thead>
@@ -152,6 +154,11 @@ export class FollowedTabView {
     private addUnfollowButton(cell: HTMLElement, tab: Tab) {
         const unfollowButton = document.createElement('a');
         unfollowButton.textContent = 'Unfollow';
+        unfollowButton.classList.add('unfollowButton');
+        unfollowButton.classList.add('btn');
+        unfollowButton.classList.add('waves-effect');
+        unfollowButton.classList.add('waves-light');
+
         unfollowButton.addEventListener('click', async (event) => {
             const upToDateTab = await this.tabRetriever.getByFollowId(tab.followState.id);
             this.commandBus.handle(new UnfollowTab(upToDateTab));

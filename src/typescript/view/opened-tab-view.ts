@@ -36,12 +36,14 @@ export class OpenedTabView {
 
     private createTable(containerElement: HTMLElement): HTMLTableElement {
         const table = document.createElement('table');
+        table.classList.add('bordered');
+        table.classList.add('highlight');
         table.innerHTML = `
             <thead>
                 <tr>
                     <th>Title</th>
-                    <th>Incognito</th>
-                    <th>Reader mode</th>
+                    <th class="incognitoIndicator">Incognito</th>
+                    <th class="readerModeIndicator">Reader mode</th>
                     <th></th>
                 </tr>
             </thead>
@@ -149,6 +151,9 @@ export class OpenedTabView {
         const followButton = document.createElement('a');
         followButton.textContent = 'Follow';
         followButton.classList.add('followButton');
+        followButton.classList.add('btn');
+        followButton.classList.add('waves-effect');
+        followButton.classList.add('waves-light');
 
         if (!tabOpenState.isPrivileged) {
             followButton.addEventListener('click', async (event) => {
@@ -166,6 +171,9 @@ export class OpenedTabView {
         const unfollowButton = document.createElement('a');
         unfollowButton.textContent = 'Unfollow';
         unfollowButton.classList.add('unfollowButton');
+        unfollowButton.classList.add('btn');
+        unfollowButton.classList.add('waves-effect');
+        unfollowButton.classList.add('waves-light');
 
         if (!tabOpenState.isPrivileged) {
             unfollowButton.addEventListener('click', async (event) => {

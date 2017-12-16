@@ -6,7 +6,7 @@ options:
 
 # File Options
 files:
-  include: 'src/client/scss/**/*.s+(a|c)ss'
+  include: 'src/scss/**/*.s+(a|c)ss'
 
 # Rule Configuration
 rules:

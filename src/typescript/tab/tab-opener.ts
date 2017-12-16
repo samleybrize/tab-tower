@@ -2,7 +2,6 @@ import { sleep } from '../utils/sleep';
 import { OpenTab } from './command/open-tab';
 import { FollowedTabManager } from './followed-tab-manager';
 import { FollowedTabRetriever } from './followed-tab-retriever';
-import { OpenedTabManager } from './opened-tab-manager';
 import { OpenedTabRetriever } from './opened-tab-retriever';
 
 export class TabOpener {

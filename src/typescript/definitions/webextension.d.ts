@@ -11,20 +11,20 @@ interface EvListener<T extends Function> {
 type Listener<T> = EvListener<(arg: T) => void>;
 
 declare namespace browser.alarms {
-    type Alarm = {
-        name: string,
-        scheduledTime: number,
-        periodInMinutes?: number,
-    };
+    interface Alarm {
+        name: string;
+        scheduledTime: number;
+        periodInMinutes?: number;
+    }
 
-    type When = {
-        when?: number,
-        periodInMinutes?: number,
-    };
-    type DelayInMinutes = {
-        delayInMinutes?: number,
-        periodInMinutes?: number,
-    };
+    interface When {
+        when?: number;
+        periodInMinutes?: number;
+    }
+    interface DelayInMinutes {
+        delayInMinutes?: number;
+        periodInMinutes?: number;
+    }
     function create(name?: string, alarmInfo?: When | DelayInMinutes): void;
     function get(name?: string): Promise<Alarm|undefined>;
     function getAll(): Promise<Alarm[]>;
@@ -35,25 +35,25 @@ declare namespace browser.alarms {
 }
 
 declare namespace browser.bookmarks {
-    type BookmarkTreeNodeUnmodifiable = "managed";
-    type BookmarkTreeNode = {
-        id: string,
-        parentId?: string,
-        index?: number,
-        url?: string,
-        title: string,
-        dateAdded?: number,
-        dateGroupModified?: number,
-        unmodifiable?: BookmarkTreeNodeUnmodifiable,
-        children?: BookmarkTreeNode[],
-    };
+    type BookmarkTreeNodeUnmodifiable = 'managed';
+    interface BookmarkTreeNode {
+        id: string;
+        parentId?: string;
+        index?: number;
+        url?: string;
+        title: string;
+        dateAdded?: number;
+        dateGroupModified?: number;
+        unmodifiable?: BookmarkTreeNodeUnmodifiable;
+        children?: BookmarkTreeNode[];
+    }
 
-    type CreateDetails = {
-        parentId?: string,
-        index?: number,
-        title?: string,
-        url?: string,
-    };
+    interface CreateDetails {
+        parentId?: string;
+        index?: number;
+        title?: string;
+        url?: string;
+    }
 
     function create(bookmark: CreateDetails): Promise<BookmarkTreeNode>;
     function get(idOrIdList: string|string[]): Promise<BookmarkTreeNode[]>;
@@ -104,15 +104,15 @@ declare namespace browser.browserAction {
     function setTitle(details: { title: string, tabId?: number }): void;
     function getTitle(details: { tabId?: number }): Promise<string>;
 
-    type IconViaPath = {
-        path: string | object,
-        tabId?: number,
-    };
+    interface IconViaPath {
+        path: string | object;
+        tabId?: number;
+    }
 
-    type IconViaImageData = {
-        imageData: ImageDataType,
-        tabId?: number,
-    };
+    interface IconViaImageData {
+        imageData: ImageDataType;
+        tabId?: number;
+    }
     function setIcon(details: IconViaPath | IconViaImageData): Promise<void>;
     function setPopup(details: { popup: string, tabId?: number }): void;
     function getPopup(details: { tabId?: number }): Promise<string>;
@@ -127,25 +127,25 @@ declare namespace browser.browserAction {
 }
 
 declare namespace browser.browsingData {
-    type DataTypeSet = {
-        cache?: boolean,
-        cookies?: boolean,
-        downloads?: boolean,
-        fileSystems?: boolean,
-        formData?: boolean,
-        history?: boolean,
-        indexedDB?: boolean,
-        localStorage?: boolean,
-        passwords?: boolean,
-        pluginData?: boolean,
-        serverBoundCertificates?: boolean,
-        serviceWorkers?: boolean,
-    };
+    interface DataTypeSet {
+        cache?: boolean;
+        cookies?: boolean;
+        downloads?: boolean;
+        fileSystems?: boolean;
+        formData?: boolean;
+        history?: boolean;
+        indexedDB?: boolean;
+        localStorage?: boolean;
+        passwords?: boolean;
+        pluginData?: boolean;
+        serverBoundCertificates?: boolean;
+        serviceWorkers?: boolean;
+    }
 
-    type DataRemovalOptions = {
-        since?: number,
-        originTypes?: { unprotectedWeb: boolean },
-    };
+    interface DataRemovalOptions {
+        since?: number;
+        originTypes?: { unprotectedWeb: boolean };
+    }
 
     function remove(removalOptions: DataRemovalOptions, dataTypes: DataTypeSet): Promise<void>;
     function removeCache(removalOptions?: DataRemovalOptions): Promise<void>;
@@ -163,11 +163,11 @@ declare namespace browser.browsingData {
 }
 
 declare namespace browser.commands {
-    type Command = {
-        name?: string,
-        description?: string,
-        shortcut?: string,
-    };
+    interface Command {
+        name?: string;
+        description?: string;
+        shortcut?: string;
+    }
 
     function getAll(): Promise<Command[]>;
 
@@ -175,41 +175,44 @@ declare namespace browser.commands {
 }
 
 declare namespace browser.contextMenus {
-    type ContextType = "all" | "page" | "frame" | "page" | "link" | "editable" | "image" | "selection"
-        | "video" | "audio" | "launcher" | "browser_action" | "page_action" | "password" | "tab";
+    type ContextType = 'all' | 'page' | 'frame' | 'page' | 'link' | 'editable' | 'image' | 'selection'
+        | 'video' | 'audio' | 'launcher' | 'browser_action' | 'page_action' | 'password' | 'tab';
 
-    type ItemType = "normal" | "checkbox" | "radio" | "separator";
+    type ItemType = 'normal' | 'checkbox' | 'radio' | 'separator';
 
-    type OnClickData = {
-        menuItemId: number|string,
-        modifiers: string[],
-        editable: boolean,
-        parentMenuItemId?: number|string,
-        mediaType?: string,
-        linkUrl?: string,
-        srcUrl?: string,
-        pageUrl?: string,
-        frameUrl?: string,
-        selectionText?: string,
-        wasChecked?: boolean,
-        checked?: boolean,
-    };
+    interface OnClickData {
+        menuItemId: number|string;
+        modifiers: string[];
+        editable: boolean;
+        parentMenuItemId?: number|string;
+        mediaType?: string;
+        linkUrl?: string;
+        srcUrl?: string;
+        pageUrl?: string;
+        frameUrl?: string;
+        selectionText?: string;
+        wasChecked?: boolean;
+        checked?: boolean;
+    }
 
     const ACTION_MENU_TOP_LEVEL_LIMIT: number;
 
-    function create(createProperties: {
-        type?: ItemType,
-        id?: string,
-        title?: string,
-        checked?: boolean,
-        command?: "_execute_browser_action" | "_execute_page_action" | "_execute_sidebar_action",
-        contexts?: ContextType[],
-        onclick?: (info: OnClickData, tab: browser.tabs.Tab) => void,
-        parentId?: number|string,
-        documentUrlPatterns?: string[],
-        targetUrlPatterns?: string[],
-        enabled?: boolean,
-    }, callback?: () => void): number|string;
+    function create(
+        createProperties: {
+            type?: ItemType,
+            id?: string,
+            title?: string,
+            checked?: boolean,
+            command?: '_execute_browser_action' | '_execute_page_action' | '_execute_sidebar_action',
+            contexts?: ContextType[],
+            onclick?: (info: OnClickData, tab: browser.tabs.Tab) => void,
+            parentId?: number|string,
+            documentUrlPatterns?: string[],
+            targetUrlPatterns?: string[],
+            enabled?: boolean,
+        },
+        callback?: () => void,
+    ): number|string;
     function update(id: number|string, updateProperties: {
         type?: ItemType,
         title?: string,
@@ -228,15 +231,15 @@ declare namespace browser.contextMenus {
 }
 
 declare namespace browser.contextualIdentities {
-    type IdentityColor = "blue" | "turquoise" | "green" | "yellow" | "orange" | "red" | "pink" | "purple";
-    type IdentityIcon = "fingerprint" | "briefcase" | "dollar" | "cart" | "circle";
+    type IdentityColor = 'blue' | 'turquoise' | 'green' | 'yellow' | 'orange' | 'red' | 'pink' | 'purple';
+    type IdentityIcon = 'fingerprint' | 'briefcase' | 'dollar' | 'cart' | 'circle';
 
-    type ContextualIdentity = {
-        cookieStoreId: string,
-        color: IdentityColor,
-        icon: IdentityIcon,
-        name: string,
-    };
+    interface ContextualIdentity {
+        cookieStoreId: string;
+        color: IdentityColor;
+        icon: IdentityIcon;
+        name: string;
+    }
 
     function create(details: {
         name: string,
@@ -254,25 +257,25 @@ declare namespace browser.contextualIdentities {
 }
 
 declare namespace browser.cookies {
-    type Cookie = {
-        name: string,
-        value: string,
-        domain: string,
-        hostOnly: boolean,
-        path: string,
-        secure: boolean,
-        httpOnly: boolean,
-        session: boolean,
-        expirationDate?: number,
-        storeId: string,
-    };
+    interface Cookie {
+        name: string;
+        value: string;
+        domain: string;
+        hostOnly: boolean;
+        path: string;
+        secure: boolean;
+        httpOnly: boolean;
+        session: boolean;
+        expirationDate?: number;
+        storeId: string;
+    }
 
-    type CookieStore = {
-        id: string,
-        tabIds: number[],
-    };
+    interface CookieStore {
+        id: string;
+        tabIds: number[];
+    }
 
-    type OnChangedCause = "evicted" | "expired" | "explicit" | "expired_overwrite"| "overwrite";
+    type OnChangedCause = 'evicted' | 'expired' | 'explicit' | 'expired_overwrite'| 'overwrite';
 
     function get(details: { url: string, name: string, storeId?: string }): Promise<Cookie|null>;
     function getAll(details: {
@@ -320,92 +323,92 @@ declare namespace browser.devtools.network {
 }
 
 declare namespace browser.devtools.panels {
-    type ExtensionPanel = {
-        onShown: Listener<Window>,
-        onHidden: Listener<void>,
-    };
+    interface ExtensionPanel {
+        onShown: Listener<Window>;
+        onHidden: Listener<void>;
+    }
 
     function create(title: string, iconPath: string, pagePath: string): Promise<ExtensionPanel>;
 }
 
 declare namespace browser.downloads {
-    type FilenameConflictAction = "uniquify" | "overwrite" | "prompt";
+    type FilenameConflictAction = 'uniquify' | 'overwrite' | 'prompt';
 
-    type InterruptReason = "FILE_FAILED" | "FILE_ACCESS_DENIED" | "FILE_NO_SPACE"
-                         | "FILE_NAME_TOO_LONG" | "FILE_TOO_LARGE" | "FILE_VIRUS_INFECTED"
-                         | "FILE_TRANSIENT_ERROR" | "FILE_BLOCKED" | "FILE_SECURITY_CHECK_FAILED"
-                         | "FILE_TOO_SHORT"
-                         | "NETWORK_FAILED" | "NETWORK_TIMEOUT" | "NETWORK_DISCONNECTED"
-                         | "NETWORK_SERVER_DOWN" | "NETWORK_INVALID_REQUEST"
-                         | "SERVER_FAILED" | "SERVER_NO_RANGE" | "SERVER_BAD_CONTENT"
-                         | "SERVER_UNAUTHORIZED" | "SERVER_CERT_PROBLEM" | "SERVER_FORBIDDEN"
-                         | "USER_CANCELED" | "USER_SHUTDOWN" | "CRASH";
+    type InterruptReason = 'FILE_FAILED' | 'FILE_ACCESS_DENIED' | 'FILE_NO_SPACE'
+                         | 'FILE_NAME_TOO_LONG' | 'FILE_TOO_LARGE' | 'FILE_VIRUS_INFECTED'
+                         | 'FILE_TRANSIENT_ERROR' | 'FILE_BLOCKED' | 'FILE_SECURITY_CHECK_FAILED'
+                         | 'FILE_TOO_SHORT'
+                         | 'NETWORK_FAILED' | 'NETWORK_TIMEOUT' | 'NETWORK_DISCONNECTED'
+                         | 'NETWORK_SERVER_DOWN' | 'NETWORK_INVALID_REQUEST'
+                         | 'SERVER_FAILED' | 'SERVER_NO_RANGE' | 'SERVER_BAD_CONTENT'
+                         | 'SERVER_UNAUTHORIZED' | 'SERVER_CERT_PROBLEM' | 'SERVER_FORBIDDEN'
+                         | 'USER_CANCELED' | 'USER_SHUTDOWN' | 'CRASH';
 
-    type DangerType = "file" | "url" | "content" | "uncommon" | "host" | "unwanted" | "safe"
-                    | "accepted";
+    type DangerType = 'file' | 'url' | 'content' | 'uncommon' | 'host' | 'unwanted' | 'safe'
+                    | 'accepted';
 
-    type State = "in_progress" | "interrupted" | "complete";
+    type State = 'in_progress' | 'interrupted' | 'complete';
 
-    type DownloadItem = {
-        id: number,
-        url: string,
-        referrer: string,
-        filename: string,
-        incognito: boolean,
-        danger: string,
-        mime: string,
-        startTime: string,
-        endTime?: string,
-        estimatedEndTime?: string,
-        state: string,
-        paused: boolean,
-        canResume: boolean,
-        error?: string,
-        bytesReceived: number,
-        totalBytes: number,
-        fileSize: number,
-        exists: boolean,
-        byExtensionId?: string,
-        byExtensionName?: string,
-    };
+    interface DownloadItem {
+        id: number;
+        url: string;
+        referrer: string;
+        filename: string;
+        incognito: boolean;
+        danger: string;
+        mime: string;
+        startTime: string;
+        endTime?: string;
+        estimatedEndTime?: string;
+        state: string;
+        paused: boolean;
+        canResume: boolean;
+        error?: string;
+        bytesReceived: number;
+        totalBytes: number;
+        fileSize: number;
+        exists: boolean;
+        byExtensionId?: string;
+        byExtensionName?: string;
+    }
 
-    type Delta<T> = {
-        current?: T,
-        previous?: T,
-    };
+    interface Delta<T> {
+        current?: T;
+        previous?: T;
+    }
 
     type StringDelta = Delta<string>;
     type DoubleDelta = Delta<number>;
     type BooleanDelta = Delta<boolean>;
     type DownloadTime = Date|string|number;
 
-    type DownloadQuery = {
-        query?: string[],
-        startedBefore?: DownloadTime,
-        startedAfter?: DownloadTime,
-        endedBefore?: DownloadTime,
-        endedAfter?: DownloadTime,
-        totalBytesGreater?: number,
-        totalBytesLess?: number,
-        filenameRegex?: string,
-        urlRegex?: string,
-        limit?: number,
-        orderBy?: string,
-        id?: number,
-        url?: string,
-        filename?: string,
-        danger?: DangerType,
-        mime?: string,
-        startTime?: string,
-        endTime?: string,
-        state?: State,
-        paused?: boolean,
-        error?: InterruptReason,
-        bytesReceived?: number,
-        totalBytes?: number,
-        fileSize?: number,
-        exists?: boolean,
-    };
+    interface DownloadQuery {
+        query?: string[];
+        startedBefore?: DownloadTime;
+        startedAfter?: DownloadTime;
+        endedBefore?: DownloadTime;
+        endedAfter?: DownloadTime;
+        totalBytesGreater?: number;
+        totalBytesLess?: number;
+        filenameRegex?: string;
+        urlRegex?: string;
+        limit?: number;
+        orderBy?: string;
+        id?: number;
+        url?: string;
+        filename?: string;
+        danger?: DangerType;
+        mime?: string;
+        startTime?: string;
+        endTime?: string;
+        state?: State;
+        paused?: boolean;
+        error?: InterruptReason;
+        bytesReceived?: number;
+        totalBytes?: number;
+        fileSize?: number;
+        exists?: boolean;
+    }
 
     function download(options: {
         url: string,
@@ -452,32 +455,32 @@ declare namespace browser.downloads {
 }
 
 declare namespace browser.events {
-    type UrlFilter = {
-        hostContains?: string,
-        hostEquals?: string,
-        hostPrefix?: string,
-        hostSuffix?: string,
-        pathContains?: string,
-        pathEquals?: string,
-        pathPrefix?: string,
-        pathSuffix?: string,
-        queryContains?: string,
-        queryEquals?: string,
-        queryPrefix?: string,
-        querySuffix?: string,
-        urlContains?: string,
-        urlEquals?: string,
-        urlMatches?: string,
-        originAndPathMatches?: string,
-        urlPrefix?: string,
-        urlSuffix?: string,
-        schemes?: string[],
-        ports?: Array<number|number[]>,
-    };
+    interface UrlFilter {
+        hostContains?: string;
+        hostEquals?: string;
+        hostPrefix?: string;
+        hostSuffix?: string;
+        pathContains?: string;
+        pathEquals?: string;
+        pathPrefix?: string;
+        pathSuffix?: string;
+        queryContains?: string;
+        queryEquals?: string;
+        queryPrefix?: string;
+        querySuffix?: string;
+        urlContains?: string;
+        urlEquals?: string;
+        urlMatches?: string;
+        originAndPathMatches?: string;
+        urlPrefix?: string;
+        urlSuffix?: string;
+        schemes?: string[];
+        ports?: Array<number|number[]>;
+    }
 }
 
 declare namespace browser.extension {
-    type ViewType = "tab" | "notification" | "popup";
+    type ViewType = 'tab' | 'notification' | 'popup';
 
     const lastError: string|null;
     const inIncognitoContext: boolean;
@@ -491,43 +494,43 @@ declare namespace browser.extension {
 }
 
 declare namespace browser.extensionTypes {
-    type ImageFormat = "jpeg" | "png";
-    type ImageDetails = {
-        format: ImageFormat,
-        quality: number,
-    };
-    type RunAt = "document_start" | "document_end" | "document_idle";
-    type InjectDetails = {
-        allFrames?: boolean,
-        code?: string,
-        file?: string,
-        frameId?: number,
-        // unsupported: matchAboutBlank?: boolean,
-        runAt?: RunAt,
-    };
+    type ImageFormat = 'jpeg' | 'png';
+    interface ImageDetails {
+        format: ImageFormat;
+        quality: number;
+    }
+    type RunAt = 'document_start' | 'document_end' | 'document_idle';
+    interface InjectDetails {
+        allFrames?: boolean;
+        code?: string;
+        file?: string;
+        frameId?: number;
+        // unsupported: matchAboutBlank?: boolean;
+        runAt?: RunAt;
+    }
 }
 
 declare namespace browser.history {
-    type TransitionType = "link" | "typed" | "auto_bookmark" | "auto_subframe" | "manual_subframe"
-                        | "generated" | "auto_toplevel" | "form_submit" | "reload" | "keyword"
-                        | "keyword_generated";
+    type TransitionType = 'link' | 'typed' | 'auto_bookmark' | 'auto_subframe' | 'manual_subframe'
+                        | 'generated' | 'auto_toplevel' | 'form_submit' | 'reload' | 'keyword'
+                        | 'keyword_generated';
 
-    type HistoryItem = {
-        id: string,
-        url?: string,
-        title?: string,
-        lastVisitTime?: number,
-        visitCount?: number,
-        typedCount?: number,
-    };
+    interface HistoryItem {
+        id: string;
+        url?: string;
+        title?: string;
+        lastVisitTime?: number;
+        visitCount?: number;
+        typedCount?: number;
+    }
 
-    type VisitItem = {
-        id: string,
-        visitId: string,
-        VisitTime?: number,
-        refferingVisitId: string,
-        transition: TransitionType,
-    };
+    interface VisitItem {
+        id: string;
+        visitId: string;
+        VisitTime?: number;
+        refferingVisitId: string;
+        transition: TransitionType;
+    }
 
     function search(query: {
         text: string,
@@ -571,7 +574,7 @@ declare namespace browser.i18n {
 
     function detectLanguage(text: string): Promise<{
         isReliable: boolean,
-        languages: { language: LanguageCode, percentage: number }[],
+        languages: Array<{ language: LanguageCode, percentage: number }>,
     }>;
 }
 
@@ -581,7 +584,7 @@ declare namespace browser.identity {
 }
 
 declare namespace browser.idle {
-    type IdleState = "active" | "idle" /* unsupported: | "locked" */;
+    type IdleState = 'active' | 'idle' /* unsupported: | 'locked' */;
 
     function queryState(detectionIntervalInSeconds: number): Promise<IdleState>;
     function setDetectionInterval(intervalInSeconds: number): void;
@@ -590,40 +593,40 @@ declare namespace browser.idle {
 }
 
 declare namespace browser.management {
-    type ExtensionInfo = {
-        description: string,
-        // unsupported: disabledReason: string,
-        enabled: boolean,
-        homepageUrl: string,
-        hostPermissions: string[],
-        icons: { size: number, url: string }[],
-        id: string,
-        installType: "admin" | "development" | "normal" | "sideload" | "other";
-        mayDisable: boolean,
-        name: string,
-        // unsupported: offlineEnabled: boolean,
-        optionsUrl: string,
-        permissions: string[],
-        shortName: string,
-        // unsupported: type: string,
-        updateUrl: string,
-        version: string,
-        // unsupported: versionName: string,
-    };
+    interface ExtensionInfo {
+        description: string;
+        // unsupported: disabledReason: string;
+        enabled: boolean;
+        homepageUrl: string;
+        hostPermissions: string[];
+        icons: Array<{ size: number, url: string }>;
+        id: string;
+        installType: 'admin' | 'development' | 'normal' | 'sideload' | 'other';
+        mayDisable: boolean;
+        name: string;
+        // unsupported: offlineEnabled: boolean;
+        optionsUrl: string;
+        permissions: string[];
+        shortName: string;
+        // unsupported: type: string;
+        updateUrl: string;
+        version: string;
+        // unsupported: versionName: string;
+    }
 
     function getSelf(): Promise<ExtensionInfo>;
     function uninstallSelf(options: { showConfirmDialog: boolean, dialogMessage: string }): Promise<void>;
 }
 
 declare namespace browser.notifications {
-    type TemplateType = "basic" /* | "image" | "list" | "progress" */;
+    type TemplateType = 'basic' /* | 'image' | 'list' | 'progress' */;
 
-    type NotificationOptions = {
-        type: TemplateType,
-        message: string,
-        title: string,
-        iconUrl?: string,
-    };
+    interface NotificationOptions {
+        type: TemplateType;
+        message: string;
+        title: string;
+        iconUrl?: string;
+    }
 
     function create(id: string|null, options: NotificationOptions): Promise<string>;
 
@@ -637,11 +640,11 @@ declare namespace browser.notifications {
 }
 
 declare namespace browser.omnibox {
-    type OnInputEnteredDisposition = "currentTab" | "newForegroundTab" | "newBackgroundTab";
-    type SuggestResult = {
-        content: string,
-        description: string,
-    };
+    type OnInputEnteredDisposition = 'currentTab' | 'newForegroundTab' | 'newBackgroundTab';
+    interface SuggestResult {
+        content: string;
+        description: string;
+    }
 
     function setDefaultSuggestion(suggestion: { description: string }): void;
 
@@ -681,42 +684,42 @@ declare namespace browser.runtime {
     const lastError: string | null;
     const id: string;
 
-    type Port = {
-        name: string,
-        disconnect(): void,
-        error: object,
+    interface Port {
+        name: string;
+        disconnect(): void;
+        error: object;
         onDisconnect: {
-            addListener(cb: (port: Port) => void): void,
-            removeListener(): void,
-        },
+            addListener(cb: (port: Port) => void): void;
+            removeListener(): void;
+        };
         onMessage: {
             addListener(cb: (message: object) => void): void,
             removeListener(): void,
-        },
-        postMessage(message: object): void,
-        sender?: runtime.MessageSender,
-    };
+        };
+        postMessage(message: object): void;
+        sender?: runtime.MessageSender;
+    }
 
-    type MessageSender = {
-        tab?: browser.tabs.Tab,
-        frameId?: number,
-        id?: string,
-        url?: string,
-        tlsChannelId?: string,
-    };
+    interface MessageSender {
+        tab?: browser.tabs.Tab;
+        frameId?: number;
+        id?: string;
+        url?: string;
+        tlsChannelId?: string;
+    }
 
-    type PlatformOs =  "mac" | "win" | "android" | "cros" | "linux" | "openbsd";
-    type PlatformArch =  "arm" | "x86-32" | "x86-64";
-    type PlatformNaclArch = "arm" | "x86-32" | "x86-64";
+    type PlatformOs =  'mac' | 'win' | 'android' | 'cros' | 'linux' | 'openbsd';
+    type PlatformArch =  'arm' | 'x86-32' | 'x86-64';
+    type PlatformNaclArch = 'arm' | 'x86-32' | 'x86-64';
 
-    type PlatformInfo = {
-        os: PlatformOs,
-        arch: PlatformArch,
-    };
+    interface PlatformInfo {
+        os: PlatformOs;
+        arch: PlatformArch;
+    }
 
-    // type RequestUpdateCheckStatus = "throttled" | "no_update" | "update_available";
-    type OnInstalledReason = "install" | "update" | "chrome_update" | "shared_module_update";
-    type OnRestartRequiredReason = "app_update" | "os_update" | "periodic";
+    // type RequestUpdateCheckStatus = 'throttled' | 'no_update' | 'update_available';
+    type OnInstalledReason = 'install' | 'update' | 'chrome_update' | 'shared_module_update';
+    type OnRestartRequiredReason = 'app_update' | 'os_update' | 'periodic';
 
     function getBackgroundPage(): Promise<Window>;
     function openOptionsPage(): Promise<void>;
@@ -735,25 +738,25 @@ declare namespace browser.runtime {
     function connectNative(application: string): Port;
 
     function sendMessage(
-        message: any
+        message: any,
     ): Promise<any>;
     function sendMessage(
         message: any,
-        options: { includeTlsChannelId?: boolean, toProxyScript?: boolean }
-    ): Promise<any>;
-    function sendMessage(
-        extensionId: string,
-        message: any,
+        options: { includeTlsChannelId?: boolean, toProxyScript?: boolean },
     ): Promise<any>;
     function sendMessage(
         extensionId: string,
         message: any,
-        options?: { includeTlsChannelId?: boolean, toProxyScript?: boolean }
+    ): Promise<any>;
+    function sendMessage(
+        extensionId: string,
+        message: any,
+        options?: { includeTlsChannelId?: boolean, toProxyScript?: boolean },
     ): Promise<any>;
 
     function sendNativeMessage(
         application: string,
-        message: object
+        message: object,
     ): Promise<object|void>;
     function getPlatformInfo(): Promise<PlatformInfo>;
     function getBrowserInfo(): Promise<{
@@ -784,19 +787,19 @@ declare namespace browser.runtime {
     type onMessagePromise = (
         message: object,
         sender: MessageSender,
-        sendResponse: (response: object) => boolean
+        sendResponse: (response: object) => boolean,
     ) => Promise<void>;
 
     type onMessageBool = (
         message: object,
         sender: MessageSender,
-        sendResponse: (response: object) => Promise<void>
+        sendResponse: (response: object) => Promise<void>,
     ) => boolean;
 
     type onMessageVoid = (
         message: object,
         sender: MessageSender,
-        sendResponse: (response: object) => Promise<void>
+        sendResponse: (response: object) => Promise<void>,
     ) => void;
 
     type onMessageEvent = onMessagePromise | onMessageBool | onMessageVoid;
@@ -805,34 +808,36 @@ declare namespace browser.runtime {
     const onMessageExternal: EvListener<onMessageEvent>;
 }
 
-declare namespace browser.sessions{
-    type Filter = { maxResults?: number }
-
-    type Session = {
-        lastModified: number,
-        tab: browser.tabs.Tab,
-        window: browser.windows.Window
+declare namespace browser.sessions {
+    interface Filter {
+        maxResults?: number;
     }
 
-    const MAX_SESSION_RESULTS: number
+    interface Session {
+        lastModified: number;
+        tab: browser.tabs.Tab;
+        window: browser.windows.Window;
+    }
 
-    function getRecentlyClosed(filter?: Filter): Promise<Session[]>
+    const MAX_SESSION_RESULTS: number;
 
-    function restore(sessionId: string): Promise<Session>
+    function getRecentlyClosed(filter?: Filter): Promise<Session[]>;
 
-    function setTabValue(tabId: number, key: string, value: string|object): Promise<void>
+    function restore(sessionId: string): Promise<Session>;
 
-    function getTabValue(tabId: number, key: string): Promise<void|string|object>
+    function setTabValue(tabId: number, key: string, value: string|object): Promise<void>;
 
-    function removeTabValue(tabId: number, key: string): Promise<void>
+    function getTabValue(tabId: number, key: string): Promise<void|string|object>;
 
-    function setWindowValue(windowId: number, key: string, value: string|object): Promise<void>
+    function removeTabValue(tabId: number, key: string): Promise<void>;
 
-    function getWindowValue(windowId: number, key: string): Promise<void|string|object>
+    function setWindowValue(windowId: number, key: string, value: string|object): Promise<void>;
 
-    function removeWindowValue(windowId: number, key: string): Promise<void>
+    function getWindowValue(windowId: number, key: string): Promise<void|string|object>;
 
-    const onChanged: EvListener<()=>void>
+    function removeWindowValue(windowId: number, key: string): Promise<void>;
+
+    const onChanged: EvListener<() => void>;
 
 }
 
@@ -847,15 +852,15 @@ declare namespace browser.sidebarAction {
 
     function getTitle(details: { tabId?: number }): Promise<string>;
 
-    type IconViaPath = {
-        path: string | { [index: number]: string },
-        tabId?: number,
-    };
+    interface IconViaPath {
+        path: string | { [index: number]: string };
+        tabId?: number;
+    }
 
-    type IconViaImageData = {
-        imageData: ImageDataType | { [index: number]: ImageDataType },
-        tabId?: number,
-    };
+    interface IconViaImageData {
+        imageData: ImageDataType | { [index: number]: ImageDataType };
+        tabId?: number;
+    }
 
     function setIcon(details: IconViaPath | IconViaImageData): Promise<void>;
 }
@@ -863,7 +868,7 @@ declare namespace browser.sidebarAction {
 declare namespace browser.storage {
 
     // Non-firefox implementations don't accept all these types
-    type StorageValue = 
+    type StorageValue =
         string |
         number |
         boolean |
@@ -884,7 +889,8 @@ declare namespace browser.storage {
         StorageObject |
         StorageArray |
         StorageMap |
-        StorageSet;
+        StorageSet
+    ;
 
     // The Index signature makes casting to/from classes or interfaces a pain.
     // Custom types are OK.
@@ -894,7 +900,7 @@ declare namespace browser.storage {
     // These have to be interfaces rather than types to avoid a circular
     // definition of StorageValue
     interface StorageArray extends Array<StorageValue> {}
-    interface StorageMap extends Map<StorageValue,StorageValue> {}
+    interface StorageMap extends Map<StorageValue, StorageValue> {}
     interface StorageSet extends Set<StorageValue> {}
 
     interface Get {
@@ -903,71 +909,73 @@ declare namespace browser.storage {
         <T extends StorageObject>(keys: T): Promise<T>;
     }
 
-    type StorageArea = {
-        get: Get,
-        // unsupported: getBytesInUse: (keys: string|string[]|null) => Promise<number>,
-        set: (keys: StorageObject) => Promise<void>,
-        remove: (keys: string|string[]) => Promise<void>,
-        clear: () => Promise<void>,
-    };
+    interface StorageArea {
+        get: Get;
+        // unsupported: getBytesInUse: (keys: string|string[]|null) => Promise<number>;
+        set: (keys: StorageObject) => Promise<void>;
+        remove: (keys: string|string[]) => Promise<void>;
+        clear: () => Promise<void>;
+    }
 
-    type StorageChange = {
-        oldValue?: any,
-        newValue?: any,
-    };
+    interface StorageChange {
+        oldValue?: any;
+        newValue?: any;
+    }
 
     const sync: StorageArea;
     const local: StorageArea;
     // unsupported: const managed: StorageArea;
 
-    type ChangeDict = { [field: string]: StorageChange };
-    type StorageName = "sync"|"local" /* |"managed" */;
+    interface ChangeDict {
+        [field: string]: StorageChange;
+    }
+    type StorageName = 'sync'|'local' /* |'managed' */;
 
     const onChanged: EvListener<(changes: ChangeDict, areaName: StorageName) => void>;
 }
 
 declare namespace browser.tabs {
-    type MutedInfoReason = "capture" | "extension" | "user";
-    type MutedInfo = {
-        muted: boolean,
-        extensionId?: string,
-        reason: MutedInfoReason,
-    };
-    type Tab = {
-        active: boolean,
-        audible?: boolean,
-        autoDiscardable?: boolean,
-        cookieStoreId?: string,
-        discarded?: boolean,
-        favIconUrl?: string,
-        height?: number,
-        highlighted: boolean,
-        id?: number,
-        incognito: boolean,
-        index: number,
-        isInReaderMode: boolean,
-        lastAccessed: number,
-        mutedInfo?: MutedInfo,
-        // not supported: openerTabId?: number,
-        pinned: boolean,
-        selected: boolean,
-        sessionId?: string,
-        status?: string,
-        title?: string,
-        url?: string,
-        width?: number,
-        windowId: number,
-    };
+    type MutedInfoReason = 'capture' | 'extension' | 'user';
+    interface MutedInfo {
+        muted: boolean;
+        extensionId?: string;
+        reason: MutedInfoReason;
+    }
+    interface Tab {
+        active: boolean;
+        audible?: boolean;
+        autoDiscardable?: boolean;
+        cookieStoreId?: string;
+        discarded?: boolean;
+        favIconUrl?: string;
+        height?: number;
+        highlighted: boolean;
+        id?: number;
+        incognito: boolean;
+        index: number;
+        isInReaderMode: boolean;
+        lastAccessed: number;
+        mutedInfo?: MutedInfo;
+        // not supported: openerTabId?: number;
+        pinned: boolean;
+        selected: boolean;
+        sessionId?: string;
+        status?: string;
+        title?: string;
+        url?: string;
+        width?: number;
+        windowId: number;
+    }
 
-    type TabStatus = "loading" | "complete";
-    type WindowType = "normal" | "popup" | "panel" | "devtools";
-    type ZoomSettingsMode = "automatic" | "disabled" | "manual";
-    type ZoomSettingsScope = "per-origin" | "per-tab";
-    type ZoomSettings = {
-        defaultZoomFactor?: number,
-        mode?: ZoomSettingsMode,
-        scope?: ZoomSettingsScope,
-    };
+    type TabStatus = 'loading' | 'complete';
+    type WindowType = 'normal' | 'popup' | 'panel' | 'devtools';
+    type ZoomSettingsMode = 'automatic' | 'disabled' | 'manual';
+    type ZoomSettingsScope = 'per-origin' | 'per-tab';
+    interface ZoomSettings {
+        defaultZoomFactor?: number;
+        mode?: ZoomSettingsMode;
+        scope?: ZoomSettingsScope;
+    }
 
     const TAB_ID_NONE: number;
 
@@ -985,13 +993,13 @@ declare namespace browser.tabs {
     }): Promise<Tab>;
     function captureVisibleTab(
         windowId?: number,
-        options?: browser.extensionTypes.ImageDetails
+        options?: browser.extensionTypes.ImageDetails,
     ): Promise<string>;
     function detectLanguage(tabId?: number): Promise<string>;
     function duplicate(tabId: number): Promise<Tab>;
     function executeScript(
         tabId: number|undefined,
-        details: browser.extensionTypes.InjectDetails
+        details: browser.extensionTypes.InjectDetails,
     ): Promise<object[]>;
     function get(tabId: number): Promise<Tab>;
     // deprecated: function getAllInWindow(): x;
@@ -1088,21 +1096,21 @@ declare namespace browser.tabs {
 }
 
 declare namespace browser.topSites {
-    type MostVisitedURL = {
-        title: string,
-        url: string,
-    };
+    interface MostVisitedURL {
+        title: string;
+        url: string;
+    }
     function get(): Promise<MostVisitedURL[]>;
 }
 
 declare namespace browser.webNavigation {
-    type TransitionType = "link" | "auto_subframe" | "form_submit" | "reload";
-                        // unsupported: | "typed" | "auto_bookmark" | "manual_subframe"
-                        //              | "generated" | "start_page" | "keyword"
-                        //              | "keyword_generated";
+    type TransitionType = 'link' | 'auto_subframe' | 'form_submit' | 'reload';
+                        // unsupported: | 'typed' | 'auto_bookmark' | 'manual_subframe'
+                        //              | 'generated' | 'start_page' | 'keyword'
+                        //              | 'keyword_generated';
 
-    type TransitionQualifier = "client_redirect" | "server_redirect" | "forward_back";
-                               // unsupported: "from_address_bar";
+    type TransitionQualifier = 'client_redirect' | 'server_redirect' | 'forward_back';
+                               // unsupported: 'from_address_bar';
 
     function getFrame(details: {
         tabId: number,
@@ -1177,33 +1185,33 @@ declare namespace browser.webNavigation {
 }
 
 declare namespace browser.webRequest {
-    type ResourceType = "main_frame" | "sub_frame" | "stylesheet" | "script" | "image" | "object"
-                      | "xmlhttprequest" | "xbl" | "xslt" | "ping" | "beacon" | "xml_dtd" | "font"
-                      | "media" | "websocket" | "csp_report" | "imageset" | "web_manifest"
-                      | "other";
+    type ResourceType = 'main_frame' | 'sub_frame' | 'stylesheet' | 'script' | 'image' | 'object'
+                      | 'xmlhttprequest' | 'xbl' | 'xslt' | 'ping' | 'beacon' | 'xml_dtd' | 'font'
+                      | 'media' | 'websocket' | 'csp_report' | 'imageset' | 'web_manifest'
+                      | 'other';
 
-    type RequestFilter = {
-        urls: string[],
-        types?: ResourceType[],
-        tabId?: number,
-        windowId?: number,
-    };
+    interface RequestFilter {
+        urls: string[];
+        types?: ResourceType[];
+        tabId?: number;
+        windowId?: number;
+    }
 
-    type HttpHeaders = ({ name: string, binaryValue: number[], value?: string }
-                        | { name: string, value: string, binaryValue?: number[] })[];
+    type HttpHeaders = Array<{ name: string, binaryValue: number[], value?: string }
+                        | { name: string, value: string, binaryValue?: number[] }>;
 
-    type BlockingResponse = {
-        cancel?: boolean,
-        redirectUrl?: string,
-        requestHeaders?: HttpHeaders,
-        responseHeaders?: HttpHeaders,
-        // unsupported: authCredentials?: { username: string, password: string },
-    };
+    interface BlockingResponse {
+        cancel?: boolean;
+        redirectUrl?: string;
+        requestHeaders?: HttpHeaders;
+        responseHeaders?: HttpHeaders;
+        // unsupported: authCredentials?: { username: string, password: string };
+    }
 
-    type UploadData = {
-        bytes?: ArrayBuffer,
-        file?: string,
-    };
+    interface UploadData {
+        bytes?: ArrayBuffer;
+        file?: string;
+    }
 
     const MAX_HANDLER_BEHAVIOR_CHANGED_CALLS_PER_10_MINUTES: number;
 
@@ -1215,7 +1223,7 @@ declare namespace browser.webRequest {
         addListener: (
             callback: (arg: T) => void,
             filter: RequestFilter,
-            extraInfoSpec?: Array<U>,
+            extraInfoSpec?: U[],
         ) => BlockingResponse|Promise<BlockingResponse>;
         removeListener: (callback: (arg: T) => void) => void;
         hasListener: (callback: (arg: T) => void) => boolean;
@@ -1236,7 +1244,7 @@ declare namespace browser.webRequest {
         type: ResourceType,
         timeStamp: number,
         originUrl: string,
-    }, "blocking"|"requestBody">;
+    }, 'blocking'|'requestBody'>;
 
     const onBeforeSendHeaders: ReqListener<{
         requestId: string,
@@ -1249,7 +1257,7 @@ declare namespace browser.webRequest {
         timeStamp: number,
         originUrl: string,
         requestHeaders?: HttpHeaders,
-    }, "blocking"|"requestHeaders">;
+    }, 'blocking'|'requestHeaders'>;
 
     const onSendHeaders: ReqListener<{
         requestId: string,
@@ -1262,7 +1270,7 @@ declare namespace browser.webRequest {
         timeStamp: number,
         originUrl: string,
         requestHeaders?: HttpHeaders,
-    }, "requestHeaders">;
+    }, 'requestHeaders'>;
 
     const onHeadersReceived: ReqListener<{
         requestId: string,
@@ -1277,7 +1285,7 @@ declare namespace browser.webRequest {
         statusLine: string,
         responseHeaders?: HttpHeaders,
         statusCode: number,
-    }, "blocking"|"responseHeaders">;
+    }, 'blocking'|'responseHeaders'>;
 
     const onAuthRequired: ReqListener<{
         requestId: string,
@@ -1295,7 +1303,7 @@ declare namespace browser.webRequest {
         responseHeaders?: HttpHeaders,
         statusLine: string,
         statusCode: number,
-    }, "blocking"|"responseHeaders">;
+    }, 'blocking'|'responseHeaders'>;
 
     const onResponseStarted: ReqListener<{
         requestId: string,
@@ -1312,7 +1320,7 @@ declare namespace browser.webRequest {
         statusLine: string,
         responseHeaders?: HttpHeaders,
         statusCode: number,
-    }, "responseHeaders">;
+    }, 'responseHeaders'>;
 
     const onBeforeRedirect: ReqListener<{
         requestId: string,
@@ -1330,7 +1338,7 @@ declare namespace browser.webRequest {
         redirectUrl: string,
         statusLine: string,
         responseHeaders?: HttpHeaders,
-    }, "responseHeaders">;
+    }, 'responseHeaders'>;
 
     const onCompleted: ReqListener<{
         requestId: string,
@@ -1347,7 +1355,7 @@ declare namespace browser.webRequest {
         statusCode: number,
         statusLine: string,
         responseHeaders?: HttpHeaders,
-    }, "responseHeaders">;
+    }, 'responseHeaders'>;
 
     const onErrorOccurred: ReqListener<{
         requestId: string,
@@ -1366,26 +1374,26 @@ declare namespace browser.webRequest {
 }
 
 declare namespace browser.windows {
-    type WindowType = "normal" | "popup" | "panel" | "devtools";
+    type WindowType = 'normal' | 'popup' | 'panel' | 'devtools';
 
-    type WindowState = "normal" | "minimized" | "maximized" | "fullscreen" | "docked";
+    type WindowState = 'normal' | 'minimized' | 'maximized' | 'fullscreen' | 'docked';
 
-    type Window = {
-        id?: number,
-        focused: boolean,
-        top?: number,
-        left?: number,
-        width?: number,
-        height?: number,
-        tabs?: browser.tabs.Tab[],
-        incognito: boolean,
-        type?: WindowType,
-        state?: WindowState,
-        alwaysOnTop: boolean,
-        sessionId?: string,
-    };
+    interface Window {
+        id?: number;
+        focused: boolean;
+        top?: number;
+        left?: number;
+        width?: number;
+        height?: number;
+        tabs?: browser.tabs.Tab[];
+        incognito: boolean;
+        type?: WindowType;
+        state?: WindowState;
+        alwaysOnTop: boolean;
+        sessionId?: string;
+    }
 
-    type CreateType = "normal" | "popup" | "panel" | "detached_panel";
+    type CreateType = 'normal' | 'popup' | 'panel' | 'detached_panel';
 
     const WINDOW_ID_NONE: number;
 

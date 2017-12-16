@@ -1,4 +1,12 @@
-import { OpenedTabManager } from './opened-tab-manager';
+import { EventBus } from '../bus/event-bus';
+import { OpenTabFaviconUrlUpdated } from './event/open-tab-favicon-url-updated';
+import { OpenTabMoved } from './event/open-tab-moved';
+import { OpenTabReaderModeStateUpdated } from './event/open-tab-reader-mode-state-updated';
+import { OpenTabTitleUpdated } from './event/open-tab-title-updated';
+import { OpenTabUrlUpdated } from './event/open-tab-url-updated';
+import { TabClosed } from './event/tab-closed';
+import { TabClosing } from './event/tab-closing';
+import { TabOpened } from './event/tab-opened';
 import { OpenedTabRetriever } from './opened-tab-retriever';
 import { TabOpener } from './tab-opener';
 
@@ -6,7 +14,7 @@ export class NativeTabEventHandler {
     private isInited = false;
 
     constructor(
-        private openedTabManager: OpenedTabManager,
+        private eventBus: EventBus,
         private openedTabRetriever: OpenedTabRetriever,
         private tabOpener: TabOpener,
     ) {
@@ -27,11 +35,13 @@ export class NativeTabEventHandler {
     async onNativeTabCreate(nativeTab: browser.tabs.Tab) {
         await this.tabOpener.waitForNewTabLoad(nativeTab.id);
         const tabOpenState = await this.openedTabRetriever.getById(nativeTab.id);
-        this.openedTabManager.nativeTabOpened(tabOpenState);
+
+        this.eventBus.publish(new TabOpened(tabOpenState));
     }
 
-    onNativeTabClose(tabId: number, removeInfo: browser.tabs.RemoveInfo) {
-        this.openedTabManager.nativeTabClosed(tabId);
+    async onNativeTabClose(tabId: number, removeInfo: browser.tabs.RemoveInfo) {
+        await this.eventBus.publish(new TabClosing(tabId));
+        this.eventBus.publish(new TabClosed(tabId));
     }
 
     async onNativeTabMove(tabId: number, moveInfo: browser.tabs.MoveInfo) {
@@ -40,7 +50,7 @@ export class NativeTabEventHandler {
 
         for (const tabOpenState of tabOpenStateList) {
             if (tabOpenState.index >= minIndex) {
-                this.openedTabManager.nativeTabMoved(tabOpenState, tabOpenState.index);
+                this.eventBus.publish(new OpenTabMoved(tabOpenState));
             }
         }
     }
@@ -53,26 +63,28 @@ export class NativeTabEventHandler {
         }
 
         if (updateInfo.title) {
-            this.openedTabManager.nativeTabTitleUpdated(tabOpenState, updateInfo.title);
+            tabOpenState.title = updateInfo.title;
+            this.eventBus.publish(new OpenTabTitleUpdated(tabOpenState));
         }
 
         if (updateInfo.url) {
-            let url = updateInfo.url;
-
             if (0 == updateInfo.url.indexOf('about:reader?')) {
-                this.openedTabManager.nativeTabReaderModeStateUpdated(tabOpenState, true);
+                tabOpenState.isInReaderMode = true;
 
-                url = new URL(url).searchParams.get('url');
+                let url = new URL(updateInfo.url).searchParams.get('url');
                 url = decodeURI(url);
+                tabOpenState.url = url;
             } else {
-                this.openedTabManager.nativeTabReaderModeStateUpdated(tabOpenState, false);
+                tabOpenState.isInReaderMode = false;
             }
 
-            this.openedTabManager.nativeTabUrlUpdated(tabOpenState, url);
+            this.eventBus.publish(new OpenTabReaderModeStateUpdated(tabOpenState));
+            this.eventBus.publish(new OpenTabUrlUpdated(tabOpenState));
         }
 
         if (undefined !== updateInfo.favIconUrl) {
-            this.openedTabManager.nativeTabFaviconUrlUpdated(tabOpenState, updateInfo.favIconUrl);
+            tabOpenState.faviconUrl = updateInfo.favIconUrl;
+            this.eventBus.publish(new OpenTabFaviconUrlUpdated(tabOpenState));
         }
     }
 }

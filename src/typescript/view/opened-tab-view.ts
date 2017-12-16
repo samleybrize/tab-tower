@@ -12,7 +12,6 @@ import { TabClosed } from '../tab/event/tab-closed';
 import { TabFollowed } from '../tab/event/tab-followed';
 import { TabOpened } from '../tab/event/tab-opened';
 import { TabUnfollowed } from '../tab/event/tab-unfollowed';
-import { Tab } from '../tab/tab';
 import { TabOpenState } from '../tab/tab-open-state';
 import { TabRetriever } from '../tab/tab-retriever';
 

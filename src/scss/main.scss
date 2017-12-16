@@ -33,8 +33,14 @@ table {
         text-align: center;
     }
 
-    .actions .transparent {
-        display: none;
+    .actions {
+        .transparent {
+            display: none;
+        }
+
+        .disabled {
+            color: grey;
+        }
     }
 
     .title a {

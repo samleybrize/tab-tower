@@ -6,4 +6,5 @@ export class TabOpenState {
     isInReaderMode: boolean = false;
     url: string = null;
     faviconUrl: string = null;
+    isPrivileged: boolean = false;
 }

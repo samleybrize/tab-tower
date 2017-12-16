@@ -35,6 +35,7 @@ export class OpenedTabRetriever {
         tab.isInReaderMode = isInReaderMode;
         tab.url = url;
         tab.faviconUrl = rawTab.favIconUrl;
+        tab.isPrivileged = this.isTabPrivileged(url);
 
         return tab;
     }
@@ -54,6 +55,14 @@ export class OpenedTabRetriever {
         }
 
         return {url, isInReaderMode};
+    }
+
+    private isTabPrivileged(tabUrl: string): boolean {
+        const colonIndex = tabUrl.indexOf(':');
+        const predicate = tabUrl.substr(0, colonIndex);
+        const forbiddenPredicates = ['about', 'chrome', 'data', 'file', 'javascript'];
+
+        return forbiddenPredicates.indexOf(predicate) >= 0;
     }
 
     async getById(id: number): Promise<TabOpenState> {

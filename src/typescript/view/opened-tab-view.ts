@@ -149,10 +149,15 @@ export class OpenedTabView {
         const followButton = document.createElement('a');
         followButton.textContent = 'Follow';
         followButton.classList.add('followButton');
-        followButton.addEventListener('click', async (event) => {
-            const upToDateTab = await this.tabRetriever.getByOpenId(tabOpenState.id);
-            this.commandBus.handle(new FollowTab(upToDateTab));
-        });
+
+        if (!tabOpenState.isPrivileged) {
+            followButton.addEventListener('click', async (event) => {
+                const upToDateTab = await this.tabRetriever.getByOpenId(tabOpenState.id);
+                this.commandBus.handle(new FollowTab(upToDateTab));
+            });
+        } else {
+            followButton.classList.add('disabled');
+        }
 
         cell.appendChild(followButton);
     }
@@ -161,10 +166,15 @@ export class OpenedTabView {
         const unfollowButton = document.createElement('a');
         unfollowButton.textContent = 'Unfollow';
         unfollowButton.classList.add('unfollowButton');
-        unfollowButton.addEventListener('click', async (event) => {
-            const upToDateTab = await this.tabRetriever.getByOpenId(tabOpenState.id);
-            this.commandBus.handle(new UnfollowTab(upToDateTab));
-        });
+
+        if (!tabOpenState.isPrivileged) {
+            unfollowButton.addEventListener('click', async (event) => {
+                const upToDateTab = await this.tabRetriever.getByOpenId(tabOpenState.id);
+                this.commandBus.handle(new UnfollowTab(upToDateTab));
+            });
+        } else {
+            unfollowButton.classList.add('disabled');
+        }
 
         cell.appendChild(unfollowButton);
     }

@@ -41,7 +41,7 @@ export class FollowedTabModifier {
     async followTab(command: FollowTab) {
         const tab = command.tab;
 
-        if (tab.isFollowed || !tab.isOpened) {
+        if (tab.isFollowed || !tab.isOpened || tab.openState.isPrivileged) {
             return;
         }
 

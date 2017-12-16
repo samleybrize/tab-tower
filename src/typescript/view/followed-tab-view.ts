@@ -152,9 +152,9 @@ export class FollowedTabView {
     private addUnfollowButton(cell: HTMLElement, tab: Tab) {
         const unfollowButton = document.createElement('a');
         unfollowButton.textContent = 'Unfollow';
-        unfollowButton.setAttribute('data-follow-id', '' + tab.followState.id);
-        unfollowButton.addEventListener('mouseup', (event) => {
-            this.commandBus.handle(new UnfollowTab(tab));
+        unfollowButton.addEventListener('mouseup', async (event) => {
+            const upToDateTab = await this.tabRetriever.getByFollowId(tab.followState.id);
+            this.commandBus.handle(new UnfollowTab(upToDateTab));
         });
 
         cell.appendChild(unfollowButton);
@@ -186,11 +186,11 @@ export class FollowedTabView {
 
     private updateTabReaderModeState(row: HTMLElement, isInReaderMode: boolean) {
         row.setAttribute('data-reader-mode', isInReaderMode ? '1' : '');
-        row.querySelector('.incognitoIndicator').textContent = isInReaderMode ? 'Yes' : 'No';
+        row.querySelector('.readerModeIndicator').textContent = isInReaderMode ? 'Yes' : 'No';
     }
 
     private updateTabIncognitoState(row: HTMLElement, isIncognito: boolean) {
-        row.querySelector('.readerModeIndicator').textContent = isIncognito ? 'Yes' : 'No';
+        row.querySelector('.incognitoIndicator').textContent = isIncognito ? 'Yes' : 'No';
     }
 
     async onTabClose(event: TabClosed) {

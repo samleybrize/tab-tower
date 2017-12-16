@@ -15,38 +15,29 @@ export class OpenedTabManager {
     constructor(private eventBus: EventBus) {
     }
 
-    async openTab(url: string, readerMode: boolean) {
-        const tab = await browser.tabs.create({
-            active: false,
-            url,
-        });
-
-        if (readerMode) {
-            await browser.tabs.toggleReaderMode(tab.id);
-        }
-
-        return tab.id;
-    }
-
     async focusTab(command: FocusTab) {
         browser.tabs.update(command.tabId, {active: true});
     }
 
+    // TODO move to native tab event handler?
     async nativeTabOpened(tabOpenState: TabOpenState) {
         this.eventBus.publish(new TabOpened(tabOpenState));
     }
 
+    // TODO move to native tab event handler?
     async nativeTabClosed(tabId: number) {
         await this.eventBus.publish(new TabClosing(tabId));
         this.eventBus.publish(new TabClosed(tabId));
     }
 
+    // TODO move to native tab event handler?
     async nativeTabMoved(tabOpenState: TabOpenState, newIndex: number) {
         const oldIndex = tabOpenState.index;
         tabOpenState.index = newIndex;
         this.eventBus.publish(new OpenTabMoved(tabOpenState, oldIndex));
     }
 
+    // TODO move to native tab event handler?
     async nativeTabTitleUpdated(tabOpenState: TabOpenState, newTitle: string) {
         const oldTitle = tabOpenState.title;
 
@@ -54,6 +45,7 @@ export class OpenedTabManager {
         this.eventBus.publish(new OpenTabTitleUpdated(tabOpenState, oldTitle));
     }
 
+    // TODO move to native tab event handler?
     async nativeTabUrlUpdated(tabOpenState: TabOpenState, newUrl: string) {
         const oldUrl = tabOpenState.url;
 
@@ -61,6 +53,7 @@ export class OpenedTabManager {
         this.eventBus.publish(new OpenTabUrlUpdated(tabOpenState, oldUrl));
     }
 
+    // TODO move to native tab event handler?
     async nativeTabReaderModeStateUpdated(tabOpenState: TabOpenState, newReaderModeState: boolean) {
         const oldReaderModeState = tabOpenState.isInReaderMode;
 
@@ -68,6 +61,7 @@ export class OpenedTabManager {
         this.eventBus.publish(new OpenTabReaderModeStateUpdated(tabOpenState, oldReaderModeState));
     }
 
+    // TODO move to native tab event handler?
     async nativeTabFaviconUrlUpdated(tabOpenState: TabOpenState, newFaviconUrl: string) {
         const oldFaviconUrl = tabOpenState.faviconUrl;
 

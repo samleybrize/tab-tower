@@ -1,10 +1,15 @@
 import { OpenedTabManager } from './opened-tab-manager';
 import { OpenedTabRetriever } from './opened-tab-retriever';
+import { TabOpener } from './tab-opener';
 
 export class NativeTabEventHandler {
     private isInited = false;
 
-    constructor(private openedTabManager: OpenedTabManager, private openedTabRetriever: OpenedTabRetriever) {
+    constructor(
+        private openedTabManager: OpenedTabManager,
+        private openedTabRetriever: OpenedTabRetriever,
+        private tabOpener: TabOpener,
+    ) {
     }
 
     init() {
@@ -20,6 +25,7 @@ export class NativeTabEventHandler {
     }
 
     async onNativeTabCreate(nativeTab: browser.tabs.Tab) {
+        await this.tabOpener.waitForNewTabLoad(nativeTab.id);
         const tabOpenState = await this.openedTabRetriever.getById(nativeTab.id);
         this.openedTabManager.nativeTabOpened(tabOpenState);
     }

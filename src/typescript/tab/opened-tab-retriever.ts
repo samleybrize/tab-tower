@@ -31,13 +31,14 @@ export class OpenedTabRetriever {
             return;
         }
 
+        const {url, isInReaderMode} = this.getUrlAndReaderModeState(rawTab);
         const tab = new TabOpenState();
         tab.id = rawTab.id;
         tab.index = rawTab.index;
         tab.title = rawTab.title;
         tab.isIncognito = rawTab.incognito;
-        tab.isInReaderMode = (0 == rawTab.url.indexOf('about:reader?'));
-        tab.url = rawTab.url;
+        tab.isInReaderMode = isInReaderMode;
+        tab.url = url;
         tab.faviconUrl = rawTab.favIconUrl;
 
         return tab;
@@ -49,6 +50,19 @@ export class OpenedTabRetriever {
 
     private isTabIdIgnored(tabId: number) {
         return this.ignoredTabIdList.indexOf(tabId) >= 0;
+    }
+
+    private getUrlAndReaderModeState(rawTab: browser.tabs.Tab) {
+        let url = rawTab.url;
+        let isInReaderMode = false;
+
+        if (0 == url.indexOf('about:reader?')) {
+            url = new URL(url).searchParams.get('url');
+            url = decodeURI(url);
+            isInReaderMode = true;
+        }
+
+        return {url, isInReaderMode};
     }
 
     async getById(id: number): Promise<TabOpenState> {

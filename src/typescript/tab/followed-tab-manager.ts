@@ -4,6 +4,7 @@ import { EventBus } from '../bus/event-bus';
 import { TabFollowState } from '../tab/tab-follow-state';
 import { TabOpenState } from '../tab/tab-open-state';
 import { FollowTab } from './command/follow-tab';
+import { UnfollowTab } from './command/unfollow-tab';
 import { OpenTabFaviconUrlUpdated } from './event/open-tab-favicon-url-updated';
 import { OpenTabMoved } from './event/open-tab-moved';
 import { OpenTabReaderModeStateUpdated } from './event/open-tab-reader-mode-state-updated';
@@ -66,7 +67,7 @@ export class FollowedTabManager {
         return followState;
     }
 
-    async unfollowTab(command: FollowTab) {
+    async unfollowTab(command: UnfollowTab) {
         const tab = command.tab;
 
         if (!tab.isFollowed) {

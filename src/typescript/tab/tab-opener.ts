@@ -7,7 +7,6 @@ import { OpenedTabRetriever } from './opened-tab-retriever';
 
 export class TabOpener {
     constructor(
-        private openedTabManager: OpenedTabManager,
         private openedTabRetriever: OpenedTabRetriever,
         private followedTabManager: FollowedTabManager,
         private followedTabRetriever: FollowedTabRetriever,
@@ -15,21 +14,24 @@ export class TabOpener {
     }
 
     async openTab(command: OpenTab) {
-        const tabId = await this.openedTabManager.openTab(command.url, command.readerMode);
-        await this.waitForNewTabLoad(tabId);
+        const tab = await browser.tabs.create({
+            active: false,
+            url: command.url,
+        });
+        await this.waitForNewTabLoad(tab.id);
 
         if (command.followId) {
             const tabFollowState = await this.followedTabRetriever.getById(command.followId);
-            const tabOpenState = await this.openedTabRetriever.getById(tabId);
+            const tabOpenState = await this.openedTabRetriever.getById(tab.id);
             await this.followedTabManager.associateOpenedTab(tabFollowState, tabOpenState);
         }
 
-        if (command.readerMode) {
-            await browser.tabs.toggleReaderMode(tabId);
+        if (command.readerMode && browser.tabs.toggleReaderMode) {
+            await browser.tabs.toggleReaderMode(tab.id);
         }
     }
 
-    private async waitForNewTabLoad(tabId: number) {
+    async waitForNewTabLoad(tabId: number) {
         const maxRetries = 300;
 
         for (let i = 0; i < maxRetries; i++) {

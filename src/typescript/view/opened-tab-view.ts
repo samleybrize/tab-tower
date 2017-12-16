@@ -13,6 +13,7 @@ import { TabFollowed } from '../tab/event/tab-followed';
 import { TabOpened } from '../tab/event/tab-opened';
 import { TabUnfollowed } from '../tab/event/tab-unfollowed';
 import { Tab } from '../tab/tab';
+import { TabOpenState } from '../tab/tab-open-state';
 import { TabRetriever } from '../tab/tab-retriever';
 
 export class OpenedTabView {
@@ -38,12 +39,12 @@ export class OpenedTabView {
         const table = document.createElement('table');
         table.innerHTML = `
             <thead>
-                <th></th>
-                <th>Title</th>
-                <th>Incognito</th>
-                <th>Reader mode</th>
-                <th>Opened</th>
-                <th></th>
+                <tr>
+                    <th>Title</th>
+                    <th>Incognito</th>
+                    <th>Reader mode</th>
+                    <th></th>
+                </tr>
             </thead>
             <tbody></tbody>
         `;
@@ -51,10 +52,8 @@ export class OpenedTabView {
         return table;
     }
 
-    async refresh() {
+    async init() {
         const tabList = await this.tabRetriever.getOpenedTabs();
-
-        this.removeAllTabsFromListElement();
         this.noTabRow = this.createNoTabRow();
         this.tbodyElement.appendChild(this.noTabRow);
 
@@ -69,14 +68,8 @@ export class OpenedTabView {
                 continue;
             }
 
-            const row = this.createTabRow(tab);
+            const row = this.createTabRow(tab.openState, tab.isFollowed);
             this.tbodyElement.appendChild(row);
-        }
-    }
-
-    private removeAllTabsFromListElement() {
-        while (this.tbodyElement.firstChild) {
-            this.tbodyElement.removeChild(this.tbodyElement.firstChild);
         }
     }
 
@@ -93,171 +86,223 @@ export class OpenedTabView {
         return row;
     }
 
-    private createTabRow(tab: Tab): HTMLElement {
-        const titleCell = this.createTitleCell(tab);
-        const faviconCell = this.createFaviconCell(tab);
-        const incognitoCell = this.createIncognitoCell(tab);
-        const readerModeCell = this.createReaderModeCell(tab);
-        const openIndicatorCell = this.createOpenIndicatorCell(tab);
-        const followCell = this.createFollowCell(tab);
-
+    private createTabRow(tabOpenState: TabOpenState, isFollowed: boolean): HTMLElement {
         const row = document.createElement('tr');
-        row.setAttribute('data-index', '' + tab.openState.index);
-        row.setAttribute('data-id', '' + tab.openState.id);
-        row.appendChild(faviconCell);
+
+        const titleCell = this.createTitleCell(row);
+        const incognitoCell = this.createCell('incognitoIndicator');
+        const readerModeCell = this.createCell('readerModeIndicator');
+        const actionsCell = this.createCell('actions');
+        this.addFollowButton(actionsCell, tabOpenState);
+        this.addUnfollowButton(actionsCell, tabOpenState);
+
+        row.setAttribute('data-tab-id', '' + tabOpenState.id);
         row.appendChild(titleCell);
         row.appendChild(incognitoCell);
         row.appendChild(readerModeCell);
-        row.appendChild(openIndicatorCell);
-        row.appendChild(followCell);
+        row.appendChild(actionsCell);
+
+        this.updateTabFavicon(row, tabOpenState.faviconUrl);
+        this.updateTabIncognitoState(row, tabOpenState.isIncognito);
+        this.updateTabIndex(row, tabOpenState.index);
+        this.updateTabReaderModeState(row, tabOpenState.isInReaderMode);
+        this.updateTabTitle(row, tabOpenState.title);
+        this.updateTabUrl(row, tabOpenState.url);
+        this.updateFollowState(row, isFollowed);
 
         return row;
     }
 
-    private createTitleCell(tab: Tab): HTMLElement {
+    private createCell(className?: string): HTMLElement {
+        const cell = document.createElement('td');
+
+        if (className) {
+            cell.classList.add(className);
+        }
+
+        return cell;
+    }
+
+    private createTitleCell(row: HTMLElement): HTMLElement {
         const linkElement = document.createElement('a');
-        linkElement.setAttribute('data-url', tab.openState.url);
-        linkElement.setAttribute('title', tab.openState.url);
-        linkElement.textContent = tab.openState.title;
+        linkElement.innerHTML = `
+            <img />
+            <span></span>
+        `;
         linkElement.addEventListener('mouseup', (event) => {
-            this.commandBus.handle(new FocusTab(tab.openState.id));
+            const tabId = +row.getAttribute('data-tab-id');
+
+            if (tabId) {
+                this.commandBus.handle(new FocusTab(tabId));
+            }
+        });
+        linkElement.querySelector('img').addEventListener('error', (event) => {
+            (event.target as HTMLImageElement).src = this.defaultFaviconUrl;
         });
 
-        const titleCell = document.createElement('td');
-        titleCell.classList.add('title');
-        titleCell.appendChild(linkElement);
+        const cell = this.createCell('title');
+        cell.appendChild(linkElement);
 
-        return titleCell;
+        return cell;
     }
 
-    private createFaviconCell(tab: Tab): HTMLElement {
-        const faviconImage = document.createElement('img');
+    private addFollowButton(cell: HTMLElement, tabOpenState: TabOpenState) {
+        const followButton = document.createElement('a');
+        followButton.textContent = 'Follow';
+        followButton.classList.add('followButton');
+        followButton.addEventListener('mouseup', async (event) => {
+            const upToDateTab = await this.tabRetriever.getByOpenId(tabOpenState.id);
+            this.commandBus.handle(new FollowTab(upToDateTab));
+        });
 
-        if (null == tab.openState.faviconUrl) {
-            faviconImage.src = this.defaultFaviconUrl;
+        cell.appendChild(followButton);
+    }
+
+    private addUnfollowButton(cell: HTMLElement, tabOpenState: TabOpenState) {
+        const unfollowButton = document.createElement('a');
+        unfollowButton.textContent = 'Unfollow';
+        unfollowButton.classList.add('unfollowButton');
+        unfollowButton.addEventListener('mouseup', async (event) => {
+            const upToDateTab = await this.tabRetriever.getByOpenId(tabOpenState.id);
+            this.commandBus.handle(new UnfollowTab(upToDateTab));
+        });
+
+        cell.appendChild(unfollowButton);
+    }
+
+    private updateTabTitle(row: HTMLElement, title: string) {
+        row.querySelector('.title a span').textContent = title;
+    }
+
+    private updateTabFavicon(row: HTMLElement, faviconUrl: string) {
+        const faviconElement = row.querySelector('.title a img') as HTMLImageElement;
+
+        if (null == faviconUrl) {
+            faviconElement.src = this.defaultFaviconUrl;
         } else {
-            faviconImage.src = tab.openState.faviconUrl;
-            faviconImage.addEventListener('error', (event) => {
-                faviconImage.src = this.defaultFaviconUrl;
-            });
+            faviconElement.src = faviconUrl;
         }
-
-        const faviconCell = document.createElement('td');
-        faviconCell.classList.add('favicon');
-        faviconCell.appendChild(faviconImage);
-
-        return faviconCell;
     }
 
-    private createIncognitoCell(tab: Tab): HTMLElement {
-        const incognitoCell = document.createElement('td');
-        incognitoCell.classList.add('incognito');
-        incognitoCell.textContent = tab.openState.isIncognito ? 'Yes' : 'No';
-
-        return incognitoCell;
+    private updateTabUrl(row: HTMLElement, url: string) {
+        row.setAttribute('data-url', '' + url);
+        row.querySelector('.title a').setAttribute('data-url', '' + url);
     }
 
-    private createReaderModeCell(tab: Tab): HTMLElement {
-        const readerModeCell = document.createElement('td');
-        readerModeCell.classList.add('readerMode');
-        readerModeCell.textContent = tab.openState.isInReaderMode ? 'Yes' : 'No';
-
-        return readerModeCell;
+    private updateTabIndex(row: HTMLElement, index: number) {
+        row.setAttribute('data-index', '' + index);
     }
 
-    private createOpenIndicatorCell(tab: Tab): HTMLElement {
-        const openIndicatorCell = document.createElement('td');
-        openIndicatorCell.textContent = tab.isOpened ? 'Yes' : 'No';
-        openIndicatorCell.classList.add('opened');
-        openIndicatorCell.classList.add('openIndicator');
-
-        return openIndicatorCell;
+    private updateTabReaderModeState(row: HTMLElement, isInReaderMode: boolean) {
+        row.setAttribute('data-reader-mode', isInReaderMode ? '1' : '');
+        row.querySelector('.readerModeIndicator').textContent = isInReaderMode ? 'Yes' : 'No';
     }
 
-    private createFollowCell(tab: Tab): HTMLElement {
-        const followCell = document.createElement('td');
-        followCell.classList.add('follow');
+    private updateTabIncognitoState(row: HTMLElement, isIncognito: boolean) {
+        row.querySelector('.incognitoIndicator').textContent = isIncognito ? 'Yes' : 'No';
+    }
 
-        if (!tab.isFollowed) {
-            const followButton = document.createElement('a');
-            followButton.textContent = 'Follow';
-            followButton.setAttribute('data-tab-id', '' + tab.openState.id);
-            followButton.addEventListener('mouseup', (event) => {
-                this.commandBus.handle(new FollowTab(tab));
-            });
+    private updateFollowState(row: HTMLElement, isFollowed: boolean) {
+        const followButton = row.querySelector('.followButton');
+        const unfollowButton = row.querySelector('.unfollowButton');
 
-            followCell.appendChild(followButton);
+        if (isFollowed) {
+            followButton.classList.add('transparent');
+            unfollowButton.classList.remove('transparent');
         } else {
-            const followButton = document.createElement('a');
-            followButton.textContent = 'Unfollow';
-            followButton.setAttribute('data-tab-id', '' + tab.openState.id);
-            followButton.addEventListener('mouseup', (event) => {
-                this.commandBus.handle(new UnfollowTab(tab));
-            });
-
-            followCell.appendChild(followButton);
+            followButton.classList.remove('transparent');
+            unfollowButton.classList.add('transparent');
         }
-
-        return followCell;
     }
 
-    onTabOpen(event: TabOpened): Promise<void> {
-        this.refresh();
-
-        return;
+    async onTabOpen(event: TabOpened) {
+        // TODO insert row at the correct position
+        const row = this.createTabRow(event.tabOpenState, false);
+        this.tbodyElement.appendChild(row);
     }
 
-    onTabClose(event: TabClosed): Promise<void> {
-        this.refresh();
-
-        return;
+    private getTabRowByTabId(tabId: number): HTMLTableRowElement {
+        return this.tbodyElement.querySelector(`tr[data-tab-id="${tabId}"]`);
     }
 
-    onOpenTabMove(event: OpenTabMoved): Promise<void> {
-        this.refresh();
+    async onTabClose(event: TabClosed) {
+        const openedTabRow = this.getTabRowByTabId(event.tabId);
 
-        return;
+        if (openedTabRow) {
+            openedTabRow.remove();
+            this.showNoTabRowIfTableIsEmpty();
+        }
     }
 
-    onOpenTabFaviconUrlUpdate(event: OpenTabFaviconUrlUpdated): Promise<void> {
-        this.refresh();
-
-        return;
+    private showNoTabRowIfTableIsEmpty() {
+        if (this.tbodyElement.querySelectorAll('tr').length <= 1) {
+            this.noTabRow.classList.remove('transparent');
+        } else {
+            this.noTabRow.classList.add('transparent');
+        }
     }
 
-    onOpenTabTitleUpdate(event: OpenTabTitleUpdated): Promise<void> {
-        this.refresh();
+    async onOpenTabMove(event: OpenTabMoved) {
+        const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
-        return;
+        if (tabRow) {
+            this.updateTabIndex(tabRow, event.tabOpenState.index);
+        }
     }
 
-    onOpenTabUrlUpdate(event: OpenTabUrlUpdated): Promise<void> {
-        this.refresh();
+    async onOpenTabFaviconUrlUpdate(event: OpenTabFaviconUrlUpdated) {
+        const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
-        return;
+        if (tabRow) {
+            this.updateTabFavicon(tabRow, event.tabOpenState.faviconUrl);
+        }
     }
 
-    onOpenTabReaderModeStateUpdate(event: OpenTabReaderModeStateUpdated): Promise<void> {
-        this.refresh();
+    async onOpenTabTitleUpdate(event: OpenTabTitleUpdated) {
+        const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
-        return;
+        if (tabRow) {
+            this.updateTabTitle(tabRow, event.tabOpenState.title);
+        }
     }
 
-    onTabFollow(event: TabFollowed): Promise<void> {
-        this.refresh();
+    async onOpenTabUrlUpdate(event: OpenTabUrlUpdated) {
+        const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
-        return;
+        if (tabRow) {
+            this.updateTabUrl(tabRow, event.tabOpenState.url);
+        }
     }
 
-    onTabUnfollow(event: TabUnfollowed): Promise<void> {
-        this.refresh();
+    async onOpenTabReaderModeStateUpdate(event: OpenTabReaderModeStateUpdated) {
+        const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
-        return;
+        if (tabRow) {
+            this.updateTabReaderModeState(tabRow, event.tabOpenState.isInReaderMode);
+        }
     }
 
-    onAssociateOpenedTabToFollowedTab(event: OpenedTabAssociatedToFollowedTab): Promise<void> {
-        this.refresh();
+    async onTabFollow(event: TabFollowed) {
+        const tabRow = this.getTabRowByTabId(event.tab.openState.id);
 
-        return;
+        if (tabRow) {
+            this.updateFollowState(tabRow, true);
+        }
+    }
+
+    async onTabUnfollow(event: TabUnfollowed) {
+        const tabRow = this.getTabRowByTabId(event.tab.openState.id);
+
+        if (tabRow) {
+            this.updateFollowState(tabRow, false);
+        }
+    }
+
+    async onAssociateOpenedTabToFollowedTab(event: OpenedTabAssociatedToFollowedTab) {
+        const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
+
+        if (tabRow) {
+            this.updateFollowState(tabRow, true);
+        }
     }
 }

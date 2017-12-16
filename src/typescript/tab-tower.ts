@@ -21,6 +21,7 @@ import { NativeTabEventHandler } from './tab/native-tab-event-handler';
 import { OpenedTabModifier } from './tab/opened-tab-modifier';
 import { OpenedTabRetriever } from './tab/opened-tab-retriever';
 import { InMemoryTabPersister } from './tab/persister/in-memory-tab-persister';
+import { TabCloser } from './tab/tab-closer';
 import { TabOpener } from './tab/tab-opener';
 import { TabRetriever } from './tab/tab-retriever';
 import { FollowedTabView } from './view/followed-tab-view';
@@ -39,12 +40,13 @@ function main() {
     const openedTabManager = new OpenedTabModifier();
     const openedTabRetriever = new OpenedTabRetriever([currentUrl]);
     const tabOpener = new TabOpener(openedTabRetriever, followedTabManager, followedTabRetriever);
+    const tabCloser = new TabCloser();
     const tabRetriever = new TabRetriever(followedTabRetriever, openedTabRetriever);
 
     const followedTabView = new FollowedTabView(tabRetriever, commandBus, document.querySelector('#followedTabList'), defaultFaviconUrl);
     const openedTabView = new OpenedTabView(tabRetriever, commandBus, document.querySelector('#openedTabList'), defaultFaviconUrl);
 
-    const nativeEventHandler = new NativeTabEventHandler(eventBus, openedTabRetriever, tabOpener);
+    const nativeEventHandler = new NativeTabEventHandler(eventBus, openedTabRetriever, tabCloser, tabOpener);
     nativeEventHandler.init();
 
     commandBus.register(FocusTab, openedTabManager.focusTab, followedTabManager);

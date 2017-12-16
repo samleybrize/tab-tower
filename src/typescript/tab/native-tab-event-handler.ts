@@ -8,6 +8,7 @@ import { TabClosed } from './event/tab-closed';
 import { TabClosing } from './event/tab-closing';
 import { TabOpened } from './event/tab-opened';
 import { OpenedTabRetriever } from './opened-tab-retriever';
+import { TabCloser } from './tab-closer';
 import { TabOpener } from './tab-opener';
 
 export class NativeTabEventHandler {
@@ -16,6 +17,7 @@ export class NativeTabEventHandler {
     constructor(
         private eventBus: EventBus,
         private openedTabRetriever: OpenedTabRetriever,
+        private tabCloser: TabCloser,
         private tabOpener: TabOpener,
     ) {
     }
@@ -37,22 +39,33 @@ export class NativeTabEventHandler {
         const tabOpenState = await this.openedTabRetriever.getById(nativeTab.id);
 
         this.eventBus.publish(new TabOpened(tabOpenState));
+        this.notifyTabMoveFromIndex(nativeTab.index + 1);
     }
 
-    async onNativeTabClose(tabId: number, removeInfo: browser.tabs.RemoveInfo) {
-        await this.eventBus.publish(new TabClosing(tabId));
-        this.eventBus.publish(new TabClosed(tabId));
-    }
-
-    async onNativeTabMove(tabId: number, moveInfo: browser.tabs.MoveInfo) {
+    private async notifyTabMoveFromIndex(fromIndex: number) {
         const tabOpenStateList = await this.openedTabRetriever.getAll();
-        const minIndex = Math.min(moveInfo.fromIndex, moveInfo.toIndex);
 
         for (const tabOpenState of tabOpenStateList) {
-            if (tabOpenState.index >= minIndex) {
+            if (tabOpenState.index >= fromIndex) {
                 this.eventBus.publish(new OpenTabMoved(tabOpenState));
             }
         }
+    }
+
+    async onNativeTabClose(tabId: number, removeInfo: browser.tabs.RemoveInfo) {
+        const closedTab = await this.openedTabRetriever.getById(tabId);
+
+        await this.eventBus.publish(new TabClosing(tabId));
+        await this.tabCloser.waitForTabClose(tabId);
+        await this.eventBus.publish(new TabClosed(tabId));
+
+        const closedTabIndex = closedTab ? closedTab.index : 0;
+        this.notifyTabMoveFromIndex(closedTabIndex);
+    }
+
+    async onNativeTabMove(tabId: number, moveInfo: browser.tabs.MoveInfo) {
+        const minIndex = Math.min(moveInfo.fromIndex, moveInfo.toIndex);
+        this.notifyTabMoveFromIndex(minIndex);
     }
 
     async onNativeTabUpdate(tabId: number, updateInfo: browser.tabs.UpdateInfo) {

@@ -215,9 +215,31 @@ export class OpenedTabView {
     }
 
     async onTabOpen(event: TabOpened) {
-        // TODO insert row at the correct position
-        const row = this.createTabRow(event.tabOpenState, false);
-        this.tbodyElement.appendChild(row);
+        const rowToInsert = this.createTabRow(event.tabOpenState, false);
+
+        if (0 == event.tabOpenState.index) {
+            this.noTabRow.insertAdjacentElement('afterend', rowToInsert);
+
+            return;
+        }
+
+        this.insertRowAtIndex(rowToInsert, event.tabOpenState.index);
+    }
+
+    private insertRowAtIndex(rowToInsert: HTMLElement, insertAtIndex: number) {
+        const rowList = Array.from(this.tbodyElement.querySelectorAll('tr')).reverse();
+
+        for (const existingRow of rowList) {
+            const rowIndex = +existingRow.getAttribute('data-index');
+
+            if (null !== rowIndex && rowIndex < insertAtIndex) {
+                existingRow.insertAdjacentElement('afterend', rowToInsert);
+
+                return;
+            }
+        }
+
+        this.tbodyElement.appendChild(rowToInsert);
     }
 
     private getTabRowByTabId(tabId: number): HTMLTableRowElement {
@@ -245,6 +267,7 @@ export class OpenedTabView {
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
+            this.insertRowAtIndex(tabRow, event.tabOpenState.index);
             this.updateTabIndex(tabRow, event.tabOpenState.index);
         }
     }

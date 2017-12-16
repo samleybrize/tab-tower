@@ -1,10 +1,6 @@
-import { TabClosing } from './event/tab-closing';
 import { TabOpenState } from './tab-open-state';
 
 export class OpenedTabRetriever {
-    private ignoredTabIdList: number[] = [];
-    private ignoredTabIdListPurgeTimeoutReference: number = null;
-
     constructor(private ignoredUrls: string[]) {
         this.ignoredUrls.push('about:blank');
     }
@@ -27,7 +23,7 @@ export class OpenedTabRetriever {
     }
 
     private createTab(rawTab: browser.tabs.Tab): TabOpenState {
-        if (this.isUrlIgnored(rawTab.url) || this.isTabIdIgnored(rawTab.id) || null === rawTab.id || null === rawTab.index) {
+        if (this.isUrlIgnored(rawTab.url) || null === rawTab.id || null === rawTab.index) {
             return;
         }
 
@@ -48,10 +44,6 @@ export class OpenedTabRetriever {
         return this.ignoredUrls.indexOf(url) >= 0;
     }
 
-    private isTabIdIgnored(tabId: number) {
-        return this.ignoredTabIdList.indexOf(tabId) >= 0;
-    }
-
     private getUrlAndReaderModeState(rawTab: browser.tabs.Tab) {
         let url = rawTab.url;
         let isInReaderMode = false;
@@ -66,10 +58,6 @@ export class OpenedTabRetriever {
     }
 
     async getById(id: number): Promise<TabOpenState> {
-        if (this.isTabIdIgnored(id)) {
-            return null;
-        }
-
         let rawTab: browser.tabs.Tab;
 
         try {
@@ -92,22 +80,5 @@ export class OpenedTabRetriever {
         }
 
         return null;
-    }
-
-    onTabClosing(event: TabClosing): Promise<void> {
-        this.ignoredTabIdList.push(event.tabId);
-
-        if (this.ignoredTabIdListPurgeTimeoutReference) {
-            clearTimeout(this.ignoredTabIdListPurgeTimeoutReference);
-            this.ignoredTabIdListPurgeTimeoutReference = null;
-        }
-
-        this.ignoredTabIdListPurgeTimeoutReference = setTimeout(this.purgeIgnoredTabIdList.bind(this), 60000);
-
-        return;
-    }
-
-    private purgeIgnoredTabIdList() {
-        this.ignoredTabIdList = [];
     }
 }

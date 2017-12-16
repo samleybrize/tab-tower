@@ -5,7 +5,6 @@ import { OpenTabReaderModeStateUpdated } from './event/open-tab-reader-mode-stat
 import { OpenTabTitleUpdated } from './event/open-tab-title-updated';
 import { OpenTabUrlUpdated } from './event/open-tab-url-updated';
 import { TabClosed } from './event/tab-closed';
-import { TabClosing } from './event/tab-closing';
 import { TabOpened } from './event/tab-opened';
 import { OpenedTabRetriever } from './opened-tab-retriever';
 import { TabCloser } from './tab-closer';
@@ -55,7 +54,6 @@ export class NativeTabEventHandler {
     async onNativeTabClose(tabId: number, removeInfo: browser.tabs.RemoveInfo) {
         const closedTab = await this.openedTabRetriever.getById(tabId);
 
-        await this.eventBus.publish(new TabClosing(tabId));
         await this.tabCloser.waitForTabClose(tabId);
         await this.eventBus.publish(new TabClosed(tabId));
 

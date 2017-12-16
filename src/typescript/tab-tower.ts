@@ -11,7 +11,6 @@ import { OpenTabTitleUpdated } from './tab/event/open-tab-title-updated';
 import { OpenTabUrlUpdated } from './tab/event/open-tab-url-updated';
 import { OpenedTabAssociatedToFollowedTab } from './tab/event/opened-tab-associated-to-followed-tab';
 import { TabClosed } from './tab/event/tab-closed';
-import { TabClosing } from './tab/event/tab-closing';
 import { TabFollowed } from './tab/event/tab-followed';
 import { TabOpened } from './tab/event/tab-opened';
 import { TabUnfollowed } from './tab/event/tab-unfollowed';
@@ -57,7 +56,6 @@ function main() {
     eventBus.subscribe(TabClosed, followedTabView.onTabClose, followedTabView);
     eventBus.subscribe(TabClosed, followedTabManager.onTabClose, followedTabManager);
     eventBus.subscribe(TabClosed, openedTabView.onTabClose, openedTabView);
-    eventBus.subscribe(TabClosing, openedTabRetriever.onTabClosing, openedTabRetriever);
     eventBus.subscribe(TabOpened, openedTabView.onTabOpen, openedTabView);
     eventBus.subscribe(TabFollowed, followedTabView.onTabFollow, followedTabView);
     eventBus.subscribe(TabFollowed, openedTabView.onTabFollow, openedTabView);

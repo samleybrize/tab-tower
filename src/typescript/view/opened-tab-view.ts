@@ -364,7 +364,7 @@ export class OpenedTabView {
     }
 
     async onTabUnfollow(event: TabUnfollowed) {
-        const tabRow = this.getTabRowByTabId(event.tab.openState.id);
+        const tabRow = this.getTabRowByTabId(event.openState.id);
 
         if (tabRow) {
             this.updateFollowState(tabRow, false);

@@ -17,18 +17,6 @@ export class WebStorageTabPersister implements TabPersister {
         return followStateList;
     }
 
-    async getByOpenIndex(index: number): Promise<TabFollowState> {
-        const followStateList = await this.getAll();
-
-        for (const followState of followStateList) {
-            if (followState.openIndex === index) {
-                return followState;
-            }
-        }
-
-        return null;
-    }
-
     async getByFollowId(followId: string): Promise<TabFollowState> {
         const id = this.getStorageObjectId(followId);
         const storageObject = await browser.storage.local.get(id);

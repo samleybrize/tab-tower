@@ -876,6 +876,7 @@ declare namespace browser.storage {
         undefined |
         RegExp |
         ArrayBuffer |
+        object |
         Uint8ClampedArray |
         Uint8Array |
         Uint16Array |
@@ -904,7 +905,7 @@ declare namespace browser.storage {
     interface StorageSet extends Set<StorageValue> {}
 
     interface Get {
-        (keys: string|string[]|null): Promise<StorageObject>;
+        (keys?: string|string[]|null): Promise<StorageObject>;
         /* <T extends StorageObject>(keys: T): Promise<{[K in keyof T]: T[K]}>; */
         <T extends StorageObject>(keys: T): Promise<T>;
     }

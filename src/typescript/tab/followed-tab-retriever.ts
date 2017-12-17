@@ -9,8 +9,17 @@ export class FollowedTabRetriever {
         return this.tabPersister.getAll();
     }
 
-    async getByOpenIndex(index: number): Promise<TabFollowState> {
-        return this.tabPersister.getByOpenIndex(index);
+    async getWithOpenIndex(): Promise<Map<number, TabFollowState>> {
+        const followStateList = await this.getAll();
+        const map = new Map<number, TabFollowState>();
+
+        for (const followState of followStateList) {
+            if (null !== followState.openIndex) {
+                map.set(followState.openIndex, followState);
+            }
+        }
+
+        return map;
     }
 
     async getById(id: string): Promise<TabFollowState> {

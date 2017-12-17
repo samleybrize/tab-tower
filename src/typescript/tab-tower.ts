@@ -20,6 +20,8 @@ import { NativeTabEventHandler } from './tab/native-tab-event-handler';
 import { OpenedTabModifier } from './tab/opened-tab-modifier';
 import { OpenedTabRetriever } from './tab/opened-tab-retriever';
 import { InMemoryTabPersister } from './tab/persister/in-memory-tab-persister';
+import { WebStorageTabPersister } from './tab/persister/web-storage-tab-persister';
+import { TabAssociationMaintainer } from './tab/tab-association-maintainer';
 import { TabCloser } from './tab/tab-closer';
 import { TabOpener } from './tab/tab-opener';
 import { TabRetriever } from './tab/tab-retriever';
@@ -29,18 +31,20 @@ import { OpenedTabView } from './view/opened-tab-view';
 const defaultFaviconUrl = '/ui/images/default-favicon.svg';
 const currentUrl = location.href;
 
-function main() {
+async function main() {
     const commandBus = new CommandBus();
     const eventBus = new EventBus();
 
-    const inMemoryTabPersister = new InMemoryTabPersister();
-    const followedTabManager = new FollowedTabModifier(inMemoryTabPersister, eventBus);
-    const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
+    const webStorageTabPersister = new WebStorageTabPersister();
+    const inMemoryTabPersister = new InMemoryTabPersister(); // TODO decorator
+    const tabAssociationMaintainer = new TabAssociationMaintainer();
+    const followedTabModifier = new FollowedTabModifier(webStorageTabPersister, tabAssociationMaintainer, eventBus);
+    const followedTabRetriever = new FollowedTabRetriever(webStorageTabPersister);
     const openedTabManager = new OpenedTabModifier();
     const openedTabRetriever = new OpenedTabRetriever([currentUrl]);
-    const tabOpener = new TabOpener(openedTabRetriever, followedTabManager, followedTabRetriever);
+    const tabOpener = new TabOpener(openedTabRetriever, followedTabRetriever, tabAssociationMaintainer, eventBus);
     const tabCloser = new TabCloser();
-    const tabRetriever = new TabRetriever(followedTabRetriever, openedTabRetriever);
+    const tabRetriever = new TabRetriever(followedTabRetriever, openedTabRetriever, tabAssociationMaintainer);
 
     const followedTabView = new FollowedTabView(tabRetriever, commandBus, document.querySelector('#followedTabList'), defaultFaviconUrl);
     const openedTabView = new OpenedTabView(tabRetriever, commandBus, document.querySelector('#openedTabList'), defaultFaviconUrl);
@@ -48,36 +52,40 @@ function main() {
     const nativeEventHandler = new NativeTabEventHandler(eventBus, openedTabRetriever, tabCloser, tabOpener);
     nativeEventHandler.init();
 
-    commandBus.register(FocusTab, openedTabManager.focusTab, followedTabManager);
-    commandBus.register(FollowTab, followedTabManager.followTab, followedTabManager);
+    commandBus.register(FocusTab, openedTabManager.focusTab, followedTabModifier);
+    commandBus.register(FollowTab, followedTabModifier.followTab, followedTabModifier);
     commandBus.register(OpenTab, tabOpener.openTab, tabOpener);
-    commandBus.register(UnfollowTab, followedTabManager.unfollowTab, followedTabManager);
+    commandBus.register(UnfollowTab, followedTabModifier.unfollowTab, followedTabModifier);
 
     eventBus.subscribe(TabClosed, followedTabView.onTabClose, followedTabView);
-    eventBus.subscribe(TabClosed, followedTabManager.onTabClose, followedTabManager);
+    eventBus.subscribe(TabClosed, followedTabModifier.onTabClose, followedTabModifier);
     eventBus.subscribe(TabClosed, openedTabView.onTabClose, openedTabView);
+    eventBus.subscribe(TabClosed, tabAssociationMaintainer.onTabClose, tabAssociationMaintainer);
     eventBus.subscribe(TabOpened, openedTabView.onTabOpen, openedTabView);
     eventBus.subscribe(TabFollowed, followedTabView.onTabFollow, followedTabView);
     eventBus.subscribe(TabFollowed, openedTabView.onTabFollow, openedTabView);
     eventBus.subscribe(OpenedTabAssociatedToFollowedTab, followedTabView.onAssociateOpenedTabToFollowedTab, followedTabView);
+    eventBus.subscribe(OpenedTabAssociatedToFollowedTab, followedTabModifier.onAssociateOpenedTabToFollowedTab, followedTabModifier);
     eventBus.subscribe(OpenedTabAssociatedToFollowedTab, openedTabView.onAssociateOpenedTabToFollowedTab, openedTabView);
-    eventBus.subscribe(OpenTabMoved, followedTabManager.onOpenTabMove, followedTabManager);
+    eventBus.subscribe(OpenTabMoved, followedTabModifier.onOpenTabMove, followedTabModifier);
     eventBus.subscribe(OpenTabMoved, openedTabView.onOpenTabMove, openedTabView);
-    eventBus.subscribe(OpenTabFaviconUrlUpdated, followedTabManager.onOpenTabFaviconUrlUpdate, followedTabManager);
+    eventBus.subscribe(OpenTabFaviconUrlUpdated, followedTabModifier.onOpenTabFaviconUrlUpdate, followedTabModifier);
     eventBus.subscribe(OpenTabFaviconUrlUpdated, followedTabView.onOpenTabFaviconUrlUpdate, followedTabView);
     eventBus.subscribe(OpenTabFaviconUrlUpdated, openedTabView.onOpenTabFaviconUrlUpdate, openedTabView);
-    eventBus.subscribe(OpenTabReaderModeStateUpdated, followedTabManager.onOpenTabReaderModeStateUpdate, followedTabManager);
+    eventBus.subscribe(OpenTabReaderModeStateUpdated, followedTabModifier.onOpenTabReaderModeStateUpdate, followedTabModifier);
     eventBus.subscribe(OpenTabReaderModeStateUpdated, followedTabView.onOpenTabReaderModeStateUpdate, followedTabView);
     eventBus.subscribe(OpenTabReaderModeStateUpdated, openedTabView.onOpenTabReaderModeStateUpdate, openedTabView);
-    eventBus.subscribe(OpenTabTitleUpdated, followedTabManager.onOpenTabTitleUpdate, followedTabManager);
+    eventBus.subscribe(OpenTabTitleUpdated, followedTabModifier.onOpenTabTitleUpdate, followedTabModifier);
     eventBus.subscribe(OpenTabTitleUpdated, followedTabView.onOpenTabTitleUpdate, followedTabView);
     eventBus.subscribe(OpenTabTitleUpdated, openedTabView.onOpenTabTitleUpdate, openedTabView);
-    eventBus.subscribe(OpenTabUrlUpdated, followedTabManager.onOpenTabUrlUpdate, followedTabManager);
+    eventBus.subscribe(OpenTabUrlUpdated, followedTabModifier.onOpenTabUrlUpdate, followedTabModifier);
     eventBus.subscribe(OpenTabUrlUpdated, followedTabView.onOpenTabUrlUpdate, followedTabView);
     eventBus.subscribe(OpenTabUrlUpdated, openedTabView.onOpenTabUrlUpdate, openedTabView);
     eventBus.subscribe(TabUnfollowed, followedTabView.onTabUnfollow, followedTabView);
     eventBus.subscribe(TabUnfollowed, openedTabView.onTabUnfollow, openedTabView);
+    eventBus.subscribe(TabUnfollowed, tabAssociationMaintainer.onTabUnfollow, tabAssociationMaintainer);
 
+    await tabRetriever.associateOpenedTabsWithFollowedTabs();
     followedTabView.init();
     openedTabView.init();
 }

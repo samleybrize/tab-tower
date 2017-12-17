@@ -282,7 +282,7 @@ export class FollowedTabView {
     }
 
     async onTabUnfollow(event: TabUnfollowed) {
-        const followedTabRow = this.tbodyElement.querySelector(`tr[data-follow-id="${event.oldTabFollowState.id}"]`);
+        const followedTabRow = this.tbodyElement.querySelector(`tr[data-follow-id="${event.oldFollowState.id}"]`);
 
         if (followedTabRow) {
             followedTabRow.remove();

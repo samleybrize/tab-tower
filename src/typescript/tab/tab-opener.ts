@@ -1,14 +1,17 @@
+import { EventBus } from '../bus/event-bus';
 import { sleep } from '../utils/sleep';
 import { OpenTab } from './command/open-tab';
-import { FollowedTabModifier } from './followed-tab-modifier';
+import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';
 import { FollowedTabRetriever } from './followed-tab-retriever';
 import { OpenedTabRetriever } from './opened-tab-retriever';
+import { TabAssociationMaintainer } from './tab-association-maintainer';
 
 export class TabOpener {
     constructor(
         private openedTabRetriever: OpenedTabRetriever,
-        private followedTabManager: FollowedTabModifier,
         private followedTabRetriever: FollowedTabRetriever,
+        private tabAssociationMaintainer: TabAssociationMaintainer,
+        private eventBus: EventBus,
     ) {
     }
 
@@ -22,7 +25,9 @@ export class TabOpener {
         if (command.followId) {
             const tabFollowState = await this.followedTabRetriever.getById(command.followId);
             const tabOpenState = await this.openedTabRetriever.getById(tab.id);
-            await this.followedTabManager.associateOpenedTab(tabFollowState, tabOpenState);
+
+            this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(tab.id, command.followId);
+            this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(tabOpenState, tabFollowState));
         }
 
         if (command.readerMode && browser.tabs.toggleReaderMode) {

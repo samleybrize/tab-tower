@@ -15,27 +15,14 @@ import { TabClosed } from './event/tab-closed';
 import { TabFollowed } from './event/tab-followed';
 import { TabUnfollowed } from './event/tab-unfollowed';
 import { TabPersister } from './persister/tab-persister';
+import { TabAssociationMaintainer } from './tab-association-maintainer';
 
 export class FollowedTabModifier {
-    private openTabIdFollowIdAssociation = new Map<number, string>();
-
-    constructor(private tabPersister: TabPersister, private eventBus: EventBus) {
-    }
-
-    async associateOpenedTab(tabFollowState: TabFollowState, tabOpenState: TabOpenState) {
-        this.associateOpenedTabWithoutPersistingNorEvent(tabFollowState, tabOpenState);
-        await this.tabPersister.setOpenIndex(tabFollowState.id, tabFollowState.openIndex);
-
-        this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(tabOpenState, tabFollowState));
-    }
-
-    private associateOpenedTabWithoutPersistingNorEvent(tabFollowState: TabFollowState, tabOpenState: TabOpenState) {
-        if (null == tabFollowState || null == tabOpenState) {
-            return;
-        }
-
-        this.openTabIdFollowIdAssociation.set(tabOpenState.id, tabFollowState.id);
-        tabFollowState.openIndex = tabOpenState.index;
+    constructor(
+        private tabPersister: TabPersister,
+        private tabAssociationMaintainer: TabAssociationMaintainer,
+        private eventBus: EventBus,
+    ) {
     }
 
     async followTab(command: FollowTab) {
@@ -61,7 +48,7 @@ export class FollowedTabModifier {
         followState.faviconUrl = openState.faviconUrl;
         followState.openIndex = openState.index;
 
-        this.associateOpenedTabWithoutPersistingNorEvent(followState, openState);
+        this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(openState.id, followState.id);
 
         return followState;
     }
@@ -76,64 +63,58 @@ export class FollowedTabModifier {
         await this.tabPersister.remove(tab.followState.id);
         const oldFollowState = tab.followState;
         tab.followState = null;
-        this.eventBus.publish(new TabUnfollowed(tab, oldFollowState));
+        this.eventBus.publish(new TabUnfollowed(tab.openState, oldFollowState));
+    }
+
+    async onAssociateOpenedTabToFollowedTab(event: OpenedTabAssociatedToFollowedTab) {
+        await this.tabPersister.setOpenIndex(event.tabFollowState.id, event.tabOpenState.index);
     }
 
     async onTabClose(event: TabClosed): Promise<void> {
-        const followId = this.openTabIdFollowIdAssociation.get(event.tabId);
-        this.openTabIdFollowIdAssociation.delete(event.tabId);
+        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabId);
 
-        if (null == followId) {
-            return;
+        if (followId) {
+            await this.tabPersister.setOpenIndex(followId, null);
         }
-
-        const tabFollowState = await this.tabPersister.getByFollowId(followId);
-
-        if (null == tabFollowState) {
-            return;
-        }
-
-        tabFollowState.openIndex = null;
-        await this.tabPersister.setOpenIndex(tabFollowState.id, null);
     }
 
     async onOpenTabMove(event: OpenTabMoved): Promise<void> {
-        const tabFollowState = await this.tabPersister.getByOpenIndex(event.tabOpenState.index);
+        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
 
-        if (tabFollowState) {
-            await this.tabPersister.setOpenIndex(tabFollowState.id, event.tabOpenState.index);
+        if (followId) {
+            await this.tabPersister.setOpenIndex(followId, event.tabOpenState.index);
         }
     }
 
     async onOpenTabFaviconUrlUpdate(event: OpenTabFaviconUrlUpdated): Promise<void> {
-        const tabFollowState = await this.tabPersister.getByOpenIndex(event.tabOpenState.index);
+        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
 
-        if (tabFollowState) {
-            await this.tabPersister.setFaviconUrl(tabFollowState.id, event.tabOpenState.faviconUrl);
+        if (followId) {
+            await this.tabPersister.setFaviconUrl(followId, event.tabOpenState.faviconUrl);
         }
     }
 
     async onOpenTabTitleUpdate(event: OpenTabTitleUpdated): Promise<void> {
-        const tabFollowState = await this.tabPersister.getByOpenIndex(event.tabOpenState.index);
+        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
 
-        if (tabFollowState) {
-            await this.tabPersister.setTitle(tabFollowState.id, event.tabOpenState.title);
+        if (followId) {
+            await this.tabPersister.setTitle(followId, event.tabOpenState.title);
         }
     }
 
     async onOpenTabUrlUpdate(event: OpenTabUrlUpdated): Promise<void> {
-        const tabFollowState = await this.tabPersister.getByOpenIndex(event.tabOpenState.index);
+        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
 
-        if (tabFollowState) {
-            await this.tabPersister.setUrl(tabFollowState.id, event.tabOpenState.url);
+        if (followId) {
+            await this.tabPersister.setUrl(followId, event.tabOpenState.url);
         }
     }
 
     async onOpenTabReaderModeStateUpdate(event: OpenTabReaderModeStateUpdated): Promise<void> {
-        const tabFollowState = await this.tabPersister.getByOpenIndex(event.tabOpenState.index);
+        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
 
-        if (tabFollowState) {
-            await this.tabPersister.setReaderMode(tabFollowState.id, event.tabOpenState.isInReaderMode);
+        if (followId) {
+            await this.tabPersister.setReaderMode(followId, event.tabOpenState.isInReaderMode);
         }
     }
 }

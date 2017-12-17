@@ -36,7 +36,7 @@ async function main() {
     const eventBus = new EventBus();
 
     const webStorageTabPersister = new WebStorageTabPersister();
-    const inMemoryTabPersister = new InMemoryTabPersister(); // TODO decorator
+    const inMemoryTabPersister = new InMemoryTabPersister(webStorageTabPersister);
     const tabAssociationMaintainer = new TabAssociationMaintainer();
     const followedTabModifier = new FollowedTabModifier(webStorageTabPersister, tabAssociationMaintainer, eventBus);
     const followedTabRetriever = new FollowedTabRetriever(webStorageTabPersister);

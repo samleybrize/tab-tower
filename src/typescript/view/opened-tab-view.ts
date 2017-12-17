@@ -108,7 +108,7 @@ export class OpenedTabView {
         this.updateTabIndex(row, tabOpenState.index);
         this.updateTabReaderModeState(row, tabOpenState.isInReaderMode);
         this.updateTabTitle(row, tabOpenState.title);
-        this.updateTabUrl(row, tabOpenState.url);
+        this.updateTabUrl(row, tabOpenState.url, tabOpenState.isPrivileged);
         this.updateFollowState(row, isFollowed);
 
         return row;
@@ -162,14 +162,14 @@ export class OpenedTabView {
         followButton.classList.add('waves-effect');
         followButton.classList.add('waves-light');
 
-        if (!tabOpenState.isPrivileged) {
-            followButton.addEventListener('click', async (event) => {
-                const upToDateTab = await this.tabRetriever.getByOpenId(tabOpenState.id);
-                this.commandBus.handle(new FollowTab(upToDateTab));
-            });
-        } else {
-            followButton.classList.add('disabled');
-        }
+        followButton.addEventListener('click', async (event) => {
+            if (followButton.classList.contains('disabled')) {
+                return;
+            }
+
+            const upToDateTab = await this.tabRetriever.getByOpenId(tabOpenState.id);
+            this.commandBus.handle(new FollowTab(upToDateTab));
+        });
 
         cell.appendChild(followButton);
     }
@@ -182,14 +182,14 @@ export class OpenedTabView {
         unfollowButton.classList.add('waves-effect');
         unfollowButton.classList.add('waves-light');
 
-        if (!tabOpenState.isPrivileged) {
-            unfollowButton.addEventListener('click', async (event) => {
-                const upToDateTab = await this.tabRetriever.getByOpenId(tabOpenState.id);
-                this.commandBus.handle(new UnfollowTab(upToDateTab));
-            });
-        } else {
-            unfollowButton.classList.add('disabled');
-        }
+        unfollowButton.addEventListener('click', async (event) => {
+            if (unfollowButton.classList.contains('disabled')) {
+                return;
+            }
+
+            const upToDateTab = await this.tabRetriever.getByOpenId(tabOpenState.id);
+            this.commandBus.handle(new UnfollowTab(upToDateTab));
+        });
 
         cell.appendChild(unfollowButton);
     }
@@ -208,9 +208,20 @@ export class OpenedTabView {
         }
     }
 
-    private updateTabUrl(row: HTMLElement, url: string) {
+    private updateTabUrl(row: HTMLElement, url: string, isPrivileged: boolean) {
         row.setAttribute('data-url', '' + url);
         row.querySelector('.title a').setAttribute('data-url', '' + url);
+
+        const followButton = row.querySelector('.followButton');
+        const unfollowButton = row.querySelector('.unfollowButton');
+
+        if (isPrivileged) {
+            followButton.classList.add('disabled');
+            unfollowButton.classList.add('disabled');
+        } else {
+            followButton.classList.remove('disabled');
+            unfollowButton.classList.remove('disabled');
+        }
     }
 
     private updateTabIndex(row: HTMLElement, index: number) {
@@ -332,7 +343,7 @@ export class OpenedTabView {
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
-            this.updateTabUrl(tabRow, event.tabOpenState.url);
+            this.updateTabUrl(tabRow, event.tabOpenState.url, event.tabOpenState.isPrivileged);
         }
     }
 

@@ -1,9 +1,10 @@
 $roboto-font-path: '/ui/fonts/roboto/';
 
 @import 'node_modules/materialize-css/sass/materialize';
+@import 'material-icons';
 
 body {
-    // font-size: 1em;
+    padding-bottom: 20px;
     background: #fafafa;
 }
 
@@ -30,6 +31,7 @@ table {
 
         img {
             height: 16px;
+            margin-right: 8px;
             vertical-align: middle;
         }
     }
@@ -57,5 +59,9 @@ table {
         &.transparent {
             display: none;
         }
+    }
+
+    .yes {
+        color: green;
     }
 }

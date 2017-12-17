@@ -90,9 +90,9 @@ export class FollowedTabView {
         const row = document.createElement('tr');
 
         const titleCell = this.createTitleCell(tab, row);
-        const incognitoCell = this.createCell('incognitoIndicator');
-        const readerModeCell = this.createCell('readerModeIndicator');
-        const openIndicatorCell = this.createCell('openIndicator');
+        const incognitoCell = this.createMaterialIconCell('incognitoIndicator');
+        const readerModeCell = this.createMaterialIconCell('readerModeIndicator');
+        const openIndicatorCell = this.createMaterialIconCell('openIndicator');
         const actionsCell = this.createCell('actions');
         this.addUnfollowButton(actionsCell, tab);
 
@@ -120,6 +120,13 @@ export class FollowedTabView {
         if (className) {
             cell.classList.add(className);
         }
+
+        return cell;
+    }
+
+    private createMaterialIconCell(className?: string) {
+        const cell = this.createCell(className);
+        cell.innerHTML = '<i class="material-icons"></i>';
 
         return cell;
     }
@@ -188,16 +195,39 @@ export class FollowedTabView {
 
     private updateTabOpenState(row: HTMLElement, isOpened: boolean, tabId: number) {
         row.setAttribute('data-open-tab-id', '' + tabId);
-        row.querySelector('.openIndicator').textContent = isOpened ? 'Yes' : 'No';
+
+        const iconElement = row.querySelector('.openIndicator i');
+        iconElement.textContent = isOpened ? 'check_circle' : 'highlight_off';
+
+        if (isOpened) {
+            iconElement.classList.add('yes');
+        } else {
+            iconElement.classList.remove('yes');
+        }
     }
 
     private updateTabReaderModeState(row: HTMLElement, isInReaderMode: boolean) {
         row.setAttribute('data-reader-mode', isInReaderMode ? '1' : '');
-        row.querySelector('.readerModeIndicator').textContent = isInReaderMode ? 'Yes' : 'No';
+
+        const iconElement = row.querySelector('.readerModeIndicator i');
+        iconElement.textContent = isInReaderMode ? 'check_circle' : 'highlight_off';
+
+        if (isInReaderMode) {
+            iconElement.classList.add('yes');
+        } else {
+            iconElement.classList.remove('yes');
+        }
     }
 
     private updateTabIncognitoState(row: HTMLElement, isIncognito: boolean) {
-        row.querySelector('.incognitoIndicator').textContent = isIncognito ? 'Yes' : 'No';
+        const iconElement = row.querySelector('.incognitoIndicator i');
+        iconElement.textContent = isIncognito ? 'check_circle' : 'highlight_off';
+
+        if (isIncognito) {
+            iconElement.classList.add('yes');
+        } else {
+            iconElement.classList.remove('yes');
+        }
     }
 
     async onTabClose(event: TabClosed) {

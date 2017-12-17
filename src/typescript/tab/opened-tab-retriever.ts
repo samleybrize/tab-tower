@@ -35,7 +35,7 @@ export class OpenedTabRetriever {
         tab.isInReaderMode = isInReaderMode;
         tab.url = url;
         tab.faviconUrl = rawTab.favIconUrl;
-        tab.isPrivileged = this.isTabPrivileged(url);
+        tab.isPrivileged = this.isTabPrivileged(url, isInReaderMode);
 
         return tab;
     }
@@ -57,7 +57,11 @@ export class OpenedTabRetriever {
         return {url, isInReaderMode};
     }
 
-    private isTabPrivileged(tabUrl: string): boolean {
+    private isTabPrivileged(tabUrl: string, isInReaderMode: boolean): boolean {
+        if (isInReaderMode) {
+            return false;
+        }
+
         const colonIndex = tabUrl.indexOf(':');
         const predicate = tabUrl.substr(0, colonIndex);
         const forbiddenPredicates = ['about', 'chrome', 'data', 'file', 'javascript'];

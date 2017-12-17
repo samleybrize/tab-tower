@@ -91,8 +91,8 @@ export class OpenedTabView {
         const row = document.createElement('tr');
 
         const titleCell = this.createTitleCell(row);
-        const incognitoCell = this.createCell('incognitoIndicator');
-        const readerModeCell = this.createCell('readerModeIndicator');
+        const incognitoCell = this.createMaterialIconCell('incognitoIndicator');
+        const readerModeCell = this.createMaterialIconCell('readerModeIndicator');
         const actionsCell = this.createCell('actions');
         this.addFollowButton(actionsCell, tabOpenState);
         this.addUnfollowButton(actionsCell, tabOpenState);
@@ -120,6 +120,13 @@ export class OpenedTabView {
         if (className) {
             cell.classList.add(className);
         }
+
+        return cell;
+    }
+
+    private createMaterialIconCell(className?: string) {
+        const cell = this.createCell(className);
+        cell.innerHTML = '<i class="material-icons"></i>';
 
         return cell;
     }
@@ -212,11 +219,26 @@ export class OpenedTabView {
 
     private updateTabReaderModeState(row: HTMLElement, isInReaderMode: boolean) {
         row.setAttribute('data-reader-mode', isInReaderMode ? '1' : '');
-        row.querySelector('.readerModeIndicator').textContent = isInReaderMode ? 'Yes' : 'No';
+
+        const iconElement = row.querySelector('.readerModeIndicator i');
+        iconElement.textContent = isInReaderMode ? 'check_circle' : 'highlight_off';
+
+        if (isInReaderMode) {
+            iconElement.classList.add('yes');
+        } else {
+            iconElement.classList.remove('yes');
+        }
     }
 
     private updateTabIncognitoState(row: HTMLElement, isIncognito: boolean) {
-        row.querySelector('.incognitoIndicator').textContent = isIncognito ? 'Yes' : 'No';
+        const iconElement = row.querySelector('.incognitoIndicator i');
+        iconElement.textContent = isIncognito ? 'check_circle' : 'highlight_off';
+
+        if (isIncognito) {
+            iconElement.classList.add('yes');
+        } else {
+            iconElement.classList.remove('yes');
+        }
     }
 
     private updateFollowState(row: HTMLElement, isFollowed: boolean) {

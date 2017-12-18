@@ -18,8 +18,9 @@ export class TabRetriever {
         for (const tabOpenState of tabOpenStateList) {
             const followState = candidateFollowStates.get(tabOpenState.index);
 
-            if (followState) {
+            if (followState && tabOpenState.url == followState.url) {
                 this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(tabOpenState.id, followState.id);
+                // TODO publish OpenedTabAssociatedToFollowedTab
             }
         }
     }

@@ -67,6 +67,7 @@ export class FollowedTabModifier {
     }
 
     async onAssociateOpenedTabToFollowedTab(event: OpenedTabAssociatedToFollowedTab) {
+        // TODO update title, incognito, reader mode, url, favicon url
         await this.tabPersister.setOpenIndex(event.tabFollowState.id, event.tabOpenState.index);
     }
 

@@ -1,3 +1,5 @@
+import { EventBus } from '../bus/event-bus';
+import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';
 import { FollowedTabRetriever } from './followed-tab-retriever';
 import { OpenedTabRetriever } from './opened-tab-retriever';
 import { Tab } from './tab';
@@ -8,6 +10,7 @@ export class TabRetriever {
         private followedTabRetriever: FollowedTabRetriever,
         private openedTabRetriever: OpenedTabRetriever,
         private tabAssociationMaintainer: TabAssociationMaintainer,
+        private eventBus: EventBus,
     ) {
     }
 
@@ -20,7 +23,7 @@ export class TabRetriever {
 
             if (followState && tabOpenState.url == followState.url) {
                 this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(tabOpenState.id, followState.id);
-                // TODO publish OpenedTabAssociatedToFollowedTab
+                this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(tabOpenState, followState));
             }
         }
     }

@@ -2,11 +2,11 @@ import { CommandBus } from '../bus/command-bus';
 import { FocusTab } from '../tab/command/focus-tab';
 import { OpenTab } from '../tab/command/open-tab';
 import { UnfollowTab } from '../tab/command/unfollow-tab';
-import { OpenTabFaviconUrlUpdated } from '../tab/event/open-tab-favicon-url-updated';
-import { OpenTabReaderModeStateUpdated } from '../tab/event/open-tab-reader-mode-state-updated';
-import { OpenTabTitleUpdated } from '../tab/event/open-tab-title-updated';
-import { OpenTabUrlUpdated } from '../tab/event/open-tab-url-updated';
 import { OpenedTabAssociatedToFollowedTab } from '../tab/event/opened-tab-associated-to-followed-tab';
+import { OpenedTabFaviconUrlUpdated } from '../tab/event/opened-tab-favicon-url-updated';
+import { OpenedTabReaderModeStateUpdated } from '../tab/event/opened-tab-reader-mode-state-updated';
+import { OpenedTabTitleUpdated } from '../tab/event/opened-tab-title-updated';
+import { OpenedTabUrlUpdated } from '../tab/event/opened-tab-url-updated';
 import { TabClosed } from '../tab/event/tab-closed';
 import { TabFollowed } from '../tab/event/tab-followed';
 import { TabUnfollowed } from '../tab/event/tab-unfollowed';
@@ -138,7 +138,7 @@ export class FollowedTabView {
             <span></span>
         `;
         linkElement.addEventListener('click', (event) => {
-            const openTabId = +row.getAttribute('data-open-tab-id');
+            const openTabId = +row.getAttribute('data-opened-tab-id');
 
             if (openTabId) {
                 this.commandBus.handle(new FocusTab(openTabId));
@@ -194,7 +194,7 @@ export class FollowedTabView {
     }
 
     private updateTabOpenState(row: HTMLElement, isOpened: boolean, tabId: number) {
-        row.setAttribute('data-open-tab-id', '' + tabId);
+        row.setAttribute('data-opened-tab-id', '' + tabId);
 
         const iconElement = row.querySelector('.openIndicator i');
         iconElement.textContent = isOpened ? 'check_circle' : 'highlight_off';
@@ -239,10 +239,10 @@ export class FollowedTabView {
     }
 
     private getTabRowByOpenTabId(openTabId: number): HTMLTableRowElement {
-        return this.tbodyElement.querySelector(`tr[data-open-tab-id="${openTabId}"]`);
+        return this.tbodyElement.querySelector(`tr[data-opened-tab-id="${openTabId}"]`);
     }
 
-    async onOpenTabFaviconUrlUpdate(event: OpenTabFaviconUrlUpdated) {
+    async onOpenTabFaviconUrlUpdate(event: OpenedTabFaviconUrlUpdated) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -250,7 +250,7 @@ export class FollowedTabView {
         }
     }
 
-    async onOpenTabTitleUpdate(event: OpenTabTitleUpdated) {
+    async onOpenTabTitleUpdate(event: OpenedTabTitleUpdated) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -258,7 +258,7 @@ export class FollowedTabView {
         }
     }
 
-    async onOpenTabUrlUpdate(event: OpenTabUrlUpdated) {
+    async onOpenTabUrlUpdate(event: OpenedTabUrlUpdated) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -266,7 +266,7 @@ export class FollowedTabView {
         }
     }
 
-    async onOpenTabReaderModeStateUpdate(event: OpenTabReaderModeStateUpdated) {
+    async onOpenTabReaderModeStateUpdate(event: OpenedTabReaderModeStateUpdated) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {

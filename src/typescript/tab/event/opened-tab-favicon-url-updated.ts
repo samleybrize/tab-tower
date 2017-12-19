@@ -1,6 +1,6 @@
 import { TabOpenState } from '../tab-open-state';
 
-export class OpenTabFaviconUrlUpdated {
+export class OpenedTabFaviconUrlUpdated {
     constructor(public readonly tabOpenState: TabOpenState) {
     }
 }

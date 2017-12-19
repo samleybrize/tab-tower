@@ -1,9 +1,9 @@
 import { EventBus } from '../bus/event-bus';
-import { OpenTabFaviconUrlUpdated } from './event/open-tab-favicon-url-updated';
-import { OpenTabMoved } from './event/open-tab-moved';
-import { OpenTabReaderModeStateUpdated } from './event/open-tab-reader-mode-state-updated';
-import { OpenTabTitleUpdated } from './event/open-tab-title-updated';
-import { OpenTabUrlUpdated } from './event/open-tab-url-updated';
+import { OpenedTabFaviconUrlUpdated } from './event/opened-tab-favicon-url-updated';
+import { OpenedTabMoved } from './event/opened-tab-moved';
+import { OpenedTabReaderModeStateUpdated } from './event/opened-tab-reader-mode-state-updated';
+import { OpenedTabTitleUpdated } from './event/opened-tab-title-updated';
+import { OpenedTabUrlUpdated } from './event/opened-tab-url-updated';
 import { TabClosed } from './event/tab-closed';
 import { TabOpened } from './event/tab-opened';
 import { OpenedTabRetriever } from './opened-tab-retriever';
@@ -46,7 +46,7 @@ export class NativeTabEventHandler {
 
         for (const tabOpenState of tabOpenStateList) {
             if (tabOpenState.index >= fromIndex) {
-                this.eventBus.publish(new OpenTabMoved(tabOpenState));
+                this.eventBus.publish(new OpenedTabMoved(tabOpenState));
             }
         }
     }
@@ -75,7 +75,7 @@ export class NativeTabEventHandler {
 
         if (updateInfo.title) {
             tabOpenState.title = updateInfo.title;
-            this.eventBus.publish(new OpenTabTitleUpdated(tabOpenState));
+            this.eventBus.publish(new OpenedTabTitleUpdated(tabOpenState));
         }
 
         if (updateInfo.url) {
@@ -89,13 +89,13 @@ export class NativeTabEventHandler {
                 tabOpenState.isInReaderMode = false;
             }
 
-            this.eventBus.publish(new OpenTabReaderModeStateUpdated(tabOpenState));
-            this.eventBus.publish(new OpenTabUrlUpdated(tabOpenState));
+            this.eventBus.publish(new OpenedTabReaderModeStateUpdated(tabOpenState));
+            this.eventBus.publish(new OpenedTabUrlUpdated(tabOpenState));
         }
 
         if (undefined !== updateInfo.favIconUrl) {
             tabOpenState.faviconUrl = updateInfo.favIconUrl;
-            this.eventBus.publish(new OpenTabFaviconUrlUpdated(tabOpenState));
+            this.eventBus.publish(new OpenedTabFaviconUrlUpdated(tabOpenState));
         }
     }
 }

@@ -2,12 +2,12 @@ import { CommandBus } from '../bus/command-bus';
 import { FocusTab } from '../tab/command/focus-tab';
 import { FollowTab } from '../tab/command/follow-tab';
 import { UnfollowTab } from '../tab/command/unfollow-tab';
-import { OpenTabFaviconUrlUpdated } from '../tab/event/open-tab-favicon-url-updated';
-import { OpenTabMoved } from '../tab/event/open-tab-moved';
-import { OpenTabReaderModeStateUpdated } from '../tab/event/open-tab-reader-mode-state-updated';
-import { OpenTabTitleUpdated } from '../tab/event/open-tab-title-updated';
-import { OpenTabUrlUpdated } from '../tab/event/open-tab-url-updated';
 import { OpenedTabAssociatedToFollowedTab } from '../tab/event/opened-tab-associated-to-followed-tab';
+import { OpenedTabFaviconUrlUpdated } from '../tab/event/opened-tab-favicon-url-updated';
+import { OpenedTabMoved } from '../tab/event/opened-tab-moved';
+import { OpenedTabReaderModeStateUpdated } from '../tab/event/opened-tab-reader-mode-state-updated';
+import { OpenedTabTitleUpdated } from '../tab/event/opened-tab-title-updated';
+import { OpenedTabUrlUpdated } from '../tab/event/opened-tab-url-updated';
 import { TabClosed } from '../tab/event/tab-closed';
 import { TabFollowed } from '../tab/event/tab-followed';
 import { TabOpened } from '../tab/event/tab-opened';
@@ -314,7 +314,7 @@ export class OpenedTabView {
         }
     }
 
-    async onOpenTabMove(event: OpenTabMoved) {
+    async onOpenTabMove(event: OpenedTabMoved) {
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -323,7 +323,7 @@ export class OpenedTabView {
         }
     }
 
-    async onOpenTabFaviconUrlUpdate(event: OpenTabFaviconUrlUpdated) {
+    async onOpenTabFaviconUrlUpdate(event: OpenedTabFaviconUrlUpdated) {
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -331,7 +331,7 @@ export class OpenedTabView {
         }
     }
 
-    async onOpenTabTitleUpdate(event: OpenTabTitleUpdated) {
+    async onOpenTabTitleUpdate(event: OpenedTabTitleUpdated) {
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -339,7 +339,7 @@ export class OpenedTabView {
         }
     }
 
-    async onOpenTabUrlUpdate(event: OpenTabUrlUpdated) {
+    async onOpenTabUrlUpdate(event: OpenedTabUrlUpdated) {
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -347,7 +347,7 @@ export class OpenedTabView {
         }
     }
 
-    async onOpenTabReaderModeStateUpdate(event: OpenTabReaderModeStateUpdated) {
+    async onOpenTabReaderModeStateUpdate(event: OpenedTabReaderModeStateUpdated) {
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {

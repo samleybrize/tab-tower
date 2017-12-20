@@ -28,6 +28,14 @@ import { TabRetriever } from './tab/tab-retriever';
 import { FollowedTabView } from './view/followed-tab-view';
 import { OpenedTabView } from './view/opened-tab-view';
 
+import { QueryBus } from './bus/query-bus'; // TODO
+import { BackgroundMessageReceiver } from './message/receiver/background-message-receiver'; // TODO
+import { CommandMessageHandler } from './message/receiver/command-message-handler'; // TODO
+import { EventMessageHandler } from './message/receiver/event-message-handler'; // TODO
+import { MessageHandler } from './message/receiver/message-handler'; // TODO
+import { QueryMessageHandler } from './message/receiver/query-message-handler'; // TODO
+import { ObjectUnserializer } from './utils/object-unserializer'; // TODO
+
 const defaultFaviconUrl = '/ui/images/default-favicon.svg';
 const currentUrl = location.href;
 
@@ -88,6 +96,29 @@ async function main() {
     await tabRetriever.associateOpenedTabsWithFollowedTabs();
     followedTabView.init();
     openedTabView.init();
+
+    // TODO ===
+    const queryBus = new QueryBus();
+    const objectUnserializer = new ObjectUnserializer();
+    objectUnserializer.addSupportedClasses([TabClosed]);
+
+    let messageHandler: MessageHandler = new CommandMessageHandler(commandBus, objectUnserializer);
+    messageHandler = new EventMessageHandler(eventBus, objectUnserializer, messageHandler);
+    messageHandler = new QueryMessageHandler(queryBus, objectUnserializer, messageHandler);
+
+    const messageReceiver = new BackgroundMessageReceiver(messageHandler);
+    messageReceiver.listen();
+
+    setTimeout(() => {
+        messageHandler.handleMessage({
+            messageType: 'event',
+            className: 'TabClosed',
+            data: {
+                tabId: 4,
+            },
+        });
+    }, 2000);
+    // TODO ===
 }
 
 main();

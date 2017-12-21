@@ -1,7 +1,7 @@
 import { TabOpenState } from './tab-open-state';
 
 export class OpenedTabRetriever {
-    constructor(private ignoredUrls: string[]) {
+    constructor(private ignoreUrlsThatStartWith: string[]) {
     }
 
     async getAll(): Promise<TabOpenState[]> {
@@ -41,7 +41,13 @@ export class OpenedTabRetriever {
     }
 
     private isUrlIgnored(url: string) {
-        return this.ignoredUrls.indexOf(url) >= 0;
+        for (const startToIgnore of this.ignoreUrlsThatStartWith) {
+            if (0 == url.indexOf(startToIgnore)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private getUrlAndReaderModeState(rawTab: browser.tabs.Tab) {

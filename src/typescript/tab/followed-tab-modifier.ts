@@ -28,7 +28,7 @@ export class FollowedTabModifier {
     async followTab(command: FollowTab) {
         const tab = command.tab;
 
-        if (tab.isFollowed || !tab.isOpened || tab.openState.isPrivileged) {
+        if (tab.followState || !tab.openState || tab.openState.isPrivileged) {
             return;
         }
 
@@ -56,7 +56,7 @@ export class FollowedTabModifier {
     async unfollowTab(command: UnfollowTab) {
         const tab = command.tab;
 
-        if (!tab.isFollowed) {
+        if (!tab.followState) {
             return;
         }
 

@@ -1,4 +1,5 @@
 import { CommandBus } from '../bus/command-bus';
+import { QueryBus } from '../bus/query-bus';
 import { FocusTab } from '../tab/command/focus-tab';
 import { OpenTab } from '../tab/command/open-tab';
 import { UnfollowTab } from '../tab/command/unfollow-tab';
@@ -10,16 +11,17 @@ import { OpenedTabUrlUpdated } from '../tab/event/opened-tab-url-updated';
 import { TabClosed } from '../tab/event/tab-closed';
 import { TabFollowed } from '../tab/event/tab-followed';
 import { TabUnfollowed } from '../tab/event/tab-unfollowed';
+import { GetFollowedTabs } from '../tab/query/get-followed-tabs';
+import { GetTabByFollowId } from '../tab/query/get-tab-by-follow-id';
 import { Tab } from '../tab/tab';
-import { TabRetriever } from '../tab/tab-retriever';
 
 export class FollowedTabView {
     private tbodyElement: HTMLElement;
     private noTabRow: HTMLElement;
 
     constructor(
-        private tabRetriever: TabRetriever,
         private commandBus: CommandBus,
+        private queryBus: QueryBus,
         containerElement: HTMLElement,
         private defaultFaviconUrl: string,
     ) {
@@ -53,7 +55,7 @@ export class FollowedTabView {
     }
 
     async init() {
-        const tabList = await this.tabRetriever.getFollowedTabs();
+        const tabList = await this.queryBus.query(new GetFollowedTabs());
         this.noTabRow = this.createNoTabRow();
         this.tbodyElement.appendChild(this.noTabRow);
 
@@ -64,7 +66,7 @@ export class FollowedTabView {
         }
 
         for (const tab of tabList) {
-            if (!tab.isOpened) {
+            if (!tab.openState) {
                 continue;
             }
 
@@ -103,15 +105,19 @@ export class FollowedTabView {
         row.appendChild(openIndicatorCell);
         row.appendChild(actionsCell);
 
-        const tabOpenId = tab.isOpened ? tab.openState.id : null;
+        const tabOpenId = tab.openState ? tab.openState.id : null;
         this.updateTabFavicon(row, tab.followState.faviconUrl);
         this.updateTabIncognitoState(row, tab.followState.isIncognito);
-        this.updateTabOpenState(row, tab.isOpened, tabOpenId);
+        this.updateTabOpenState(row, this.isTabOpened(tab), tabOpenId);
         this.updateTabReaderModeState(row, tab.followState.isInReaderMode);
         this.updateTabTitle(row, tab.followState.title);
         this.updateTabUrl(row, tab.followState.url);
 
         return row;
+    }
+
+    private isTabOpened(tab: Tab) {
+        return !!tab.openState;
     }
 
     private createCell(className?: string): HTMLElement {
@@ -167,7 +173,7 @@ export class FollowedTabView {
         unfollowButton.classList.add('waves-light');
 
         unfollowButton.addEventListener('click', async (event) => {
-            const upToDateTab = await this.tabRetriever.getByFollowId(tab.followState.id);
+            const upToDateTab = await this.queryBus.query(new GetTabByFollowId(tab.followState.id));
             this.commandBus.handle(new UnfollowTab(upToDateTab));
         });
 

@@ -1,4 +1,5 @@
 import { CommandBus } from '../bus/command-bus';
+import { QueryBus } from '../bus/query-bus';
 import { FocusTab } from '../tab/command/focus-tab';
 import { FollowTab } from '../tab/command/follow-tab';
 import { UnfollowTab } from '../tab/command/unfollow-tab';
@@ -12,16 +13,18 @@ import { TabClosed } from '../tab/event/tab-closed';
 import { TabFollowed } from '../tab/event/tab-followed';
 import { TabOpened } from '../tab/event/tab-opened';
 import { TabUnfollowed } from '../tab/event/tab-unfollowed';
+import { GetOpenedTabs } from '../tab/query/get-opened-tabs';
+import { GetTabByOpenId } from '../tab/query/get-tab-by-open-id';
+import { Tab } from '../tab/tab';
 import { TabOpenState } from '../tab/tab-open-state';
-import { TabRetriever } from '../tab/tab-retriever';
 
 export class OpenedTabView {
     private tbodyElement: HTMLElement;
     private noTabRow: HTMLElement;
 
     constructor(
-        private tabRetriever: TabRetriever,
         private commandBus: CommandBus,
+        private queryBus: QueryBus,
         containerElement: HTMLElement,
         private defaultFaviconUrl: string,
     ) {
@@ -54,7 +57,7 @@ export class OpenedTabView {
     }
 
     async init() {
-        const tabList = await this.tabRetriever.getOpenedTabs();
+        const tabList = await this.queryBus.query(new GetOpenedTabs());
         this.noTabRow = this.createNoTabRow();
         this.tbodyElement.appendChild(this.noTabRow);
 
@@ -65,13 +68,17 @@ export class OpenedTabView {
         }
 
         for (const tab of tabList) {
-            if (!tab.isOpened) {
+            if (!tab.openState) {
                 continue;
             }
 
-            const row = this.createTabRow(tab.openState, tab.isFollowed);
+            const row = this.createTabRow(tab.openState, this.isTabFollowed(tab));
             this.tbodyElement.appendChild(row);
         }
+    }
+
+    private isTabFollowed(tab: Tab) {
+        return !!tab.followState;
     }
 
     private createNoTabRow() {
@@ -167,7 +174,7 @@ export class OpenedTabView {
                 return;
             }
 
-            const upToDateTab = await this.tabRetriever.getByOpenId(tabOpenState.id);
+            const upToDateTab = await this.queryBus.query(new GetTabByOpenId(tabOpenState.id));
             this.commandBus.handle(new FollowTab(upToDateTab));
         });
 
@@ -187,7 +194,7 @@ export class OpenedTabView {
                 return;
             }
 
-            const upToDateTab = await this.tabRetriever.getByOpenId(tabOpenState.id);
+            const upToDateTab = await this.queryBus.query(new GetTabByOpenId(tabOpenState.id));
             this.commandBus.handle(new UnfollowTab(upToDateTab));
         });
 

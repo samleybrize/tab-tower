@@ -2,6 +2,10 @@ import { EventBus } from '../bus/event-bus';
 import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';
 import { FollowedTabRetriever } from './followed-tab-retriever';
 import { OpenedTabRetriever } from './opened-tab-retriever';
+import { GetFollowedTabs } from './query/get-followed-tabs';
+import { GetOpenedTabs } from './query/get-opened-tabs';
+import { GetTabByFollowId } from './query/get-tab-by-follow-id';
+import { GetTabByOpenId } from './query/get-tab-by-open-id';
 import { Tab } from './tab';
 import { TabAssociationMaintainer } from './tab-association-maintainer';
 
@@ -28,7 +32,7 @@ export class TabRetriever {
         }
     }
 
-    async getOpenedTabs(): Promise<Tab[]> {
+    async queryOpenedTabs(query: GetOpenedTabs): Promise<Tab[]> {
         const tabOpenStateList = await this.openedTabRetriever.getAll();
         const tabList: Tab[] = [];
 
@@ -52,7 +56,7 @@ export class TabRetriever {
         return null;
     }
 
-    async getFollowedTabs(): Promise<Tab[]> {
+    async queryFollowedTabs(query: GetFollowedTabs): Promise<Tab[]> {
         const tabFollowStateList = await this.followedTabRetriever.getAll();
         const tabList: Tab[] = [];
 
@@ -76,8 +80,8 @@ export class TabRetriever {
         return null;
     }
 
-    async getByOpenId(tabOpenId: number): Promise<Tab> {
-        const tabOpenState = await this.openedTabRetriever.getById(tabOpenId);
+    async queryByOpenId(query: GetTabByOpenId): Promise<Tab> {
+        const tabOpenState = await this.openedTabRetriever.getById(query.openId);
 
         if (null == tabOpenState) {
             return null;
@@ -85,13 +89,13 @@ export class TabRetriever {
 
         const tab = new Tab();
         tab.openState = tabOpenState;
-        tab.followState = await this.getAssociatedTabFollowedState(tabOpenId);
+        tab.followState = await this.getAssociatedTabFollowedState(query.openId);
 
         return tab;
     }
 
-    async getByFollowId(tabFollowId: string): Promise<Tab> {
-        const tabFollowState = await this.followedTabRetriever.getById(tabFollowId);
+    async queryByFollowId(query: GetTabByFollowId): Promise<Tab> {
+        const tabFollowState = await this.followedTabRetriever.getById(query.followId);
 
         if (null == tabFollowState) {
             return null;
@@ -99,7 +103,7 @@ export class TabRetriever {
 
         const tab = new Tab();
         tab.followState = tabFollowState;
-        tab.openState = await this.getAssociatedTabOpenState(tabFollowId);
+        tab.openState = await this.getAssociatedTabOpenState(query.followId);
 
         return tab;
     }

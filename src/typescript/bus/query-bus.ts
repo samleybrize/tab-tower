@@ -1,5 +1,5 @@
 export interface Query<T> {
-    getResult(): T;
+    readonly resultType: T;
 }
 
 interface QueryType<T> {
@@ -7,12 +7,12 @@ interface QueryType<T> {
     queryIdentifier?: number;
 }
 
-type QueryHandler<T> = (query: T) => Promise<T>;
+type QueryHandler<T extends Query<K>, K> = (query: T) => Promise<K>;
 
 export class QueryBus {
-    private handlerList = new Map<number, QueryHandler<any>>();
+    private handlerList = new Map<number, QueryHandler<any, any>>();
 
-    register<T>(queryType: QueryType<T>, handler: QueryHandler<T>, bindToHandler?: object) {
+    register<T extends Query<K>, K>(queryType: QueryType<T>, handler: QueryHandler<T, K>, bindToHandler?: object) {
         if (null == queryType.queryIdentifier) {
             queryType.queryIdentifier = this.generateQueryIdentifier();
         }
@@ -38,8 +38,6 @@ export class QueryBus {
             return;
         }
 
-        await queryHandler(query);
-
-        return query.getResult();
+        return await queryHandler(query);
     }
 }

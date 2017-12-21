@@ -1,10 +1,10 @@
 import { CommandBus } from '../../bus/command-bus';
 import { ObjectUnserializer } from '../../utils/object-unserializer';
 import { Message } from '../message';
-import { MessageHandler } from './message-handler';
+import { ReceivedMessageHandler } from './received-message-handler';
 
-export class CommandMessageHandler implements MessageHandler {
-    constructor(private commandBus: CommandBus, private objectCreator: ObjectUnserializer, private nextMessageHandler?: MessageHandler) {
+export class ReceivedCommandMessageHandler implements ReceivedMessageHandler {
+    constructor(private commandBus: CommandBus, private objectCreator: ObjectUnserializer, private nextMessageHandler?: ReceivedMessageHandler) {
     }
 
     async handleMessage(message: Message): Promise<void> {

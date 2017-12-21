@@ -1,11 +1,11 @@
 import { Message } from '../message';
-import { MessageHandler } from './message-handler';
 import { MessageReceiver } from './message-receiver';
+import { ReceivedMessageHandler } from './received-message-handler';
 
 export class ContentMessageReceiver implements MessageReceiver {
     private isListening = false;
 
-    constructor(private messageHandler: MessageHandler) {
+    constructor(private messageHandler: ReceivedMessageHandler) {
     }
 
     listen(): void {

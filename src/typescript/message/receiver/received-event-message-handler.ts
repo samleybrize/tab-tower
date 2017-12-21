@@ -1,10 +1,10 @@
 import { EventBus } from '../../bus/event-bus';
 import { ObjectUnserializer } from '../../utils/object-unserializer';
 import { Message } from '../message';
-import { MessageHandler } from './message-handler';
+import { ReceivedMessageHandler } from './received-message-handler';
 
-export class EventMessageHandler implements MessageHandler {
-    constructor(private eventBus: EventBus, private objectUnserializer: ObjectUnserializer, private nextMessageHandler?: MessageHandler) {
+export class ReceivedEventMessageHandler implements ReceivedMessageHandler {
+    constructor(private eventBus: EventBus, private objectUnserializer: ObjectUnserializer, private nextMessageHandler?: ReceivedMessageHandler) {
     }
 
     async handleMessage(message: Message): Promise<void> {

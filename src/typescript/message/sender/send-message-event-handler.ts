@@ -1,6 +1,6 @@
 import { MessageSender } from './message-sender';
 
-export class MessageEventHandler {
+export class SendMessageEventHandler {
     constructor(private messageSender: MessageSender) {
     }
 

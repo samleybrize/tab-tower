@@ -1,5 +1,6 @@
 import { CommandBus } from '../bus/command-bus';
 import { QueryBus } from '../bus/query-bus';
+import { CloseTab } from '../tab/command/close-tab';
 import { FocusTab } from '../tab/command/focus-tab';
 import { OpenTab } from '../tab/command/open-tab';
 import { UnfollowTab } from '../tab/command/unfollow-tab';
@@ -97,6 +98,7 @@ export class FollowedTabView {
         const openIndicatorCell = this.createMaterialIconCell('openIndicator');
         const actionsCell = this.createCell('actions');
         this.addUnfollowButton(actionsCell, tab);
+        this.addCloseButton(actionsCell, row);
 
         row.setAttribute('data-follow-id', '' + tab.followState.id);
         row.appendChild(titleCell);
@@ -180,6 +182,28 @@ export class FollowedTabView {
         cell.appendChild(unfollowButton);
     }
 
+    private addCloseButton(cell: HTMLElement, row: HTMLElement) {
+        const closeButton = document.createElement('a');
+        closeButton.textContent = 'Close';
+        closeButton.classList.add('closeButton');
+        closeButton.classList.add('btn');
+        closeButton.classList.add('waves-effect');
+        closeButton.classList.add('waves-light');
+        closeButton.classList.add('transparent');
+
+        closeButton.addEventListener('click', async (event) => {
+            const openId = row.getAttribute('data-opened-tab-id');
+
+            if (null === openId || '' === openId) {
+                return;
+            }
+
+            this.commandBus.handle(new CloseTab(+openId));
+        });
+
+        cell.appendChild(closeButton);
+    }
+
     private updateTabTitle(row: HTMLElement, title: string) {
         row.querySelector('.title a span').textContent = title;
     }
@@ -202,13 +226,16 @@ export class FollowedTabView {
     private updateTabOpenState(row: HTMLElement, isOpened: boolean, tabId: number) {
         row.setAttribute('data-opened-tab-id', '' + tabId);
 
+        const closeButton = row.querySelector('.closeButton');
         const iconElement = row.querySelector('.openIndicator i');
         iconElement.textContent = isOpened ? 'check_circle' : 'highlight_off';
 
         if (isOpened) {
             iconElement.classList.add('yes');
+            closeButton.classList.remove('transparent');
         } else {
             iconElement.classList.remove('yes');
+            closeButton.classList.add('transparent');
         }
     }
 

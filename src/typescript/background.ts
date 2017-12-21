@@ -10,6 +10,7 @@ import { ReceivedQueryMessageHandler } from './message/receiver/received-query-m
 import { BackgroundMessageSender } from './message/sender/background-message-sender';
 import { SendMessageEventHandler } from './message/sender/send-message-event-handler';
 import { SendMessageQueryHandler } from './message/sender/send-message-query-handler';
+import { CloseTab } from './tab/command/close-tab';
 import { FocusTab } from './tab/command/focus-tab';
 import { FollowTab } from './tab/command/follow-tab';
 import { OpenTab } from './tab/command/open-tab';
@@ -82,6 +83,7 @@ async function main() {
     const nativeEventHandler = new NativeTabEventHandler(eventBus, openedTabRetriever, tabCloser, tabOpener);
     nativeEventHandler.init();
 
+    commandBus.register(CloseTab, openedTabModifier.closeTab, followedTabModifier);
     commandBus.register(FocusTab, openedTabModifier.focusTab, followedTabModifier);
     commandBus.register(FollowTab, followedTabModifier.followTab, followedTabModifier);
     commandBus.register(OpenTab, tabOpener.openTab, tabOpener);

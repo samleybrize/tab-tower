@@ -1,5 +1,6 @@
 import { CommandBus } from '../bus/command-bus';
 import { QueryBus } from '../bus/query-bus';
+import { CloseTab } from '../tab/command/close-tab';
 import { FocusTab } from '../tab/command/focus-tab';
 import { FollowTab } from '../tab/command/follow-tab';
 import { UnfollowTab } from '../tab/command/unfollow-tab';
@@ -103,6 +104,7 @@ export class OpenedTabView {
         const actionsCell = this.createCell('actions');
         this.addFollowButton(actionsCell, tabOpenState);
         this.addUnfollowButton(actionsCell, tabOpenState);
+        this.addCloseButton(actionsCell, tabOpenState);
 
         row.setAttribute('data-tab-id', '' + tabOpenState.id);
         row.appendChild(titleCell);
@@ -199,6 +201,21 @@ export class OpenedTabView {
         });
 
         cell.appendChild(unfollowButton);
+    }
+
+    private addCloseButton(cell: HTMLElement, tabOpenState: TabOpenState) {
+        const closeButton = document.createElement('a');
+        closeButton.textContent = 'Close';
+        closeButton.classList.add('closeButton');
+        closeButton.classList.add('btn');
+        closeButton.classList.add('waves-effect');
+        closeButton.classList.add('waves-light');
+
+        closeButton.addEventListener('click', async (event) => {
+            this.commandBus.handle(new CloseTab(tabOpenState.id));
+        });
+
+        cell.appendChild(closeButton);
     }
 
     private updateTabTitle(row: HTMLElement, title: string) {

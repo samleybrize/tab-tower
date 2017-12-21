@@ -10,6 +10,7 @@ import { ReceivedQueryMessageHandler } from './message/receiver/received-query-m
 import { ContentMessageSender } from './message/sender/content-message-sender';
 import { SendMessageCommandHandler } from './message/sender/send-message-command-handler';
 import { SendMessageQueryHandler } from './message/sender/send-message-query-handler';
+import { CloseTab } from './tab/command/close-tab';
 import { FocusTab } from './tab/command/focus-tab';
 import { FollowTab } from './tab/command/follow-tab';
 import { OpenTab } from './tab/command/open-tab';
@@ -62,6 +63,7 @@ async function main() {
     const messageReceiver = new BackgroundMessageReceiver(receivedMessageHandler);
     messageReceiver.listen();
 
+    commandBus.register(CloseTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(FocusTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(FollowTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(OpenTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);

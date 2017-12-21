@@ -4,7 +4,16 @@
     "version": "1.0",
     "description": "Description",
     "icons": {
-        "48": "icons/border-48.png"
+        "48": "icons/tab-tower-48.png",
+        "96": "icons/tab-tower-96.png"
+    },
+    "browser_action": {
+        "default_icon": {
+            "16": "icons/tab-tower-16.png",
+            "32": "icons/tab-tower-32.png",
+            "64": "icons/tab-tower-64.png"
+        },
+        "default_title": "Tab Tower"
     },
     "background": {
         "scripts": ["dist/js/background.js"]

@@ -115,12 +115,23 @@ async function main() {
     eventBus.subscribe(TabUnfollowed, tabAssociationMaintainer.onTabUnfollow, tabAssociationMaintainer);
 
     await tabRetriever.associateOpenedTabsWithFollowedTabs();
+
+    const uiUrl = `moz-extension://${location.host}/ui/tab-tower.html`;
+    browser.browserAction.onClicked.addListener(async () => {
+        const uiTabs = await browser.tabs.query({url: uiUrl});
+
+        if (uiTabs.length > 0) {
+            browser.tabs.update(uiTabs[0].id, {active: true});
+
+            return;
+        }
+
+        browser.tabs.create({
+            active: true,
+            index: 0,
+            url: uiUrl,
+        });
+    });
 }
 
 main();
-
-browser.tabs.create({
-    active: true,
-    index: 0,
-    url: '/ui/tab-tower.html',
-});

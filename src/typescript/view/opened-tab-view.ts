@@ -186,12 +186,14 @@ export class OpenedTabView {
     private addUnfollowButton(cell: HTMLElement, tabOpenState: TabOpenState) {
         const unfollowButton = document.createElement('a');
         unfollowButton.textContent = 'Unfollow';
+        unfollowButton.setAttribute('data-tooltip', 'Please double click to unfollow this tab');
         unfollowButton.classList.add('unfollowButton');
         unfollowButton.classList.add('btn');
         unfollowButton.classList.add('waves-effect');
         unfollowButton.classList.add('waves-light');
+        jQuery(unfollowButton).tooltip();
 
-        unfollowButton.addEventListener('click', async (event) => {
+        unfollowButton.addEventListener('dblclick', async (event) => {
             if (unfollowButton.classList.contains('disabled')) {
                 return;
             }

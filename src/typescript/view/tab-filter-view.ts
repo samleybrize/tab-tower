@@ -2,15 +2,42 @@ import { EventBus } from '../bus/event-bus';
 import { TabFilterRequested } from '../tab/event/tab-filter-requested';
 
 export class TabFilterView {
-    constructor(private eventBus: EventBus, private inputElement: HTMLInputElement) {
-        if (null == inputElement) {
+    private inputElement: HTMLInputElement;
+    private resetButton: HTMLElement;
+
+    constructor(private eventBus: EventBus, private containerElement: HTMLInputElement) {
+        if (null == containerElement) {
             throw new Error('null input element received');
-        } else if (!(inputElement instanceof HTMLInputElement)) {
-            throw new Error('input element must be an instance of HTMLInputElement');
         }
+
+        this.inputElement = containerElement.querySelector('input');
+        this.resetButton = containerElement.querySelector('.resetButton');
     }
 
     init() {
+        // TODO on focus lost, or click on the reset button, if no filter text, hide input
+        this.containerElement.addEventListener('click', () => {
+            this.containerElement.classList.remove('collapsed');
+            this.inputElement.focus();
+        });
+        this.resetButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+
+            this.inputElement.value = '';
+            this.inputElement.blur();
+            this.containerElement.classList.add('collapsed');
+        });
+        this.inputElement.addEventListener('blur', (event) => {
+            if ('' == this.inputElement.value) {
+                this.containerElement.classList.add('collapsed');
+            }
+        });
+        this.inputElement.addEventListener('focus', (event) => {
+            this.containerElement.classList.remove('collapsed');
+        });
+        this.containerElement.querySelector('label').setAttribute('data-tooltip', 'Filter tabs');
+        jQuery(this.containerElement.querySelector('label')).tooltip({});
+
         let timeoutReference: number = null;
         this.inputElement.addEventListener('input', (event) => {
             if (timeoutReference) {
@@ -21,6 +48,7 @@ export class TabFilterView {
         });
 
         if (this.inputElement.value) {
+            // TODO remove collapsed class
             this.notifyInputChange();
         }
     }

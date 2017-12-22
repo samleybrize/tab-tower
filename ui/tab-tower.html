@@ -7,12 +7,23 @@
         <link rel="stylesheet" href="/dist/css/style.css" />
     </head>
     <body>
-        <h1>Tabs</h1>
-
-        <div id="tabSearch" class="input-field" style="width: 30%; margin: auto;">
-            <i class="material-icons prefix">search</i>
-            <input id="tabSearchInput" type="text">
-            <label for="tabSearchInput">Filter tabs</label>
+        <div class="navbar-fixed">
+            <nav>
+                <div class="nav-wrapper">
+                    <span class="brand-logo">Tab Tower</span>
+                    <ul class="right hide-on-med-and-down">
+                        <li>
+                            <div id="tabFilter" class="input-field collapsed">
+                                <input id="tabFilterInput" type="search" />
+                                <label class="label-icon" for="tabFilterInput"><i class="material-icons">search</i></label>
+                                <i class="material-icons resetButton">close</i>
+                            </div>
+                        </li>
+                        <li class="openedTabs active"><a>Opened tabs</a></li>
+                        <li class="followedTabs"><a>Followed tabs</a></li>
+                    </ul>
+                </div>
+            </nav>
         </div>
 
         <h2>Opened tabs</h2>

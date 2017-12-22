@@ -9,6 +9,36 @@ body {
     background: #fafafa;
 }
 
+.brand-logo {
+    margin-left: 15px;
+}
+
+#tabFilter {
+    label {
+        pointer-events: none;
+        transform: none;
+    }
+
+    input {
+        width: 13rem;
+    }
+
+    &.collapsed {
+        label {
+            pointer-events: all;
+            cursor: pointer;
+        }
+
+        input {
+            width: 0;
+        }
+
+        .resetButton {
+            display: none;
+        }
+    }
+}
+
 table {
     width: 90%;
     margin: auto;

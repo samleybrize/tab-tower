@@ -49,7 +49,7 @@ async function main() {
     const stringMatcher = new StringMatcher();
     const followedTabView = new FollowedTabView(commandBus, queryBus, stringMatcher, document.querySelector('#followedTabList'), defaultFaviconUrl);
     const openedTabView = new OpenedTabView(commandBus, queryBus, stringMatcher, document.querySelector('#openedTabList'), defaultFaviconUrl);
-    const tabSearchView = new TabFilterView(eventBus, document.querySelector('#tabSearch input'));
+    const tabSearchView = new TabFilterView(eventBus, document.querySelector('#tabFilter'));
 
     const objectUnserializer = new ObjectUnserializer();
     objectUnserializer.addSupportedClasses(tabCommands);

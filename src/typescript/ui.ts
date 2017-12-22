@@ -26,6 +26,7 @@ import { TabClosed } from './tab/event/tab-closed';
 import { tabEvents } from './tab/event/tab-events';
 import { TabFollowed } from './tab/event/tab-followed';
 import { TabOpened } from './tab/event/tab-opened';
+import { TabSearched } from './tab/event/tab-searched';
 import { TabUnfollowed } from './tab/event/tab-unfollowed';
 import { GetFollowedTabs } from './tab/query/get-followed-tabs';
 import { GetOpenedTabs } from './tab/query/get-opened-tabs';
@@ -33,8 +34,10 @@ import { GetTabByFollowId } from './tab/query/get-tab-by-follow-id';
 import { GetTabByOpenId } from './tab/query/get-tab-by-open-id';
 import { tabQueries } from './tab/query/tab-queries';
 import { ObjectUnserializer } from './utils/object-unserializer';
+import { StringMatcher } from './utils/string-matcher';
 import { FollowedTabView } from './view/followed-tab-view';
 import { OpenedTabView } from './view/opened-tab-view';
+import { TabSearchView } from './view/tab-search-view';
 
 const defaultFaviconUrl = '/ui/images/default-favicon.svg';
 
@@ -43,8 +46,10 @@ async function main() {
     const eventBus = new EventBus();
     const queryBus = new QueryBus();
 
-    const followedTabView = new FollowedTabView(commandBus, queryBus, document.querySelector('#followedTabList'), defaultFaviconUrl);
-    const openedTabView = new OpenedTabView(commandBus, queryBus, document.querySelector('#openedTabList'), defaultFaviconUrl);
+    const stringMatcher = new StringMatcher();
+    const followedTabView = new FollowedTabView(commandBus, queryBus, stringMatcher, document.querySelector('#followedTabList'), defaultFaviconUrl);
+    const openedTabView = new OpenedTabView(commandBus, queryBus, stringMatcher, document.querySelector('#openedTabList'), defaultFaviconUrl);
+    const tabSearchView = new TabSearchView(eventBus, document.querySelector('#tabSearch input'));
 
     const objectUnserializer = new ObjectUnserializer();
     objectUnserializer.addSupportedClasses(tabCommands);
@@ -90,11 +95,14 @@ async function main() {
     eventBus.subscribe(OpenedTabTitleUpdated, openedTabView.onOpenTabTitleUpdate, openedTabView);
     eventBus.subscribe(OpenedTabUrlUpdated, followedTabView.onOpenTabUrlUpdate, followedTabView);
     eventBus.subscribe(OpenedTabUrlUpdated, openedTabView.onOpenTabUrlUpdate, openedTabView);
+    eventBus.subscribe(TabSearched, followedTabView.onTabSearch, followedTabView);
+    eventBus.subscribe(TabSearched, openedTabView.onTabSearch, openedTabView);
     eventBus.subscribe(TabUnfollowed, followedTabView.onTabUnfollow, followedTabView);
     eventBus.subscribe(TabUnfollowed, openedTabView.onTabUnfollow, openedTabView);
 
     followedTabView.init();
     openedTabView.init();
+    tabSearchView.init();
 }
 
 main();

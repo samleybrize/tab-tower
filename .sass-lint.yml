@@ -7,8 +7,6 @@ options:
 # File Options
 files:
   include: 'src/scss/**/*.s+(a|c)ss'
-  ignore:
-    - 'src/scss/_material-icons.scss'
 
 # Rule Configuration
 rules:

@@ -11,10 +11,12 @@ import { OpenedTabTitleUpdated } from '../tab/event/opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from '../tab/event/opened-tab-url-updated';
 import { TabClosed } from '../tab/event/tab-closed';
 import { TabFollowed } from '../tab/event/tab-followed';
+import { TabSearched } from '../tab/event/tab-searched';
 import { TabUnfollowed } from '../tab/event/tab-unfollowed';
 import { GetFollowedTabs } from '../tab/query/get-followed-tabs';
 import { GetTabByFollowId } from '../tab/query/get-tab-by-follow-id';
 import { Tab } from '../tab/tab';
+import { StringMatcher } from '../utils/string-matcher';
 
 export class FollowedTabView {
     private tbodyElement: HTMLElement;
@@ -23,6 +25,7 @@ export class FollowedTabView {
     constructor(
         private commandBus: CommandBus,
         private queryBus: QueryBus,
+        private stringMatcher: StringMatcher,
         containerElement: HTMLElement,
         private defaultFaviconUrl: string,
     ) {
@@ -342,5 +345,27 @@ export class FollowedTabView {
             this.updateTabTitle(followedTabRow, event.tabOpenState.title);
             this.updateTabUrl(followedTabRow, event.tabOpenState.url);
         }
+    }
+
+    async onTabSearch(event: TabSearched) {
+        const rowList = Array.from(this.tbodyElement.querySelectorAll('tr'));
+
+        for (const row of rowList) {
+            if (row.classList.contains('noTabRow')) {
+                continue;
+            }
+
+            const titleCell = row.querySelector('.title a');
+            const title = titleCell.textContent.toLowerCase();
+            const url = titleCell.getAttribute('data-url').toLowerCase();
+
+            if (this.stringMatcher.isCaseSensitiveMatch(event.searchTerms, [title, url])) {
+                row.classList.remove('filtered');
+            } else {
+                row.classList.add('filtered');
+            }
+        }
+
+        // TODO show no tab row if no more row to show
     }
 }

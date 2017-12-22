@@ -1,6 +1,7 @@
 $roboto-font-path: '/ui/fonts/roboto/';
 
 @import 'node_modules/materialize-css/sass/materialize';
+@import 'materialize';
 @import 'material-icons';
 
 body {
@@ -67,5 +68,9 @@ table {
 
     .yes {
         color: green;
+    }
+
+    tr.filtered {
+        display: none;
     }
 }

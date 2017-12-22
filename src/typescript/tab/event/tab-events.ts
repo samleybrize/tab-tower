@@ -5,9 +5,9 @@ import { OpenedTabReaderModeStateUpdated } from './opened-tab-reader-mode-state-
 import { OpenedTabTitleUpdated } from './opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from './opened-tab-url-updated';
 import { TabClosed } from './tab-closed';
+import { TabFilterRequested } from './tab-filter-requested';
 import { TabFollowed } from './tab-followed';
 import { TabOpened } from './tab-opened';
-import { TabSearched } from './tab-searched';
 import { TabUnfollowed } from './tab-unfollowed';
 
 export const tabEvents = [
@@ -18,8 +18,8 @@ export const tabEvents = [
     OpenedTabTitleUpdated,
     OpenedTabUrlUpdated,
     TabClosed,
+    TabFilterRequested,
     TabFollowed,
     TabOpened,
-    TabSearched,
     TabUnfollowed,
 ];

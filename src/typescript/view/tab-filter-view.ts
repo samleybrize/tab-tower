@@ -1,7 +1,7 @@
 import { EventBus } from '../bus/event-bus';
-import { TabSearched } from '../tab/event/tab-searched';
+import { TabFilterRequested } from '../tab/event/tab-filter-requested';
 
-export class TabSearchView {
+export class TabFilterView {
     constructor(private eventBus: EventBus, private inputElement: HTMLInputElement) {
         if (null == inputElement) {
             throw new Error('null input element received');
@@ -21,15 +21,14 @@ export class TabSearchView {
         });
 
         if (this.inputElement.value) {
-            // TODO
             this.notifyInputChange();
         }
     }
 
     private notifyInputChange() {
         const value = '' + this.inputElement.value;
-        const searchTerms = value.toLowerCase().split(' ');
+        const filterTerms = value.toLowerCase().split(' ');
 
-        this.eventBus.publish(new TabSearched(searchTerms));
+        this.eventBus.publish(new TabFilterRequested(filterTerms));
     }
 }

@@ -11,9 +11,9 @@ import { OpenedTabReaderModeStateUpdated } from '../tab/event/opened-tab-reader-
 import { OpenedTabTitleUpdated } from '../tab/event/opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from '../tab/event/opened-tab-url-updated';
 import { TabClosed } from '../tab/event/tab-closed';
+import { TabFilterRequested } from '../tab/event/tab-filter-requested';
 import { TabFollowed } from '../tab/event/tab-followed';
 import { TabOpened } from '../tab/event/tab-opened';
-import { TabSearched } from '../tab/event/tab-searched';
 import { TabUnfollowed } from '../tab/event/tab-unfollowed';
 import { GetOpenedTabs } from '../tab/query/get-opened-tabs';
 import { GetTabByOpenId } from '../tab/query/get-tab-by-open-id';
@@ -24,6 +24,8 @@ import { StringMatcher } from '../utils/string-matcher';
 export class OpenedTabView {
     private tbodyElement: HTMLElement;
     private noTabRow: HTMLElement;
+    private isInitDone = false;
+    private filterTerms: string[];
 
     constructor(
         private commandBus: CommandBus,
@@ -79,6 +81,9 @@ export class OpenedTabView {
             const row = this.createTabRow(tab.openState, this.isTabFollowed(tab));
             this.tbodyElement.appendChild(row);
         }
+
+        this.isInitDone = true;
+        this.applyTabFilter();
     }
 
     private isTabFollowed(tab: Tab) {
@@ -88,7 +93,7 @@ export class OpenedTabView {
     private createNoTabRow() {
         const cell = document.createElement('td');
         cell.setAttribute('colspan', '5');
-        cell.textContent = 'No tab';
+        cell.textContent = 'No tab found';
 
         const row = document.createElement('tr');
         row.classList.add('transparent');
@@ -304,6 +309,7 @@ export class OpenedTabView {
         }
 
         this.insertRowAtIndex(rowToInsert, event.tabOpenState.index);
+        this.applyTabFilter();
     }
 
     private insertRowAtIndex(rowToInsert: HTMLElement, insertAtIndex: number) {
@@ -336,7 +342,7 @@ export class OpenedTabView {
     }
 
     private showNoTabRowIfTableIsEmpty() {
-        if (this.tbodyElement.querySelectorAll('tr').length <= 1) {
+        if (this.tbodyElement.querySelectorAll('tr:not(.filtered):not(.noTabRow)').length <= 0) {
             this.noTabRow.classList.remove('transparent');
         } else {
             this.noTabRow.classList.add('transparent');
@@ -408,7 +414,16 @@ export class OpenedTabView {
         }
     }
 
-    async onTabSearch(event: TabSearched) {
+    async onTabFilterRequest(event: TabFilterRequested) {
+        this.filterTerms = event.filterTerms;
+        this.applyTabFilter();
+    }
+
+    private applyTabFilter() {
+        if (!this.isInitDone) {
+            return;
+        }
+
         const rowList = Array.from(this.tbodyElement.querySelectorAll('tr'));
 
         for (const row of rowList) {
@@ -420,13 +435,13 @@ export class OpenedTabView {
             const title = titleCell.textContent.toLowerCase();
             const url = titleCell.getAttribute('data-url').toLowerCase();
 
-            if (this.stringMatcher.isCaseSensitiveMatch(event.searchTerms, [title, url])) {
+            if (this.stringMatcher.isCaseSensitiveMatch(this.filterTerms, [title, url])) {
                 row.classList.remove('filtered');
             } else {
                 row.classList.add('filtered');
             }
         }
 
-        // TODO show no tab row if no more row to show
+        this.showNoTabRowIfTableIsEmpty();
     }
 }

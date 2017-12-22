@@ -22,7 +22,7 @@ export class FollowedTabView {
     private tbodyElement: HTMLElement;
     private noTabRow: HTMLElement;
     private isInitDone = false;
-    private filterTerms: string[];
+    private filterTerms: string[] = null;
 
     constructor(
         private commandBus: CommandBus,
@@ -72,7 +72,7 @@ export class FollowedTabView {
         }
 
         for (const tab of tabList) {
-            if (!tab.openState) {
+            if (!tab.followState) {
                 continue;
             }
 
@@ -361,7 +361,7 @@ export class FollowedTabView {
     }
 
     private applyTabFilter() {
-        if (!this.isInitDone) {
+        if (!this.isInitDone || !this.hasFilterTerms()) {
             return;
         }
 
@@ -384,5 +384,9 @@ export class FollowedTabView {
         }
 
         this.showNoTabRowIfTableIsEmpty();
+    }
+
+    private hasFilterTerms() {
+        return null !== this.filterTerms && this.filterTerms.length > 0;
     }
 }

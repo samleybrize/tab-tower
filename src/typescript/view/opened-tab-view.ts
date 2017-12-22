@@ -25,7 +25,7 @@ export class OpenedTabView {
     private tbodyElement: HTMLElement;
     private noTabRow: HTMLElement;
     private isInitDone = false;
-    private filterTerms: string[];
+    private filterTerms: string[] = null;
 
     constructor(
         private commandBus: CommandBus,
@@ -420,7 +420,7 @@ export class OpenedTabView {
     }
 
     private applyTabFilter() {
-        if (!this.isInitDone) {
+        if (!this.isInitDone || !this.hasFilterTerms()) {
             return;
         }
 
@@ -443,5 +443,9 @@ export class OpenedTabView {
         }
 
         this.showNoTabRowIfTableIsEmpty();
+    }
+
+    private hasFilterTerms() {
+        return null !== this.filterTerms && this.filterTerms.length > 0;
     }
 }

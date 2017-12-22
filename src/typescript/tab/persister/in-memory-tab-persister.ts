@@ -73,6 +73,10 @@ export class InMemoryTabPersister implements TabPersister {
 
             this.followStateMap.set(clonedFollowState.id, clonedFollowState);
         }
+
+        if (this.decoratedTabPersister) {
+            this.decoratedTabPersister.persist(tabFollowState);
+        }
     }
 
     async setOpenIndex(followId: string, openIndex: number) {
@@ -82,8 +86,14 @@ export class InMemoryTabPersister implements TabPersister {
 
         const existingTabFollowState = this.followStateMap.get(followId);
 
-        if (existingTabFollowState) {
-            existingTabFollowState.openIndex = openIndex;
+        if (null == existingTabFollowState) {
+            return;
+        }
+
+        existingTabFollowState.openIndex = openIndex;
+
+        if (this.decoratedTabPersister) {
+            this.decoratedTabPersister.setOpenIndex(followId, openIndex);
         }
     }
 
@@ -94,8 +104,14 @@ export class InMemoryTabPersister implements TabPersister {
 
         const existingTabFollowState = this.followStateMap.get(followId);
 
-        if (existingTabFollowState) {
-            existingTabFollowState.faviconUrl = faviconUrl;
+        if (null == existingTabFollowState) {
+            return;
+        }
+
+        existingTabFollowState.faviconUrl = faviconUrl;
+
+        if (this.decoratedTabPersister) {
+            this.decoratedTabPersister.setFaviconUrl(followId, faviconUrl);
         }
     }
 
@@ -106,8 +122,14 @@ export class InMemoryTabPersister implements TabPersister {
 
         const existingTabFollowState = this.followStateMap.get(followId);
 
-        if (existingTabFollowState) {
-            existingTabFollowState.title = title;
+        if (null == existingTabFollowState) {
+            return;
+        }
+
+        existingTabFollowState.title = title;
+
+        if (this.decoratedTabPersister) {
+            this.decoratedTabPersister.setTitle(followId, title);
         }
     }
 
@@ -118,8 +140,14 @@ export class InMemoryTabPersister implements TabPersister {
 
         const existingTabFollowState = this.followStateMap.get(followId);
 
-        if (existingTabFollowState) {
-            existingTabFollowState.url = url;
+        if (null == existingTabFollowState) {
+            return;
+        }
+
+        existingTabFollowState.url = url;
+
+        if (this.decoratedTabPersister) {
+            this.decoratedTabPersister.setUrl(followId, url);
         }
     }
 
@@ -130,8 +158,14 @@ export class InMemoryTabPersister implements TabPersister {
 
         const existingTabFollowState = this.followStateMap.get(followId);
 
-        if (existingTabFollowState) {
-            existingTabFollowState.isInReaderMode = readerMode;
+        if (null == existingTabFollowState) {
+            return;
+        }
+
+        existingTabFollowState.isInReaderMode = readerMode;
+
+        if (this.decoratedTabPersister) {
+            this.decoratedTabPersister.setReaderMode(followId, readerMode);
         }
     }
 
@@ -142,8 +176,14 @@ export class InMemoryTabPersister implements TabPersister {
 
         const followStateToRemove = this.followStateMap.get(followId);
 
-        if (followStateToRemove) {
-            this.followStateMap.delete(followId);
+        if (null == followStateToRemove) {
+            return;
+        }
+
+        this.followStateMap.delete(followId);
+
+        if (this.decoratedTabPersister) {
+            this.decoratedTabPersister.remove(followId);
         }
     }
 }

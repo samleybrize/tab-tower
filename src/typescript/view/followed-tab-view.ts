@@ -160,10 +160,12 @@ export class FollowedTabView {
         `;
         linkElement.addEventListener('click', (event) => {
             const openTabId = +row.getAttribute('data-opened-tab-id');
+            const isOpeningTab = !!row.getAttribute('data-is-opening-tab');
 
             if (openTabId) {
                 this.commandBus.handle(new FocusTab(openTabId));
-            } else {
+            } else if (!isOpeningTab) {
+                row.setAttribute('data-is-opening-tab', '1');
                 const url = row.getAttribute('data-url');
                 const readerMode = !!row.getAttribute('data-reader-mode');
                 this.commandBus.handle(new OpenTab(url, readerMode, tab.followState.id));
@@ -366,6 +368,7 @@ export class FollowedTabView {
             this.updateTabReaderModeState(followedTabRow, event.tabOpenState.isInReaderMode);
             this.updateTabTitle(followedTabRow, event.tabOpenState.title);
             this.updateTabUrl(followedTabRow, event.tabOpenState.url);
+            followedTabRow.setAttribute('data-is-opening-tab', '0');
         }
     }
 

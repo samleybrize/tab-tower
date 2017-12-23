@@ -1,0 +1,56 @@
+#header {
+    .title {
+        margin-left: 15px;
+
+        span {
+            &.transition {
+                animation-duration: 0.6s;
+                animation-name: breadcrumbFadeIn;
+            }
+        }
+    }
+
+    #headerTabFilter {
+        label {
+            pointer-events: none;
+            transform: none;
+
+            i {
+                color: white;
+            }
+
+            &.active i {
+                color: black;
+            }
+        }
+
+        input {
+            width: 13rem;
+        }
+
+        &.collapsed {
+            label {
+                pointer-events: all;
+                cursor: pointer;
+            }
+
+            input {
+                width: 0;
+            }
+
+            .resetButton {
+                display: none;
+            }
+        }
+    }
+}
+
+@keyframes breadcrumbFadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

@@ -1,0 +1,88 @@
+#openedTabList,
+#followedTabList {
+    display: none;
+
+    &.show {
+        display: block;
+        animation-duration: 0.6s;
+        animation-name: viewShow;
+    }
+
+    .title {
+        cursor: pointer;
+
+        a {
+            display: block;
+            color: #444;
+        }
+
+        img {
+            height: 16px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+    }
+
+    .incognitoIndicator,
+    .openIndicator,
+    .readerModeIndicator {
+        text-align: center;
+
+        div {
+            position: relative;
+            min-height: 24px;
+        }
+
+        .off,
+        .on {
+            position: absolute;
+            top: 0;
+            left: calc(50% - 12px);
+            font-size: 24px;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+
+            &.transparent {
+                opacity: 0;
+            }
+        }
+
+        .off {
+            color: #999;
+        }
+
+        .on {
+            color: #64dd17;
+        }
+    }
+
+    .actions {
+        text-align: right;
+
+        .transparent {
+            display: none;
+        }
+
+        .closeButton {
+            margin-left: 8px;
+        }
+
+        .unfollowButton {
+            background-color: #ff9800;
+
+            &:hover {
+                background-color: lighten(#ff9800, 5%);
+            }
+        }
+    }
+
+    .noTabRow {
+        td {
+            text-align: center;
+        }
+
+        &.transparent {
+            display: none;
+        }
+    }
+}

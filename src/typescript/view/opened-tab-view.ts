@@ -171,7 +171,10 @@ export class OpenedTabView {
         });
 
         const cell = this.createCell('title');
+        cell.setAttribute('data-tooltip', 'Go to tab');
         cell.appendChild(linkElement);
+
+        jQuery(cell).tooltip();
 
         return cell;
     }

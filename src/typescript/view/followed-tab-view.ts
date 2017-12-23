@@ -240,15 +240,20 @@ export class FollowedTabView {
 
     private updateTabOpenState(row: HTMLElement, isOpened: boolean, tabId: number) {
         row.setAttribute('data-opened-tab-id', '' + tabId);
+        const titleCell = row.querySelector('.title');
 
         const closeButton = row.querySelector('.closeButton');
         this.updateOnOffIndicator(isOpened, row.querySelector('.openIndicator'));
 
         if (isOpened) {
             closeButton.classList.remove('transparent');
+            titleCell.setAttribute('data-tooltip', 'Go to tab');
         } else {
+            titleCell.setAttribute('data-tooltip', 'Open tab');
             closeButton.classList.add('transparent');
         }
+
+        jQuery(titleCell).tooltip();
     }
 
     private updateOnOffIndicator(isOn: boolean, cell: HTMLElement) {

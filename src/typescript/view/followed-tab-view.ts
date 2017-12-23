@@ -101,9 +101,9 @@ export class FollowedTabView {
         const row = document.createElement('tr');
 
         const titleCell = this.createTitleCell(tab, row);
-        const incognitoCell = this.createMaterialIconCell('incognitoIndicator');
-        const readerModeCell = this.createMaterialIconCell('readerModeIndicator');
-        const openIndicatorCell = this.createMaterialIconCell('openIndicator');
+        const incognitoCell = this.createOnOffIndicatorCell('incognitoIndicator');
+        const readerModeCell = this.createOnOffIndicatorCell('readerModeIndicator');
+        const openIndicatorCell = this.createOnOffIndicatorCell('openIndicator');
         const actionsCell = this.createCell('actions');
         this.addUnfollowButton(actionsCell, tab);
         this.addCloseButton(actionsCell, row);
@@ -140,9 +140,14 @@ export class FollowedTabView {
         return cell;
     }
 
-    private createMaterialIconCell(className?: string) {
+    private createOnOffIndicatorCell(className?: string) {
         const cell = this.createCell(className);
-        cell.innerHTML = '<i class="material-icons"></i>';
+        cell.innerHTML = `
+            <div>
+                <i class="material-icons off">highlight_off</i>
+                <i class="material-icons on">check_circle</i>
+            </div>
+        `;
 
         return cell;
     }
@@ -237,40 +242,36 @@ export class FollowedTabView {
         row.setAttribute('data-opened-tab-id', '' + tabId);
 
         const closeButton = row.querySelector('.closeButton');
-        const iconElement = row.querySelector('.openIndicator i');
-        iconElement.textContent = isOpened ? 'check_circle' : 'highlight_off';
+        this.updateOnOffIndicator(isOpened, row.querySelector('.openIndicator'));
 
         if (isOpened) {
-            iconElement.classList.add('yes');
             closeButton.classList.remove('transparent');
         } else {
-            iconElement.classList.remove('yes');
             closeButton.classList.add('transparent');
+        }
+    }
+
+    private updateOnOffIndicator(isOn: boolean, cell: HTMLElement) {
+        const iconOnElement = cell.querySelector('.on');
+        const iconOffElement = cell.querySelector('.off');
+
+        if (isOn) {
+            iconOnElement.classList.remove('transparent');
+            iconOffElement.classList.add('transparent');
+        } else {
+            iconOnElement.classList.add('transparent');
+            iconOffElement.classList.remove('transparent');
         }
     }
 
     private updateTabReaderModeState(row: HTMLElement, isInReaderMode: boolean) {
         row.setAttribute('data-reader-mode', isInReaderMode ? '1' : '');
 
-        const iconElement = row.querySelector('.readerModeIndicator i');
-        iconElement.textContent = isInReaderMode ? 'check_circle' : 'highlight_off';
-
-        if (isInReaderMode) {
-            iconElement.classList.add('yes');
-        } else {
-            iconElement.classList.remove('yes');
-        }
+        this.updateOnOffIndicator(isInReaderMode, row.querySelector('.readerModeIndicator'));
     }
 
     private updateTabIncognitoState(row: HTMLElement, isIncognito: boolean) {
-        const iconElement = row.querySelector('.incognitoIndicator i');
-        iconElement.textContent = isIncognito ? 'check_circle' : 'highlight_off';
-
-        if (isIncognito) {
-            iconElement.classList.add('yes');
-        } else {
-            iconElement.classList.remove('yes');
-        }
+        this.updateOnOffIndicator(isIncognito, row.querySelector('.incognitoIndicator'));
     }
 
     show() {

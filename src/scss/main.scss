@@ -77,8 +77,34 @@ table {
     .incognitoIndicator,
     .openIndicator,
     .readerModeIndicator {
-        color: #999;
         text-align: center;
+
+        div {
+            position: relative;
+            min-height: 24px;
+        }
+
+        .off,
+        .on {
+            position: absolute;
+            top: 0;
+            left: calc(50% - 12px);
+            font-size: 24px;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+
+            &.transparent {
+                opacity: 0;
+            }
+        }
+
+        .off {
+            color: #999;
+        }
+
+        .on {
+            color: #64dd17;
+        }
     }
 
     .actions {
@@ -101,10 +127,6 @@ table {
         &.transparent {
             display: none;
         }
-    }
-
-    .yes {
-        color: #64dd17;
     }
 
     tr.filtered {

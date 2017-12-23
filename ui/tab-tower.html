@@ -7,10 +7,10 @@
         <link rel="stylesheet" href="/dist/css/style.css" />
     </head>
     <body>
-        <div class="navbar-fixed">
+        <div id="header" class="navbar-fixed">
             <nav>
                 <div class="nav-wrapper">
-                    <span class="brand-logo">Tab Tower</span>
+                    <span class="brand-logo">Tab Tower &gt; <span></span></span>
                     <ul class="right hide-on-med-and-down">
                         <li>
                             <div id="tabFilter" class="input-field collapsed">
@@ -19,17 +19,14 @@
                                 <i class="material-icons resetButton">close</i>
                             </div>
                         </li>
-                        <li class="openedTabs active"><a>Opened tabs</a></li>
-                        <li class="followedTabs"><a>Followed tabs</a></li>
+                        <li class="openedTabs waves-effect waves-light"><a>Opened tabs</a></li>
+                        <li class="followedTabs waves-effect waves-light"><a>Followed tabs</a></li>
                     </ul>
                 </div>
             </nav>
         </div>
 
-        <h2>Opened tabs</h2>
         <div id="openedTabList"></div>
-
-        <h2>Followed tabs</h2>
         <div id="followedTabList"></div>
 
         <script src="/dist/js/ui.js"></script>

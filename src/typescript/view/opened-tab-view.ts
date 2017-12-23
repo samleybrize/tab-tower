@@ -31,7 +31,7 @@ export class OpenedTabView {
         private commandBus: CommandBus,
         private queryBus: QueryBus,
         private stringMatcher: StringMatcher,
-        containerElement: HTMLElement,
+        private containerElement: HTMLElement,
         private defaultFaviconUrl: string,
     ) {
         if (null == containerElement) {
@@ -297,6 +297,14 @@ export class OpenedTabView {
             followButton.classList.remove('transparent');
             unfollowButton.classList.add('transparent');
         }
+    }
+
+    show() {
+        this.containerElement.classList.add('show');
+    }
+
+    hide() {
+        this.containerElement.classList.remove('show');
     }
 
     async onTabOpen(event: TabOpened) {

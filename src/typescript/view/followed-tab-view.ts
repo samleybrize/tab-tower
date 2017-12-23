@@ -28,7 +28,7 @@ export class FollowedTabView {
         private commandBus: CommandBus,
         private queryBus: QueryBus,
         private stringMatcher: StringMatcher,
-        containerElement: HTMLElement,
+        private containerElement: HTMLElement,
         private defaultFaviconUrl: string,
     ) {
         if (null == containerElement) {
@@ -271,6 +271,14 @@ export class FollowedTabView {
         } else {
             iconElement.classList.remove('yes');
         }
+    }
+
+    show() {
+        this.containerElement.classList.add('show');
+    }
+
+    hide() {
+        this.containerElement.classList.remove('show');
     }
 
     async onTabClose(event: TabClosed) {

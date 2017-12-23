@@ -36,6 +36,7 @@ import { tabQueries } from './tab/query/tab-queries';
 import { ObjectUnserializer } from './utils/object-unserializer';
 import { StringMatcher } from './utils/string-matcher';
 import { FollowedTabView } from './view/followed-tab-view';
+import { HeaderView } from './view/header-view';
 import { OpenedTabView } from './view/opened-tab-view';
 import { TabFilterView } from './view/tab-filter-view';
 
@@ -50,6 +51,7 @@ async function main() {
     const followedTabView = new FollowedTabView(commandBus, queryBus, stringMatcher, document.querySelector('#followedTabList'), defaultFaviconUrl);
     const openedTabView = new OpenedTabView(commandBus, queryBus, stringMatcher, document.querySelector('#openedTabList'), defaultFaviconUrl);
     const tabSearchView = new TabFilterView(eventBus, document.querySelector('#tabFilter'));
+    const headerView = new HeaderView(followedTabView, openedTabView, document.querySelector('#header'));
 
     const objectUnserializer = new ObjectUnserializer();
     objectUnserializer.addSupportedClasses(tabCommands);
@@ -100,6 +102,7 @@ async function main() {
     eventBus.subscribe(TabUnfollowed, followedTabView.onTabUnfollow, followedTabView);
     eventBus.subscribe(TabUnfollowed, openedTabView.onTabUnfollow, openedTabView);
 
+    headerView.init();
     followedTabView.init();
     openedTabView.init();
     tabSearchView.init();

@@ -3,6 +3,7 @@ import { TabFilterRequested } from '../tab/event/tab-filter-requested';
 
 export class TabFilterView {
     private inputElement: HTMLInputElement;
+    private labelElement: HTMLLabelElement;
     private resetButton: HTMLElement;
 
     constructor(private eventBus: EventBus, private containerElement: HTMLInputElement) {
@@ -11,13 +12,13 @@ export class TabFilterView {
         }
 
         this.inputElement = containerElement.querySelector('input');
+        this.labelElement = containerElement.querySelector('label');
         this.resetButton = containerElement.querySelector('.resetButton');
     }
 
     init() {
-        // TODO on focus lost, or click on the reset button, if no filter text, hide input
         this.containerElement.addEventListener('click', () => {
-            this.containerElement.classList.remove('collapsed');
+            this.expand();
             this.inputElement.focus();
         });
         this.resetButton.addEventListener('click', (event) => {
@@ -25,18 +26,24 @@ export class TabFilterView {
 
             this.inputElement.value = '';
             this.inputElement.blur();
-            this.containerElement.classList.add('collapsed');
+            this.collapse();
         });
+
+        this.labelElement.setAttribute('data-tooltip', 'Filter tabs');
+        jQuery(this.labelElement).tooltip({});
+
+        this.initInput();
+    }
+
+    private initInput() {
         this.inputElement.addEventListener('blur', (event) => {
             if ('' == this.inputElement.value) {
-                this.containerElement.classList.add('collapsed');
+                this.collapse();
             }
         });
         this.inputElement.addEventListener('focus', (event) => {
-            this.containerElement.classList.remove('collapsed');
+            this.expand();
         });
-        this.containerElement.querySelector('label').setAttribute('data-tooltip', 'Filter tabs');
-        jQuery(this.containerElement.querySelector('label')).tooltip({});
 
         let timeoutReference: number = null;
         this.inputElement.addEventListener('input', (event) => {
@@ -48,9 +55,17 @@ export class TabFilterView {
         });
 
         if (this.inputElement.value) {
-            // TODO remove collapsed class
+            this.expand();
             this.notifyInputChange();
         }
+    }
+
+    private collapse() {
+        this.containerElement.classList.add('collapsed');
+    }
+
+    private expand() {
+        this.containerElement.classList.remove('collapsed');
     }
 
     private notifyInputChange() {

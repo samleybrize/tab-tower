@@ -1,4 +1,7 @@
 $roboto-font-path: '/ui/fonts/roboto/';
+$primary-color: #03a9f4; // light-blue
+$table-striped-color: #c8ebfb;
+$secondary-color: #42a5f5; // blue lighten-1
 
 @import 'node_modules/materialize-css/sass/materialize';
 @import 'materialize';
@@ -11,6 +14,13 @@ body {
 
 .brand-logo {
     margin-left: 15px;
+
+    span {
+        &.transition {
+            animation-duration: 0.6s;
+            animation-name: breadcrumbFadeIn;
+        }
+    }
 }
 
 #tabFilter {
@@ -40,11 +50,7 @@ body {
 }
 
 table {
-    width: 90%;
-    margin: auto;
     background: white;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
 
     td,
     th {
@@ -52,12 +58,13 @@ table {
     }
 
     th {
-        color: #757575;
+        color: #999;
     }
 
     .title {
         a {
             display: block;
+            color: #444;
         }
 
         img {
@@ -70,6 +77,7 @@ table {
     .incognitoIndicator,
     .openIndicator,
     .readerModeIndicator {
+        color: #999;
         text-align: center;
     }
 
@@ -96,10 +104,43 @@ table {
     }
 
     .yes {
-        color: green;
+        color: #64dd17;
     }
 
     tr.filtered {
         display: none;
+    }
+}
+
+#openedTabList,
+#followedTabList {
+    display: none;
+
+    &.show {
+        display: block;
+        animation-duration: 0.6s;
+        animation-name: viewShow;
+    }
+}
+
+@keyframes viewShow {
+    from {
+        opacity: 0;
+        transform: translateY(-100px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes breadcrumbFadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
     }
 }

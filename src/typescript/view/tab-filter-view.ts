@@ -27,6 +27,7 @@ export class TabFilterView {
             this.inputElement.value = '';
             this.inputElement.blur();
             this.collapse();
+            this.notifyInputChange();
         });
 
         this.labelElement.setAttribute('data-tooltip', 'Filter tabs');

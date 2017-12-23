@@ -27,6 +27,14 @@ body {
     label {
         pointer-events: none;
         transform: none;
+
+        i {
+            color: white;
+        }
+
+        &.active i {
+            color: black;
+        }
     }
 
     input {
@@ -116,6 +124,14 @@ table {
 
         .closeButton {
             margin-left: 8px;
+        }
+
+        .unfollowButton {
+            background-color: #ff9800;
+
+            &:hover {
+                background-color: lighten(#ff9800, 5%);
+            }
         }
     }
 

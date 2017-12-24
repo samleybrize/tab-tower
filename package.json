@@ -16,7 +16,7 @@
     "webpack": "^3.10.0"
   },
   "scripts": {
-    "start": "web-ext run --no-reload",
+    "start": "web-ext run --ignore-files='**/*'",
     "build": "npm run build-ts && npm run build-sass",
     "build-ts": "webpack",
     "build-sass": "node-sass src/scss/main.scss dist/css/style.css --source-map true",

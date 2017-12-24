@@ -18,14 +18,14 @@
             i {
                 color: white;
             }
-
-            &.active i {
-                color: black;
-            }
         }
 
         input {
             width: 13rem;
+
+            &:focus + label i {
+                color: black;
+            }
         }
 
         &.collapsed {

@@ -22,7 +22,8 @@ export class OpenedTabRetriever {
     }
 
     private createTab(rawTab: browser.tabs.Tab): TabOpenState {
-        if (this.isUrlIgnored(rawTab.url) || null === rawTab.id || null === rawTab.index) {
+        // incognito tabs are ignored for now
+        if (this.isUrlIgnored(rawTab.url) || null === rawTab.id || null === rawTab.index || rawTab.incognito) {
             return;
         }
 

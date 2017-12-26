@@ -415,7 +415,7 @@ export class FollowedTabView {
             this.updateTabReaderModeState(followedTabRow, event.tabOpenState.isInReaderMode);
             this.updateTabTitle(followedTabRow, event.tabOpenState.title);
             this.updateTabUrl(followedTabRow, event.tabOpenState.url);
-            followedTabRow.setAttribute('data-is-opening-tab', '0');
+            followedTabRow.removeAttribute('data-is-opening-tab');
         }
     }
 

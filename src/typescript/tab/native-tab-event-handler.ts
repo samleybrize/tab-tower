@@ -75,6 +75,8 @@ export class NativeTabEventHandler {
             return;
         }
 
+        // TODO notify event state change (loading, complete)
+
         if (updateInfo.title) {
             tabOpenState.title = updateInfo.title;
             this.eventBus.publish(new OpenedTabTitleUpdated(tabOpenState));

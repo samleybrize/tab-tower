@@ -89,6 +89,8 @@ export class FollowedTabModifier {
     }
 
     async onOpenTabFaviconUrlUpdate(event: OpenedTabFaviconUrlUpdated): Promise<void> {
+        // TODO ignore if updates are disabled
+        // TODO stack if needed
         const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
 
         if (followId) {
@@ -97,6 +99,8 @@ export class FollowedTabModifier {
     }
 
     async onOpenTabTitleUpdate(event: OpenedTabTitleUpdated): Promise<void> {
+        // TODO ignore if updates are disabled
+        // TODO stack if needed
         const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
 
         if (followId) {
@@ -105,6 +109,9 @@ export class FollowedTabModifier {
     }
 
     async onOpenTabUrlUpdate(event: OpenedTabUrlUpdated): Promise<void> {
+        // TODO if url is a privileged one, disable updates on associated followed tab, else enable them
+        // TODO if url is a non privileged one, enable updates and play stacked events on associated followed tab
+        // TODO disable event stack on associated followed tab
         const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
 
         if (followId) {
@@ -113,10 +120,15 @@ export class FollowedTabModifier {
     }
 
     async onOpenTabReaderModeStateUpdate(event: OpenedTabReaderModeStateUpdated): Promise<void> {
+        // TODO ignore if updates are disabled
+        // TODO stack if needed
         const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
 
         if (followId) {
             await this.tabPersister.setReaderMode(followId, event.tabOpenState.isInReaderMode);
         }
     }
+
+    // TODO when a tab is in 'loading' state, enable event stack on associated followed tab
+    // TODO when a tab is not in 'loading' state, disable event stack on associated followed tab
 }

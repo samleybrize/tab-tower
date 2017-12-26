@@ -295,6 +295,11 @@ export class FollowedTabView {
         const tabRow = this.getTabRowByOpenTabId(event.tabId);
 
         if (tabRow) {
+            const followId = tabRow.getAttribute('data-follow-id');
+            const upToDateTab = await this.queryBus.query(new GetTabByFollowId(followId));
+            this.updateTabTitle(tabRow, upToDateTab.followState.title);
+            this.updateTabUrl(tabRow, upToDateTab.followState.url);
+            this.updateTabFavicon(tabRow, upToDateTab.followState.faviconUrl);
             this.updateTabOpenState(tabRow, false, null);
         }
     }

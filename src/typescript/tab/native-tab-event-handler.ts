@@ -1,5 +1,6 @@
 import { EventBus } from '../bus/event-bus';
 import { OpenedTabFaviconUrlUpdated } from './event/opened-tab-favicon-url-updated';
+import { OpenedTabIsLoading } from './event/opened-tab-is-loading';
 import { OpenedTabMoved } from './event/opened-tab-moved';
 import { OpenedTabReaderModeStateUpdated } from './event/opened-tab-reader-mode-state-updated';
 import { OpenedTabTitleUpdated } from './event/opened-tab-title-updated';
@@ -75,7 +76,9 @@ export class NativeTabEventHandler {
             return;
         }
 
-        // TODO notify event state change (loading, complete)
+        if ('loading' == updateInfo.status) {
+            this.eventBus.publish(new OpenedTabIsLoading(tabOpenState));
+        }
 
         if (updateInfo.title) {
             tabOpenState.title = updateInfo.title;

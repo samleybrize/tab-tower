@@ -19,6 +19,10 @@ export class TabAssociationMaintainer {
     }
 
     async onTabUnfollow(event: TabUnfollowed) {
+        if (null == event.openState) {
+            return;
+        }
+
         const followId = this.getAssociatedFollowId(event.openState.id);
 
         if (followId) {

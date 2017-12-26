@@ -458,6 +458,8 @@ export class OpenedTabView {
         if (this.isEventHandlingNotReady()) {
             this.pendingEvents.push(this.onTabUnfollow.bind(this, event));
             return;
+        } else if (null == event.openState) {
+            return;
         }
 
         const tabRow = this.getTabRowByTabId(event.openState.id);

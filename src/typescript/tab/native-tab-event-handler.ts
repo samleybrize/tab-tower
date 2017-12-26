@@ -37,8 +37,10 @@ export class NativeTabEventHandler {
         await this.tabOpener.waitForNewTabLoad(nativeTab.id);
         const tabOpenState = await this.openedTabRetriever.getById(nativeTab.id);
 
-        this.eventBus.publish(new TabOpened(tabOpenState));
-        this.notifyTabMoveFromIndex(nativeTab.index + 1);
+        if (tabOpenState) {
+            this.eventBus.publish(new TabOpened(tabOpenState));
+            this.notifyTabMoveFromIndex(nativeTab.index + 1);
+        }
     }
 
     private async notifyTabMoveFromIndex(fromIndex: number) {

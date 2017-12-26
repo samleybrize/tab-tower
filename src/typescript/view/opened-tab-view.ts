@@ -25,6 +25,7 @@ export class OpenedTabView {
     private tbodyElement: HTMLElement;
     private noTabRow: HTMLElement;
     private isInitDone = false;
+    private pendingEvents: Array<() => void> = [];
     private filterTerms: string[] = null;
 
     constructor(
@@ -67,12 +68,6 @@ export class OpenedTabView {
         this.noTabRow = this.createNoTabRow();
         this.tbodyElement.appendChild(this.noTabRow);
 
-        if (0 == tabList.length) {
-            this.noTabRow.classList.remove('transparent');
-
-            return;
-        }
-
         for (const tab of tabList) {
             if (!tab.openState) {
                 continue;
@@ -83,7 +78,9 @@ export class OpenedTabView {
         }
 
         this.isInitDone = true;
+        await this.playPendingEvents();
         this.applyTabFilter();
+        this.showNoTabRowIfTableIsEmpty();
     }
 
     private isTabFollowed(tab: Tab) {
@@ -315,6 +312,11 @@ export class OpenedTabView {
     }
 
     async onTabOpen(event: TabOpened) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.onTabOpen.bind(this, event));
+            return;
+        }
+
         const rowToInsert = this.createTabRow(event.tabOpenState, false);
 
         if (0 == event.tabOpenState.index) {
@@ -325,6 +327,10 @@ export class OpenedTabView {
 
         this.insertRowAtIndex(rowToInsert, event.tabOpenState.index);
         this.applyTabFilter();
+    }
+
+    private isEventHandlingNotReady() {
+        return !this.isInitDone || this.pendingEvents.length;
     }
 
     private insertRowAtIndex(rowToInsert: HTMLElement, insertAtIndex: number) {
@@ -348,6 +354,11 @@ export class OpenedTabView {
     }
 
     async onTabClose(event: TabClosed) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.onTabClose.bind(this, event));
+            return;
+        }
+
         const openedTabRow = this.getTabRowByTabId(event.tabId);
 
         if (openedTabRow) {
@@ -365,6 +376,11 @@ export class OpenedTabView {
     }
 
     async onOpenTabMove(event: OpenedTabMoved) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.onOpenTabMove.bind(this, event));
+            return;
+        }
+
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -374,6 +390,11 @@ export class OpenedTabView {
     }
 
     async onOpenTabFaviconUrlUpdate(event: OpenedTabFaviconUrlUpdated) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.onOpenTabFaviconUrlUpdate.bind(this, event));
+            return;
+        }
+
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -382,6 +403,11 @@ export class OpenedTabView {
     }
 
     async onOpenTabTitleUpdate(event: OpenedTabTitleUpdated) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.onOpenTabTitleUpdate.bind(this, event));
+            return;
+        }
+
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -390,6 +416,11 @@ export class OpenedTabView {
     }
 
     async onOpenTabUrlUpdate(event: OpenedTabUrlUpdated) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.onOpenTabUrlUpdate.bind(this, event));
+            return;
+        }
+
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -398,6 +429,11 @@ export class OpenedTabView {
     }
 
     async onOpenTabReaderModeStateUpdate(event: OpenedTabReaderModeStateUpdated) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.onOpenTabReaderModeStateUpdate.bind(this, event));
+            return;
+        }
+
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -406,6 +442,11 @@ export class OpenedTabView {
     }
 
     async onTabFollow(event: TabFollowed) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.onTabFollow.bind(this, event));
+            return;
+        }
+
         const tabRow = this.getTabRowByTabId(event.tab.openState.id);
 
         if (tabRow) {
@@ -414,6 +455,11 @@ export class OpenedTabView {
     }
 
     async onTabUnfollow(event: TabUnfollowed) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.onTabUnfollow.bind(this, event));
+            return;
+        }
+
         const tabRow = this.getTabRowByTabId(event.openState.id);
 
         if (tabRow) {
@@ -422,6 +468,11 @@ export class OpenedTabView {
     }
 
     async onAssociateOpenedTabToFollowedTab(event: OpenedTabAssociatedToFollowedTab) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.onAssociateOpenedTabToFollowedTab.bind(this, event));
+            return;
+        }
+
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -462,5 +513,14 @@ export class OpenedTabView {
 
     private hasFilterTerms() {
         return null !== this.filterTerms && this.filterTerms.length > 0;
+    }
+
+    private async playPendingEvents() {
+        while (this.pendingEvents.length) {
+            const callback = this.pendingEvents.pop();
+            await callback();
+        }
+
+        this.pendingEvents = [];
     }
 }

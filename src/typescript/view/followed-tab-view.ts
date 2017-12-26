@@ -22,6 +22,7 @@ export class FollowedTabView {
     private tbodyElement: HTMLElement;
     private noTabRow: HTMLElement;
     private isInitDone = false;
+    private pendingEvents: Array<() => void> = [];
     private filterTerms: string[] = null;
 
     constructor(
@@ -65,12 +66,6 @@ export class FollowedTabView {
         this.noTabRow = this.createNoTabRow();
         this.tbodyElement.appendChild(this.noTabRow);
 
-        if (0 == tabList.length) {
-            this.noTabRow.classList.remove('transparent');
-
-            return;
-        }
-
         for (const tab of tabList) {
             if (!tab.followState) {
                 continue;
@@ -81,7 +76,9 @@ export class FollowedTabView {
         }
 
         this.isInitDone = true;
+        await this.playPendingEvents();
         this.applyTabFilter();
+        this.showNoTabRowIfTableIsEmpty();
     }
 
     private createNoTabRow() {
@@ -290,6 +287,11 @@ export class FollowedTabView {
     }
 
     async onTabClose(event: TabClosed) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.onTabClose.bind(this, event));
+            return;
+        }
+
         const tabRow = this.getTabRowByOpenTabId(event.tabId);
 
         if (tabRow) {
@@ -297,11 +299,20 @@ export class FollowedTabView {
         }
     }
 
+    private isEventHandlingNotReady() {
+        return !this.isInitDone || this.pendingEvents.length;
+    }
+
     private getTabRowByOpenTabId(openTabId: number): HTMLTableRowElement {
         return this.tbodyElement.querySelector(`tr[data-opened-tab-id="${openTabId}"]`);
     }
 
     async onOpenTabFaviconUrlUpdate(event: OpenedTabFaviconUrlUpdated) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.onOpenTabFaviconUrlUpdate.bind(this, event));
+            return;
+        }
+
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -310,6 +321,11 @@ export class FollowedTabView {
     }
 
     async onOpenTabTitleUpdate(event: OpenedTabTitleUpdated) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.onOpenTabTitleUpdate.bind(this, event));
+            return;
+        }
+
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -318,6 +334,11 @@ export class FollowedTabView {
     }
 
     async onOpenTabUrlUpdate(event: OpenedTabUrlUpdated) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.onOpenTabUrlUpdate.bind(this, event));
+            return;
+        }
+
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -326,6 +347,11 @@ export class FollowedTabView {
     }
 
     async onOpenTabReaderModeStateUpdate(event: OpenedTabReaderModeStateUpdated) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.onOpenTabReaderModeStateUpdate.bind(this, event));
+            return;
+        }
+
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -334,6 +360,11 @@ export class FollowedTabView {
     }
 
     async onTabFollow(event: TabFollowed) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.onTabFollow.bind(this, event));
+            return;
+        }
+
         const row = this.createTabRow(event.tab);
         this.tbodyElement.appendChild(row);
 
@@ -342,9 +373,15 @@ export class FollowedTabView {
     }
 
     async onTabUnfollow(event: TabUnfollowed) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.onTabUnfollow.bind(this, event));
+            return;
+        }
+
         const followedTabRow = this.tbodyElement.querySelector(`tr[data-follow-id="${event.oldFollowState.id}"]`);
 
         if (followedTabRow) {
+            jQuery(followedTabRow).find('[data-tooltip]').tooltip('close');
             followedTabRow.remove();
             this.showNoTabRowIfTableIsEmpty();
         }
@@ -359,6 +396,11 @@ export class FollowedTabView {
     }
 
     async onAssociateOpenedTabToFollowedTab(event: OpenedTabAssociatedToFollowedTab) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.onAssociateOpenedTabToFollowedTab.bind(this, event));
+            return;
+        }
+
         const followedTabRow: HTMLElement = this.tbodyElement.querySelector(`tr[data-follow-id="${event.tabFollowState.id}"]`);
 
         if (followedTabRow) {
@@ -405,5 +447,14 @@ export class FollowedTabView {
 
     private hasFilterTerms() {
         return null !== this.filterTerms && this.filterTerms.length > 0;
+    }
+
+    private async playPendingEvents() {
+        while (this.pendingEvents.length) {
+            const callback = this.pendingEvents.pop();
+            await callback();
+        }
+
+        this.pendingEvents = [];
     }
 }

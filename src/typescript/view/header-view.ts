@@ -53,4 +53,13 @@ export class HeaderView {
             this.breadcrumb.classList.add('transition');
         }, 0);
     }
+
+    notifyNumberOfOpenedTabsChanged(counter: number) {
+        console.log('e'); // TODO
+        this.openedTabButton.querySelector('.counter').textContent = '' + counter;
+    }
+
+    notifyNumberOfFollowedTabsChanged(counter: number) {
+        this.followedTabButton.querySelector('.counter').textContent = '' + counter;
+    }
 }

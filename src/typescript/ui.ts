@@ -38,6 +38,7 @@ import { StringMatcher } from './utils/string-matcher';
 import { FollowedTabView } from './view/followed-tab-view';
 import { HeaderView } from './view/header-view';
 import { OpenedTabView } from './view/opened-tab-view';
+import { TabCounter } from './view/tab-counter';
 import { TabFilterView } from './view/tab-filter-view';
 
 const defaultFaviconUrl = '/ui/images/default-favicon.svg';
@@ -48,10 +49,14 @@ async function main() {
     const queryBus = new QueryBus();
 
     const stringMatcher = new StringMatcher();
-    const followedTabView = new FollowedTabView(commandBus, queryBus, stringMatcher, document.querySelector('#followedTabList'), defaultFaviconUrl);
-    const openedTabView = new OpenedTabView(commandBus, queryBus, stringMatcher, document.querySelector('#openedTabList'), defaultFaviconUrl);
+    const tabCounter = new TabCounter();
+    const followedTabView = new FollowedTabView(commandBus, queryBus, stringMatcher, tabCounter, document.querySelector('#followedTabList'), defaultFaviconUrl);
+    const openedTabView = new OpenedTabView(commandBus, queryBus, stringMatcher, tabCounter, document.querySelector('#openedTabList'), defaultFaviconUrl);
     const tabSearchView = new TabFilterView(eventBus, document.querySelector('#headerTabFilter'));
     const headerView = new HeaderView(followedTabView, openedTabView, document.querySelector('#header'));
+
+    tabCounter.observeNumberOfFollowedTabs(headerView.notifyNumberOfFollowedTabsChanged.bind(headerView));
+    tabCounter.observeNumberOfOpenedTabs(headerView.notifyNumberOfOpenedTabsChanged.bind(headerView));
 
     const objectUnserializer = new ObjectUnserializer();
     objectUnserializer.addSupportedClasses(tabCommands);

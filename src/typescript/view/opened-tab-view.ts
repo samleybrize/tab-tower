@@ -20,6 +20,7 @@ import { GetTabByOpenId } from '../tab/query/get-tab-by-open-id';
 import { Tab } from '../tab/tab';
 import { TabOpenState } from '../tab/tab-open-state';
 import { StringMatcher } from '../utils/string-matcher';
+import { TabCounter } from './tab-counter';
 
 export class OpenedTabView {
     private tbodyElement: HTMLElement;
@@ -32,6 +33,7 @@ export class OpenedTabView {
         private commandBus: CommandBus,
         private queryBus: QueryBus,
         private stringMatcher: StringMatcher,
+        private tabCounter: TabCounter,
         private containerElement: HTMLElement,
         private defaultFaviconUrl: string,
     ) {
@@ -67,6 +69,7 @@ export class OpenedTabView {
         const tabList = await this.queryBus.query(new GetOpenedTabs());
         this.noTabRow = this.createNoTabRow();
         this.tbodyElement.appendChild(this.noTabRow);
+        let numberOfOpenedTabs = 0;
 
         for (const tab of tabList) {
             if (!tab.openState) {
@@ -75,9 +78,11 @@ export class OpenedTabView {
 
             const row = this.createTabRow(tab.openState, this.isTabFollowed(tab));
             this.tbodyElement.appendChild(row);
+            numberOfOpenedTabs++;
         }
 
         this.isInitDone = true;
+        this.tabCounter.setNumberOfOpenedTabs(numberOfOpenedTabs);
         await this.playPendingEvents();
         this.applyTabFilter();
         this.showNoTabRowIfTableIsEmpty();
@@ -327,6 +332,7 @@ export class OpenedTabView {
 
         this.insertRowAtIndex(rowToInsert, event.tabOpenState.index);
         this.applyTabFilter();
+        this.tabCounter.incrementNumberOfOpenedTabs();
     }
 
     private isEventHandlingNotReady() {
@@ -364,6 +370,7 @@ export class OpenedTabView {
         if (openedTabRow) {
             openedTabRow.remove();
             this.showNoTabRowIfTableIsEmpty();
+            this.tabCounter.decrementNumberOfOpenedTabs();
         }
     }
 

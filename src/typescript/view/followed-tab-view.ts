@@ -17,6 +17,7 @@ import { GetFollowedTabs } from '../tab/query/get-followed-tabs';
 import { GetTabByFollowId } from '../tab/query/get-tab-by-follow-id';
 import { Tab } from '../tab/tab';
 import { StringMatcher } from '../utils/string-matcher';
+import { TabCounter } from './tab-counter';
 
 export class FollowedTabView {
     private tbodyElement: HTMLElement;
@@ -29,6 +30,7 @@ export class FollowedTabView {
         private commandBus: CommandBus,
         private queryBus: QueryBus,
         private stringMatcher: StringMatcher,
+        private tabCounter: TabCounter,
         private containerElement: HTMLElement,
         private defaultFaviconUrl: string,
     ) {
@@ -65,6 +67,7 @@ export class FollowedTabView {
         const tabList = await this.queryBus.query(new GetFollowedTabs());
         this.noTabRow = this.createNoTabRow();
         this.tbodyElement.appendChild(this.noTabRow);
+        let numberOfFollowedTabs = 0;
 
         for (const tab of tabList) {
             if (!tab.followState) {
@@ -73,9 +76,11 @@ export class FollowedTabView {
 
             const row = this.createTabRow(tab);
             this.tbodyElement.appendChild(row);
+            numberOfFollowedTabs++;
         }
 
         this.isInitDone = true;
+        this.tabCounter.setNumberOfFollowedTabs(numberOfFollowedTabs);
         await this.playPendingEvents();
         this.applyTabFilter();
         this.showNoTabRowIfTableIsEmpty();
@@ -375,6 +380,7 @@ export class FollowedTabView {
 
         this.noTabRow.classList.add('transparent');
         this.applyTabFilter();
+        this.tabCounter.incrementNumberOfFollowedTabs();
     }
 
     async onTabUnfollow(event: TabUnfollowed) {
@@ -389,6 +395,7 @@ export class FollowedTabView {
             jQuery(followedTabRow).find('[data-tooltip]').tooltip('close');
             followedTabRow.remove();
             this.showNoTabRowIfTableIsEmpty();
+            this.tabCounter.decrementNumberOfFollowedTabs();
         }
     }
 

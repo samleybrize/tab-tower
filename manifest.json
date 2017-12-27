@@ -3,6 +3,11 @@
     "name": "Tab Tower",
     "version": "1.0",
     "description": "Description",
+    "applications": {
+        "gecko": {
+            "id": "{9da846ee-eae7-11e7-80c1-9a214cf093ae}"
+        }
+    },
     "icons": {
         "48": "icons/tab-tower-48.png",
         "96": "icons/tab-tower-96.png"
@@ -16,7 +21,9 @@
         "default_title": "Tab Tower"
     },
     "background": {
-        "scripts": ["dist/js/background.js"]
+        "scripts": [
+            "dist/js/background.js"
+        ]
     },
     "permissions": [
         "activeTab",

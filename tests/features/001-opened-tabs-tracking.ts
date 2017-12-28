@@ -15,8 +15,8 @@ describe('Opened tabs tracking', () => {
         driver = webdriverRetriever.getDriver();
         browserInstructionSender.init();
     });
-    after(() => {
-        driver.quit();
+    after(async () => {
+        await driver.quit();
         browserInstructionSender.shutdown();
     });
 
@@ -52,16 +52,53 @@ describe('Opened tabs tracking', () => {
         assert.isFalse(isNoTabRowVisible);
     });
 
-    xit("Title, url and favicon should be updated when an opened tab's url change", async () => {
-        // TODO
+    it("Title, url and favicon should be updated when an opened tab's url change", async () => {
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+
+        const newTabUrl = firefoxConfig.getExtensionUrl('/tests/resources/test-page2.html');
+        browserInstructionSender.send({action: 'change-tab-url', data: {tabIndex:1, url: newTabUrl}});
+        await sleep(1000);
+
+        const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
+        const openedTabRowList = await driver.findElements(By.css('#openedTabList tbody tr[data-tab-id]'));
+        const tabShownUrl = await openedTabRowList[0].findElement(By.css('.title a')).getAttribute('data-url');
+        const tabShownTitle = await openedTabRowList[0].findElement(By.css('.title a span')).getText();
+        const tabShownFaviconUrl = await openedTabRowList[0].findElement(By.css('.title a img')).getAttribute('src');
+
+        const expectedFaviconUrl = firefoxConfig.getExtensionUrl('/tests/resources/favicon2.png');
+        assert.equal(openedTabRowList.length, 1);
+        assert.equal(tabShownUrl, newTabUrl);
+        assert.equal(tabShownTitle, 'Test page 2');
+        assert.equal(tabShownFaviconUrl, expectedFaviconUrl);
+        assert.isFalse(isNoTabRowVisible);
     });
 
-    xit('Default favicon should be shown when an opened tab have not', async () => {
-        // TODO
+    it('Default favicon should be shown when an opened tab have not', async () => {
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+
+        const newTabUrl = firefoxConfig.getExtensionUrl('/tests/resources/test-page-without-favicon.html');
+        browserInstructionSender.send({action: 'change-tab-url', data: {tabIndex:1, url: newTabUrl}});
+        await sleep(1000);
+
+        const openedTabRowList = await driver.findElements(By.css('#openedTabList tbody tr[data-tab-id]'));
+        const tabShownFaviconUrl = await openedTabRowList[0].findElement(By.css('.title a img')).getAttribute('src');
+
+        const expectedFaviconUrl = firefoxConfig.getExtensionUrl('/ui/images/default-favicon.svg');
+        assert.equal(tabShownFaviconUrl, expectedFaviconUrl);
     });
 
-    xit("Default favicon should be shown when an opened tab's favicon can't be downloaded", async () => {
-        // TODO
+    it("Default favicon should be shown when an opened tab's favicon can't be downloaded", async () => {
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+
+        const newTabUrl = firefoxConfig.getExtensionUrl('/tests/resources/test-page-with-not-found-favicon.html');
+        browserInstructionSender.send({action: 'change-tab-url', data: {tabIndex:1, url: newTabUrl}});
+        await sleep(1000);
+
+        const openedTabRowList = await driver.findElements(By.css('#openedTabList tbody tr[data-tab-id]'));
+        const tabShownFaviconUrl = await openedTabRowList[0].findElement(By.css('.title a img')).getAttribute('src');
+
+        const expectedFaviconUrl = firefoxConfig.getExtensionUrl('/ui/images/default-favicon.svg');
+        assert.equal(tabShownFaviconUrl, expectedFaviconUrl);
     });
 
     xit('Reader mode should be shown in the opened tabs list when enabled', async () => {

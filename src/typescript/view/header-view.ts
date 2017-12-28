@@ -55,7 +55,6 @@ export class HeaderView {
     }
 
     notifyNumberOfOpenedTabsChanged(counter: number) {
-        console.log('e'); // TODO
         this.openedTabButton.querySelector('.counter').textContent = '' + counter;
     }
 

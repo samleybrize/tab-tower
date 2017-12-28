@@ -80,8 +80,8 @@ describe('Opened tabs tracking', () => {
         browserInstructionSender.send({action: 'change-tab-url', data: {tabIndex:1, url: newTabUrl}});
         await sleep(1000);
 
-        const openedTabRowList = await driver.findElements(By.css('#openedTabList tbody tr[data-tab-id]'));
-        const tabShownFaviconUrl = await openedTabRowList[0].findElement(By.css('.title a img')).getAttribute('src');
+        const openedTabRow = await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id]'));
+        const tabShownFaviconUrl = await openedTabRow.findElement(By.css('.title a img')).getAttribute('src');
 
         const expectedFaviconUrl = firefoxConfig.getExtensionUrl('/ui/images/default-favicon.svg');
         assert.equal(tabShownFaviconUrl, expectedFaviconUrl);
@@ -94,19 +94,43 @@ describe('Opened tabs tracking', () => {
         browserInstructionSender.send({action: 'change-tab-url', data: {tabIndex:1, url: newTabUrl}});
         await sleep(1000);
 
-        const openedTabRowList = await driver.findElements(By.css('#openedTabList tbody tr[data-tab-id]'));
-        const tabShownFaviconUrl = await openedTabRowList[0].findElement(By.css('.title a img')).getAttribute('src');
+        const openedTabRow = await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id]'));
+        const tabShownFaviconUrl = await openedTabRow.findElement(By.css('.title a img')).getAttribute('src');
 
         const expectedFaviconUrl = firefoxConfig.getExtensionUrl('/ui/images/default-favicon.svg');
         assert.equal(tabShownFaviconUrl, expectedFaviconUrl);
     });
 
-    xit('Reader mode should be shown in the opened tabs list when enabled', async () => {
-        // TODO
+    it('Reader mode should be shown in the opened tabs list when enabled', async () => {
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+
+        const newTabUrl = 'http://www.wikipedia.fr'; // TODO
+        browserInstructionSender.send({action: 'change-tab-url', data: {tabIndex:1, url: newTabUrl}});
+        await sleep(1000);
+        browserInstructionSender.send({action: 'toggle-reader-mode', data: {tabIndex:1}});
+        await sleep(2000);
+
+        const cell = await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] .readerModeIndicator'));
+        const onIndicator = cell.findElement(By.css('.on'));
+        const offIndicator = cell.findElement(By.css('.off'));
+
+        assert.isTrue(await onIndicator.isDisplayed());
+        assert.isFalse(await offIndicator.isDisplayed());
     });
 
-    xit('Reader mode should not be shown in the opened tabs list when disabled', async () => {
-        // TODO
+    it('Reader mode should not be shown in the opened tabs list when disabled', async () => {
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+
+        const newTabUrl = 'http://www.wikipedia.fr'; // TODO
+        browserInstructionSender.send({action: 'toggle-reader-mode', data: {tabIndex:1}});
+        await sleep(2000);
+
+        const cell = await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] .readerModeIndicator'));
+        const onIndicator = cell.findElement(By.css('.on'));
+        const offIndicator = cell.findElement(By.css('.off'));
+
+        assert.isFalse(await onIndicator.isDisplayed());
+        assert.isTrue(await offIndicator.isDisplayed());
     });
 
     xit('Opened tab should be removed from opened tabs list when closed', async () => {

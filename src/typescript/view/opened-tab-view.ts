@@ -332,6 +332,7 @@ export class OpenedTabView {
 
         this.insertRowAtIndex(rowToInsert, event.tabOpenState.index);
         this.applyTabFilter();
+        this.showNoTabRowIfTableIsEmpty();
         this.tabCounter.incrementNumberOfOpenedTabs();
     }
 

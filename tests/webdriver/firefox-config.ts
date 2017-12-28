@@ -36,14 +36,14 @@ export class FirefoxConfig {
         const helperExtensionPath = this.getHelperExtensionPath();
         const rootPath = this.getRootProjectPath();
 
-        childProcess.execSync(`cd '${rootPath}' && zip -r ${extensionPath} dist icons ui manifest.json`); // TODO
+        childProcess.execSync(`cd '${rootPath}' && zip -r ${extensionPath} dist icons ui manifest.json tests/resources`); // TODO
         childProcess.execSync(`cd '${rootPath}/tests/webdriver/browser-instruction-receiver-extension' && zip -r ${helperExtensionPath} background.js manifest.json`); // TODO
 
         this.isExtensionBuilded = true;
     }
 
     private getRootProjectPath() {
-        return path.join(__dirname, '../../..');
+        return path.join(__dirname, '../../../..');
     }
 
     private getExtensionPath() {

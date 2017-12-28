@@ -47,7 +47,7 @@ import { TabOpener } from './tab/tab-opener';
 import { TabRetriever } from './tab/tab-retriever';
 import { ObjectUnserializer } from './utils/object-unserializer';
 
-const extensionUrlsStartWith = `moz-extension://${location.host}/`;
+const uiUrlStartWith = `moz-extension://${location.host}/ui/tab-tower.html`;
 
 async function main() {
     const commandBus = new CommandBus();
@@ -61,7 +61,7 @@ async function main() {
     const followedTabModifier = new FollowedTabModifier(inMemoryTabPersister, tabAssociationMaintainer, eventBus, privilegedUrlDetector);
     const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
     const openedTabModifier = new OpenedTabModifier();
-    const openedTabRetriever = new OpenedTabRetriever(privilegedUrlDetector, [extensionUrlsStartWith]);
+    const openedTabRetriever = new OpenedTabRetriever(privilegedUrlDetector, [uiUrlStartWith]);
     const tabOpener = new TabOpener(openedTabRetriever, followedTabRetriever, tabAssociationMaintainer, eventBus);
     const tabCloser = new TabCloser();
     const tabRetriever = new TabRetriever(followedTabRetriever, openedTabRetriever, tabAssociationMaintainer, eventBus);

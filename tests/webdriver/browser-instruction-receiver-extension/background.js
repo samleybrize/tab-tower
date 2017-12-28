@@ -5,7 +5,7 @@ client.onmessage = function (event) {
 
     switch (message.action) {
         case 'open-tab':
-            browser.tabs.create({url: message.data.url});
+            browser.tabs.create({url: message.data.url, active: !!message.data.active});
             break;
     }
 }

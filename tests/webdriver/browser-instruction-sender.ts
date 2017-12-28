@@ -60,6 +60,10 @@ export class BrowserInstructionSender {
         return this.send({action: 'open-tab', data: {url}});
     }
 
+    async closeTab(tabIndex: number) {
+        return this.send({action: 'close-tab', data: {tabIndex}});
+    }
+
     async changeTabUrl(tabIndex: number, newUrl: string) {
         return this.send({action: 'change-tab-url', data: {tabIndex, url: newUrl}});
     }

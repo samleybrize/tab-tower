@@ -6,7 +6,12 @@ client.onmessage = async function (event) {
 
     switch (message.action) {
         case 'open-tab':
-            browser.tabs.create({url: message.data.url, active: !!message.data.active});
+            await browser.tabs.create({url: message.data.url, active: !!message.data.active});
+            break;
+
+        case 'close-tab':
+            targetTabId = await getTabIdByIndex(message.data.tabIndex);
+            await browser.tabs.remove(targetTabId);
             break;
 
         case 'change-tab-url':

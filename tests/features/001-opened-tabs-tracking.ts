@@ -102,8 +102,6 @@ describe('Opened tabs tracking', () => {
     });
 
     it('Reader mode should be shown in the opened tabs list when enabled', async () => {
-        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
-
         const newTabUrl = 'http://www.wikipedia.fr'; // TODO
         await browserInstructionSender.changeTabUrl(1, newTabUrl);
         await sleep(1000);
@@ -119,8 +117,6 @@ describe('Opened tabs tracking', () => {
     });
 
     it('Reader mode should not be shown in the opened tabs list when disabled', async () => {
-        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
-
         const newTabUrl = 'http://www.wikipedia.fr'; // TODO
         await browserInstructionSender.toggleReaderMode(1);
         await sleep(2000);
@@ -133,12 +129,19 @@ describe('Opened tabs tracking', () => {
         assert.isTrue(await offIndicator.isDisplayed());
     });
 
-    xit('Opened tab should be removed from opened tabs list when closed', async () => {
-        // TODO
+    it('Opened tab should be removed from opened tabs list when closed', async () => {
+        await browserInstructionSender.closeTab(1);
+        await sleep(1000);
+
+        const openedTabRowList = await driver.findElements(By.css('#openedTabList tbody tr[data-tab-id]'));
+
+        assert.strictEqual(openedTabRowList.length, 0);
     });
 
-    xit('The no tab row should appear when there is no opened tab anymore', async () => {
-        // TODO
+    it('The no tab row should appear when there is no opened tab anymore', async () => {
+        const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
+
+        assert.isTrue(isNoTabRowVisible);
     });
 
     xit('Incognito tabs should not be shown in the opened tabs list', async () => {

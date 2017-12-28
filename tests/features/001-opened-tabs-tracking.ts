@@ -117,7 +117,6 @@ describe('Opened tabs tracking', () => {
     });
 
     it('Reader mode should not be shown in the opened tabs list when disabled', async () => {
-        const newTabUrl = 'http://www.wikipedia.fr'; // TODO
         await browserInstructionSender.toggleReaderMode(1);
         await sleep(2000);
 
@@ -144,7 +143,15 @@ describe('Opened tabs tracking', () => {
         assert.isTrue(isNoTabRowVisible);
     });
 
-    xit('Incognito tabs should not be shown in the opened tabs list', async () => {
-        // TODO
+    it('Incognito tabs should not be shown in the opened tabs list', async () => {
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+
+        const url = firefoxConfig.getExtensionUrl('/tests/resources/test-page1.html');
+        await browserInstructionSender.createWindow(true, url);
+        await sleep(1000);
+
+        const openedTabRowList = await driver.findElements(By.css('#openedTabList tbody tr[data-tab-id]'));
+
+        assert.strictEqual(openedTabRowList.length, 0);
     });
 });

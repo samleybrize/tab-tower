@@ -71,4 +71,11 @@ export class BrowserInstructionSender {
     async toggleReaderMode(tabIndex: number) {
         return this.send({action: 'toggle-reader-mode', data: {tabIndex}});
     }
+
+    async createWindow(isIncognito: boolean, url: string) {
+        return this.send({action: 'create-window', data: {
+            isIncognito,
+            url,
+        }});
+    }
 }

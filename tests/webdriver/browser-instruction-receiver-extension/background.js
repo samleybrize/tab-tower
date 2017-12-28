@@ -28,6 +28,11 @@ client.onmessage = async function (event) {
             await browser.tabs.toggleReaderMode(targetTabId);
             await browser.tabs.update(currentTabId, {active: true});
             break;
+
+        case 'create-window':
+            console.log(message); // TODO
+            await browser.windows.create({incognito: !!message.data.isIncognito, url: message.data.url});
+            break;
     }
 }
 

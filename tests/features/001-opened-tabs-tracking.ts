@@ -1,17 +1,22 @@
 import { assert } from 'chai';
 import { Builder, By, Key, until, WebDriver } from 'selenium-webdriver';
+
+import { BrowserInstructionSender } from '../webdriver/browser-instruction-sender';
 import { WebDriverRetriever } from '../webdriver/webdriver-retriever';
 
 let webdriverRetriever: WebDriverRetriever;
 let driver: WebDriver;
+const browserInstructionSender: BrowserInstructionSender = BrowserInstructionSender.getInstance();
 
 describe('Opened tabs tracking', () => {
     before(() => {
         webdriverRetriever = WebDriverRetriever.getInstance();
         driver = webdriverRetriever.getDriver();
+        browserInstructionSender.init();
     });
     after(() => {
         driver.quit();
+        browserInstructionSender.shutdown();
     });
 
     it('The no tab row should appear when there is no opened tab', async () => {
@@ -27,6 +32,7 @@ describe('Opened tabs tracking', () => {
 
     xit('Opened tab should appear in the opened tabs list', async () => {
         // TODO
+        browserInstructionSender.send({action: 'open-tab', data: {url: 'http://google.fr'}}); // TODO
     });
 
     xit("Title, url and favicon should be updated when an opened tab's url change", async () => {

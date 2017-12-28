@@ -13,6 +13,7 @@ export class FirefoxConfig {
 
         const firefoxProfile = new Profile();
         firefoxProfile.addExtension(this.getExtensionPath());
+        firefoxProfile.addExtension(this.getHelperExtensionPath());
         firefoxProfile.setPreference('xpinstall.signatures.required', false);
 
         // used to fix the random uuid assigned by firefox to the extension
@@ -32,9 +33,11 @@ export class FirefoxConfig {
         }
 
         const extensionPath = this.getExtensionPath();
+        const helperExtensionPath = this.getHelperExtensionPath();
         const rootPath = this.getRootProjectPath();
 
         childProcess.execSync(`cd '${rootPath}' && zip -r ${extensionPath} dist icons ui manifest.json`); // TODO
+        childProcess.execSync(`cd '${rootPath}/tests/webdriver/browser-instruction-receiver-extension' && zip -r ${helperExtensionPath} background.js manifest.json`); // TODO
 
         this.isExtensionBuilded = true;
     }
@@ -45,6 +48,10 @@ export class FirefoxConfig {
 
     private getExtensionPath() {
         return path.join(os.tmpdir(), 'tab-tower.xpi');
+    }
+
+    private getHelperExtensionPath() {
+        return path.join(os.tmpdir(), 'tab-tower-helper.xpi');
     }
 
     private getFirefoxBinaryPath() {

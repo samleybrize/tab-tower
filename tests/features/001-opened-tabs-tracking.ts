@@ -35,7 +35,7 @@ describe('Opened tabs tracking', () => {
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
 
         const newTabUrl = firefoxConfig.getExtensionUrl('/tests/resources/test-page1.html');
-        browserInstructionSender.send({action: 'open-tab', data: {url: newTabUrl}});
+        await browserInstructionSender.openTab(newTabUrl);
         await sleep(1000);
 
         const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
@@ -56,7 +56,7 @@ describe('Opened tabs tracking', () => {
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
 
         const newTabUrl = firefoxConfig.getExtensionUrl('/tests/resources/test-page2.html');
-        browserInstructionSender.send({action: 'change-tab-url', data: {tabIndex:1, url: newTabUrl}});
+        await browserInstructionSender.changeTabUrl(1, newTabUrl);
         await sleep(1000);
 
         const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
@@ -77,7 +77,7 @@ describe('Opened tabs tracking', () => {
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
 
         const newTabUrl = firefoxConfig.getExtensionUrl('/tests/resources/test-page-without-favicon.html');
-        browserInstructionSender.send({action: 'change-tab-url', data: {tabIndex:1, url: newTabUrl}});
+        await browserInstructionSender.changeTabUrl(1, newTabUrl);
         await sleep(1000);
 
         const openedTabRow = await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id]'));
@@ -91,7 +91,7 @@ describe('Opened tabs tracking', () => {
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
 
         const newTabUrl = firefoxConfig.getExtensionUrl('/tests/resources/test-page-with-not-found-favicon.html');
-        browserInstructionSender.send({action: 'change-tab-url', data: {tabIndex:1, url: newTabUrl}});
+        await browserInstructionSender.changeTabUrl(1, newTabUrl);
         await sleep(1000);
 
         const openedTabRow = await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id]'));
@@ -105,9 +105,9 @@ describe('Opened tabs tracking', () => {
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
 
         const newTabUrl = 'http://www.wikipedia.fr'; // TODO
-        browserInstructionSender.send({action: 'change-tab-url', data: {tabIndex:1, url: newTabUrl}});
+        await browserInstructionSender.changeTabUrl(1, newTabUrl);
         await sleep(1000);
-        browserInstructionSender.send({action: 'toggle-reader-mode', data: {tabIndex:1}});
+        await browserInstructionSender.toggleReaderMode(1);
         await sleep(2000);
 
         const cell = await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] .readerModeIndicator'));
@@ -122,7 +122,7 @@ describe('Opened tabs tracking', () => {
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
 
         const newTabUrl = 'http://www.wikipedia.fr'; // TODO
-        browserInstructionSender.send({action: 'toggle-reader-mode', data: {tabIndex:1}});
+        await browserInstructionSender.toggleReaderMode(1);
         await sleep(2000);
 
         const cell = await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] .readerModeIndicator'));

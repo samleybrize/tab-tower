@@ -40,7 +40,15 @@ export class BrowserInstructionSender {
         });
     }
 
-    async send(message: Message) {
+    shutdown(): Promise<void> {
+        return new Promise((resolve) => {
+            this.httpServer.close(() => {
+                resolve();
+            });
+        });
+    }
+
+    private async send(message: Message) {
         if (null == this.websocketServer) {
             throw new Error('Websocket server not initialized');
         }
@@ -48,11 +56,15 @@ export class BrowserInstructionSender {
         this.websocketServer.broadcastUTF(JSON.stringify(message));
     }
 
-    shutdown(): Promise<void> {
-        return new Promise((resolve) => {
-            this.httpServer.close(() => {
-                resolve();
-            });
-        });
+    async openTab(url: string) {
+        return this.send({action: 'open-tab', data: {url}});
+    }
+
+    async changeTabUrl(tabIndex: number, newUrl: string) {
+        return this.send({action: 'change-tab-url', data: {tabIndex, url: newUrl}});
+    }
+
+    async toggleReaderMode(tabIndex: number) {
+        return this.send({action: 'toggle-reader-mode', data: {tabIndex}});
     }
 }

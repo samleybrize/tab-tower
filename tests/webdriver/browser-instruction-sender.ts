@@ -1,4 +1,5 @@
 import * as http from 'http';
+import { WebDriver } from 'selenium-webdriver';
 import { server as WebSocketServer } from 'websocket';
 
 interface Message {
@@ -81,5 +82,13 @@ export class BrowserInstructionSender {
             isIncognito,
             url,
         }});
+    }
+
+    async triggerDoubleClick(webdriver: WebDriver, quotelessCssSelector: string) {
+        return webdriver.executeScript(`
+            var doubleClickEvent = document.createEvent('MouseEvents');
+            doubleClickEvent.initEvent('dblclick', true, true);
+            document.querySelector('${quotelessCssSelector}').dispatchEvent(doubleClickEvent);
+        `);
     }
 }

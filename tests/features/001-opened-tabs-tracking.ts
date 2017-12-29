@@ -173,6 +173,25 @@ describe('Opened tabs tracking', () => {
         assert.equal(tab2ShownFaviconUrl, expectedFaviconUrl1);
     });
 
+    it('Associated tab should be closed when clicking on a close button in the opened tab list', async () => {
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+
+        await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] .closeButton')).click();
+        await sleep(1000);
+
+        const openedTabRowList = await driver.findElements(By.css('#openedTabList tbody tr[data-tab-id]'));
+        const tabShownUrl = await openedTabRowList[0].findElement(By.css('.title a')).getAttribute('data-url');
+        const tabShownTitle = await openedTabRowList[0].findElement(By.css('.title a span')).getText();
+        const tabShownFaviconUrl = await openedTabRowList[0].findElement(By.css('.title a img')).getAttribute('src');
+
+        const expectedUrl = firefoxConfig.getExtensionUrl('/tests/resources/test-page1.html');
+        const expectedFaviconUrl = firefoxConfig.getExtensionUrl('/tests/resources/favicon1.png');
+        assert.equal(openedTabRowList.length, 1);
+        assert.equal(tabShownUrl, expectedUrl);
+        assert.equal(tabShownTitle, 'Test page 1');
+        assert.equal(tabShownFaviconUrl, expectedFaviconUrl);
+    });
+
     it('Incognito tabs should not be shown in the opened tabs list', async () => {
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
 

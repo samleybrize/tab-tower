@@ -14,6 +14,11 @@ client.onmessage = async function (event) {
             await browser.tabs.remove(targetTabId);
             break;
 
+        case 'move-tab':
+            targetTabId = await getTabIdByIndex(message.data.tabIndex);
+            await browser.tabs.move(targetTabId, {index: message.data.targetIndex});
+            break;
+
         case 'change-tab-url':
             targetTabId = await getTabIdByIndex(message.data.tabIndex);
             browser.tabs.update(targetTabId, {url: message.data.url});
@@ -30,7 +35,6 @@ client.onmessage = async function (event) {
             break;
 
         case 'create-window':
-            console.log(message); // TODO
             await browser.windows.create({incognito: !!message.data.isIncognito, url: message.data.url});
             break;
     }

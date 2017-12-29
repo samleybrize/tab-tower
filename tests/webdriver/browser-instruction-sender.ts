@@ -64,6 +64,10 @@ export class BrowserInstructionSender {
         return this.send({action: 'close-tab', data: {tabIndex}});
     }
 
+    async moveTab(tabIndex: number, targetIndex: number) {
+        return this.send({action: 'move-tab', data: {tabIndex, targetIndex}});
+    }
+
     async changeTabUrl(tabIndex: number, newUrl: string) {
         return this.send({action: 'change-tab-url', data: {tabIndex, url: newUrl}});
     }

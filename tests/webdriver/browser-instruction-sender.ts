@@ -91,4 +91,16 @@ export class BrowserInstructionSender {
             document.querySelector('${quotelessCssSelector}').dispatchEvent(doubleClickEvent);
         `);
     }
+
+    async focusElement(webdriver: WebDriver, quotelessCssSelector: string) {
+        return webdriver.executeScript(`
+            document.querySelector('${quotelessCssSelector}').focus();
+        `);
+    }
+
+    async blurElement(webdriver: WebDriver, quotelessCssSelector: string) {
+        return webdriver.executeScript(`
+            document.querySelector('${quotelessCssSelector}').blur();
+        `);
+    }
 }

@@ -37,8 +37,8 @@
     "lint": "npm run lint:ts && npm run lint:sass",
     "lint:ts": "tslint -p tsconfig.json --type-check './src/**/*.ts'",
     "lint:sass": "sass-lint -v -q",
-    "pretest": "npm run build",
-    "test": "tsc -p tsconfig.test.json && mocha --require source-map-support/register dist/tests --recursive --timeout 20000"
+    "pretest": "npm run build && tsc -p tsconfig.test.json",
+    "test": "mocha --require source-map-support/register dist/tests --recursive --timeout 20000 -b"
   },
   "dependencies": {
     "material-design-icons": "^3.0.1",

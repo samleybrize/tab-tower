@@ -36,7 +36,7 @@ describe('Opened tabs tracking', () => {
 
         const newTabUrl = firefoxConfig.getExtensionUrl('/tests/resources/test-page1.html');
         await browserInstructionSender.openTab(newTabUrl);
-        await sleep(1000);
+        await driver.wait(until.elementLocated(By.css('#openedTabList tbody tr[data-tab-id]')), 3000);
 
         const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
         const openedTabRowList = await driver.findElements(By.css('#openedTabList tbody tr[data-tab-id]'));
@@ -102,27 +102,27 @@ describe('Opened tabs tracking', () => {
     });
 
     it('Reader mode should be shown in the opened tabs list when enabled', async () => {
+        const cell = await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] .readerModeIndicator'));
+        const onIndicator = cell.findElement(By.css('.on'));
+        const offIndicator = cell.findElement(By.css('.off'));
+
         const newTabUrl = 'http://www.wikipedia.fr'; // TODO
         await browserInstructionSender.changeTabUrl(1, newTabUrl);
         await sleep(1000);
         await browserInstructionSender.toggleReaderMode(1);
-        await sleep(2000);
-
-        const cell = await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] .readerModeIndicator'));
-        const onIndicator = cell.findElement(By.css('.on'));
-        const offIndicator = cell.findElement(By.css('.off'));
+        await driver.wait(until.elementIsNotVisible(offIndicator), 3000);
 
         assert.isTrue(await onIndicator.isDisplayed());
         assert.isFalse(await offIndicator.isDisplayed());
     });
 
     it('Reader mode should not be shown in the opened tabs list when disabled', async () => {
-        await browserInstructionSender.toggleReaderMode(1);
-        await sleep(2000);
-
         const cell = await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] .readerModeIndicator'));
         const onIndicator = cell.findElement(By.css('.on'));
         const offIndicator = cell.findElement(By.css('.off'));
+
+        await browserInstructionSender.toggleReaderMode(1);
+        await driver.wait(until.elementIsNotVisible(onIndicator), 3000);
 
         assert.isFalse(await onIndicator.isDisplayed());
         assert.isTrue(await offIndicator.isDisplayed());
@@ -150,7 +150,8 @@ describe('Opened tabs tracking', () => {
         const newTabUrl2 = firefoxConfig.getExtensionUrl('/tests/resources/test-page2.html');
         await browserInstructionSender.openTab(newTabUrl1);
         await browserInstructionSender.openTab(newTabUrl2);
-        await sleep(1000);
+        await driver.wait(until.elementsLocated(By.css('#openedTabList tbody tr[data-index="1"]')), 3000);
+        await driver.wait(until.elementsLocated(By.css('#openedTabList tbody tr[data-index="2"]')), 3000);
         await browserInstructionSender.moveTab(1, 2);
         await sleep(1000);
 

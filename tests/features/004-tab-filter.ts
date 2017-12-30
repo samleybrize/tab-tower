@@ -39,7 +39,7 @@ describe('Tab filter', () => {
         await driver.wait(until.elementTextIs(followedTabsCounter, '3'), 2000);
     });
     after(async () => {
-        // await driver.quit();
+        await driver.quit();
         browserInstructionSender.shutdown();
     });
     afterEach(async () => {

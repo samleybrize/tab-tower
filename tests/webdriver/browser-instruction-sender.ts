@@ -44,8 +44,12 @@ export class BrowserInstructionSender {
     shutdown(): Promise<void> {
         return new Promise((resolve) => {
             this.httpServer.close(() => {
+                this.httpServer = null;
                 resolve();
             });
+
+            this.websocketServer.closeAllConnections();
+            this.websocketServer = null;
         });
     }
 

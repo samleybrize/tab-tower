@@ -135,7 +135,7 @@ describe('Tab filter', () => {
             assert.isFalse(isTabRow4Visible);
         });
 
-        it('TODO clear input', async () => {
+        it('Should disable filter when clearing the input', async () => {
             await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
             await sleep(500);
             await driver.findElement(By.css('#headerTabFilter input')).clear();
@@ -154,7 +154,7 @@ describe('Tab filter', () => {
             assert.isTrue(isTabRow4Visible);
         });
 
-        it('TODO reset button when input is empty', async () => {
+        it('Should do nothing when clicking on the reset button while the input is empty', async () => {
             await driver.findElement(By.css('#headerTabFilter .resetButton')).click();
             await sleep(500);
 
@@ -171,7 +171,7 @@ describe('Tab filter', () => {
             assert.isTrue(isTabRow4Visible);
         });
 
-        it('TODO reset button when input is not empty', async () => {
+        it('Should disable filter when the reset button is clicked', async () => {
             await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
             await sleep(500);
             await driver.findElement(By.css('#headerTabFilter .resetButton')).click();
@@ -273,7 +273,7 @@ describe('Tab filter', () => {
             assert.isFalse(isTabRow3Visible);
         });
 
-        it('TODO clear input', async () => {
+        it('Should disable filter when clearing the input', async () => {
             await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
             await sleep(500);
             await driver.findElement(By.css('#headerTabFilter input')).clear();
@@ -290,7 +290,7 @@ describe('Tab filter', () => {
             assert.isTrue(isTabRow3Visible);
         });
 
-        it('TODO reset button when input is empty', async () => {
+        it('Should do nothing when clicking on the reset button while the input is empty', async () => {
             await driver.findElement(By.css('#headerTabFilter .resetButton')).click();
             await sleep(500);
 
@@ -305,7 +305,7 @@ describe('Tab filter', () => {
             assert.isTrue(isTabRow3Visible);
         });
 
-        it('TODO reset button when input is not empty', async () => {
+        it('Should disable filter when the reset button is clicked', async () => {
             await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
             await sleep(500);
             await driver.findElement(By.css('#headerTabFilter .resetButton')).click();
@@ -357,7 +357,7 @@ describe('Tab filter', () => {
             await screenshotTaker.take('tab-filter-initial-state-with-text', headerElement);
         });
 
-        it('TODO reset button when input is empty', async () => {
+        it('State of the filter block when clicking on the reset button while the input is empty', async () => {
             await driver.findElement(By.css('#headerTabFilter .resetButton')).click();
             await sleep(500);
 
@@ -365,7 +365,7 @@ describe('Tab filter', () => {
             await screenshotTaker.take('tab-filter-reset-when-empty', headerElement);
         });
 
-        it('TODO reset button when input is not empty', async () => {
+        it('State of the filter block when clicking on the reset button while the input is not empty', async () => {
             await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some text');
             await driver.findElement(By.css('#headerTabFilter .resetButton')).click();
             await sleep(500);

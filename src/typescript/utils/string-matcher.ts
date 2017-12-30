@@ -1,8 +1,8 @@
 export class StringMatcher {
     isCaseSensitiveMatch(searchTerms: string[], matchAgainst: string[]) {
         for (const searchTerm of searchTerms) {
-            for (const t of matchAgainst) {
-                if (t.indexOf(searchTerm) >= 0) {
+            for (const stringToMatchAgainst of matchAgainst) {
+                if (stringToMatchAgainst.indexOf(searchTerm) >= 0) {
                     return true;
                 }
             }

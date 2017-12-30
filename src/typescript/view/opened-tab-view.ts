@@ -508,8 +508,8 @@ export class OpenedTabView {
             }
 
             const titleCell = row.querySelector('.title a');
-            const title = titleCell.textContent.toLowerCase();
-            const url = titleCell.getAttribute('data-url').toLowerCase();
+            const title = titleCell.textContent.toLowerCase().trim();
+            const url = titleCell.getAttribute('data-url').toLowerCase().trim();
 
             if (this.stringMatcher.isCaseSensitiveMatch(this.filterTerms, [title, url])) {
                 row.classList.remove('filtered');

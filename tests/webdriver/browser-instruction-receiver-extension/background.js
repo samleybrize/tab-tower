@@ -5,6 +5,11 @@ client.onmessage = async function (event) {
     let targetTabId;
 
     switch (message.action) {
+        case 'reload-tab':
+            targetTabId = await getTabIdByIndex(message.data.tabIndex);
+            await browser.tabs.reload(targetTabId);
+            break;
+
         case 'open-tab':
             await browser.tabs.create({url: message.data.url, active: !!message.data.active});
             break;

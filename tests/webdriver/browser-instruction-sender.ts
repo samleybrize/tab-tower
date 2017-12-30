@@ -61,6 +61,10 @@ export class BrowserInstructionSender {
         this.websocketServer.broadcastUTF(JSON.stringify(message));
     }
 
+    async reloadTab(tabIndex: number) {
+        return this.send({action: 'reload-tab', data: {tabIndex}});
+    }
+
     async openTab(url: string) {
         return this.send({action: 'open-tab', data: {url}});
     }

@@ -189,6 +189,25 @@ describe('Tab filter', () => {
             assert.isTrue(isTabRow3Visible);
             assert.isTrue(isTabRow4Visible);
         });
+
+        it('Should filter at startup when the input is not empty', async () => {
+            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
+            await sleep(500);
+            await browserInstructionSender.reloadTab(0);
+            await sleep(500);
+
+            const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
+            const isTabRow1Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="1"]')).isDisplayed();
+            const isTabRow2Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="2"]')).isDisplayed();
+            const isTabRow3Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="3"]')).isDisplayed();
+            const isTabRow4Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="4"]')).isDisplayed();
+
+            assert.isFalse(isNoTabRowVisible);
+            assert.isFalse(isTabRow1Visible);
+            assert.isTrue(isTabRow2Visible);
+            assert.isFalse(isTabRow3Visible);
+            assert.isFalse(isTabRow4Visible);
+        });
     });
 
     describe('Followed tabs', () => {
@@ -321,6 +340,27 @@ describe('Tab filter', () => {
             assert.isTrue(isTabRow2Visible);
             assert.isTrue(isTabRow3Visible);
         });
+
+        it('Should filter at startup when the input is not empty', async () => {
+            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
+            await sleep(500);
+            await browserInstructionSender.reloadTab(0);
+            await sleep(500);
+
+            const followedTabListElement = driver.findElement(By.css('#followedTabList'));
+            await driver.findElement(By.css('#header .followedTabs')).click();
+            await driver.wait(until.elementIsVisible(followedTabListElement), 3000);
+
+            const isNoTabRowVisible = await driver.findElement(By.css('#followedTabList tbody .noTabRow')).isDisplayed();
+            const isTabRow1Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="2"]')).isDisplayed();
+            const isTabRow2Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="3"]')).isDisplayed();
+            const isTabRow3Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="4"]')).isDisplayed();
+
+            assert.isFalse(isNoTabRowVisible);
+            assert.isFalse(isTabRow1Visible);
+            assert.isTrue(isTabRow2Visible);
+            assert.isFalse(isTabRow3Visible);
+        });
     });
 
     describe('Screenshots', () => {
@@ -372,6 +412,16 @@ describe('Tab filter', () => {
 
             const headerElement = driver.findElement(By.css('#header'));
             await screenshotTaker.take('tab-filter-reset-when-not-empty', headerElement);
+        });
+
+        it('State of the filter block at startup when the input is not empty', async () => {
+            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
+            await sleep(500);
+            await browserInstructionSender.reloadTab(0);
+            await sleep(500);
+
+            const headerElement = driver.findElement(By.css('#header'));
+            await screenshotTaker.take('tab-filter-at-startup-when-not-empty', headerElement);
         });
     });
 });

@@ -24,6 +24,7 @@ describe('Header', () => {
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
         await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
 
+        const breadcrumbElement = driver.findElement(By.css('#header .title span'));
         const openedTabListElement = driver.findElement(By.css('#openedTabList'));
         const followedTabListElement = driver.findElement(By.css('#followedTabList'));
 
@@ -32,9 +33,11 @@ describe('Header', () => {
 
         assert.isFalse(await openedTabListElement.isDisplayed());
         assert.isTrue(await followedTabListElement.isDisplayed());
+        assert.equal(await breadcrumbElement.getText(), 'Followed tabs');
     });
 
     it('Opened tabs list should be shown when clicking on the opened tabs button', async () => {
+        const breadcrumbElement = driver.findElement(By.css('#header .title span'));
         const openedTabListElement = driver.findElement(By.css('#openedTabList'));
         const followedTabListElement = driver.findElement(By.css('#followedTabList'));
 
@@ -43,6 +46,7 @@ describe('Header', () => {
 
         assert.isTrue(await openedTabListElement.isDisplayed());
         assert.isFalse(await followedTabListElement.isDisplayed());
+        assert.equal(await breadcrumbElement.getText(), 'Opened tabs');
     });
 
     it('Opened tabs counter should indicate 0 when there is no opened tab', async () => {

@@ -39,7 +39,7 @@ describe('Tab filter', () => {
         await driver.wait(until.elementTextIs(followedTabsCounter, '3'), 2000);
     });
     after(async () => {
-        await driver.quit();
+        // await driver.quit();
         browserInstructionSender.shutdown();
     });
     afterEach(async () => {
@@ -51,8 +51,6 @@ describe('Tab filter', () => {
 
     describe('Opened tabs', () => {
         it('Should filter opened tabs by title on input with one word', async () => {
-            const firefoxConfig = webdriverRetriever.getFirefoxConfig();
-
             await driver.findElement(By.css('#headerTabFilter input')).sendKeys('azerty');
             await sleep(500);
 
@@ -62,7 +60,6 @@ describe('Tab filter', () => {
             const isTabRow3Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="3"]')).isDisplayed();
             const isTabRow4Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="4"]')).isDisplayed();
 
-            const expectedFaviconUrl = firefoxConfig.getExtensionUrl('/tests/resources/favicon2.png');
             assert.isFalse(isNoTabRowVisible);
             assert.isFalse(isTabRow1Visible);
             assert.isTrue(isTabRow2Visible);
@@ -71,8 +68,6 @@ describe('Tab filter', () => {
         });
 
         it('Should filter opened tabs by title on input with two word', async () => {
-            const firefoxConfig = webdriverRetriever.getFirefoxConfig();
-
             await driver.findElement(By.css('#headerTabFilter input')).sendKeys('azerty qwerty');
             await sleep(500);
 
@@ -82,7 +77,6 @@ describe('Tab filter', () => {
             const isTabRow3Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="3"]')).isDisplayed();
             const isTabRow4Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="4"]')).isDisplayed();
 
-            const expectedFaviconUrl = firefoxConfig.getExtensionUrl('/tests/resources/favicon2.png');
             assert.isFalse(isNoTabRowVisible);
             assert.isFalse(isTabRow1Visible);
             assert.isTrue(isTabRow2Visible);
@@ -91,8 +85,6 @@ describe('Tab filter', () => {
         });
 
         it('Should filter opened tabs by url on input with one word', async () => {
-            const firefoxConfig = webdriverRetriever.getFirefoxConfig();
-
             await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
             await sleep(500);
 
@@ -102,7 +94,6 @@ describe('Tab filter', () => {
             const isTabRow3Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="3"]')).isDisplayed();
             const isTabRow4Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="4"]')).isDisplayed();
 
-            const expectedFaviconUrl = firefoxConfig.getExtensionUrl('/tests/resources/favicon2.png');
             assert.isFalse(isNoTabRowVisible);
             assert.isFalse(isTabRow1Visible);
             assert.isTrue(isTabRow2Visible);
@@ -111,8 +102,6 @@ describe('Tab filter', () => {
         });
 
         it('Should filter opened tabs by url on input with two word', async () => {
-            const firefoxConfig = webdriverRetriever.getFirefoxConfig();
-
             await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some other');
             await sleep(500);
 
@@ -122,7 +111,6 @@ describe('Tab filter', () => {
             const isTabRow3Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="3"]')).isDisplayed();
             const isTabRow4Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="4"]')).isDisplayed();
 
-            const expectedFaviconUrl = firefoxConfig.getExtensionUrl('/tests/resources/favicon2.png');
             assert.isFalse(isNoTabRowVisible);
             assert.isFalse(isTabRow1Visible);
             assert.isTrue(isTabRow2Visible);
@@ -131,8 +119,6 @@ describe('Tab filter', () => {
         });
 
         it('Should show the no tab row in opened tabs list when the filter do not match any tab', async () => {
-            const firefoxConfig = webdriverRetriever.getFirefoxConfig();
-
             await driver.findElement(By.css('#headerTabFilter input')).sendKeys('unknown');
             await sleep(500);
 
@@ -142,12 +128,66 @@ describe('Tab filter', () => {
             const isTabRow3Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="3"]')).isDisplayed();
             const isTabRow4Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="4"]')).isDisplayed();
 
-            const expectedFaviconUrl = firefoxConfig.getExtensionUrl('/tests/resources/favicon2.png');
             assert.isTrue(isNoTabRowVisible);
             assert.isFalse(isTabRow1Visible);
             assert.isFalse(isTabRow2Visible);
             assert.isFalse(isTabRow3Visible);
             assert.isFalse(isTabRow4Visible);
+        });
+
+        it('TODO clear input', async () => {
+            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
+            await sleep(500);
+            await driver.findElement(By.css('#headerTabFilter input')).clear();
+            await sleep(500);
+
+            const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
+            const isTabRow1Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="1"]')).isDisplayed();
+            const isTabRow2Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="2"]')).isDisplayed();
+            const isTabRow3Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="3"]')).isDisplayed();
+            const isTabRow4Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="4"]')).isDisplayed();
+
+            assert.isFalse(isNoTabRowVisible);
+            assert.isTrue(isTabRow1Visible);
+            assert.isTrue(isTabRow2Visible);
+            assert.isTrue(isTabRow3Visible);
+            assert.isTrue(isTabRow4Visible);
+        });
+
+        it('TODO reset button when input is empty', async () => {
+            await driver.findElement(By.css('#headerTabFilter .resetButton')).click();
+            await sleep(500);
+
+            const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
+            const isTabRow1Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="1"]')).isDisplayed();
+            const isTabRow2Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="2"]')).isDisplayed();
+            const isTabRow3Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="3"]')).isDisplayed();
+            const isTabRow4Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="4"]')).isDisplayed();
+
+            assert.isFalse(isNoTabRowVisible);
+            assert.isTrue(isTabRow1Visible);
+            assert.isTrue(isTabRow2Visible);
+            assert.isTrue(isTabRow3Visible);
+            assert.isTrue(isTabRow4Visible);
+        });
+
+        it('TODO reset button when input is not empty', async () => {
+            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
+            await sleep(500);
+            await driver.findElement(By.css('#headerTabFilter .resetButton')).click();
+            await sleep(500);
+
+            const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
+            const isTabRow1Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="1"]')).isDisplayed();
+            const isTabRow2Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="2"]')).isDisplayed();
+            const isTabRow3Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="3"]')).isDisplayed();
+            const isTabRow4Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="4"]')).isDisplayed();
+
+            assert.isFalse(isNoTabRowVisible);
+            assert.isTrue(isTabRow1Visible);
+            assert.isTrue(isTabRow2Visible);
+            assert.isTrue(isTabRow3Visible);
+            assert.isTrue(isTabRow4Visible);
         });
     });
 
@@ -159,8 +199,6 @@ describe('Tab filter', () => {
         });
 
         it('Should filter followed tabs by title on input with one word', async () => {
-            const firefoxConfig = webdriverRetriever.getFirefoxConfig();
-
             await driver.findElement(By.css('#headerTabFilter input')).sendKeys('azerty');
             await sleep(500);
 
@@ -169,7 +207,6 @@ describe('Tab filter', () => {
             const isTabRow2Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="3"]')).isDisplayed();
             const isTabRow3Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="4"]')).isDisplayed();
 
-            const expectedFaviconUrl = firefoxConfig.getExtensionUrl('/tests/resources/favicon2.png');
             assert.isFalse(isNoTabRowVisible);
             assert.isFalse(isTabRow1Visible);
             assert.isTrue(isTabRow2Visible);
@@ -177,8 +214,6 @@ describe('Tab filter', () => {
         });
 
         it('Should filter followed tabs by title on input with two word', async () => {
-            const firefoxConfig = webdriverRetriever.getFirefoxConfig();
-
             await driver.findElement(By.css('#headerTabFilter input')).sendKeys('azerty qwerty');
             await sleep(500);
 
@@ -187,7 +222,6 @@ describe('Tab filter', () => {
             const isTabRow2Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="3"]')).isDisplayed();
             const isTabRow3Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="4"]')).isDisplayed();
 
-            const expectedFaviconUrl = firefoxConfig.getExtensionUrl('/tests/resources/favicon2.png');
             assert.isFalse(isNoTabRowVisible);
             assert.isFalse(isTabRow1Visible);
             assert.isTrue(isTabRow2Visible);
@@ -195,8 +229,6 @@ describe('Tab filter', () => {
         });
 
         it('Should filter followed tabs by url on input with one word', async () => {
-            const firefoxConfig = webdriverRetriever.getFirefoxConfig();
-
             await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
             await sleep(500);
 
@@ -205,7 +237,6 @@ describe('Tab filter', () => {
             const isTabRow2Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="3"]')).isDisplayed();
             const isTabRow3Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="4"]')).isDisplayed();
 
-            const expectedFaviconUrl = firefoxConfig.getExtensionUrl('/tests/resources/favicon2.png');
             assert.isFalse(isNoTabRowVisible);
             assert.isFalse(isTabRow1Visible);
             assert.isTrue(isTabRow2Visible);
@@ -213,8 +244,6 @@ describe('Tab filter', () => {
         });
 
         it('Should filter followed tabs by url on input with two word', async () => {
-            const firefoxConfig = webdriverRetriever.getFirefoxConfig();
-
             await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some other');
             await sleep(500);
 
@@ -223,7 +252,6 @@ describe('Tab filter', () => {
             const isTabRow2Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="3"]')).isDisplayed();
             const isTabRow3Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="4"]')).isDisplayed();
 
-            const expectedFaviconUrl = firefoxConfig.getExtensionUrl('/tests/resources/favicon2.png');
             assert.isFalse(isNoTabRowVisible);
             assert.isFalse(isTabRow1Visible);
             assert.isTrue(isTabRow2Visible);
@@ -231,8 +259,6 @@ describe('Tab filter', () => {
         });
 
         it('Should show the no tab row in followed tabs list when the filter do not match any tab', async () => {
-            const firefoxConfig = webdriverRetriever.getFirefoxConfig();
-
             await driver.findElement(By.css('#headerTabFilter input')).sendKeys('unknown');
             await sleep(500);
 
@@ -241,20 +267,60 @@ describe('Tab filter', () => {
             const isTabRow2Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="3"]')).isDisplayed();
             const isTabRow3Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="4"]')).isDisplayed();
 
-            const expectedFaviconUrl = firefoxConfig.getExtensionUrl('/tests/resources/favicon2.png');
             assert.isTrue(isNoTabRowVisible);
             assert.isFalse(isTabRow1Visible);
             assert.isFalse(isTabRow2Visible);
             assert.isFalse(isTabRow3Visible);
         });
-    });
 
-    xit('TODO reset button when input is empty', async () => {
-        // TODO
-    });
+        it('TODO clear input', async () => {
+            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
+            await sleep(500);
+            await driver.findElement(By.css('#headerTabFilter input')).clear();
+            await sleep(500);
 
-    xit('TODO reset button when input is non empty', async () => {
-        // TODO
+            const isNoTabRowVisible = await driver.findElement(By.css('#followedTabList tbody .noTabRow')).isDisplayed();
+            const isTabRow1Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="2"]')).isDisplayed();
+            const isTabRow2Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="3"]')).isDisplayed();
+            const isTabRow3Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="4"]')).isDisplayed();
+
+            assert.isFalse(isNoTabRowVisible);
+            assert.isTrue(isTabRow1Visible);
+            assert.isTrue(isTabRow2Visible);
+            assert.isTrue(isTabRow3Visible);
+        });
+
+        it('TODO reset button when input is empty', async () => {
+            await driver.findElement(By.css('#headerTabFilter .resetButton')).click();
+            await sleep(500);
+
+            const isNoTabRowVisible = await driver.findElement(By.css('#followedTabList tbody .noTabRow')).isDisplayed();
+            const isTabRow1Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="2"]')).isDisplayed();
+            const isTabRow2Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="3"]')).isDisplayed();
+            const isTabRow3Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="4"]')).isDisplayed();
+
+            assert.isFalse(isNoTabRowVisible);
+            assert.isTrue(isTabRow1Visible);
+            assert.isTrue(isTabRow2Visible);
+            assert.isTrue(isTabRow3Visible);
+        });
+
+        it('TODO reset button when input is not empty', async () => {
+            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
+            await sleep(500);
+            await driver.findElement(By.css('#headerTabFilter .resetButton')).click();
+            await sleep(500);
+
+            const isNoTabRowVisible = await driver.findElement(By.css('#followedTabList tbody .noTabRow')).isDisplayed();
+            const isTabRow1Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="2"]')).isDisplayed();
+            const isTabRow2Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="3"]')).isDisplayed();
+            const isTabRow3Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="4"]')).isDisplayed();
+
+            assert.isFalse(isNoTabRowVisible);
+            assert.isTrue(isTabRow1Visible);
+            assert.isTrue(isTabRow2Visible);
+            assert.isTrue(isTabRow3Visible);
+        });
     });
 
     describe('Screenshots', () => {
@@ -289,6 +355,23 @@ describe('Tab filter', () => {
 
             const headerElement = driver.findElement(By.css('#header'));
             await screenshotTaker.take('tab-filter-initial-state-with-text', headerElement);
+        });
+
+        it('TODO reset button when input is empty', async () => {
+            await driver.findElement(By.css('#headerTabFilter .resetButton')).click();
+            await sleep(500);
+
+            const headerElement = driver.findElement(By.css('#header'));
+            await screenshotTaker.take('tab-filter-reset-when-empty', headerElement);
+        });
+
+        it('TODO reset button when input is not empty', async () => {
+            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some text');
+            await driver.findElement(By.css('#headerTabFilter .resetButton')).click();
+            await sleep(500);
+
+            const headerElement = driver.findElement(By.css('#header'));
+            await screenshotTaker.take('tab-filter-reset-when-not-empty', headerElement);
         });
     });
 });

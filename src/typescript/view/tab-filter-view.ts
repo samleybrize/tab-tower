@@ -54,6 +54,7 @@ export class TabFilterView {
 
             timeoutReference = setTimeout(this.notifyInputChange.bind(this), 300);
         });
+        this.inputElement.addEventListener('change', this.notifyInputChange.bind(this));
 
         if (this.inputElement.value) {
             this.expand();

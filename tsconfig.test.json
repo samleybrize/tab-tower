@@ -13,6 +13,6 @@
         "baseUrl": "."
     },
     "include": [
-        "tests"
+        "tests/features"
     ]
 }

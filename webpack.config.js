@@ -1,8 +1,14 @@
 const path = require('path');
-  
+
+const backgroundEntries = ['./src/typescript/background.ts'];
+
+if ('test' == process.env.NODE_ENV) {
+    backgroundEntries.push('./tests/webdriver/browser-instruction-receiver.ts');
+}
+
 module.exports = [
     {
-        entry: './src/typescript/background.ts',
+        entry: backgroundEntries,
         output: {
             filename: 'background.js',
             path: path.resolve(__dirname, 'dist/js'),

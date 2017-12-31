@@ -1,13 +1,13 @@
-const client = new WebSocket('ws://localhost:8888');
+const client = new WebSocket('ws://localhost:8888'); // TODO param
 
-client.onmessage = async function (event) {
+client.onmessage = async (event) => {
     const message = JSON.parse(event.data);
     let targetTabId;
 
     switch (message.action) {
         case 'reload-tab':
             targetTabId = await getTabIdByIndex(message.data.tabIndex);
-            await browser.tabs.reload(targetTabId);
+            await browser.tabs.reload(targetTabId, {bypassCache: true});
             break;
 
         case 'open-tab':
@@ -51,23 +51,23 @@ client.onmessage = async function (event) {
             await browser.tabs.executeScript(targetTabId, {code});
             break;
     }
-}
+};
 
-client.onerror = function (error) {
+client.onerror = (error) => {
     console.error(error);
 };
 
-async function getTabIdByIndex(index) {
-    const matchingTabs = await browser.tabs.query({index});
+async function getTabIdByIndex(tabIndex: number) {
+    const matchingTabs = await browser.tabs.query({index: tabIndex});
 
     if (1 !== matchingTabs.length) {
-        throw new Error(`Can't find a tab at index ${index}`);
+        throw new Error(`Can't find a tab at index ${tabIndex}`);
     }
 
     return matchingTabs[0].id;
 }
 
-function sleep(milliseconds) {
+function sleep(milliseconds: number) {
     return new Promise((resolve) => {
         setTimeout(resolve, milliseconds);
     });

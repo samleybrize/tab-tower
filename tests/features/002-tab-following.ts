@@ -258,18 +258,33 @@ describe('Tab following', () => {
         assert.strictEqual(numberOfRows, 1);
     });
 
-    xit('A followed tab should be updated to the last non-privileged url when its associated opened tab is closed', async () => {
+    it('A followed tab should be updated to the last non-privileged url when its associated opened tab is closed', async () => {
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
         const url = firefoxConfig.getExtensionUrl('/tests/resources/test-page1.html');
 
-        await browserInstructionSender.openTab();
-        await sleep(500);
         await browserInstructionSender.changeTabUrl(1, url);
-        await sleep(500);
-        // TODO follow tab
+        await sleep(1000);
+
+        await showOpenedTabsList();
+        await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] .followButton')).click();
+        await showFollowedTabsList();
+        await driver.wait(until.elementLocated(By.css('#followedTabList tbody tr[data-follow-id]')), 3000);
+
         await browserInstructionSender.makeTabGoToPreviousPage(1);
         await sleep(500);
 
-        // TODO
+        await browserInstructionSender.closeTab(1);
+        await sleep(500);
+
+        const followedTabRowList = await driver.findElements(By.css('#followedTabList tbody tr[data-follow-id]'));
+        const tabShownUrl = await followedTabRowList[0].findElement(By.css('.title a')).getAttribute('data-url');
+        const tabShownTitle = await followedTabRowList[0].findElement(By.css('.title a span')).getText();
+        const tabShownFaviconUrl = await followedTabRowList[0].findElement(By.css('.title a img')).getAttribute('src');
+
+        const expectedUrl = firefoxConfig.getExtensionUrl('/tests/resources/test-page1.html');
+        const expectedFaviconUrl = firefoxConfig.getExtensionUrl('/tests/resources/favicon1.png');
+        assert.equal(tabShownUrl, expectedUrl);
+        assert.equal(tabShownTitle, 'Test page 1');
+        assert.equal(tabShownFaviconUrl, expectedFaviconUrl);
     });
 });

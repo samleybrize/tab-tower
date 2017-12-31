@@ -10,10 +10,13 @@ let driver: WebDriver;
 const browserInstructionSender: BrowserInstructionSender = BrowserInstructionSender.getInstance();
 
 describe('Opened tabs tracking', () => {
-    before(() => {
+    before(async () => {
         webdriverRetriever = WebDriverRetriever.getInstance();
         driver = webdriverRetriever.getDriver();
         browserInstructionSender.init();
+
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+        await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
     });
     after(async () => {
         await driver.quit();
@@ -21,9 +24,6 @@ describe('Opened tabs tracking', () => {
     });
 
     it('The no tab row should appear when there is no opened tab', async () => {
-        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
-
-        await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
         const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
         const numberOfRows = (await driver.findElements(By.css('#openedTabList tbody tr'))).length;
 

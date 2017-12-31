@@ -9,11 +9,14 @@ let webdriverRetriever: WebDriverRetriever;
 let driver: WebDriver;
 const browserInstructionSender: BrowserInstructionSender = BrowserInstructionSender.getInstance();
 
-describe('Header', () => {
-    before(() => {
+describe('Navigation', () => {
+    before(async () => {
         webdriverRetriever = WebDriverRetriever.getInstance();
         driver = webdriverRetriever.getDriver();
         browserInstructionSender.init();
+
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+        await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
     });
     after(async () => {
         await driver.quit();
@@ -21,9 +24,6 @@ describe('Header', () => {
     });
 
     it('Followed tabs list should be shown when clicking on the followed tabs button', async () => {
-        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
-        await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
-
         const breadcrumbElement = driver.findElement(By.css('#header .title span'));
         const openedTabListElement = driver.findElement(By.css('#openedTabList'));
         const followedTabListElement = driver.findElement(By.css('#followedTabList'));

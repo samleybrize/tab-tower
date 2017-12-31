@@ -42,6 +42,14 @@ client.onmessage = async function (event) {
         case 'create-window':
             await browser.windows.create({incognito: !!message.data.isIncognito, url: message.data.url});
             break;
+
+        case 'make-tab-go-to-previous-page':
+            targetTabId = await getTabIdByIndex(message.data.tabIndex);
+            const code = `
+                history.back();
+            `;
+            await browser.tabs.executeScript(targetTabId, {code});
+            break;
     }
 }
 

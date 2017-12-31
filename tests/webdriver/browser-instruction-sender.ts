@@ -111,4 +111,8 @@ export class BrowserInstructionSender {
             document.querySelector('${quotelessCssSelector}').blur();
         `);
     }
+
+    async makeTabGoToPreviousPage(tabIndex: number) {
+        return this.send({action: 'make-tab-go-to-previous-page', data: {tabIndex}});
+    }
 }

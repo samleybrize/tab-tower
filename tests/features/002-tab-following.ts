@@ -259,6 +259,17 @@ describe('Tab following', () => {
     });
 
     xit('A followed tab should be updated to the last non-privileged url when its associated opened tab is closed', async () => {
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+        const url = firefoxConfig.getExtensionUrl('/tests/resources/test-page1.html');
+
+        await browserInstructionSender.openTab();
+        await sleep(500);
+        await browserInstructionSender.changeTabUrl(1, url);
+        await sleep(500);
+        // TODO follow tab
+        await browserInstructionSender.makeTabGoToPreviousPage(1);
+        await sleep(500);
+
         // TODO
     });
 });

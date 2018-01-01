@@ -8,6 +8,7 @@ import { UnfollowTab } from './command/unfollow-tab';
 import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';
 import { OpenedTabFaviconUrlUpdated } from './event/opened-tab-favicon-url-updated';
 import { OpenedTabIsLoading } from './event/opened-tab-is-loading';
+import { OpenedTabLoadingIsComplete } from './event/opened-tab-loading-is-complete';
 import { OpenedTabMoved } from './event/opened-tab-moved';
 import { OpenedTabReaderModeStateUpdated } from './event/opened-tab-reader-mode-state-updated';
 import { OpenedTabTitleUpdated } from './event/opened-tab-title-updated';
@@ -40,6 +41,7 @@ export class FollowedTabModifier {
         }
 
         const tabFollowState = this.createTabFollowStateFromOpenState(command.tab.openState);
+        this.eventStackEnabledOnId.set(tabFollowState.id, true);
         tab.followState = tabFollowState;
         await this.tabPersister.persist(tabFollowState);
         this.eventBus.publish(new TabFollowed(tab));
@@ -186,7 +188,7 @@ export class FollowedTabModifier {
         await this.tabPersister.setReaderMode(followId, event.tabOpenState.isInReaderMode);
     }
 
-    async onOpenedTabIsLoading(event: OpenedTabIsLoading): Promise<void> {
+    async onOpenedTabLoadingIsComplete(event: OpenedTabLoadingIsComplete): Promise<void> {
         const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
 
         if (followId) {

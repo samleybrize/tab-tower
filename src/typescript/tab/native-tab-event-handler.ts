@@ -1,6 +1,7 @@
 import { EventBus } from '../bus/event-bus';
 import { OpenedTabFaviconUrlUpdated } from './event/opened-tab-favicon-url-updated';
 import { OpenedTabIsLoading } from './event/opened-tab-is-loading';
+import { OpenedTabLoadingIsComplete } from './event/opened-tab-loading-is-complete';
 import { OpenedTabMoved } from './event/opened-tab-moved';
 import { OpenedTabReaderModeStateUpdated } from './event/opened-tab-reader-mode-state-updated';
 import { OpenedTabTitleUpdated } from './event/opened-tab-title-updated';
@@ -78,6 +79,8 @@ export class NativeTabEventHandler {
 
         if ('loading' == updateInfo.status) {
             this.eventBus.publish(new OpenedTabIsLoading(tabOpenState));
+        } else if ('complete' == updateInfo.status) {
+            this.eventBus.publish(new OpenedTabLoadingIsComplete(tabOpenState));
         }
 
         if (updateInfo.title) {

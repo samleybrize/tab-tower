@@ -18,7 +18,7 @@ import { tabCommands } from './tab/command/tab-commands';
 import { UnfollowTab } from './tab/command/unfollow-tab';
 import { OpenedTabAssociatedToFollowedTab } from './tab/event/opened-tab-associated-to-followed-tab';
 import { OpenedTabFaviconUrlUpdated } from './tab/event/opened-tab-favicon-url-updated';
-import { OpenedTabIsLoading } from './tab/event/opened-tab-is-loading';
+import { OpenedTabLoadingIsComplete } from './tab/event/opened-tab-loading-is-complete';
 import { OpenedTabMoved } from './tab/event/opened-tab-moved';
 import { OpenedTabReaderModeStateUpdated } from './tab/event/opened-tab-reader-mode-state-updated';
 import { OpenedTabTitleUpdated } from './tab/event/opened-tab-title-updated';
@@ -104,7 +104,7 @@ async function main() {
     eventBus.subscribe(TabFollowed, sendMessageEventHandler.onEvent, sendMessageEventHandler);
     eventBus.subscribe(OpenedTabAssociatedToFollowedTab, followedTabModifier.onAssociateOpenedTabToFollowedTab, followedTabModifier);
     eventBus.subscribe(OpenedTabAssociatedToFollowedTab, sendMessageEventHandler.onEvent, sendMessageEventHandler);
-    eventBus.subscribe(OpenedTabIsLoading, followedTabModifier.onOpenedTabIsLoading, followedTabModifier);
+    eventBus.subscribe(OpenedTabLoadingIsComplete, followedTabModifier.onOpenedTabLoadingIsComplete, followedTabModifier);
     eventBus.subscribe(OpenedTabFaviconUrlUpdated, followedTabModifier.onOpenedTabFaviconUrlUpdate, followedTabModifier);
     eventBus.subscribe(OpenedTabFaviconUrlUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
     eventBus.subscribe(OpenedTabMoved, followedTabModifier.onOpenedTabMove, followedTabModifier);

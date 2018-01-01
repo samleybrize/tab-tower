@@ -7,7 +7,7 @@ client.onmessage = async (event) => {
     switch (message.action) {
         case 'reload-tab':
             targetTabId = await getTabIdByIndex(message.data.tabIndex);
-            await browser.tabs.reload(targetTabId, {bypassCache: true});
+            await browser.tabs.reload(targetTabId, {bypassCache: message.data.bypassCache});
             break;
 
         case 'open-tab':

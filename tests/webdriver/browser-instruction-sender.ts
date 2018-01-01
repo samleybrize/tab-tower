@@ -61,8 +61,8 @@ export class BrowserInstructionSender {
         this.websocketServer.broadcastUTF(JSON.stringify(message));
     }
 
-    async reloadTab(tabIndex: number) {
-        return this.send({action: 'reload-tab', data: {tabIndex}});
+    async reloadTab(tabIndex: number, bypassCache?: boolean) {
+        return this.send({action: 'reload-tab', data: {tabIndex, bypassCache: !!bypassCache}});
     }
 
     async openTab(url?: string) {

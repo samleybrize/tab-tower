@@ -1,11 +1,11 @@
 {
     "manifest_version": 2,
     "name": "Tab Tower",
-    "version": "1.0",
+    "version": "0.1.0",
     "description": "Description",
     "applications": {
         "gecko": {
-            "id": "{9da846ee-eae7-11e7-80c1-9a214cf093ae}"
+            "id": "tab-tower@stephen.berquet"
         }
     },
     "icons": {

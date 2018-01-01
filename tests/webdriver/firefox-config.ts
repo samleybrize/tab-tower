@@ -58,7 +58,7 @@ export class FirefoxConfig {
     }
 
     getExtensionId() {
-        return '{9da846ee-eae7-11e7-80c1-9a214cf093ae}';
+        return 'tab-tower@stephen.berquet';
     }
 
     getExtensionInternalId() {

@@ -35,6 +35,22 @@ describe('Tab following', () => {
         browserInstructionSender.shutdown();
     });
 
+    it('TODO', async () => {
+        // TODO
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+        const newTabUrl = firefoxConfig.getExtensionUrl('/tests/resources/test-page1.html');
+        await browserInstructionSender.openTab(newTabUrl);
+        await sleep(1000);
+        await browserInstructionSender.focusTab(1);
+        await sleep(1000);
+        const windows = await driver.getAllWindowHandles();
+        await driver.switchTo().window(windows[1]);
+        await driver.get('about:config');
+        await sleep(1000);
+        console.log(await driver.getTitle());
+        assert.isTrue(false);
+    });
+
     it('The no tab row should appear when there is no followed tab', async () => {
         await showFollowedTabsList();
 

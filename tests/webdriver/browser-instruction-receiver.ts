@@ -50,6 +50,11 @@ client.onmessage = async (event) => {
             `;
             await browser.tabs.executeScript(targetTabId, {code});
             break;
+
+        case 'focus-tab':
+            targetTabId = await getTabIdByIndex(message.data.tabIndex);
+            await browser.tabs.update(targetTabId, {active: true});
+            break;
     }
 };
 

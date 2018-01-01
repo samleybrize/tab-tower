@@ -115,4 +115,8 @@ export class BrowserInstructionSender {
     async makeTabGoToPreviousPage(tabIndex: number) {
         return this.send({action: 'make-tab-go-to-previous-page', data: {tabIndex}});
     }
+
+    async focusTab(tabIndex: number) {
+        return this.send({action: 'focus-tab', data: {tabIndex}});
+    }
 }

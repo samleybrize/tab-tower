@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   class="foreground"
+   ng-style="{top: ae.offsetIcon+'px',left:ae.offsetIcon+'px',width:ae.size+'px',height:ae.size+'px',opacity:ae.foregroundOpacity}"
+   viewBox="0 0 128 128"
+   style="opacity:1"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="tab-tower2.svg"
+   width="128"
+   height="128"
+   inkscape:version="0.92.2 5c3e80d, 2017-08-06">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="716"
+     id="namedview6"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="2"
+     inkscape:cx="11.864407"
+     inkscape:cy="11.966103"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer1"
+     inkscape:label="Background"
+     transform="translate(-0.13559327,104.0339)">
+    <rect
+       style="opacity:1;fill:#03a9f4;fill-opacity:1;stroke:none;stroke-width:362.76348877;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4511"
+       width="128"
+       height="128.547"
+       x="0.13559327"
+       y="-104.5809"
+       ry="19.431625" />
+  </g>
+  <path
+     ng-attr-fill="{{ae.foregroundColor.hex}}"
+     ng-attr-d="{{icon.data}}"
+     d="m 24.8,15.000005 c -5.439001,0 -9.8,4.361 -9.8,9.8 v 48.999998 h 9.8 V 24.800005 h 48.999996 v -9.8 H 24.8 m 19.599997,19.599999 c -5.439,0 -9.8,4.361 -9.8,9.8 V 93.4 h 9.8 V 44.400004 h 48.999994 v -9.8 H 44.399997 m 19.6,19.6 c -5.438999,0 -9.800001,4.360999 -9.800001,9.799999 V 103.2 c 0,5.439 4.361002,9.8 9.800001,9.8 H 103.19999 C 108.63899,113 113,108.639 113,103.2 V 64.000003 c 0,-5.439 -4.36101,-9.799999 -9.80001,-9.799999 z"
+     id="path2"
+     inkscape:connector-curvature="0"
+     style="fill:#ffffff;stroke-width:4.89999628" />
+</svg>

@@ -9,14 +9,14 @@
         }
     },
     "icons": {
-        "48": "icons/tab-tower-48.png",
-        "96": "icons/tab-tower-96.png"
+        "48": "icons/tab-tower.svg",
+        "96": "icons/tab-tower.svg"
     },
     "browser_action": {
         "default_icon": {
-            "16": "icons/tab-tower-16.png",
-            "32": "icons/tab-tower-32.png",
-            "64": "icons/tab-tower-64.png"
+            "16": "icons/tab-tower.svg",
+            "32": "icons/tab-tower.svg",
+            "64": "icons/tab-tower.svg"
         },
         "default_title": "Tab Tower"
     },

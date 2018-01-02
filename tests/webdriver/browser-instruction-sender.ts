@@ -119,4 +119,8 @@ export class BrowserInstructionSender {
     async focusTab(tabIndex: number) {
         return this.send({action: 'focus-tab', data: {tabIndex}});
     }
+
+    async reloadExtension() {
+        return this.send({action: 'reload-extension', data: {}});
+    }
 }

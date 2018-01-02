@@ -117,4 +117,30 @@ describe('Navigation', () => {
 
         assert.equal(await openedTabsCounter.getText(), '4');
     });
+
+    it('Opened tabs counter should indicate the number of opened tab at startup', async () => {
+        await browserInstructionSender.reloadExtension();
+        await sleep(1000);
+
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+        const windowHandleList = await driver.getAllWindowHandles();
+        await driver.switchTo().window(windowHandleList[0]);
+        await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
+
+        const openedTabsCounter = driver.findElement(By.css('#header .openedTabs .counter'));
+        assert.equal(await openedTabsCounter.getText(), '3');
+    });
+
+    it('Followed tabs counter should indicate the number of followed tab at startup', async () => {
+        await browserInstructionSender.reloadExtension();
+        await sleep(1000);
+
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+        const windowHandleList = await driver.getAllWindowHandles();
+        await driver.switchTo().window(windowHandleList[0]);
+        await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
+
+        const followedTabsCounter = driver.findElement(By.css('#header .followedTabs .counter'));
+        assert.equal(await followedTabsCounter.getText(), '1');
+    });
 });

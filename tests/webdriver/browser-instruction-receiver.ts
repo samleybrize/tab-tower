@@ -55,6 +55,10 @@ client.onmessage = async (event) => {
             targetTabId = await getTabIdByIndex(message.data.tabIndex);
             await browser.tabs.update(targetTabId, {active: true});
             break;
+
+        case 'reload-extension':
+            browser.runtime.reload();
+            break;
     }
 };
 

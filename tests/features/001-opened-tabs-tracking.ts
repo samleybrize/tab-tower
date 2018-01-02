@@ -193,6 +193,13 @@ describe('Opened tabs tracking', () => {
         assert.equal(tabShownFaviconUrl, expectedFaviconUrl);
     });
 
+    it('A click on an opened tab should focus the associated tab', async () => {
+        await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] a')).click();
+        const activeTab = await browserInstructionSender.getActiveTab();
+
+        assert.equal(activeTab.index, 1);
+    });
+
     it('Should show opened tabs at startup', async () => {
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
         const tab1Url = firefoxConfig.getExtensionUrl('/tests/resources/test-page1.html');

@@ -1,6 +1,6 @@
 import * as http from 'http';
 import { WebDriver } from 'selenium-webdriver';
-import { server as WebSocketServer } from 'websocket';
+import { IMessage, server as WebSocketServer } from 'websocket';
 
 interface Message {
     action: string;
@@ -12,6 +12,7 @@ export class BrowserInstructionSender {
 
     private httpServer: http.Server = null;
     private websocketServer: WebSocketServer = null;
+    private receiveCallbackMap = new Map<number, (message: any) => void>();
 
     static getInstance() {
         if (null == this.instance) {
@@ -37,7 +38,15 @@ export class BrowserInstructionSender {
         });
 
         this.websocketServer.on('request', (request) => {
-            request.accept(null, request.origin);
+            const connection = request.accept(null, request.origin);
+            connection.on('message', (data: IMessage) => {
+                const message = JSON.parse(data.utf8Data);
+
+                if (message && message.messageId && this.receiveCallbackMap.has(message.messageId)) {
+                    const callback = this.receiveCallbackMap.get(message.messageId);
+                    callback(message);
+                }
+            });
         });
     }
 
@@ -65,8 +74,8 @@ export class BrowserInstructionSender {
         return this.send({action: 'reload-tab', data: {tabIndex, bypassCache: !!bypassCache}});
     }
 
-    async openTab(url?: string) {
-        return this.send({action: 'open-tab', data: {url}});
+    async openTab(url?: string, index?: number) {
+        return this.send({action: 'open-tab', data: {url, index}});
     }
 
     async closeTab(tabIndex: number) {
@@ -122,5 +131,25 @@ export class BrowserInstructionSender {
 
     async reloadExtension() {
         return this.send({action: 'reload-extension', data: {}});
+    }
+
+    async getActiveTab(): Promise<browser.tabs.Tab> {
+        return new Promise<browser.tabs.Tab>((resolve, reject) => {
+            const messageId = Math.random();
+            this.receiveCallbackMap.set(messageId, (message) => {
+                resolve(message ? message.activeTab : null);
+            });
+            this.send({action: 'get-active-tab', data: {messageId}});
+        });
+    }
+
+    async getTab(tabIndex: number): Promise<browser.tabs.Tab> {
+        return new Promise<browser.tabs.Tab>((resolve, reject) => {
+            const messageId = Math.random();
+            this.receiveCallbackMap.set(messageId, (message) => {
+                resolve(message ? message.tab : null);
+            });
+            this.send({action: 'get-tab', data: {messageId, tabIndex}});
+        });
     }
 }

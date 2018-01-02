@@ -11,7 +11,7 @@ client.onmessage = async (event) => {
             break;
 
         case 'open-tab':
-            await browser.tabs.create({url: message.data.url, active: !!message.data.active});
+            await browser.tabs.create({url: message.data.url, active: !!message.data.active, index: message.data.index});
             break;
 
         case 'close-tab':
@@ -58,6 +58,25 @@ client.onmessage = async (event) => {
 
         case 'reload-extension':
             browser.runtime.reload();
+            break;
+
+        case 'get-active-tab':
+            const tabList = await browser.tabs.query({active: true});
+
+            client.send(JSON.stringify({
+                messageId: message.data.messageId,
+                activeTab: tabList ? tabList[0] : null,
+            }));
+            break;
+
+        case 'get-tab':
+            const tabId = await getTabIdByIndex(message.data.tabIndex);
+            const tab = await browser.tabs.get(tabId);
+
+            client.send(JSON.stringify({
+                messageId: message.data.messageId,
+                tab,
+            }));
             break;
     }
 };

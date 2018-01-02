@@ -31,7 +31,7 @@ describe('Tab following', () => {
         await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
     });
     after(async () => {
-        // await driver.quit();
+        await driver.quit();
         browserInstructionSender.shutdown();
     });
 
@@ -258,12 +258,46 @@ describe('Tab following', () => {
         assert.strictEqual(numberOfRows, 1);
     });
 
+    it('A click on a followed tab that is closed should open it', async () => {
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+
+        await showOpenedTabsList();
+        const tabUrl = firefoxConfig.getExtensionUrl('/tests/resources/test-page2.html');
+        const tabFavivconUrl = firefoxConfig.getExtensionUrl('/tests/resources/favicon2.png');
+        await browserInstructionSender.openTab(tabUrl, 1);
+        await driver.wait(until.elementLocated(By.css('#openedTabList tbody tr[data-tab-id="5"]')), 3000);
+        await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] .followButton')).click();
+        await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] .closeButton')).click();
+        await sleep(1000);
+
+        await showFollowedTabsList();
+        await driver.findElement(By.css('#followedTabList tbody tr[data-follow-id] a')).click();
+        const activeTab = await browserInstructionSender.getActiveTab();
+        const openedTab = await browserInstructionSender.getTab(2);
+
+        assert.equal(activeTab.index, 0);
+        assert.isNotNull(openedTab);
+        assert.equal(openedTab.favIconUrl, tabFavivconUrl);
+        assert.equal(openedTab.url, tabUrl);
+        assert.equal(openedTab.title, 'Test page 2');
+    });
+
+    it('A click on a followed tab that is opened should focus the associated opened tab', async () => {
+        await driver.findElement(By.css('#followedTabList tbody tr[data-follow-id] a')).click();
+        const activeTab = await browserInstructionSender.getActiveTab();
+
+        assert.equal(activeTab.index, 2);
+    });
+
     it('A followed tab should be updated to the last non-privileged url when its associated opened tab is closed', async () => {
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
 
         const newTabUrl = firefoxConfig.getExtensionUrl('/tests/resources/test-page1.html');
         await browserInstructionSender.closeTab(1);
+        await browserInstructionSender.closeTab(2);
         await browserInstructionSender.openTab(newTabUrl);
+        await browserInstructionSender.focusTab(0);
+        await browserInstructionSender.triggerDoubleClick(driver, '#followedTabList tbody tr[data-follow-id] .unfollowButton');
         await sleep(1000);
 
         await showOpenedTabsList();

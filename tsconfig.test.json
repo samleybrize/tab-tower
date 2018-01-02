@@ -13,6 +13,7 @@
         "baseUrl": "."
     },
     "include": [
-        "tests/features"
+        "tests/features",
+        "src/typescript/definitions/webextension.d.ts"
     ]
 }

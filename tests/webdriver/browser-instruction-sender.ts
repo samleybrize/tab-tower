@@ -105,7 +105,11 @@ export class BrowserInstructionSender {
         return webdriver.executeScript(`
             var doubleClickEvent = document.createEvent('MouseEvents');
             doubleClickEvent.initEvent('dblclick', true, true);
-            document.querySelector('${quotelessCssSelector}').dispatchEvent(doubleClickEvent);
+            var elements = Array.from(document.querySelectorAll('${quotelessCssSelector}'));
+
+            for (var element of elements) {
+                element.dispatchEvent(doubleClickEvent);
+            }
         `);
     }
 

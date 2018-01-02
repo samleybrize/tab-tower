@@ -31,7 +31,7 @@ describe('Tab following', () => {
         await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
     });
     after(async () => {
-        await driver.quit();
+        // await driver.quit();
         browserInstructionSender.shutdown();
     });
 
@@ -327,5 +327,48 @@ describe('Tab following', () => {
         assert.equal(tabShownUrl, expectedUrl);
         assert.equal(tabShownTitle, 'Test page 1');
         assert.equal(tabShownFaviconUrl, expectedFaviconUrl);
+    });
+
+    it('Should show followed tabs at startup', async () => {
+        // TODO reader mode
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+
+        await showOpenedTabsList();
+        const tab1Url = firefoxConfig.getExtensionUrl('/tests/resources/test-page1.html');
+        const tab2Url = firefoxConfig.getExtensionUrl('/tests/resources/test-page2.html');
+        await browserInstructionSender.openTab(tab2Url);
+        await driver.wait(until.elementLocated(By.css('#openedTabList tbody tr[data-tab-id]')), 3000);
+
+        await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] .followButton')).click();
+        await showFollowedTabsList();
+        await driver.wait(until.elementLocated(By.css('#followedTabList tbody tr[data-follow-id]')), 3000);
+
+        await browserInstructionSender.reloadExtension();
+        await sleep(1000);
+
+        const windowHandles = await driver.getAllWindowHandles();
+        driver.switchTo().window(windowHandles[0]);
+        await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
+        await showFollowedTabsList();
+
+        const isNoTabRowVisible = await driver.findElement(By.css('#followedTabList tbody .noTabRow')).isDisplayed();
+        const followedTabRowList = await driver.findElements(By.css('#followedTabList tbody tr[data-follow-id]'));
+        const tab1ShownUrl = await followedTabRowList[0].findElement(By.css('.title a')).getAttribute('data-url');
+        const tab1ShownTitle = await followedTabRowList[0].findElement(By.css('.title a span')).getText();
+        const tab1ShownFaviconUrl = await followedTabRowList[0].findElement(By.css('.title a img')).getAttribute('src');
+        const tab2ShownUrl = await followedTabRowList[1].findElement(By.css('.title a')).getAttribute('data-url');
+        const tab2ShownTitle = await followedTabRowList[1].findElement(By.css('.title a span')).getText();
+        const tab2ShownFaviconUrl = await followedTabRowList[1].findElement(By.css('.title a img')).getAttribute('src');
+
+        const expectedFaviconUrl1 = firefoxConfig.getExtensionUrl('/tests/resources/favicon1.png');
+        const expectedFaviconUrl2 = firefoxConfig.getExtensionUrl('/tests/resources/favicon2.png');
+        assert.equal(followedTabRowList.length, 2);
+        assert.equal(tab1ShownUrl, tab1Url);
+        assert.equal(tab1ShownTitle, 'Test page 1');
+        assert.equal(tab1ShownFaviconUrl, expectedFaviconUrl1);
+        assert.equal(tab2ShownUrl, tab2Url);
+        assert.equal(tab2ShownTitle, 'Test page 2');
+        assert.equal(tab2ShownFaviconUrl, expectedFaviconUrl2);
+        assert.isFalse(isNoTabRowVisible);
     });
 });

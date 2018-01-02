@@ -193,12 +193,47 @@ describe('Opened tabs tracking', () => {
         assert.equal(tabShownFaviconUrl, expectedFaviconUrl);
     });
 
+    it('Should show opened tabs at startup', async () => {
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+        const tab1Url = firefoxConfig.getExtensionUrl('/tests/resources/test-page1.html');
+        const tab2Url = firefoxConfig.getExtensionUrl('/tests/resources/test-page2.html');
+
+        await browserInstructionSender.openTab(tab2Url);
+        await browserInstructionSender.openTab();
+        await browserInstructionSender.reloadExtension();
+        await sleep(1000);
+
+        const windowHandles = await driver.getAllWindowHandles();
+        driver.switchTo().window(windowHandles[2]);
+        await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
+
+        const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
+        const openedTabRowList = await driver.findElements(By.css('#openedTabList tbody tr[data-tab-id]'));
+        const tab1ShownUrl = await openedTabRowList[0].findElement(By.css('.title a')).getAttribute('data-url');
+        const tab1ShownTitle = await openedTabRowList[0].findElement(By.css('.title a span')).getText();
+        const tab1ShownFaviconUrl = await openedTabRowList[0].findElement(By.css('.title a img')).getAttribute('src');
+        const tab2ShownUrl = await openedTabRowList[1].findElement(By.css('.title a')).getAttribute('data-url');
+        const tab2ShownTitle = await openedTabRowList[1].findElement(By.css('.title a span')).getText();
+        const tab2ShownFaviconUrl = await openedTabRowList[1].findElement(By.css('.title a img')).getAttribute('src');
+
+        const expectedFaviconUrl1 = firefoxConfig.getExtensionUrl('/tests/resources/favicon1.png');
+        const expectedFaviconUrl2 = firefoxConfig.getExtensionUrl('/tests/resources/favicon2.png');
+        assert.equal(openedTabRowList.length, 2);
+        assert.equal(tab1ShownUrl, tab1Url);
+        assert.equal(tab1ShownTitle, 'Test page 1');
+        assert.equal(tab1ShownFaviconUrl, expectedFaviconUrl1);
+        assert.equal(tab2ShownUrl, tab2Url);
+        assert.equal(tab2ShownTitle, 'Test page 2');
+        assert.equal(tab2ShownFaviconUrl, expectedFaviconUrl2);
+        assert.isFalse(isNoTabRowVisible);
+    });
+
     it('Incognito tabs should not be shown in the opened tabs list', async () => {
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
 
         const url = firefoxConfig.getExtensionUrl('/tests/resources/test-page1.html');
+        await browserInstructionSender.closeTab(0);
         await browserInstructionSender.closeTab(1);
-        await browserInstructionSender.closeTab(2);
         await browserInstructionSender.createWindow(true, url);
         await sleep(1000);
 

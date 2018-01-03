@@ -20,12 +20,12 @@ export class TabRetriever {
 
     async associateOpenedTabsWithFollowedTabs() {
         const tabOpenStateList = await this.openedTabRetriever.getAll();
-        const candidateFollowStates = await this.followedTabRetriever.getWithOpenIndex();
+        const candidateFollowStates = await this.followedTabRetriever.getWithOpenLongLivedId();
 
         for (const tabOpenState of tabOpenStateList) {
-            const followState = candidateFollowStates.get(tabOpenState.index);
+            const followState = candidateFollowStates.get(tabOpenState.longLivedId);
 
-            if (followState && tabOpenState.url == followState.url) {
+            if (followState) {
                 this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(tabOpenState.id, followState.id);
                 this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(tabOpenState, followState));
             }

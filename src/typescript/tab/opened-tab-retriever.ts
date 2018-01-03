@@ -1,3 +1,5 @@
+import * as uuid from 'uuid';
+
 import { PrivilegedUrlDetector } from './privileged-url-detector';
 import { TabOpenState } from './tab-open-state';
 
@@ -10,7 +12,7 @@ export class OpenedTabRetriever {
         const tabList: TabOpenState[] = [];
 
         for (const rawTab of rawTabs) {
-            const tab = this.createTab(rawTab);
+            const tab = await this.createTab(rawTab);
 
             if (null == tab) {
                 continue;
@@ -22,7 +24,7 @@ export class OpenedTabRetriever {
         return tabList;
     }
 
-    private createTab(rawTab: browser.tabs.Tab): TabOpenState {
+    private async createTab(rawTab: browser.tabs.Tab): Promise<TabOpenState> {
         // incognito tabs are ignored for now
         if (this.isUrlIgnored(rawTab.url) || null === rawTab.id || null === rawTab.index || rawTab.incognito) {
             return;
@@ -31,6 +33,7 @@ export class OpenedTabRetriever {
         const {url, isInReaderMode} = this.getUrlAndReaderModeState(rawTab);
         const tab = new TabOpenState();
         tab.id = rawTab.id;
+        tab.longLivedId = await this.getTabLongLivedId(rawTab.id);
         tab.index = rawTab.index;
         tab.title = rawTab.title;
         tab.isIncognito = rawTab.incognito;
@@ -65,6 +68,17 @@ export class OpenedTabRetriever {
         return {url, isInReaderMode};
     }
 
+    private async getTabLongLivedId(tabId: number): Promise<string> {
+        let longLivedId = await browser.sessions.getTabValue(tabId, 'longLivedId');
+
+        if ('string' != typeof longLivedId) {
+            longLivedId = uuid.v1();
+            await browser.sessions.setTabValue(tabId, 'longLivedId', longLivedId);
+        }
+
+        return longLivedId;
+    }
+
     async getById(id: number): Promise<TabOpenState> {
         let rawTab: browser.tabs.Tab;
 
@@ -75,7 +89,7 @@ export class OpenedTabRetriever {
             return null;
         }
 
-        return this.createTab(rawTab);
+        return await this.createTab(rawTab);
     }
 
     async getByIndex(index: number): Promise<TabOpenState> {
@@ -83,7 +97,7 @@ export class OpenedTabRetriever {
 
         for (const rawTab of rawTabList) {
             if (rawTab.index == index) {
-                return this.createTab(rawTab);
+                return await this.createTab(rawTab);
             }
         }
 

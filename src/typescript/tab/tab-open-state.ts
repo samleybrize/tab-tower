@@ -1,5 +1,6 @@
 export class TabOpenState {
     id: number = null;
+    longLivedId: string = null;
     index: number = null;
     title: string = null;
     isIncognito: boolean = false;

@@ -69,4 +69,8 @@ export class FirefoxConfig {
         const extensionInternalId = this.getExtensionInternalId();
         return `moz-extension://${extensionInternalId}${relativeUrl}`;
     }
+
+    getReaderModeTestPageUrl() {
+        return 'https://www.mozilla.org/en-US/mission/';
+    }
 }

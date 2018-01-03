@@ -5,7 +5,7 @@ export class TabFollowState {
     isInReaderMode: boolean = false;
     url: string = null;
     faviconUrl: string = null;
-    openIndex: number = null;
+    openLongLivedId: string = null;
 
     static fromObject(sourceObject: any): TabFollowState {
         const followState = new TabFollowState();
@@ -15,7 +15,7 @@ export class TabFollowState {
         followState.isInReaderMode = sourceObject.isInReaderMode;
         followState.url = sourceObject.url;
         followState.faviconUrl = sourceObject.faviconUrl;
-        followState.openIndex = sourceObject.openIndex;
+        followState.openLongLivedId = sourceObject.openLongLivedId;
 
         return followState;
     }

@@ -102,11 +102,13 @@ describe('Opened tabs tracking', () => {
     });
 
     it('Reader mode should be shown in the opened tabs list when enabled', async () => {
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+
         const cell = await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] .readerModeIndicator'));
         const onIndicator = cell.findElement(By.css('.on'));
         const offIndicator = cell.findElement(By.css('.off'));
 
-        const newTabUrl = 'http://www.wikipedia.fr'; // TODO
+        const newTabUrl = firefoxConfig.getReaderModeTestPageUrl();
         await browserInstructionSender.changeTabUrl(1, newTabUrl);
         await sleep(1000);
         await browserInstructionSender.toggleReaderMode(1);
@@ -200,6 +202,14 @@ describe('Opened tabs tracking', () => {
         assert.equal(activeTab.index, 1);
     });
 
+    xit('A click on an opened tab should focus the associated tab when an ignored tab was moved', async () => {
+        // TODO
+    });
+
+    xit('A click on an opened tab should focus the associated tab when an ignored tab was closed', async () => {
+        // TODO
+    });
+
     it('Should show opened tabs at startup', async () => {
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
         const tab1Url = firefoxConfig.getExtensionUrl('/tests/resources/test-page1.html');
@@ -233,6 +243,10 @@ describe('Opened tabs tracking', () => {
         assert.equal(tab2ShownTitle, 'Test page 2');
         assert.equal(tab2ShownFaviconUrl, expectedFaviconUrl2);
         assert.isFalse(isNoTabRowVisible);
+    });
+
+    xit('Should show opened tabs with reader mode enabled at startup', async () => {
+        // TODO
     });
 
     it('Incognito tabs should not be shown in the opened tabs list', async () => {

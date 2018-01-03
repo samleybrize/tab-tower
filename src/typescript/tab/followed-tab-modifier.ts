@@ -55,7 +55,7 @@ export class FollowedTabModifier {
         followState.isInReaderMode = openState.isInReaderMode;
         followState.url = openState.url;
         followState.faviconUrl = openState.faviconUrl;
-        followState.openIndex = openState.index;
+        followState.openLongLivedId = openState.longLivedId;
 
         this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(openState.id, followState.id);
 
@@ -77,7 +77,7 @@ export class FollowedTabModifier {
 
     async onAssociateOpenedTabToFollowedTab(event: OpenedTabAssociatedToFollowedTab) {
         const followState = event.tabFollowState;
-        followState.openIndex = event.tabOpenState.index;
+        followState.openLongLivedId = event.tabOpenState.longLivedId;
         await this.tabPersister.persist(followState);
     }
 
@@ -85,15 +85,8 @@ export class FollowedTabModifier {
         const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabId);
 
         if (followId) {
-            await this.tabPersister.setOpenIndex(followId, null);
-        }
-    }
-
-    async onOpenedTabMove(event: OpenedTabMoved): Promise<void> {
-        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
-
-        if (followId) {
-            await this.tabPersister.setOpenIndex(followId, event.tabOpenState.index);
+            // TODO will not work when a closed tab is restored
+            await this.tabPersister.setOpenLongLivedId(followId, null);
         }
     }
 

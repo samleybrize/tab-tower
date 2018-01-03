@@ -40,9 +40,9 @@ export class WebStorageTabPersister implements TabPersister {
         await browser.storage.local.set(persistObject);
     }
 
-    async setOpenIndex(followId: string, openIndex: number) {
+    async setOpenLongLivedId(followId: string, openLongLivedId: string) {
         const followState = await this.getByFollowId(followId);
-        followState.openIndex = openIndex;
+        followState.openLongLivedId = openLongLivedId;
 
         await this.persist(followState);
     }

@@ -9,13 +9,13 @@ export class FollowedTabRetriever {
         return this.tabPersister.getAll();
     }
 
-    async getWithOpenIndex(): Promise<Map<number, TabFollowState>> {
+    async getWithOpenLongLivedId(): Promise<Map<string, TabFollowState>> {
         const followStateList = await this.getAll();
-        const map = new Map<number, TabFollowState>();
+        const map = new Map<string, TabFollowState>();
 
         for (const followState of followStateList) {
-            if (null !== followState.openIndex) {
-                map.set(followState.openIndex, followState);
+            if (null !== followState.openLongLivedId) {
+                map.set(followState.openLongLivedId, followState);
             }
         }
 

@@ -107,7 +107,6 @@ async function main() {
     eventBus.subscribe(OpenedTabLoadingIsComplete, followedTabModifier.onOpenedTabLoadingIsComplete, followedTabModifier);
     eventBus.subscribe(OpenedTabFaviconUrlUpdated, followedTabModifier.onOpenedTabFaviconUrlUpdate, followedTabModifier);
     eventBus.subscribe(OpenedTabFaviconUrlUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
-    eventBus.subscribe(OpenedTabMoved, followedTabModifier.onOpenedTabMove, followedTabModifier);
     eventBus.subscribe(OpenedTabMoved, sendMessageEventHandler.onEvent, sendMessageEventHandler);
     eventBus.subscribe(OpenedTabReaderModeStateUpdated, followedTabModifier.onOpenedTabReaderModeStateUpdate, followedTabModifier);
     eventBus.subscribe(OpenedTabReaderModeStateUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);

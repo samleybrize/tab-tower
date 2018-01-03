@@ -145,11 +145,13 @@ describe('Tab following', () => {
     });
 
     it('Reader mode status of a followed tab should be updated when enabling reader mode on its associated opened tab', async () => {
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+
         const cell = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="2"] .readerModeIndicator'));
         const onIndicator = cell.findElement(By.css('.on'));
         const offIndicator = cell.findElement(By.css('.off'));
 
-        const newTabUrl = 'http://www.wikipedia.fr'; // TODO
+        const newTabUrl = firefoxConfig.getReaderModeTestPageUrl();
         await browserInstructionSender.changeTabUrl(1, newTabUrl);
         await sleep(1000);
         await browserInstructionSender.toggleReaderMode(1);
@@ -289,6 +291,18 @@ describe('Tab following', () => {
         assert.equal(activeTab.index, 2);
     });
 
+    xit('A click on a followed tab whose associated opened tab was moved should focus the associated opened tab', async () => {
+        // TODO
+    });
+
+    xit('A click on a followed tab should focus the associated opened tab when an ignored opened tab was moved', async () => {
+        // TODO
+    });
+
+    xit('A click on a followed tab should focus the associated opened tab when an ignored opened tab was closed', async () => {
+        // TODO
+    });
+
     it('A followed tab should be updated to the last non-privileged url when its associated opened tab is closed', async () => {
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
 
@@ -364,7 +378,6 @@ describe('Tab following', () => {
     });
 
     it('Should show followed tabs at startup', async () => {
-        // TODO reader mode
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
 
         await showOpenedTabsList();
@@ -404,6 +417,10 @@ describe('Tab following', () => {
         assert.equal(tab2ShownTitle, 'Test page 2');
         assert.equal(tab2ShownFaviconUrl, expectedFaviconUrl2);
         assert.isFalse(isNoTabRowVisible);
+    });
+
+    xit('Should show followed tabs with reader mode enabled at startup', async () => {
+        // TODO
     });
 
     it('Should show followed tabs associated to opened tabs at startup', async () => {
@@ -447,12 +464,18 @@ describe('Tab following', () => {
         assert.isTrue(isTab2OpenIndicatorOnDisplayed);
         assert.isFalse(isTab2OpenIndicatorOffDisplayed);
 
-        await followedTabsRowList[0].findElement('.title a').click();
+        await followedTabsRowList[0].findElement(By.css('.title a')).click();
         let activeTab = await browserInstructionSender.getActiveTab();
         assert.equal(activeTab.index, 2);
 
-        await followedTabsRowList[1].findElement('.title a').click();
+        await browserInstructionSender.focusTab(0);
+        await sleep(500);
+        await followedTabsRowList[1].findElement(By.css('.title a')).click();
         activeTab = await browserInstructionSender.getActiveTab();
         assert.equal(activeTab.index, 1);
+    });
+
+    xit('Should show followed tabs associated to opened tabs with reader mode enabled at startup', async () => {
+        // TODO
     });
 });

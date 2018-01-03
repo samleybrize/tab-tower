@@ -54,7 +54,7 @@ export class InMemoryTabPersister implements TabPersister {
         destination.id = source.id;
         destination.isIncognito = source.isIncognito;
         destination.isInReaderMode = source.isInReaderMode;
-        destination.openIndex = source.openIndex;
+        destination.openLongLivedId = source.openLongLivedId;
         destination.title = source.title;
         destination.url = source.url;
     }
@@ -79,7 +79,7 @@ export class InMemoryTabPersister implements TabPersister {
         }
     }
 
-    async setOpenIndex(followId: string, openIndex: number) {
+    async setOpenLongLivedId(followId: string, openLongLivedId: string) {
         if (!this.isRetrievedFromDecorated) {
             await this.retrieveFromDecorated();
         }
@@ -90,10 +90,10 @@ export class InMemoryTabPersister implements TabPersister {
             return;
         }
 
-        existingTabFollowState.openIndex = openIndex;
+        existingTabFollowState.openLongLivedId = openLongLivedId;
 
         if (this.decoratedTabPersister) {
-            this.decoratedTabPersister.setOpenIndex(followId, openIndex);
+            this.decoratedTabPersister.setOpenLongLivedId(followId, openLongLivedId);
         }
     }
 

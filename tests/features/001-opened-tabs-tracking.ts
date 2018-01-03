@@ -104,15 +104,16 @@ describe('Opened tabs tracking', () => {
     it('Reader mode should be shown in the opened tabs list when enabled', async () => {
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
 
-        const cell = await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] .readerModeIndicator'));
-        const onIndicator = cell.findElement(By.css('.on'));
-        const offIndicator = cell.findElement(By.css('.off'));
+        const titleElement = await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] .title a'));
+        const readerModeCell = await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] .readerModeIndicator'));
+        const onIndicator = readerModeCell.findElement(By.css('.on'));
+        const offIndicator = readerModeCell.findElement(By.css('.off'));
 
         const newTabUrl = firefoxConfig.getReaderModeTestPageUrl();
         await browserInstructionSender.changeTabUrl(1, newTabUrl);
-        await sleep(1000);
+        await sleep(500);
         await browserInstructionSender.toggleReaderMode(1);
-        await driver.wait(until.elementIsNotVisible(offIndicator), 3000);
+        await driver.wait(until.elementIsNotVisible(offIndicator), 10000);
 
         assert.isTrue(await onIndicator.isDisplayed());
         assert.isFalse(await offIndicator.isDisplayed());
@@ -196,18 +197,40 @@ describe('Opened tabs tracking', () => {
     });
 
     it('A click on an opened tab should focus the associated tab', async () => {
-        await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] a')).click();
+        await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] .title a')).click();
         const activeTab = await browserInstructionSender.getActiveTab();
 
         assert.equal(activeTab.index, 1);
     });
 
-    xit('A click on an opened tab should focus the associated tab when an ignored tab was moved', async () => {
-        // TODO
+    it('A click on an opened tab should focus the associated tab when an ignored tab was moved', async () => {
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+
+        const newTabUrl = firefoxConfig.getExtensionUrl('/ui/tab-tower.html');
+        await browserInstructionSender.openTab(newTabUrl);
+        await sleep(500);
+        await browserInstructionSender.moveTab(2, 1);
+        await sleep(500);
+        await browserInstructionSender.focusTab(0);
+        await sleep(500);
+
+        await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] .title a')).click();
+        await sleep(500);
+
+        const activeTab = await browserInstructionSender.getActiveTab();
+        assert.equal(activeTab.index, 2);
     });
 
-    xit('A click on an opened tab should focus the associated tab when an ignored tab was closed', async () => {
-        // TODO
+    it('A click on an opened tab should focus the associated tab when an ignored tab was closed', async () => {
+        await browserInstructionSender.closeTab(1);
+        await browserInstructionSender.focusTab(0);
+        await sleep(500);
+
+        await driver.findElement(By.css('#openedTabList tbody tr[data-tab-id] .title a')).click();
+        await sleep(500);
+
+        const activeTab = await browserInstructionSender.getActiveTab();
+        assert.equal(activeTab.index, 1);
     });
 
     it('Should show opened tabs at startup', async () => {
@@ -223,6 +246,7 @@ describe('Opened tabs tracking', () => {
         const windowHandles = await driver.getAllWindowHandles();
         driver.switchTo().window(windowHandles[2]);
         await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
+        await sleep(500);
 
         const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
         const openedTabRowList = await driver.findElements(By.css('#openedTabList tbody tr[data-tab-id]'));

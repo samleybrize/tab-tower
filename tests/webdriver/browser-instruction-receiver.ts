@@ -33,6 +33,14 @@ client.onmessage = async (event) => {
             const currentTabId = (await browser.tabs.query({active: true}))[0].id;
             targetTabId = await getTabIdByIndex(message.data.tabIndex);
 
+            while (true) {
+                const targetTab = await browser.tabs.get(targetTabId);
+
+                if ('complete' == targetTab.status) {
+                    break;
+                }
+            }
+
             await browser.tabs.update(targetTabId, {active: true});
             await sleep(500);
             await browser.tabs.toggleReaderMode(targetTabId);

@@ -155,7 +155,7 @@ describe('Tab following', () => {
         await browserInstructionSender.changeTabUrl(1, newTabUrl);
         await sleep(1000);
         await browserInstructionSender.toggleReaderMode(1);
-        await driver.wait(until.elementIsNotVisible(offIndicator), 3000);
+        await driver.wait(until.elementIsNotVisible(offIndicator), 10000);
 
         assert.isTrue(await onIndicator.isDisplayed());
         assert.isFalse(await offIndicator.isDisplayed());
@@ -291,16 +291,43 @@ describe('Tab following', () => {
         assert.equal(activeTab.index, 2);
     });
 
-    xit('A click on a followed tab whose associated opened tab was moved should focus the associated opened tab', async () => {
-        // TODO
+    it('A click on a followed tab whose associated opened tab was moved should focus the associated opened tab', async () => {
+        await browserInstructionSender.focusTab(0);
+        await browserInstructionSender.moveTab(2, 1);
+        await sleep(1000);
+
+        await driver.findElement(By.css('#followedTabList tbody tr[data-follow-id] a')).click();
+        const activeTab = await browserInstructionSender.getActiveTab();
+
+        assert.equal(activeTab.index, 1);
     });
 
-    xit('A click on a followed tab should focus the associated opened tab when an ignored opened tab was moved', async () => {
-        // TODO
+    it('A click on a followed tab should focus the associated opened tab when an ignored opened tab was moved', async () => {
+        await browserInstructionSender.focusTab(0);
+        await browserInstructionSender.moveTab(0, 2);
+        await sleep(1000);
+
+        await driver.findElement(By.css('#followedTabList tbody tr[data-follow-id] a')).click();
+        const activeTab = await browserInstructionSender.getActiveTab();
+
+        assert.equal(activeTab.index, 0);
     });
 
-    xit('A click on a followed tab should focus the associated opened tab when an ignored opened tab was closed', async () => {
-        // TODO
+    it('A click on a followed tab should focus the associated opened tab when an ignored opened tab was closed', async () => {
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+
+        await browserInstructionSender.focusTab(2);
+        await browserInstructionSender.changeTabUrl(1, firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
+        await browserInstructionSender.moveTab(1, 0);
+        await sleep(1000);
+
+        await browserInstructionSender.closeTab(0);
+        await sleep(1000);
+
+        await driver.findElement(By.css('#followedTabList tbody tr[data-follow-id] a')).click();
+        const activeTab = await browserInstructionSender.getActiveTab();
+
+        assert.equal(activeTab.index, 0);
     });
 
     it('A followed tab should be updated to the last non-privileged url when its associated opened tab is closed', async () => {

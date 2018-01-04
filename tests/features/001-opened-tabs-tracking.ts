@@ -269,8 +269,29 @@ describe('Opened tabs tracking', () => {
         assert.isFalse(isNoTabRowVisible);
     });
 
-    xit('Should show opened tabs with reader mode enabled at startup', async () => {
-        // TODO
+    it('Should show opened tabs with reader mode enabled at startup', async () => {
+        const currentOpenedTabRowList = await driver.findElements(By.css('#openedTabList tbody tr[data-tab-id]'));
+        const currentReaderModeOffIndicator = currentOpenedTabRowList[1].findElement(By.css('.readerModeIndicator .off'));
+
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+        await browserInstructionSender.changeTabUrl(1, firefoxConfig.getReaderModeTestPageUrl());
+        await browserInstructionSender.toggleReaderMode(1);
+        await driver.wait(until.elementIsNotVisible(currentReaderModeOffIndicator), 3000);
+
+        await browserInstructionSender.reloadExtension();
+        await sleep(1000);
+
+        await browserInstructionSender.openTab();
+        const windowHandles = await driver.getAllWindowHandles();
+        driver.switchTo().window(windowHandles[2]);
+        await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
+        await sleep(500);
+
+        const newOpenedTabRowList = await driver.findElements(By.css('#openedTabList tbody tr[data-tab-id]'));
+        const newReaderModeOnIndicator = newOpenedTabRowList[1].findElement(By.css('.readerModeIndicator .on'));
+        const newReaderModeOffIndicator = newOpenedTabRowList[1].findElement(By.css('.readerModeIndicator .off'));
+        assert.isTrue(await newReaderModeOnIndicator.isDisplayed());
+        assert.isFalse(await newReaderModeOffIndicator.isDisplayed());
     });
 
     it('Incognito tabs should not be shown in the opened tabs list', async () => {

@@ -2,6 +2,9 @@ import { TabFollowState } from '../tab-follow-state';
 import { TabPersister } from './tab-persister';
 
 export class WebStorageTabPersister implements TabPersister {
+    private actionStack: Array<() => Promise<any>> = [];
+    private isActionStackPlaying = false;
+
     async getAll(): Promise<TabFollowState[]> {
         const storageObject = await browser.storage.local.get();
         const followStateList: TabFollowState[] = [];
@@ -33,6 +36,19 @@ export class WebStorageTabPersister implements TabPersister {
     }
 
     async persist(tabFollowState: TabFollowState) {
+        const promise = new Promise<void>((resolve, reject) => {
+            this.actionStack.push(async () => {
+                this.persistImmediately(tabFollowState);
+                resolve();
+            });
+        });
+
+        this.startActionStackPlaying();
+
+        return promise;
+    }
+
+    private async persistImmediately(tabFollowState: TabFollowState) {
         const id = this.getStorageObjectId(tabFollowState.id);
         const persistObject: any = {};
         persistObject[id] = tabFollowState;
@@ -40,43 +56,118 @@ export class WebStorageTabPersister implements TabPersister {
         await browser.storage.local.set(persistObject);
     }
 
-    async setOpenLongLivedId(followId: string, openLongLivedId: string) {
-        const followState = await this.getByFollowId(followId);
-        followState.openLongLivedId = openLongLivedId;
+    private async startActionStackPlaying() {
+        if (this.isActionStackPlaying) {
+            return;
+        }
 
-        await this.persist(followState);
+        this.isActionStackPlaying = true;
+        setTimeout(this.playActionStack.bind(this), 1);
+    }
+
+    private async playActionStack() {
+        this.isActionStackPlaying = true;
+
+        while (this.actionStack.length > 0) {
+            const action = this.actionStack.shift();
+            await action();
+        }
+
+        this.isActionStackPlaying = false;
+    }
+
+    async setOpenLongLivedId(followId: string, openLongLivedId: string) {
+        const promise = new Promise<void>((resolve, reject) => {
+            this.actionStack.push(async () => {
+                const followState = await this.getByFollowId(followId);
+                followState.openLongLivedId = openLongLivedId;
+
+                await this.persistImmediately(followState);
+                resolve();
+            });
+        });
+
+        this.startActionStackPlaying();
+
+        return promise;
     }
 
     async setFaviconUrl(followId: string, faviconUrl: string) {
-        const followState = await this.getByFollowId(followId);
-        followState.faviconUrl = faviconUrl;
+        const promise = new Promise<void>((resolve, reject) => {
+            this.actionStack.push(async () => {
+                const followState = await this.getByFollowId(followId);
+                followState.faviconUrl = faviconUrl;
 
-        await this.persist(followState);
+                await this.persistImmediately(followState);
+                resolve();
+            });
+        });
+
+        this.startActionStackPlaying();
+
+        return promise;
     }
 
     async setTitle(followId: string, title: string) {
-        const followState = await this.getByFollowId(followId);
-        followState.title = title;
+        const promise = new Promise<void>((resolve, reject) => {
+            this.actionStack.push(async () => {
+                const followState = await this.getByFollowId(followId);
+                followState.title = title;
 
-        await this.persist(followState);
+                await this.persistImmediately(followState);
+                resolve();
+            });
+        });
+
+        this.startActionStackPlaying();
+
+        return promise;
     }
 
     async setUrl(followId: string, url: string) {
-        const followState = await this.getByFollowId(followId);
-        followState.url = url;
+        const promise = new Promise<void>((resolve, reject) => {
+            this.actionStack.push(async () => {
+                const followState = await this.getByFollowId(followId);
+                followState.url = url;
 
-        await this.persist(followState);
+                await this.persistImmediately(followState);
+                resolve();
+            });
+        });
+
+        this.startActionStackPlaying();
+
+        return promise;
     }
 
     async setReaderMode(followId: string, readerMode: boolean) {
-        const followState = await this.getByFollowId(followId);
-        followState.isInReaderMode = readerMode;
+        const promise = new Promise<void>((resolve, reject) => {
+            this.actionStack.push(async () => {
+                const followState = await this.getByFollowId(followId);
+                followState.isInReaderMode = readerMode;
 
-        await this.persist(followState);
+                await this.persistImmediately(followState);
+                resolve();
+            });
+        });
+
+        this.startActionStackPlaying();
+
+        return promise;
     }
 
     async remove(followId: string): Promise<void> {
-        const id = this.getStorageObjectId(followId);
-        await browser.storage.local.remove(id);
+        const promise = new Promise<void>((resolve, reject) => {
+            this.actionStack.push(async () => {
+                const id = this.getStorageObjectId(followId);
+                await browser.storage.local.remove(id);
+
+                resolve();
+            });
+        });
+
+        this.startActionStackPlaying();
+
+        return promise;
     }
 }

@@ -147,9 +147,11 @@ describe('Tab following', () => {
     it('Reader mode status of a followed tab should be updated when enabling reader mode on its associated opened tab', async () => {
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
 
-        const cell = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="2"] .readerModeIndicator'));
-        const onIndicator = cell.findElement(By.css('.on'));
-        const offIndicator = cell.findElement(By.css('.off'));
+        const row = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="2"]'));
+        const titleElement = await row.findElement(By.css('.title a'));
+        const readerModeCell = await row.findElement(By.css('.readerModeIndicator'));
+        const onIndicator = readerModeCell.findElement(By.css('.on'));
+        const offIndicator = readerModeCell.findElement(By.css('.off'));
 
         const newTabUrl = firefoxConfig.getReaderModeTestPageUrl();
         await browserInstructionSender.changeTabUrl(1, newTabUrl);
@@ -159,18 +161,22 @@ describe('Tab following', () => {
 
         assert.isTrue(await onIndicator.isDisplayed());
         assert.isFalse(await offIndicator.isDisplayed());
+        assert.match(await titleElement.getText(), /mozilla/i);
     });
 
     it('Reader mode status of a followed tab should be updated when disabling reader mode on its associated opened tab', async () => {
-        const cell = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="2"] .readerModeIndicator'));
-        const onIndicator = cell.findElement(By.css('.on'));
-        const offIndicator = cell.findElement(By.css('.off'));
+        const row = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="2"]'));
+        const titleElement = await row.findElement(By.css('.title a'));
+        const readerModeCell = await row.findElement(By.css('.readerModeIndicator'));
+        const onIndicator = readerModeCell.findElement(By.css('.on'));
+        const offIndicator = readerModeCell.findElement(By.css('.off'));
 
         await browserInstructionSender.toggleReaderMode(1);
         await driver.wait(until.elementIsNotVisible(onIndicator), 3000);
 
         assert.isFalse(await onIndicator.isDisplayed());
         assert.isTrue(await offIndicator.isDisplayed());
+        assert.match(await titleElement.getText(), /mozilla/i);
     });
 
     it('Tab unfollowed from the opened tabs list should be removed from the followed tabs list', async () => {
@@ -334,10 +340,8 @@ describe('Tab following', () => {
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
 
         const newTabUrl = firefoxConfig.getExtensionUrl('/tests/resources/test-page1.html');
-        await browserInstructionSender.closeTab(1);
-        await browserInstructionSender.closeTab(2);
+        await browserInstructionSender.closeTab(0);
         await browserInstructionSender.openTab(newTabUrl);
-        await browserInstructionSender.focusTab(0);
         await browserInstructionSender.triggerDoubleClick(driver, '#followedTabList tbody tr[data-follow-id] .unfollowButton');
         await sleep(1000);
 
@@ -446,8 +450,40 @@ describe('Tab following', () => {
         assert.isFalse(isNoTabRowVisible);
     });
 
-    xit('Should show followed tabs with reader mode enabled at startup', async () => {
-        // TODO
+    it('Should show followed tabs with reader mode enabled at startup', async () => {
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+
+        await driver.findElement(By.css('#followedTabList tbody tr[data-follow-id] .title a')).click();
+        await browserInstructionSender.changeTabUrl(1, firefoxConfig.getReaderModeTestPageUrl());
+        await browserInstructionSender.toggleReaderMode(1);
+        const openIndicatorOff =  driver.findElement(By.css('#followedTabList tbody tr[data-follow-id] .readerModeIndicator .off'));
+        await driver.wait(until.elementIsNotVisible(openIndicatorOff), 3000);
+
+        await browserInstructionSender.closeTab(1);
+        await sleep(1000);
+
+        await browserInstructionSender.reloadExtension();
+        await sleep(1000);
+
+        const windowHandles = await driver.getAllWindowHandles();
+        driver.switchTo().window(windowHandles[0]);
+        await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
+        await showFollowedTabsList();
+
+        const followedTabRowList = await driver.findElements(By.css('#followedTabList tbody tr[data-follow-id]'));
+        const tab1Title = await followedTabRowList[0].findElement(By.css('.title a')).getText();
+        const isTab1ReaderModeIndicatorOn = await followedTabRowList[0].findElement(By.css('.readerModeIndicator .on')).isDisplayed();
+        const isTab1ReaderModeIndicatorOff = await followedTabRowList[0].findElement(By.css('.readerModeIndicator .off')).isDisplayed();
+        const isTab2ReaderModeIndicatorOn = await followedTabRowList[1].findElement(By.css('.readerModeIndicator .on')).isDisplayed();
+        const isTab2ReaderModeIndicatorOff = await followedTabRowList[1].findElement(By.css('.readerModeIndicator .off')).isDisplayed();
+
+        const expectedFaviconUrl1 = firefoxConfig.getExtensionUrl('/tests/resources/favicon1.png');
+        const expectedFaviconUrl2 = firefoxConfig.getExtensionUrl('/tests/resources/favicon2.png');
+        assert.match(tab1Title, /mozilla/i);
+        assert.isTrue(isTab1ReaderModeIndicatorOn);
+        assert.isFalse(isTab1ReaderModeIndicatorOff);
+        assert.isFalse(isTab2ReaderModeIndicatorOn);
+        assert.isTrue(isTab2ReaderModeIndicatorOff);
     });
 
     it('Should show followed tabs associated to opened tabs at startup', async () => {

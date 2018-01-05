@@ -17,19 +17,13 @@ import { TabClosed } from './event/tab-closed';
 import { TabFollowed } from './event/tab-followed';
 import { TabUnfollowed } from './event/tab-unfollowed';
 import { TabPersister } from './persister/tab-persister';
-import { PrivilegedUrlDetector } from './privileged-url-detector';
 import { TabAssociationMaintainer } from './tab-association-maintainer';
 
 export class FollowedTabModifier {
-    private updatesDisabledOnId = new Map<string, boolean>();
-    private eventStackEnabledOnId = new Map<string, boolean>();
-    private eventStack = new Map<string, Array<() => any>>();
-
     constructor(
         private tabPersister: TabPersister,
         private tabAssociationMaintainer: TabAssociationMaintainer,
         private eventBus: EventBus,
-        private privilegedUrlDetector: PrivilegedUrlDetector,
     ) {
     }
 
@@ -41,7 +35,6 @@ export class FollowedTabModifier {
         }
 
         const tabFollowState = this.createTabFollowStateFromOpenState(command.tab.openState);
-        this.eventStackEnabledOnId.set(tabFollowState.id, true);
         tab.followState = tabFollowState;
         await this.tabPersister.persist(tabFollowState);
         this.eventBus.publish(new TabFollowed(tab));
@@ -91,101 +84,50 @@ export class FollowedTabModifier {
     }
 
     async onOpenedTabFaviconUrlUpdate(event: OpenedTabFaviconUrlUpdated): Promise<void> {
+        if (event.tabOpenState.isPrivileged) {
+            return;
+        }
+
         const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
 
-        if (null == followId || this.areUpdatesDisabled(followId)) {
-            return;
-        } else if (this.isEventStackEnabled(followId)) {
-            this.stackEvent(followId, this.onOpenedTabFaviconUrlUpdate.bind(this, event));
-            return;
+        if (followId) {
+            await this.tabPersister.setFaviconUrl(followId, event.tabOpenState.faviconUrl);
         }
-
-        await this.tabPersister.setFaviconUrl(followId, event.tabOpenState.faviconUrl);
-    }
-
-    private areUpdatesDisabled(followId: string) {
-        return this.updatesDisabledOnId.get(followId);
-    }
-
-    private isEventStackEnabled(followId: string) {
-        return this.eventStackEnabledOnId.get(followId);
-    }
-
-    private stackEvent(followId: string, callback: () => Promise<void>) {
-        let eventStack = this.eventStack.get(followId);
-
-        if (null == eventStack) {
-            eventStack = [];
-            this.eventStack.set(followId, eventStack);
-        }
-
-        eventStack.push(callback);
     }
 
     async onOpenedTabTitleUpdate(event: OpenedTabTitleUpdated): Promise<void> {
-        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
-
-        if (null == followId || this.areUpdatesDisabled(followId)) {
-            return;
-        } else if (this.isEventStackEnabled(followId)) {
-            this.stackEvent(followId, this.onOpenedTabTitleUpdate.bind(this, event));
+        if (event.tabOpenState.isPrivileged) {
             return;
         }
 
-        await this.tabPersister.setTitle(followId, event.tabOpenState.title);
+        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
+
+        if (followId) {
+            await this.tabPersister.setTitle(followId, event.tabOpenState.title);
+        }
     }
 
     async onOpenedTabUrlUpdate(event: OpenedTabUrlUpdated): Promise<void> {
-        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
-
-        if (null == followId) {
+        if (event.tabOpenState.isPrivileged) {
             return;
         }
 
-        this.eventStackEnabledOnId.delete(followId);
+        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
 
-        if (this.privilegedUrlDetector.isPrivileged(event.tabOpenState.url)) {
-            this.updatesDisabledOnId.set(followId, true);
-            this.eventStack.delete(followId);
-        } else {
-            this.updatesDisabledOnId.delete(followId);
-            await this.playStackedEvents(followId);
+        if (followId) {
             await this.tabPersister.setUrl(followId, event.tabOpenState.url);
         }
     }
 
-    private async playStackedEvents(followId: string) {
-        const stackedEvents = this.eventStack.get(followId);
-
-        if (null == stackedEvents || 0 == stackedEvents.length) {
-            return;
-        }
-
-        for (const event of stackedEvents) {
-            await event();
-        }
-
-        this.eventStack.delete(followId);
-    }
-
     async onOpenedTabReaderModeStateUpdate(event: OpenedTabReaderModeStateUpdated): Promise<void> {
-        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
-
-        if (null == followId || this.areUpdatesDisabled(followId)) {
-            return;
-        } else if (this.isEventStackEnabled(followId)) {
-            this.stackEvent(followId, this.onOpenedTabReaderModeStateUpdate.bind(this, event));
+        if (event.tabOpenState.isPrivileged) {
             return;
         }
 
-        await this.tabPersister.setReaderMode(followId, event.tabOpenState.isInReaderMode);
-    }
-
-    async onOpenedTabLoadingIsComplete(event: OpenedTabLoadingIsComplete): Promise<void> {
         const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
 
         if (followId) {
-            this.eventStackEnabledOnId.set(followId, true);
+            await this.tabPersister.setReaderMode(followId, event.tabOpenState.isInReaderMode);
         }
     }
 }

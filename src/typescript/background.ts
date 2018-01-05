@@ -58,7 +58,7 @@ async function main() {
     const inMemoryTabPersister = new InMemoryTabPersister(webStorageTabPersister);
     const privilegedUrlDetector = new PrivilegedUrlDetector();
     const tabAssociationMaintainer = new TabAssociationMaintainer();
-    const followedTabModifier = new FollowedTabModifier(inMemoryTabPersister, tabAssociationMaintainer, eventBus, privilegedUrlDetector);
+    const followedTabModifier = new FollowedTabModifier(inMemoryTabPersister, tabAssociationMaintainer, eventBus);
     const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
     const openedTabModifier = new OpenedTabModifier();
     const openedTabRetriever = new OpenedTabRetriever(privilegedUrlDetector, [uiUrlStartWith]);
@@ -104,7 +104,6 @@ async function main() {
     eventBus.subscribe(TabFollowed, sendMessageEventHandler.onEvent, sendMessageEventHandler);
     eventBus.subscribe(OpenedTabAssociatedToFollowedTab, followedTabModifier.onAssociateOpenedTabToFollowedTab, followedTabModifier);
     eventBus.subscribe(OpenedTabAssociatedToFollowedTab, sendMessageEventHandler.onEvent, sendMessageEventHandler);
-    eventBus.subscribe(OpenedTabLoadingIsComplete, followedTabModifier.onOpenedTabLoadingIsComplete, followedTabModifier);
     eventBus.subscribe(OpenedTabFaviconUrlUpdated, followedTabModifier.onOpenedTabFaviconUrlUpdate, followedTabModifier);
     eventBus.subscribe(OpenedTabFaviconUrlUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
     eventBus.subscribe(OpenedTabMoved, sendMessageEventHandler.onEvent, sendMessageEventHandler);

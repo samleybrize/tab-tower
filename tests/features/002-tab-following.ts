@@ -159,9 +159,11 @@ describe('Tab following', () => {
         await browserInstructionSender.toggleReaderMode(1);
         await driver.wait(until.elementIsNotVisible(offIndicator), 10000);
 
+        const title = await titleElement.getText();
         assert.isTrue(await onIndicator.isDisplayed());
         assert.isFalse(await offIndicator.isDisplayed());
-        assert.match(await titleElement.getText(), /mozilla/i);
+        assert.match(title, /mozilla/i);
+        assert.notMatch(title, /http/i);
     });
 
     it('Reader mode status of a followed tab should be updated when disabling reader mode on its associated opened tab', async () => {
@@ -174,9 +176,11 @@ describe('Tab following', () => {
         await browserInstructionSender.toggleReaderMode(1);
         await driver.wait(until.elementIsNotVisible(onIndicator), 3000);
 
+        const title = await titleElement.getText();
         assert.isFalse(await onIndicator.isDisplayed());
         assert.isTrue(await offIndicator.isDisplayed());
-        assert.match(await titleElement.getText(), /mozilla/i);
+        assert.match(title, /mozilla/i);
+        assert.notMatch(title, /http/i);
     });
 
     it('Tab unfollowed from the opened tabs list should be removed from the followed tabs list', async () => {
@@ -480,6 +484,7 @@ describe('Tab following', () => {
         const expectedFaviconUrl1 = firefoxConfig.getExtensionUrl('/tests/resources/favicon1.png');
         const expectedFaviconUrl2 = firefoxConfig.getExtensionUrl('/tests/resources/favicon2.png');
         assert.match(tab1Title, /mozilla/i);
+        assert.notMatch(tab1Title, /http/i);
         assert.isTrue(isTab1ReaderModeIndicatorOn);
         assert.isFalse(isTab1ReaderModeIndicatorOff);
         assert.isFalse(isTab2ReaderModeIndicatorOn);
@@ -573,7 +578,8 @@ describe('Tab following', () => {
 
         const expectedFaviconUrl1 = firefoxConfig.getExtensionUrl('/tests/resources/favicon1.png');
         const expectedFaviconUrl2 = firefoxConfig.getExtensionUrl('/tests/resources/favicon2.png');
-        assert.match(tab1Title, /mozilla/i); // TODO assert not an url
+        assert.match(tab1Title, /mozilla/i);
+        assert.notMatch(tab1Title, /http/i);
         assert.isTrue(isTab1OpenIndicatorOn);
         assert.isFalse(isTab1OpenIndicatorOff);
         assert.isTrue(isTab1ReaderModeIndicatorOn);

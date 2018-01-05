@@ -294,6 +294,36 @@ describe('Tab following', () => {
         assert.equal(openedTab.title, 'Test page 2');
     });
 
+    it('A click on a followed tab with reader mode enabled that is closed should open it in reader mode', async () => {
+        await showOpenedTabsList();
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+
+        await browserInstructionSender.openTab(firefoxConfig.getReaderModeTestPageUrl());
+        await driver.wait(until.elementLocated(By.css('#openedTabList tbody tr[data-index="3"]')), 3000);
+
+        await browserInstructionSender.toggleReaderMode(3);
+        const openedTabsList = await driver.findElements(By.css('#openedTabList tbody tr[data-tab-id]'));
+        const openReaderModeIndicatorOff = openedTabsList[2].findElement(By.css('.readerModeIndicator .off'));
+        await driver.wait(until.elementIsNotVisible(openReaderModeIndicatorOff), 10000);
+
+        await openedTabsList[2].findElement(By.css('.followButton')).click();
+
+        await browserInstructionSender.closeTab(3);
+        await sleep(500);
+
+        await showFollowedTabsList();
+        const followedTabsList = await driver.findElements(By.css('#followedTabList tbody tr[data-follow-id]'));
+        followedTabsList[1].findElement(By.css('.title a')).click();
+        const openIndicatorOff = followedTabsList[1].findElement(By.css('.openIndicator .off'));
+        await driver.wait(until.elementIsNotVisible(openIndicatorOff), 10000);
+
+        const followedReaderModeIndicatorOn = followedTabsList[1].findElement(By.css('.readerModeIndicator .on'));
+        const followedReaderModeIndicatorOff = followedTabsList[1].findElement(By.css('.readerModeIndicator .off'));
+
+        assert.isTrue(await followedReaderModeIndicatorOn.isDisplayed());
+        assert.isFalse(await followedReaderModeIndicatorOff.isDisplayed());
+    });
+
     it('A click on a followed tab that is opened should focus the associated opened tab', async () => {
         await driver.findElement(By.css('#followedTabList tbody tr[data-follow-id] a')).click();
         const activeTab = await browserInstructionSender.getActiveTab();

@@ -374,6 +374,7 @@ describe('Tab following', () => {
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
 
         const newTabUrl = firefoxConfig.getExtensionUrl('/tests/resources/test-page1.html');
+        await browserInstructionSender.closeTab(2);
         await browserInstructionSender.closeTab(0);
         await browserInstructionSender.openTab(newTabUrl);
         await browserInstructionSender.triggerDoubleClick(driver, '#followedTabList tbody tr[data-follow-id] .unfollowButton');

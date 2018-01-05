@@ -16,22 +16,28 @@ export class TabOpener {
     }
 
     async openTab(command: OpenTab) {
-        const tab = await browser.tabs.create({
+        const createTabOptions: browser.tabs.CreateProperties = {
             active: false,
             url: command.url,
-        });
-        await this.waitForNewTabLoad(tab.id);
+        };
 
-        if (command.followId) {
-            const tabFollowState = await this.followedTabRetriever.getById(command.followId);
-            const tabOpenState = await this.openedTabRetriever.getById(tab.id);
-
-            this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(tab.id, command.followId);
-            this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(tabOpenState, tabFollowState));
+        if (browser.tabs.toggleReaderMode) {
+            createTabOptions.openInReaderMode = command.readerMode;
         }
 
-        if (command.readerMode && browser.tabs.toggleReaderMode) {
-            await browser.tabs.toggleReaderMode(tab.id);
+        const tab = await browser.tabs.create(createTabOptions);
+        await this.waitForNewTabLoad(tab.id);
+
+        this.associateNewTabToFollowedTab(command, tab);
+    }
+
+    private async associateNewTabToFollowedTab(openTabCommand: OpenTab, openedTab: browser.tabs.Tab) {
+        if (openTabCommand.followId) {
+            const tabFollowState = await this.followedTabRetriever.getById(openTabCommand.followId);
+            const tabOpenState = await this.openedTabRetriever.getById(openedTab.id);
+
+            this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(openedTab.id, openTabCommand.followId);
+            this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(tabOpenState, tabFollowState));
         }
     }
 

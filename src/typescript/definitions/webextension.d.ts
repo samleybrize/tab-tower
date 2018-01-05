@@ -980,18 +980,20 @@ declare namespace browser.tabs {
 
     const TAB_ID_NONE: number;
 
+    interface CreateProperties {
+        active?: boolean;
+        cookieStoreId?: string;
+        index?: number;
+        // unsupported: openerTabId: number;
+        pinned?: boolean;
+        // deprecated: selected: boolean;
+        url?: string;
+        openInReaderMode?: boolean;
+        windowId?: number;
+    }
+
     function connect(tabId: number, connectInfo?: { name?: string, frameId?: number }): browser.runtime.Port;
-    function create(createProperties: {
-        active?: boolean,
-        cookieStoreId?: string,
-        index?: number,
-        // unsupported: openerTabId: number,
-        pinned?: boolean,
-        // deprecated: selected: boolean,
-        url?: string,
-        openInReaderMode?: boolean,
-        windowId?: number,
-    }): Promise<Tab>;
+    function create(createProperties: CreateProperties): Promise<Tab>;
     function captureVisibleTab(
         windowId?: number,
         options?: browser.extensionTypes.ImageDetails,

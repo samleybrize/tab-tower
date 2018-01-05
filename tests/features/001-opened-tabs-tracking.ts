@@ -125,7 +125,7 @@ describe('Opened tabs tracking', () => {
         const offIndicator = cell.findElement(By.css('.off'));
 
         await browserInstructionSender.toggleReaderMode(1);
-        await driver.wait(until.elementIsNotVisible(onIndicator), 3000);
+        await driver.wait(until.elementIsNotVisible(onIndicator), 10000);
 
         assert.isFalse(await onIndicator.isDisplayed());
         assert.isTrue(await offIndicator.isDisplayed());
@@ -276,7 +276,7 @@ describe('Opened tabs tracking', () => {
         const firefoxConfig = webdriverRetriever.getFirefoxConfig();
         await browserInstructionSender.changeTabUrl(1, firefoxConfig.getReaderModeTestPageUrl());
         await browserInstructionSender.toggleReaderMode(1);
-        await driver.wait(until.elementIsNotVisible(currentReaderModeOffIndicator), 3000);
+        await driver.wait(until.elementIsNotVisible(currentReaderModeOffIndicator), 10000);
 
         await browserInstructionSender.reloadExtension();
         await sleep(1000);

@@ -457,7 +457,7 @@ describe('Tab following', () => {
         await browserInstructionSender.changeTabUrl(1, firefoxConfig.getReaderModeTestPageUrl());
         await browserInstructionSender.toggleReaderMode(1);
         const openIndicatorOff =  driver.findElement(By.css('#followedTabList tbody tr[data-follow-id] .readerModeIndicator .off'));
-        await driver.wait(until.elementIsNotVisible(openIndicatorOff), 3000);
+        await driver.wait(until.elementIsNotVisible(openIndicatorOff), 10000);
 
         await browserInstructionSender.closeTab(1);
         await sleep(1000);
@@ -500,6 +500,7 @@ describe('Tab following', () => {
         await browserInstructionSender.openTab(tab1Url);
         await browserInstructionSender.openTab(tab2Url);
         await driver.wait(until.elementLocated(By.css('#openedTabList tbody tr[data-tab-id]')), 3000);
+        await sleep(200);
 
         const openedTabsRowList = await driver.findElements(By.css('#openedTabList tbody tr[data-tab-id] .followButton'));
         await openedTabsRowList[1].click();
@@ -538,7 +539,48 @@ describe('Tab following', () => {
         assert.equal(activeTab.index, 1);
     });
 
-    xit('Should show followed tabs associated to opened tabs with reader mode enabled at startup', async () => {
-        // TODO
+    it('Should show followed tabs associated to opened tabs with reader mode enabled at startup', async () => {
+        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
+
+        await browserInstructionSender.focusTab(0);
+        await sleep(500);
+
+        await browserInstructionSender.changeTabUrl(2, firefoxConfig.getReaderModeTestPageUrl());
+        await browserInstructionSender.toggleReaderMode(2);
+        const followedTabsRowList = await driver.findElements(By.css('#followedTabList tbody tr[data-follow-id]'));
+        const openIndicatorOff =  driver.findElement(By.css('#followedTabList tbody tr[data-follow-id] .readerModeIndicator .off'));
+        await driver.wait(until.elementIsNotVisible(openIndicatorOff), 10000);
+
+        await browserInstructionSender.reloadExtension();
+        await sleep(1000);
+
+        await browserInstructionSender.openTab(null, 0);
+        const windowHandles = await driver.getAllWindowHandles();
+        driver.switchTo().window(windowHandles[0]);
+        await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
+        await showFollowedTabsList();
+
+        const followedTabRowList = await driver.findElements(By.css('#followedTabList tbody tr[data-follow-id]'));
+        const tab1Title = await followedTabRowList[0].findElement(By.css('.title a')).getText();
+        const isTab1OpenIndicatorOn = await followedTabRowList[0].findElement(By.css('.openIndicator .on')).isDisplayed();
+        const isTab1OpenIndicatorOff = await followedTabRowList[0].findElement(By.css('.openIndicator .off')).isDisplayed();
+        const isTab1ReaderModeIndicatorOn = await followedTabRowList[0].findElement(By.css('.readerModeIndicator .on')).isDisplayed();
+        const isTab1ReaderModeIndicatorOff = await followedTabRowList[0].findElement(By.css('.readerModeIndicator .off')).isDisplayed();
+        const isTab2OpenIndicatorOn = await followedTabRowList[1].findElement(By.css('.openIndicator .on')).isDisplayed();
+        const isTab2OpenIndicatorOff = await followedTabRowList[1].findElement(By.css('.openIndicator .off')).isDisplayed();
+        const isTab2ReaderModeIndicatorOn = await followedTabRowList[1].findElement(By.css('.readerModeIndicator .on')).isDisplayed();
+        const isTab2ReaderModeIndicatorOff = await followedTabRowList[1].findElement(By.css('.readerModeIndicator .off')).isDisplayed();
+
+        const expectedFaviconUrl1 = firefoxConfig.getExtensionUrl('/tests/resources/favicon1.png');
+        const expectedFaviconUrl2 = firefoxConfig.getExtensionUrl('/tests/resources/favicon2.png');
+        assert.match(tab1Title, /mozilla/i); // TODO assert not an url
+        assert.isTrue(isTab1OpenIndicatorOn);
+        assert.isFalse(isTab1OpenIndicatorOff);
+        assert.isTrue(isTab1ReaderModeIndicatorOn);
+        assert.isFalse(isTab1ReaderModeIndicatorOff);
+        assert.isTrue(isTab2OpenIndicatorOn);
+        assert.isFalse(isTab2OpenIndicatorOff);
+        assert.isFalse(isTab2ReaderModeIndicatorOn);
+        assert.isTrue(isTab2ReaderModeIndicatorOff);
     });
 });

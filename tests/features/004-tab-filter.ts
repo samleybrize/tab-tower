@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { Builder, By, Key, until, WebDriver } from 'selenium-webdriver';
+import { By, until, WebDriver } from 'selenium-webdriver';
 
 import { sleep } from '../../src/typescript/utils/sleep';
 import { BrowserInstructionSender } from '../webdriver/browser-instruction-sender';

@@ -130,7 +130,13 @@ export class BrowserInstructionSender {
     }
 
     async focusTab(tabIndex: number) {
-        return this.send({action: 'focus-tab', data: {tabIndex}});
+        return new Promise<browser.tabs.Tab>((resolve, reject) => {
+            const messageId = Math.random();
+            this.receiveCallbackMap.set(messageId, (message) => {
+                resolve();
+            });
+            this.send({action: 'focus-tab', data: {messageId, tabIndex}});
+        });
     }
 
     async reloadExtension() {

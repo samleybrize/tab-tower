@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { Builder, By, Key, until, WebDriver } from 'selenium-webdriver';
+import { By, until, WebDriver } from 'selenium-webdriver';
 
 import { sleep } from '../../src/typescript/utils/sleep';
 import { BrowserInstructionSender } from '../webdriver/browser-instruction-sender';
@@ -7,7 +7,7 @@ import { WebDriverRetriever } from '../webdriver/webdriver-retriever';
 
 let webdriverRetriever: WebDriverRetriever;
 let driver: WebDriver;
-const browserInstructionSender: BrowserInstructionSender = BrowserInstructionSender.getInstance();
+const browserInstructionSender = BrowserInstructionSender.getInstance();
 
 describe('Navigation', () => {
     before(async () => {

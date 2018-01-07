@@ -36,41 +36,35 @@ export class OpenedTabsTestHelper {
         }, 3000);
     }
 
-    // TODO
     async clickOnTabTitle(tabRow: WebElement) {
-        const isOpenedTab = null !== await tabRow.getAttribute('data-tab-id');
-        const isFollowedTab = null !== await tabRow.getAttribute('data-follow-id');
-        let followedOpenIndicator: WebElement = null;
-        let tabIndex: number = null;
-        let numberOfMatchingTabsBefore: number;
-        let url: string;
-
-        if (isFollowedTab) {
-            tabIndex = +await tabRow.getAttribute('data-opened-index');
-            followedOpenIndicator = tabRow.findElement(By.css('.openIndicator .on'));
-
-            if (null === tabIndex) {
-                url = await tabRow.findElement(By.css('.title a')).getAttribute('data-url');
-                numberOfMatchingTabsBefore = await this.getNumberOfTabsWithUrl(url);
-            }
-        } else {
-            tabIndex = +await tabRow.getAttribute('data-index');
-        }
+        const tabIndex = +await tabRow.getAttribute('data-index');
 
         await tabRow.findElement(By.css('.title a')).click();
         await this.driver.wait(async () => {
-            if (isOpenedTab) {
-                return tabIndex === (await this.browserInstructionSender.getActiveTab()).index;
-            } else if (isFollowedTab && null !== tabIndex) {
-                return tabIndex === (await this.browserInstructionSender.getActiveTab()).id;
-            } else if (isFollowedTab) {
-                const numberOfMatchingTabs = await this.getNumberOfTabsWithUrl(url);
-
-                if (numberOfMatchingTabs > numberOfMatchingTabsBefore) {
-                    return true;
-                }
-            }
+            return tabIndex === (await this.browserInstructionSender.getActiveTab()).index;
         }, 10000);
+    }
+
+    async clickOnFollowButton(tabRow: WebElement) {
+        const followButton = this.getFollowButton(tabRow);
+
+        await followButton.click();
+        await this.driver.wait(async () => {
+            return !await followButton.isDisplayed();
+        }, 3000);
+    }
+
+    async clickOnUnfollowButton(tabRow: WebElement) {
+        const unfollowButton = this.getUnfollowButton(tabRow);
+        const tabId = await tabRow.getAttribute('data-tab-id');
+
+        await this.browserInstructionSender.triggerDoubleClick(
+            this.driver,
+            `#openedTabList tbody tr[data-tab-id="${tabId}"] .unfollowButton`,
+        );
+        await this.driver.wait(async () => {
+            return !await unfollowButton.isDisplayed();
+        }, 3000);
     }
 
     async getNumberOfTabsWithUrl(url?: string) {
@@ -97,6 +91,14 @@ export class OpenedTabsTestHelper {
 
     getReaderModeIndicator(tabRow: WebElement) {
         return this.tabsTestHelper.getReaderModeIndicator(tabRow);
+    }
+
+    getFollowButton(tabRow: WebElement) {
+        return tabRow.findElement(By.css('.followButton'));
+    }
+
+    getUnfollowButton(tabRow: WebElement) {
+        return this.tabsTestHelper.getUnfollowButton(tabRow);
     }
 
     async assertNumberOfTabs(expectedNumberOfTabs: number) {
@@ -132,5 +134,33 @@ export class OpenedTabsTestHelper {
 
     async assertTabReaderModeIndicatorIsOff(tabRow: WebElement) {
         await this.tabsTestHelper.assertTabReaderModeIndicatorIsOff(tabRow);
+    }
+
+    async assertFollowButtonIsVisible(tabRow: WebElement) {
+        const isFollowButtonDisplayed = await this.getFollowButton(tabRow).isDisplayed();
+        assert.isTrue(isFollowButtonDisplayed);
+    }
+
+    async assertFollowButtonIsNotVisible(tabRow: WebElement) {
+        const isFollowButtonDisplayed = await this.getFollowButton(tabRow).isDisplayed();
+        assert.isFalse(isFollowButtonDisplayed);
+    }
+
+    async assertUnfollowButtonIsVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertUnfollowButtonIsVisible(tabRow);
+    }
+
+    async assertFollowButtonIsDisabled(tabRow: WebElement) {
+        const followButton = await this.getFollowButton(tabRow);
+        const followButtonClasses = ('' + await followButton.getAttribute('class')).split(' ');
+
+        assert.include(followButtonClasses, 'disabled');
+    }
+
+    async assertFollowButtonIsNotDisabled(tabRow: WebElement) {
+        const followButton = await this.getFollowButton(tabRow);
+        const followButtonClasses = ('' + await followButton.getAttribute('class')).split(' ');
+
+        assert.notInclude(followButtonClasses, 'disabled');
     }
 }

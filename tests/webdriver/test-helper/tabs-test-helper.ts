@@ -44,6 +44,14 @@ export class TabsTestHelper {
         };
     }
 
+    getUnfollowButton(tabRow: WebElement) {
+        return tabRow.findElement(By.css('.unfollowButton'));
+    }
+
+    getCloseButton(tabRow: WebElement) {
+        return tabRow.findElement(By.css('.closeButton'));
+    }
+
     async assertNumberOfTabs(tabRowList: WebElement[], expectedNumberOfTabs: number) {
         assert.strictEqual(tabRowList.length, expectedNumberOfTabs);
     }
@@ -89,5 +97,20 @@ export class TabsTestHelper {
     async assertIndicatorIsOff(indicator: TabIndicator) {
         assert.isFalse(await indicator.on.isDisplayed());
         assert.isTrue(await indicator.off.isDisplayed());
+    }
+
+    async assertUnfollowButtonIsVisible(tabRow: WebElement) {
+        const isUnfollowButtonDisplayed = await this.getUnfollowButton(tabRow).isDisplayed();
+        assert.isTrue(isUnfollowButtonDisplayed);
+    }
+
+    async assertCloseButtonIsVisible(tabRow: WebElement) {
+        const isCloseButtonDisplayed = await this.getCloseButton(tabRow).isDisplayed();
+        assert.isTrue(isCloseButtonDisplayed);
+    }
+
+    async assertCloseButtonIsNotVisible(tabRow: WebElement) {
+        const isCloseButtonDisplayed = await this.getCloseButton(tabRow).isDisplayed();
+        assert.isFalse(isCloseButtonDisplayed);
     }
 }

@@ -300,6 +300,7 @@ export class FollowedTabView {
         const tabRow = this.getTabRowByOpenTabId(event.tabId);
 
         if (tabRow) {
+            tabRow.removeAttribute('data-opened-tab-id');
             const followId = tabRow.getAttribute('data-follow-id');
             const upToDateTab = await this.queryBus.query(new GetTabByFollowId(followId));
             this.updateTabTitle(tabRow, upToDateTab.followState.title);

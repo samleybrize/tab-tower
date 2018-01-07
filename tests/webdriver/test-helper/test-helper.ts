@@ -4,6 +4,7 @@ import { sleep } from '../../../src/typescript/utils/sleep';
 import { BrowserInstructionSender } from '../browser-instruction-sender';
 import { FirefoxConfig } from '../firefox-config';
 import { WebDriverRetriever } from '../webdriver-retriever';
+import { FollowedTabsTestHelper } from './followed-tabs-test-helper';
 import { OpenedTabsTestHelper } from './opened-tabs-test-helper';
 import { TabsTestHelper } from './tabs-test-helper';
 
@@ -13,6 +14,7 @@ export class TestHelper {
     private firefoxConfig: FirefoxConfig;
     private webdriverRetriever: WebDriverRetriever;
     private openedTabsTestHelper: OpenedTabsTestHelper;
+    private followedTabsTestHelper: FollowedTabsTestHelper;
 
     constructor() {
         this.browserInstructionSender = BrowserInstructionSender.getInstance();
@@ -24,6 +26,7 @@ export class TestHelper {
 
         const tabsTestHelper = new TabsTestHelper(this.driver, this.browserInstructionSender);
         this.openedTabsTestHelper = new OpenedTabsTestHelper(tabsTestHelper, this.driver, this.browserInstructionSender);
+        this.followedTabsTestHelper = new FollowedTabsTestHelper(tabsTestHelper, this.driver, this.browserInstructionSender);
     }
 
     getBrowserInstructionSender() {
@@ -40,6 +43,10 @@ export class TestHelper {
 
     getOpenedTabsHelper() {
         return this.openedTabsTestHelper;
+    }
+
+    getFollowedTabsHelper() {
+        return this.followedTabsTestHelper;
     }
 
     async switchToWindowHandle(windowIndex: number) {
@@ -81,32 +88,57 @@ export class TestHelper {
     }
 
     async closeTab(tabIndex: number) {
-        const row = await this.openedTabsTestHelper.getTabRowByTabIndex(tabIndex);
-        const isRowFound = !!row;
+        const openedTabRow = await this.openedTabsTestHelper.getTabRowByTabIndex(tabIndex);
+        const openedTabId = openedTabRow ? +await openedTabRow.getAttribute('data-tab-id') : null;
+        const followedTabRow = openedTabId ? await this.followedTabsTestHelper.getTabRowByOpenedTabId(openedTabId) : null;
+        const isRowFound = !!openedTabRow;
 
         await this.browserInstructionSender.closeTab(tabIndex);
+
         if (isRowFound) {
             await this.driver.wait(async () => {
-                return null === await this.openedTabsTestHelper.getTabRowByTabIndex(tabIndex);
+                try {
+                    await openedTabRow.isDisplayed();
+                } catch (error) {
+                    if (error instanceof WebDriverError.StaleElementReferenceError) {
+                        return true;
+                    }
+                }
             }, 3000);
+
+            if (followedTabRow) {
+                await this.waitFollowedOpenIndicatorOff(followedTabRow);
+            }
         } else {
             await sleep(500);
             return true;
         }
     }
 
+    private async waitFollowedOpenIndicatorOff(followedTabRow: WebElement) {
+        const followedOpenIndicator = this.followedTabsTestHelper.getOpenIndicator(followedTabRow);
+
+        return this.driver.wait(async () => {
+            const isOnDisplayed = await followedOpenIndicator.on.isDisplayed();
+
+            return !isOnDisplayed;
+        }, 3000);
+    }
+
     async focusTab(tabIndex: number) {
         await this.browserInstructionSender.focusTab(0);
     }
 
-    async moveTab(fromIndex: number, toIndex: number) {
-        const row = await this.openedTabsTestHelper.getTabRowByTabIndex(fromIndex);
-        const isRowFound = !!row;
+    // TODO remove isIgnoredTab?
+    async moveTab(fromIndex: number, toIndex: number, isIgnoredTab?: boolean) {
+        const tabRow = await this.openedTabsTestHelper.getTabRowByTabIndex(fromIndex);
+        const isRowFound = !!tabRow;
 
         await this.browserInstructionSender.moveTab(fromIndex, toIndex);
-        if (isRowFound) {
+
+        if (isRowFound && !isIgnoredTab) {
             await this.driver.wait(async () => {
-                return toIndex == +await row.getAttribute('data-index');
+                return toIndex == +await tabRow.getAttribute('data-index');
             }, 3000);
         } else {
             await sleep(500);
@@ -115,21 +147,26 @@ export class TestHelper {
     }
 
     async changeTabUrl(tabIndex: number, newUrl: string) {
-        const row = await this.openedTabsTestHelper.getTabRowByTabIndex(tabIndex);
-        const isRowFound = !!row;
-
         await this.browserInstructionSender.changeTabUrl(tabIndex, newUrl);
 
-        if (isRowFound) {
-            await this.driver.wait(async () => {
-                if (newUrl == await row.findElement(By.css('.title a')).getAttribute('data-url')) {
-                    await sleep(500);
-                    return true;
-                }
-            }, 3000);
-        } else {
-            await sleep(1000);
-        }
+        await this.driver.wait(async () => {
+            const tab = await this.browserInstructionSender.getTab(tabIndex);
+
+            return 'complete' == tab.status && tab.url == newUrl;
+        }, 10000);
+        await sleep(500);
+    }
+
+    async makeTabGoToPreviousPage(tabIndex: number) {
+        await this.browserInstructionSender.makeTabGoToPreviousPage(tabIndex);
+        await sleep(100);
+
+        await this.driver.wait(async () => {
+            const tab = await this.browserInstructionSender.getTab(tabIndex);
+
+            return 'complete' == tab.status;
+        }, 10000);
+        await sleep(500);
     }
 
     async enableTabReaderMode(tabIndex: number, row?: WebElement) {
@@ -167,5 +204,17 @@ export class TestHelper {
     async openTabWithExtensionUrl(url: string, index?: number) {
         const newTabUrl = this.firefoxConfig.getExtensionUrl(url);
         return this.openTab(newTabUrl, index);
+    }
+
+    async showOpenedTabsList() {
+        const openedTabListElement = this.driver.findElement(By.css('#openedTabList'));
+        await this.driver.findElement(By.css('#header .openedTabs')).click();
+        await this.driver.wait(until.elementIsVisible(openedTabListElement), 3000);
+    }
+
+    async showFollowedTabsList() {
+        const followedTabListElement = this.driver.findElement(By.css('#followedTabList'));
+        await this.driver.findElement(By.css('#header .followedTabs')).click();
+        await this.driver.wait(until.elementIsVisible(followedTabListElement), 3000);
     }
 }

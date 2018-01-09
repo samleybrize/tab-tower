@@ -5,6 +5,7 @@ import { BrowserInstructionSender } from '../browser-instruction-sender';
 import { FirefoxConfig } from '../firefox-config';
 import { WebDriverRetriever } from '../webdriver-retriever';
 import { FollowedTabsTestHelper } from './followed-tabs-test-helper';
+import { NavigationTestHelper } from './navigation-test-helper';
 import { OpenedTabsTestHelper } from './opened-tabs-test-helper';
 import { TabsTestHelper } from './tabs-test-helper';
 
@@ -15,6 +16,7 @@ export class TestHelper {
     private webdriverRetriever: WebDriverRetriever;
     private openedTabsTestHelper: OpenedTabsTestHelper;
     private followedTabsTestHelper: FollowedTabsTestHelper;
+    private navigationTestHelper: NavigationTestHelper;
 
     constructor() {
         this.browserInstructionSender = BrowserInstructionSender.getInstance();
@@ -27,6 +29,7 @@ export class TestHelper {
         const tabsTestHelper = new TabsTestHelper(this.driver, this.browserInstructionSender);
         this.openedTabsTestHelper = new OpenedTabsTestHelper(tabsTestHelper, this.driver, this.browserInstructionSender);
         this.followedTabsTestHelper = new FollowedTabsTestHelper(tabsTestHelper, this.driver, this.browserInstructionSender);
+        this.navigationTestHelper = new NavigationTestHelper(this.driver);
     }
 
     getBrowserInstructionSender() {
@@ -47,6 +50,10 @@ export class TestHelper {
 
     getFollowedTabsHelper() {
         return this.followedTabsTestHelper;
+    }
+
+    getNavigationHelper() {
+        return this.navigationTestHelper;
     }
 
     async switchToWindowHandle(windowIndex: number) {

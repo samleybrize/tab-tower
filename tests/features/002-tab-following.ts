@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { By, until, WebDriver } from 'selenium-webdriver';
+import { WebDriver } from 'selenium-webdriver';
 
 import { sleep } from '../../src/typescript/utils/sleep';
 import { BrowserInstructionSender } from '../webdriver/browser-instruction-sender';
@@ -340,7 +340,7 @@ describe('Tab following', () => {
         await testHelper.showFollowedTabsList();
 
         const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
-        const newFollowedTabRowList = await driver.findElements(By.css('#followedTabList tbody tr[data-follow-id]'));
+        const newFollowedTabRowList = await followedTabsHelper.getTabRowList();
         await followedTabsHelper.assertNoTabRowIsNotVisible();
         await followedTabsHelper.assertNumberOfTabs(2);
         await followedTabsHelper.assertTabTitle(newFollowedTabRowList[0], 'Test page 1');

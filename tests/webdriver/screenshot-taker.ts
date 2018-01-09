@@ -5,7 +5,6 @@ import { WebElement } from 'selenium-webdriver';
 export class ScreenshotTaker {
     private static instance: ScreenshotTaker = null;
 
-    private isInitDone = false;
     private screenshotDirectory = path.join(__dirname, '../../../..', 'tests/screenshots');
 
     static getInstance() {
@@ -16,13 +15,8 @@ export class ScreenshotTaker {
         return this.instance;
     }
 
-    private init() {
-        if (this.isInitDone) {
-            return;
-        }
-
+    constructor() {
         this.purge();
-        this.isInitDone = true;
     }
 
     private purge() {
@@ -38,8 +32,6 @@ export class ScreenshotTaker {
     }
 
     async take(identifier: string, element: WebElement) {
-        this.init();
-
         const screenshotData = await element.takeScreenshot(true);
         const screenshotFilePath = path.join(this.screenshotDirectory, `${identifier}.png`);
         writeFileSync(screenshotFilePath, screenshotData, 'base64');

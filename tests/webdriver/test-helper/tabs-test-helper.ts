@@ -79,6 +79,14 @@ export class TabsTestHelper {
         assert.isFalse(await noTabRow.isDisplayed());
     }
 
+    async assertTabRowIsVisible(tabRow: WebElement) {
+        assert.isTrue(await tabRow.isDisplayed());
+    }
+
+    async assertTabRowIsNotVisible(tabRow: WebElement) {
+        assert.isFalse(await tabRow.isDisplayed());
+    }
+
     async assertTabReaderModeIndicatorIsOn(tabRow: WebElement) {
         const readerModeIndicator = this.getReaderModeIndicator(tabRow);
         await this.assertIndicatorIsOn(readerModeIndicator);

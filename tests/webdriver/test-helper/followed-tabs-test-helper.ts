@@ -142,6 +142,14 @@ export class FollowedTabsTestHelper {
         await this.tabsTestHelper.assertNoTabRowIsNotVisible(noTabRow);
     }
 
+    async assertTabRowIsVisible(tabRow: WebElement) {
+        await this.tabsTestHelper.assertTabRowIsVisible(tabRow);
+    }
+
+    async assertTabRowIsNotVisible(tabRow: WebElement) {
+        await this.tabsTestHelper.assertTabRowIsNotVisible(tabRow);
+    }
+
     async assertTabReaderModeIndicatorIsOn(tabRow: WebElement) {
         await this.tabsTestHelper.assertTabReaderModeIndicatorIsOn(tabRow);
     }

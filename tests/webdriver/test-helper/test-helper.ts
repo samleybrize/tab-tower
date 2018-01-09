@@ -3,10 +3,12 @@ import { By, error as WebDriverError, until, WebDriver, WebElement } from 'selen
 import { sleep } from '../../../src/typescript/utils/sleep';
 import { BrowserInstructionSender } from '../browser-instruction-sender';
 import { FirefoxConfig } from '../firefox-config';
+import { ScreenshotTaker } from '../screenshot-taker';
 import { WebDriverRetriever } from '../webdriver-retriever';
 import { FollowedTabsTestHelper } from './followed-tabs-test-helper';
 import { NavigationTestHelper } from './navigation-test-helper';
 import { OpenedTabsTestHelper } from './opened-tabs-test-helper';
+import { TabFilterTestHelper } from './tab-filter-test-helper';
 import { TabsTestHelper } from './tabs-test-helper';
 
 export class TestHelper {
@@ -17,9 +19,12 @@ export class TestHelper {
     private openedTabsTestHelper: OpenedTabsTestHelper;
     private followedTabsTestHelper: FollowedTabsTestHelper;
     private navigationTestHelper: NavigationTestHelper;
+    private screenshotTaker: ScreenshotTaker;
+    private tabFilterTestHelper: TabFilterTestHelper;
 
     constructor() {
         this.browserInstructionSender = BrowserInstructionSender.getInstance();
+        this.screenshotTaker = ScreenshotTaker.getInstance();
         this.webdriverRetriever = WebDriverRetriever.getInstance();
         this.driver = this.webdriverRetriever.getDriver();
         this.firefoxConfig = this.webdriverRetriever.getFirefoxConfig();
@@ -30,6 +35,7 @@ export class TestHelper {
         this.openedTabsTestHelper = new OpenedTabsTestHelper(tabsTestHelper, this.driver, this.browserInstructionSender);
         this.followedTabsTestHelper = new FollowedTabsTestHelper(tabsTestHelper, this.driver, this.browserInstructionSender);
         this.navigationTestHelper = new NavigationTestHelper(this.driver);
+        this.tabFilterTestHelper = new TabFilterTestHelper(this.driver, this.browserInstructionSender, this.screenshotTaker);
     }
 
     getBrowserInstructionSender() {
@@ -56,6 +62,10 @@ export class TestHelper {
         return this.navigationTestHelper;
     }
 
+    getTabFilterHelper() {
+        return this.tabFilterTestHelper;
+    }
+
     async switchToWindowHandle(windowIndex: number) {
         const windowHandles = await this.driver.getAllWindowHandles();
         await this.driver.switchTo().window(windowHandles[windowIndex]);
@@ -64,6 +74,19 @@ export class TestHelper {
     async reloadExtension() {
         await this.browserInstructionSender.reloadExtension();
         await sleep(1000);
+    }
+
+    async reloadTab(tabIndex: number) {
+        await this.browserInstructionSender.reloadTab(tabIndex);
+        await sleep(100);
+        await this.driver.wait(async () => {
+            const tab = await this.browserInstructionSender.getTab(tabIndex);
+
+            if (tab && 'complete' == tab.status) {
+                return true;
+            }
+        }, 3000);
+        await sleep(500);
     }
 
     async createWindow(isIncognito: boolean, url: string) {

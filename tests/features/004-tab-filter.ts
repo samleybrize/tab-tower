@@ -1,427 +1,301 @@
 import { assert } from 'chai';
 import { By, until, WebDriver } from 'selenium-webdriver';
 
-import { sleep } from '../../src/typescript/utils/sleep';
 import { BrowserInstructionSender } from '../webdriver/browser-instruction-sender';
-import { ScreenshotTaker } from '../webdriver/screenshot-taker';
-import { WebDriverRetriever } from '../webdriver/webdriver-retriever';
+import { ExtensionUrl } from '../webdriver/extension-url';
+import { FirefoxConfig } from '../webdriver/firefox-config';
+import { FollowedTabsTestHelper } from '../webdriver/test-helper/followed-tabs-test-helper';
+import { OpenedTabsTestHelper } from '../webdriver/test-helper/opened-tabs-test-helper';
+import { TabFilterTestHelper } from '../webdriver/test-helper/tab-filter-test-helper';
+import { TestHelper } from '../webdriver/test-helper/test-helper';
 
-let webdriverRetriever: WebDriverRetriever;
+let browserInstructionSender: BrowserInstructionSender;
 let driver: WebDriver;
-const browserInstructionSender = BrowserInstructionSender.getInstance();
-const screenshotTaker = ScreenshotTaker.getInstance();
+let firefoxConfig: FirefoxConfig;
+let testHelper: TestHelper;
+let followedTabsHelper: FollowedTabsTestHelper;
+let openedTabsHelper: OpenedTabsTestHelper;
+let tabFilterHelper: TabFilterTestHelper;
 
 describe('Tab filter', () => {
     before(async () => {
-        webdriverRetriever = WebDriverRetriever.getInstance();
-        driver = webdriverRetriever.getDriver();
-        browserInstructionSender.init();
+        testHelper = new TestHelper();
+        followedTabsHelper = testHelper.getFollowedTabsHelper();
+        openedTabsHelper = testHelper.getOpenedTabsHelper();
+        tabFilterHelper = testHelper.getTabFilterHelper();
+        browserInstructionSender = testHelper.getBrowserInstructionSender();
+        driver = testHelper.getDriver();
+        firefoxConfig = testHelper.getFirefoxConfig();
 
-        const firefoxConfig = webdriverRetriever.getFirefoxConfig();
-        await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
+        await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
 
-        const openedTabsCounter = driver.findElement(By.css('#header .openedTabs .counter'));
-        const followedTabsCounter = driver.findElement(By.css('#header .followedTabs .counter'));
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_FILTER_1));
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_FILTER_WITH_SOME_TEXT));
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_FILTER_WITH_OTHER_TEXT));
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
-        const newTabUrl1 = firefoxConfig.getExtensionUrl('/tests/resources/test-filter1.html');
-        const newTabUrl2 = firefoxConfig.getExtensionUrl('/tests/resources/test-filter-with-some-text.html');
-        const newTabUrl3 = firefoxConfig.getExtensionUrl('/tests/resources/test-filter-with-other-text.html');
-        const newTabUrl4 = firefoxConfig.getExtensionUrl('/tests/resources/test-page1.html');
-        await browserInstructionSender.openTab(newTabUrl1);
-        await browserInstructionSender.openTab(newTabUrl2);
-        await browserInstructionSender.openTab(newTabUrl3);
-        await browserInstructionSender.openTab(newTabUrl4);
-        await driver.wait(until.elementTextIs(openedTabsCounter, '4'), 2000);
-
-        await driver.findElement(By.css('#openedTabList tbody tr[data-index="1"] .followButton')).click();
-        await driver.findElement(By.css('#openedTabList tbody tr[data-index="2"] .followButton')).click();
-        await driver.findElement(By.css('#openedTabList tbody tr[data-index="3"] .followButton')).click();
-        await driver.wait(until.elementTextIs(followedTabsCounter, '3'), 2000);
+        const openedTabRowList = await openedTabsHelper.getTabRowList();
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[0]);
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
     });
     after(async () => {
         await driver.quit();
         browserInstructionSender.shutdown();
     });
     afterEach(async () => {
-        const inputElement = driver.findElement(By.css('#headerTabFilter input'));
-        await inputElement.clear();
-        await browserInstructionSender.focusElement(driver, '#headerTabFilter input');
-        await sleep(500);
+        await tabFilterHelper.clearInput();
+        await tabFilterHelper.focusInput();
     });
 
     describe('Opened tabs', () => {
         it('Should filter opened tabs by title on input with one word', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('azerty');
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('azerty');
 
-            const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
-            const isTabRow1Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="1"]')).isDisplayed();
-            const isTabRow2Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="2"]')).isDisplayed();
-            const isTabRow3Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="3"]')).isDisplayed();
-            const isTabRow4Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="4"]')).isDisplayed();
-
-            assert.isFalse(isNoTabRowVisible);
-            assert.isFalse(isTabRow1Visible);
-            assert.isTrue(isTabRow2Visible);
-            assert.isFalse(isTabRow3Visible);
-            assert.isFalse(isTabRow4Visible);
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[0]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[1]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[2]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
         it('Should filter opened tabs by title on input with two word', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('azerty qwerty');
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('azerty qwerty');
 
-            const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
-            const isTabRow1Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="1"]')).isDisplayed();
-            const isTabRow2Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="2"]')).isDisplayed();
-            const isTabRow3Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="3"]')).isDisplayed();
-            const isTabRow4Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="4"]')).isDisplayed();
-
-            assert.isFalse(isNoTabRowVisible);
-            assert.isFalse(isTabRow1Visible);
-            assert.isTrue(isTabRow2Visible);
-            assert.isTrue(isTabRow3Visible);
-            assert.isFalse(isTabRow4Visible);
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[0]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[1]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[2]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
         it('Should filter opened tabs by url on input with one word', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('some');
 
-            const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
-            const isTabRow1Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="1"]')).isDisplayed();
-            const isTabRow2Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="2"]')).isDisplayed();
-            const isTabRow3Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="3"]')).isDisplayed();
-            const isTabRow4Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="4"]')).isDisplayed();
-
-            assert.isFalse(isNoTabRowVisible);
-            assert.isFalse(isTabRow1Visible);
-            assert.isTrue(isTabRow2Visible);
-            assert.isFalse(isTabRow3Visible);
-            assert.isFalse(isTabRow4Visible);
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[0]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[1]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[2]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
         it('Should filter opened tabs by url on input with two word', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some other');
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('some other');
 
-            const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
-            const isTabRow1Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="1"]')).isDisplayed();
-            const isTabRow2Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="2"]')).isDisplayed();
-            const isTabRow3Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="3"]')).isDisplayed();
-            const isTabRow4Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="4"]')).isDisplayed();
-
-            assert.isFalse(isNoTabRowVisible);
-            assert.isFalse(isTabRow1Visible);
-            assert.isTrue(isTabRow2Visible);
-            assert.isTrue(isTabRow3Visible);
-            assert.isFalse(isTabRow4Visible);
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[0]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[1]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[2]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
         it('Should show the no tab row in opened tabs list when the filter do not match any tab', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('unknown');
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('unknown');
 
-            const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
-            const isTabRow1Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="1"]')).isDisplayed();
-            const isTabRow2Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="2"]')).isDisplayed();
-            const isTabRow3Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="3"]')).isDisplayed();
-            const isTabRow4Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="4"]')).isDisplayed();
-
-            assert.isTrue(isNoTabRowVisible);
-            assert.isFalse(isTabRow1Visible);
-            assert.isFalse(isTabRow2Visible);
-            assert.isFalse(isTabRow3Visible);
-            assert.isFalse(isTabRow4Visible);
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[0]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[1]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[2]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertNoTabRowIsVisible();
         });
 
         it('Should disable filter when clearing the input', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
-            await sleep(500);
-            await driver.findElement(By.css('#headerTabFilter input')).clear();
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('some');
+            await tabFilterHelper.clearInput();
 
-            const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
-            const isTabRow1Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="1"]')).isDisplayed();
-            const isTabRow2Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="2"]')).isDisplayed();
-            const isTabRow3Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="3"]')).isDisplayed();
-            const isTabRow4Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="4"]')).isDisplayed();
-
-            assert.isFalse(isNoTabRowVisible);
-            assert.isTrue(isTabRow1Visible);
-            assert.isTrue(isTabRow2Visible);
-            assert.isTrue(isTabRow3Visible);
-            assert.isTrue(isTabRow4Visible);
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[0]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[1]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[2]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
         it('Should do nothing when clicking on the reset button while the input is empty', async () => {
-            await driver.findElement(By.css('#headerTabFilter .resetButton')).click();
-            await sleep(500);
+            await tabFilterHelper.clickOnResetButton();
 
-            const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
-            const isTabRow1Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="1"]')).isDisplayed();
-            const isTabRow2Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="2"]')).isDisplayed();
-            const isTabRow3Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="3"]')).isDisplayed();
-            const isTabRow4Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="4"]')).isDisplayed();
-
-            assert.isFalse(isNoTabRowVisible);
-            assert.isTrue(isTabRow1Visible);
-            assert.isTrue(isTabRow2Visible);
-            assert.isTrue(isTabRow3Visible);
-            assert.isTrue(isTabRow4Visible);
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[0]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[1]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[2]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
         it('Should disable filter when the reset button is clicked', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
-            await sleep(500);
-            await driver.findElement(By.css('#headerTabFilter .resetButton')).click();
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('some');
+            await tabFilterHelper.clickOnResetButton();
 
-            const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
-            const isTabRow1Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="1"]')).isDisplayed();
-            const isTabRow2Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="2"]')).isDisplayed();
-            const isTabRow3Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="3"]')).isDisplayed();
-            const isTabRow4Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="4"]')).isDisplayed();
-
-            assert.isFalse(isNoTabRowVisible);
-            assert.isTrue(isTabRow1Visible);
-            assert.isTrue(isTabRow2Visible);
-            assert.isTrue(isTabRow3Visible);
-            assert.isTrue(isTabRow4Visible);
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[0]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[1]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[2]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
         it('Should filter at startup when the input is not empty', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
-            await sleep(500);
-            await browserInstructionSender.reloadTab(0);
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('some');
+            await testHelper.reloadTab(0);
 
-            const isNoTabRowVisible = await driver.findElement(By.css('#openedTabList tbody .noTabRow')).isDisplayed();
-            const isTabRow1Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="1"]')).isDisplayed();
-            const isTabRow2Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="2"]')).isDisplayed();
-            const isTabRow3Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="3"]')).isDisplayed();
-            const isTabRow4Visible = await driver.findElement(By.css('#openedTabList tbody tr[data-index="4"]')).isDisplayed();
-
-            assert.isFalse(isNoTabRowVisible);
-            assert.isFalse(isTabRow1Visible);
-            assert.isTrue(isTabRow2Visible);
-            assert.isFalse(isTabRow3Visible);
-            assert.isFalse(isTabRow4Visible);
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[0]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[1]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[2]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertNoTabRowIsNotVisible();
         });
     });
 
     describe('Followed tabs', () => {
         before(async () => {
-            const followedTabListElement = driver.findElement(By.css('#followedTabList'));
-            await driver.findElement(By.css('#header .followedTabs')).click();
-            await driver.wait(until.elementIsVisible(followedTabListElement), 3000);
+            await testHelper.showFollowedTabsList();
         });
 
         it('Should filter followed tabs by title on input with one word', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('azerty');
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('azerty');
 
-            const isNoTabRowVisible = await driver.findElement(By.css('#followedTabList tbody .noTabRow')).isDisplayed();
-            const isTabRow1Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="2"]')).isDisplayed();
-            const isTabRow2Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="3"]')).isDisplayed();
-            const isTabRow3Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="4"]')).isDisplayed();
-
-            assert.isFalse(isNoTabRowVisible);
-            assert.isFalse(isTabRow1Visible);
-            assert.isTrue(isTabRow2Visible);
-            assert.isFalse(isTabRow3Visible);
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[1]);
+            await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[2]);
+            await followedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
         it('Should filter followed tabs by title on input with two word', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('azerty qwerty');
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('azerty qwerty');
 
-            const isNoTabRowVisible = await driver.findElement(By.css('#followedTabList tbody .noTabRow')).isDisplayed();
-            const isTabRow1Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="2"]')).isDisplayed();
-            const isTabRow2Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="3"]')).isDisplayed();
-            const isTabRow3Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="4"]')).isDisplayed();
-
-            assert.isFalse(isNoTabRowVisible);
-            assert.isFalse(isTabRow1Visible);
-            assert.isTrue(isTabRow2Visible);
-            assert.isTrue(isTabRow3Visible);
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[1]);
+            await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[2]);
+            await followedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
         it('Should filter followed tabs by url on input with one word', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('some');
 
-            const isNoTabRowVisible = await driver.findElement(By.css('#followedTabList tbody .noTabRow')).isDisplayed();
-            const isTabRow1Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="2"]')).isDisplayed();
-            const isTabRow2Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="3"]')).isDisplayed();
-            const isTabRow3Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="4"]')).isDisplayed();
-
-            assert.isFalse(isNoTabRowVisible);
-            assert.isFalse(isTabRow1Visible);
-            assert.isTrue(isTabRow2Visible);
-            assert.isFalse(isTabRow3Visible);
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[1]);
+            await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[2]);
+            await followedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
         it('Should filter followed tabs by url on input with two word', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some other');
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('some other');
 
-            const isNoTabRowVisible = await driver.findElement(By.css('#followedTabList tbody .noTabRow')).isDisplayed();
-            const isTabRow1Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="2"]')).isDisplayed();
-            const isTabRow2Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="3"]')).isDisplayed();
-            const isTabRow3Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="4"]')).isDisplayed();
-
-            assert.isFalse(isNoTabRowVisible);
-            assert.isFalse(isTabRow1Visible);
-            assert.isTrue(isTabRow2Visible);
-            assert.isTrue(isTabRow3Visible);
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[1]);
+            await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[2]);
+            await followedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
         it('Should show the no tab row in followed tabs list when the filter do not match any tab', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('unknown');
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('unknown');
 
-            const isNoTabRowVisible = await driver.findElement(By.css('#followedTabList tbody .noTabRow')).isDisplayed();
-            const isTabRow1Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="2"]')).isDisplayed();
-            const isTabRow2Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="3"]')).isDisplayed();
-            const isTabRow3Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="4"]')).isDisplayed();
-
-            assert.isTrue(isNoTabRowVisible);
-            assert.isFalse(isTabRow1Visible);
-            assert.isFalse(isTabRow2Visible);
-            assert.isFalse(isTabRow3Visible);
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[1]);
+            await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[2]);
+            await followedTabsHelper.assertNoTabRowIsVisible();
         });
 
         it('Should disable filter when clearing the input', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
-            await sleep(500);
-            await driver.findElement(By.css('#headerTabFilter input')).clear();
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('some');
+            await tabFilterHelper.clearInput();
 
-            const isNoTabRowVisible = await driver.findElement(By.css('#followedTabList tbody .noTabRow')).isDisplayed();
-            const isTabRow1Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="2"]')).isDisplayed();
-            const isTabRow2Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="3"]')).isDisplayed();
-            const isTabRow3Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="4"]')).isDisplayed();
-
-            assert.isFalse(isNoTabRowVisible);
-            assert.isTrue(isTabRow1Visible);
-            assert.isTrue(isTabRow2Visible);
-            assert.isTrue(isTabRow3Visible);
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[1]);
+            await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[2]);
+            await followedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
         it('Should do nothing when clicking on the reset button while the input is empty', async () => {
-            await driver.findElement(By.css('#headerTabFilter .resetButton')).click();
-            await sleep(500);
+            await tabFilterHelper.clickOnResetButton();
 
-            const isNoTabRowVisible = await driver.findElement(By.css('#followedTabList tbody .noTabRow')).isDisplayed();
-            const isTabRow1Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="2"]')).isDisplayed();
-            const isTabRow2Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="3"]')).isDisplayed();
-            const isTabRow3Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="4"]')).isDisplayed();
-
-            assert.isFalse(isNoTabRowVisible);
-            assert.isTrue(isTabRow1Visible);
-            assert.isTrue(isTabRow2Visible);
-            assert.isTrue(isTabRow3Visible);
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[1]);
+            await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[2]);
+            await followedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
         it('Should disable filter when the reset button is clicked', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
-            await sleep(500);
-            await driver.findElement(By.css('#headerTabFilter .resetButton')).click();
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('some');
+            await tabFilterHelper.clickOnResetButton();
 
-            const isNoTabRowVisible = await driver.findElement(By.css('#followedTabList tbody .noTabRow')).isDisplayed();
-            const isTabRow1Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="2"]')).isDisplayed();
-            const isTabRow2Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="3"]')).isDisplayed();
-            const isTabRow3Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="4"]')).isDisplayed();
-
-            assert.isFalse(isNoTabRowVisible);
-            assert.isTrue(isTabRow1Visible);
-            assert.isTrue(isTabRow2Visible);
-            assert.isTrue(isTabRow3Visible);
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[1]);
+            await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[2]);
+            await followedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
         it('Should filter at startup when the input is not empty', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
-            await sleep(500);
-            await browserInstructionSender.reloadTab(0);
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('some');
+            await testHelper.reloadTab(0);
+            await testHelper.showFollowedTabsList();
 
-            const followedTabListElement = driver.findElement(By.css('#followedTabList'));
-            await driver.findElement(By.css('#header .followedTabs')).click();
-            await driver.wait(until.elementIsVisible(followedTabListElement), 3000);
-
-            const isNoTabRowVisible = await driver.findElement(By.css('#followedTabList tbody .noTabRow')).isDisplayed();
-            const isTabRow1Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="2"]')).isDisplayed();
-            const isTabRow2Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="3"]')).isDisplayed();
-            const isTabRow3Visible = await driver.findElement(By.css('#followedTabList tbody tr[data-opened-tab-id="4"]')).isDisplayed();
-
-            assert.isFalse(isNoTabRowVisible);
-            assert.isFalse(isTabRow1Visible);
-            assert.isTrue(isTabRow2Visible);
-            assert.isFalse(isTabRow3Visible);
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[1]);
+            await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[2]);
+            await followedTabsHelper.assertNoTabRowIsNotVisible();
         });
     });
 
     describe('Screenshots', () => {
         it('State of the filter block when empty, non focused', async () => {
-            await browserInstructionSender.blurElement(driver, '#headerTabFilter input');
-            await sleep(500);
+            await tabFilterHelper.blurInput();
 
-            const headerElement = driver.findElement(By.css('#header'));
-            await screenshotTaker.take('tab-filter-initial-state', headerElement);
+            await tabFilterHelper.takeHeaderScreenshot('tab-filter-initial-state');
         });
 
         it('State of the filter block when empty, focused', async () => {
-            await browserInstructionSender.focusElement(driver, '#headerTabFilter input');
-            await sleep(500);
+            await tabFilterHelper.focusInput();
 
-            const headerElement = driver.findElement(By.css('#header'));
-            await screenshotTaker.take('tab-filter-focus-state', headerElement);
+            await tabFilterHelper.takeHeaderScreenshot('tab-filter-focus-state');
         });
 
         it('State of the filter block when non empty, focused', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some text');
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('some text');
 
-            const headerElement = driver.findElement(By.css('#header'));
-            await screenshotTaker.take('tab-filter-focus-state-with-text', headerElement);
+            await tabFilterHelper.takeHeaderScreenshot('tab-filter-focus-state-with-text');
         });
 
         it('State of the filter block when non empty, non focused', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some text');
-            await browserInstructionSender.blurElement(driver, '#headerTabFilter input');
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('some text');
+            await tabFilterHelper.blurInput();
 
-            const headerElement = driver.findElement(By.css('#header'));
-            await screenshotTaker.take('tab-filter-initial-state-with-text', headerElement);
+            await tabFilterHelper.takeHeaderScreenshot('tab-filter-initial-state-with-text');
         });
 
         it('State of the filter block when clicking on the reset button while the input is empty', async () => {
-            await driver.findElement(By.css('#headerTabFilter .resetButton')).click();
-            await sleep(500);
+            await tabFilterHelper.clickOnResetButton();
 
-            const headerElement = driver.findElement(By.css('#header'));
-            await screenshotTaker.take('tab-filter-reset-when-empty', headerElement);
+            await tabFilterHelper.takeHeaderScreenshot('tab-filter-reset-when-empty');
         });
 
         it('State of the filter block when clicking on the reset button while the input is not empty', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some text');
-            await driver.findElement(By.css('#headerTabFilter .resetButton')).click();
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('some text');
+            await tabFilterHelper.clickOnResetButton();
 
-            const headerElement = driver.findElement(By.css('#header'));
-            await screenshotTaker.take('tab-filter-reset-when-not-empty', headerElement);
+            await tabFilterHelper.takeHeaderScreenshot('tab-filter-reset-when-not-empty');
         });
 
         it('State of the filter block at startup when the input is not empty', async () => {
-            await driver.findElement(By.css('#headerTabFilter input')).sendKeys('some');
-            await sleep(500);
-            await browserInstructionSender.reloadTab(0);
-            await sleep(500);
+            await tabFilterHelper.sendTextToInput('some text');
+            await testHelper.reloadTab(0);
 
-            const headerElement = driver.findElement(By.css('#header'));
-            await screenshotTaker.take('tab-filter-at-startup-when-not-empty', headerElement);
+            await tabFilterHelper.takeHeaderScreenshot('tab-filter-at-startup-when-not-empty');
         });
     });
 });

@@ -1,6 +1,7 @@
 export class ExtensionUrl {
     static readonly UI = '/ui/tab-tower.html';
     static readonly DEFAULT_FAVICON = '/ui/images/default-favicon.svg';
+    static readonly EXTENSION_FAVICON = '/icons/tab-tower.svg';
 
     static readonly FAVICON_1 = '/tests/resources/favicon1.png';
     static readonly FAVICON_2 = '/tests/resources/favicon2.png';

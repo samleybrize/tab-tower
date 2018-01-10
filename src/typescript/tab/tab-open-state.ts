@@ -8,4 +8,5 @@ export class TabOpenState {
     url: string = null;
     faviconUrl: string = null;
     isPrivileged: boolean = false;
+    isIgnored: boolean = false;
 }

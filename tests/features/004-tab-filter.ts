@@ -35,9 +35,9 @@ describe('Tab filter', () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[0]);
         await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[3]);
     });
     after(async () => {
         await driver.quit();
@@ -54,9 +54,10 @@ describe('Tab filter', () => {
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[0]);
-            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[1]);
-            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[2]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[1]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[2]);
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[4]);
             await openedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
@@ -65,9 +66,10 @@ describe('Tab filter', () => {
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[0]);
-            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[1]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[1]);
             await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[2]);
-            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[4]);
             await openedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
@@ -76,9 +78,10 @@ describe('Tab filter', () => {
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[0]);
-            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[1]);
-            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[2]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[1]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[2]);
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[4]);
             await openedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
@@ -87,9 +90,10 @@ describe('Tab filter', () => {
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[0]);
-            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[1]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[1]);
             await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[2]);
-            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[4]);
             await openedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
@@ -101,6 +105,7 @@ describe('Tab filter', () => {
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[1]);
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[2]);
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[4]);
             await openedTabsHelper.assertNoTabRowIsVisible();
         });
 
@@ -113,6 +118,7 @@ describe('Tab filter', () => {
             await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[1]);
             await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[2]);
             await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[4]);
             await openedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
@@ -124,6 +130,7 @@ describe('Tab filter', () => {
             await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[1]);
             await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[2]);
             await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[4]);
             await openedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
@@ -136,6 +143,7 @@ describe('Tab filter', () => {
             await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[1]);
             await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[2]);
             await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[4]);
             await openedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
@@ -145,9 +153,10 @@ describe('Tab filter', () => {
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[0]);
-            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[1]);
-            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[2]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[1]);
+            await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[2]);
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[4]);
             await openedTabsHelper.assertNoTabRowIsNotVisible();
         });
     });

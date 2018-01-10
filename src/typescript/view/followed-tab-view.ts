@@ -293,10 +293,14 @@ export class FollowedTabView {
 
     async onTabClose(event: TabClosed) {
         if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.onTabClose.bind(this, event));
+            this.pendingEvents.push(this.handleTabClose.bind(this, event));
             return;
         }
 
+        await this.handleTabClose(event);
+    }
+
+    private async handleTabClose(event: TabClosed) {
         const tabRow = this.getTabRowByOpenTabId(event.tabId);
 
         if (tabRow) {
@@ -320,10 +324,14 @@ export class FollowedTabView {
 
     async onOpenTabFaviconUrlUpdate(event: OpenedTabFaviconUrlUpdated) {
         if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.onOpenTabFaviconUrlUpdate.bind(this, event));
+            this.pendingEvents.push(this.handleTabFaviconUrlUpdate.bind(this, event));
             return;
         }
 
+        await this.handleTabFaviconUrlUpdate(event);
+    }
+
+    private async handleTabFaviconUrlUpdate(event: OpenedTabFaviconUrlUpdated) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -333,10 +341,14 @@ export class FollowedTabView {
 
     async onOpenTabTitleUpdate(event: OpenedTabTitleUpdated) {
         if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.onOpenTabTitleUpdate.bind(this, event));
+            this.pendingEvents.push(this.handleTabTitleUpdate.bind(this, event));
             return;
         }
 
+        await this.handleTabTitleUpdate(event);
+    }
+
+    private async handleTabTitleUpdate(event: OpenedTabTitleUpdated) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -346,10 +358,14 @@ export class FollowedTabView {
 
     async onOpenTabUrlUpdate(event: OpenedTabUrlUpdated) {
         if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.onOpenTabUrlUpdate.bind(this, event));
+            this.pendingEvents.push(this.handleTabUrlUpdate.bind(this, event));
             return;
         }
 
+        await this.handleTabUrlUpdate(event);
+    }
+
+    private async handleTabUrlUpdate(event: OpenedTabUrlUpdated) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -359,10 +375,14 @@ export class FollowedTabView {
 
     async onOpenTabReaderModeStateUpdate(event: OpenedTabReaderModeStateUpdated) {
         if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.onOpenTabReaderModeStateUpdate.bind(this, event));
+            this.pendingEvents.push(this.handleTabReaderModeStateUpdate.bind(this, event));
             return;
         }
 
+        await this.handleTabReaderModeStateUpdate(event);
+    }
+
+    private async handleTabReaderModeStateUpdate(event: OpenedTabReaderModeStateUpdated) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -372,10 +392,14 @@ export class FollowedTabView {
 
     async onTabFollow(event: TabFollowed) {
         if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.onTabFollow.bind(this, event));
+            this.pendingEvents.push(this.handleTabFollow.bind(this, event));
             return;
         }
 
+        await this.handleTabFollow(event);
+    }
+
+    private async handleTabFollow(event: TabFollowed) {
         const row = this.createTabRow(event.tab);
         this.tbodyElement.appendChild(row);
 
@@ -386,10 +410,14 @@ export class FollowedTabView {
 
     async onTabUnfollow(event: TabUnfollowed) {
         if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.onTabUnfollow.bind(this, event));
+            this.pendingEvents.push(this.handleTabUnfollow.bind(this, event));
             return;
         }
 
+        await this.handleTabUnfollow(event);
+    }
+
+    private async handleTabUnfollow(event: TabUnfollowed) {
         const followedTabRow = this.tbodyElement.querySelector(`tr[data-follow-id="${event.oldFollowState.id}"]`);
 
         if (followedTabRow) {
@@ -410,10 +438,14 @@ export class FollowedTabView {
 
     async onAssociateOpenedTabToFollowedTab(event: OpenedTabAssociatedToFollowedTab) {
         if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.onAssociateOpenedTabToFollowedTab.bind(this, event));
+            this.pendingEvents.push(this.handleAssociateOpenedTabToFollowedTab.bind(this, event));
             return;
         }
 
+        await this.handleAssociateOpenedTabToFollowedTab(event);
+    }
+
+    private async handleAssociateOpenedTabToFollowedTab(event: OpenedTabAssociatedToFollowedTab) {
         const followedTabRow: HTMLElement = this.tbodyElement.querySelector(`tr[data-follow-id="${event.tabFollowState.id}"]`);
 
         if (followedTabRow) {

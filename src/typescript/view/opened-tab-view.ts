@@ -127,7 +127,7 @@ export class OpenedTabView {
         this.updateTabIndex(row, tabOpenState.index);
         this.updateTabReaderModeState(row, tabOpenState.isInReaderMode);
         this.updateTabTitle(row, tabOpenState.title);
-        this.updateTabUrl(row, tabOpenState.url, tabOpenState.isPrivileged);
+        this.updateTabUrl(row, tabOpenState.url, tabOpenState.isPrivileged, tabOpenState.isIgnored);
         this.updateFollowState(row, isFollowed);
 
         return row;
@@ -232,6 +232,10 @@ export class OpenedTabView {
         closeButton.classList.add('waves-light');
 
         closeButton.addEventListener('click', async (event) => {
+            if (closeButton.classList.contains('disabled')) {
+                return;
+            }
+
             this.commandBus.handle(new CloseTab(tabOpenState.id));
         });
 
@@ -252,19 +256,26 @@ export class OpenedTabView {
         }
     }
 
-    private updateTabUrl(row: HTMLElement, url: string, isPrivileged: boolean) {
+    private updateTabUrl(row: HTMLElement, url: string, isPrivileged: boolean, isIgnored: boolean) {
         row.setAttribute('data-url', '' + url);
         row.querySelector('.title a').setAttribute('data-url', '' + url);
 
         const followButton = row.querySelector('.followButton');
         const unfollowButton = row.querySelector('.unfollowButton');
+        const closeButton = row.querySelector('.closeButton');
 
-        if (isPrivileged) {
+        if (isPrivileged || isIgnored) {
             followButton.classList.add('disabled');
             unfollowButton.classList.add('disabled');
         } else {
             followButton.classList.remove('disabled');
             unfollowButton.classList.remove('disabled');
+        }
+
+        if (isIgnored) {
+            closeButton.classList.add('disabled');
+        } else {
+            closeButton.classList.remove('disabled');
         }
     }
 
@@ -318,7 +329,17 @@ export class OpenedTabView {
 
     async onTabOpen(event: TabOpened) {
         if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.onTabOpen.bind(this, event));
+            this.pendingEvents.push(this.handleTabOpen.bind(this, event));
+            return;
+        }
+
+        await this.handleTabOpen(event);
+    }
+
+    private async handleTabOpen(event: TabOpened) {
+        const existingTabRow = await this.getTabRowByTabId(event.tabOpenState.id);
+
+        if (null !== existingTabRow) {
             return;
         }
 
@@ -362,10 +383,14 @@ export class OpenedTabView {
 
     async onTabClose(event: TabClosed) {
         if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.onTabClose.bind(this, event));
+            this.pendingEvents.push(this.handleTabClose.bind(this, event));
             return;
         }
 
+        await this.handleTabClose(event);
+    }
+
+    private async handleTabClose(event: TabClosed) {
         const openedTabRow = this.getTabRowByTabId(event.tabId);
 
         if (openedTabRow) {
@@ -385,10 +410,14 @@ export class OpenedTabView {
 
     async onOpenTabMove(event: OpenedTabMoved) {
         if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.onOpenTabMove.bind(this, event));
+            this.pendingEvents.push(this.handleOpenTabMode.bind(this, event));
             return;
         }
 
+        await this.handleOpenTabMode(event);
+    }
+
+    private async handleOpenTabMode(event: OpenedTabMoved) {
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -399,10 +428,14 @@ export class OpenedTabView {
 
     async onOpenTabFaviconUrlUpdate(event: OpenedTabFaviconUrlUpdated) {
         if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.onOpenTabFaviconUrlUpdate.bind(this, event));
+            this.pendingEvents.push(this.handleOpenTabFaviconUrlUpdate.bind(this, event));
             return;
         }
 
+        await this.handleOpenTabFaviconUrlUpdate(event);
+    }
+
+    private async handleOpenTabFaviconUrlUpdate(event: OpenedTabFaviconUrlUpdated) {
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -412,10 +445,14 @@ export class OpenedTabView {
 
     async onOpenTabTitleUpdate(event: OpenedTabTitleUpdated) {
         if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.onOpenTabTitleUpdate.bind(this, event));
+            this.pendingEvents.push(this.handleOpenTabTitleUpdate.bind(this, event));
             return;
         }
 
+        await this.handleOpenTabTitleUpdate(event);
+    }
+
+    private async handleOpenTabTitleUpdate(event: OpenedTabTitleUpdated) {
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -425,23 +462,31 @@ export class OpenedTabView {
 
     async onOpenTabUrlUpdate(event: OpenedTabUrlUpdated) {
         if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.onOpenTabUrlUpdate.bind(this, event));
+            this.pendingEvents.push(this.handleOpenTabUrlUpdate.bind(this, event));
             return;
         }
 
+        await this.handleOpenTabUrlUpdate(event);
+    }
+
+    private async handleOpenTabUrlUpdate(event: OpenedTabUrlUpdated) {
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
-            this.updateTabUrl(tabRow, event.tabOpenState.url, event.tabOpenState.isPrivileged);
+            this.updateTabUrl(tabRow, event.tabOpenState.url, event.tabOpenState.isPrivileged, event.tabOpenState.isIgnored);
         }
     }
 
     async onOpenTabReaderModeStateUpdate(event: OpenedTabReaderModeStateUpdated) {
         if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.onOpenTabReaderModeStateUpdate.bind(this, event));
+            this.pendingEvents.push(this.handleOpenTabReaderModeStateUpdate.bind(this, event));
             return;
         }
 
+        await this.handleOpenTabReaderModeStateUpdate(event);
+    }
+
+    private async handleOpenTabReaderModeStateUpdate(event: OpenedTabReaderModeStateUpdated) {
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -451,10 +496,14 @@ export class OpenedTabView {
 
     async onTabFollow(event: TabFollowed) {
         if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.onTabFollow.bind(this, event));
+            this.pendingEvents.push(this.handleTabFollow.bind(this, event));
             return;
         }
 
+        await this.handleTabFollow(event);
+    }
+
+    private async handleTabFollow(event: TabFollowed) {
         const tabRow = this.getTabRowByTabId(event.tab.openState.id);
 
         if (tabRow) {
@@ -464,12 +513,16 @@ export class OpenedTabView {
 
     async onTabUnfollow(event: TabUnfollowed) {
         if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.onTabUnfollow.bind(this, event));
+            this.pendingEvents.push(this.handleTabUnfollow.bind(this, event));
             return;
         } else if (null == event.openState) {
             return;
         }
 
+        await this.handleTabUnfollow(event);
+    }
+
+    private async handleTabUnfollow(event: TabUnfollowed) {
         const tabRow = this.getTabRowByTabId(event.openState.id);
 
         if (tabRow) {
@@ -479,10 +532,14 @@ export class OpenedTabView {
 
     async onAssociateOpenedTabToFollowedTab(event: OpenedTabAssociatedToFollowedTab) {
         if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.onAssociateOpenedTabToFollowedTab.bind(this, event));
+            this.pendingEvents.push(this.handleAssociateOpenedTabToFollowedTab.bind(this, event));
             return;
         }
 
+        await this.handleAssociateOpenedTabToFollowedTab(event);
+    }
+
+    private async handleAssociateOpenedTabToFollowedTab(event: OpenedTabAssociatedToFollowedTab) {
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -526,8 +583,8 @@ export class OpenedTabView {
     }
 
     private async playPendingEvents() {
-        while (this.pendingEvents.length) {
-            const callback = this.pendingEvents.pop();
+        while (this.pendingEvents.length > 0) {
+            const callback = this.pendingEvents.shift();
             await callback();
         }
 

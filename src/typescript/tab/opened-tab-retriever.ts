@@ -26,7 +26,7 @@ export class OpenedTabRetriever {
 
     private async createTab(rawTab: browser.tabs.Tab): Promise<TabOpenState> {
         // incognito tabs are ignored for now
-        if (this.isUrlIgnored(rawTab.url) || null === rawTab.id || null === rawTab.index || rawTab.incognito) {
+        if (null === rawTab.id || null === rawTab.index || rawTab.incognito) {
             return;
         }
 
@@ -41,6 +41,7 @@ export class OpenedTabRetriever {
         tab.url = url;
         tab.faviconUrl = rawTab.favIconUrl;
         tab.isPrivileged = this.privilegedUrlDetector.isPrivileged(url, isInReaderMode);
+        tab.isIgnored = this.isUrlIgnored(rawTab.url);
 
         return tab;
     }

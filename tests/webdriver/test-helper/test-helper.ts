@@ -159,21 +159,9 @@ export class TestHelper {
         await this.browserInstructionSender.focusTab(0);
     }
 
-    // TODO remove isIgnoredTab?
-    async moveTab(fromIndex: number, toIndex: number, isIgnoredTab?: boolean) {
-        const tabRow = await this.openedTabsTestHelper.getTabRowByTabIndex(fromIndex);
-        const isRowFound = !!tabRow;
-
+    async moveTab(fromIndex: number, toIndex: number) {
         await this.browserInstructionSender.moveTab(fromIndex, toIndex);
-
-        if (isRowFound && !isIgnoredTab) {
-            await this.driver.wait(async () => {
-                return toIndex == +await tabRow.getAttribute('data-index');
-            }, 3000);
-        } else {
-            await sleep(500);
-            return true;
-        }
+        await sleep(500);
     }
 
     async changeTabUrl(tabIndex: number, newUrl: string) {

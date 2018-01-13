@@ -214,14 +214,25 @@ describe('Tab following', () => {
         assert.equal(openedTab.title, 'Test page 2');
     });
 
-    it('A click on a followed tab with reader mode enabled that is closed should open it in reader mode', async () => {
+    it('Two clicks on a followed tab that is closed should open it once', async () => {
         await testHelper.showOpenedTabsList();
         await testHelper.openTab(firefoxConfig.getReaderModeTestPageUrl());
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await testHelper.enableTabReaderMode(3, openedTabRowList[3]);
-
         await openedTabsHelper.clickOnFollowButton(openedTabRowList[3]);
+        await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[3]);
+
+        await testHelper.showFollowedTabsList();
+        const followedTabRowList = await followedTabsHelper.getTabRowList();
+        await followedTabsHelper.clickTwoTimesOnTabTitle(followedTabRowList[1]);
+
+        await openedTabsHelper.assertNumberOfTabs(4);
+    });
+
+    it('A click on a followed tab with reader mode enabled that is closed should open it in reader mode', async () => {
+        await testHelper.showOpenedTabsList();
+        const openedTabRowList = await openedTabsHelper.getTabRowList();
+        await testHelper.enableTabReaderMode(3, openedTabRowList[3]);
         await testHelper.closeTab(3);
 
         await testHelper.showFollowedTabsList();

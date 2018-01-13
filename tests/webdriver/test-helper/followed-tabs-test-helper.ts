@@ -1,6 +1,7 @@
 import { assert } from 'chai';
 import { By, error as WebDriverError, WebDriver, WebElement } from 'selenium-webdriver';
 
+import { sleep } from '../../../src/typescript/utils/sleep';
 import { BrowserInstructionSender } from '../browser-instruction-sender';
 import { TabsTestHelper } from './tabs-test-helper';
 
@@ -36,15 +37,15 @@ export class FollowedTabsTestHelper {
     async clickOnTabTitle(tabRow: WebElement) {
         const openIndicator = this.getOpenIndicator(tabRow);
         const tabId = await this.getWebElementAttribute(tabRow, 'data-opened-tab-id');
-        let numberOfMatchingTabsBefore: number;
         let url: string;
 
         if (null === tabId) {
             url = await this.getWebElementAttribute(tabRow.findElement(By.css('.title a')), 'data-url');
-            numberOfMatchingTabsBefore = await this.getNumberOfTabsWithUrl(url);
         }
 
-        await tabRow.findElement(By.css('.title a')).click();
+        const titleElement = tabRow.findElement(By.css('.title a'));
+        await titleElement.click();
+
         await this.driver.wait(async () => {
             if (null !== tabId) {
                 return +tabId === (await this.browserInstructionSender.getActiveTab()).id;
@@ -52,6 +53,42 @@ export class FollowedTabsTestHelper {
                 return !await openIndicator.off.isDisplayed();
             }
         }, 10000);
+    }
+
+    async clickTwoTimesOnTabTitle(tabRow: WebElement) {
+        const tabId = await this.getWebElementAttribute(tabRow, 'data-opened-tab-id');
+        let url: string;
+
+        if (null === tabId) {
+            url = await this.getWebElementAttribute(tabRow.findElement(By.css('.title a')), 'data-url');
+        }
+
+        const titleElement = tabRow.findElement(By.css('.title a'));
+
+        await Promise.all([
+            titleElement.click(),
+            titleElement.click(),
+        ]);
+        await sleep(200);
+
+        if (null !== tabId) {
+            await this.driver.wait(async () => {
+                return +tabId === (await this.browserInstructionSender.getActiveTab()).id;
+            }, 10000);
+        } else {
+            await this.driver.wait(async () => {
+                const tabList = await this.browserInstructionSender.getAllTabs();
+
+                for (const tab of tabList) {
+                    if (tab.url == url && 'complete' != tab.status) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }, 10000);
+            await sleep(200);
+        }
     }
 
     private async getWebElementAttribute(element: WebElement, attributeName: string) {

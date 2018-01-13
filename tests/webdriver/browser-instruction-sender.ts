@@ -162,4 +162,14 @@ export class BrowserInstructionSender {
             this.send({action: 'get-tab', data: {messageId, tabIndex}});
         });
     }
+
+    async getAllTabs(): Promise<browser.tabs.Tab[]> {
+        return new Promise<browser.tabs.Tab[]>((resolve, reject) => {
+            const messageId = Math.random();
+            this.receiveCallbackMap.set(messageId, (message) => {
+                resolve(message ? message.tabList : null);
+            });
+            this.send({action: 'get-all-tabs', data: {messageId}});
+        });
+    }
 }

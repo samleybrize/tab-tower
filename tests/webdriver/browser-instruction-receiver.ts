@@ -3,6 +3,7 @@ const client = new WebSocket('ws://localhost:8888'); // TODO param
 client.onmessage = async (event) => {
     const message = JSON.parse(event.data);
     let targetTabId;
+    let tabList: browser.tabs.Tab[];
 
     switch (message.action) {
         case 'reload-tab':
@@ -77,7 +78,7 @@ client.onmessage = async (event) => {
             break;
 
         case 'get-active-tab':
-            const tabList = await browser.tabs.query({active: true});
+            tabList = await browser.tabs.query({active: true});
 
             client.send(JSON.stringify({
                 messageId: message.data.messageId,
@@ -92,6 +93,15 @@ client.onmessage = async (event) => {
             client.send(JSON.stringify({
                 messageId: message.data.messageId,
                 tab,
+            }));
+            break;
+
+        case 'get-all-tabs':
+            tabList = await browser.tabs.query({});
+
+            client.send(JSON.stringify({
+                messageId: message.data.messageId,
+                tabList,
             }));
             break;
     }

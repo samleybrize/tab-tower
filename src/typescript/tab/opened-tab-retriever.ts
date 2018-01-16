@@ -1,13 +1,82 @@
 import * as uuid from 'uuid';
 
+import { OpenedTabFaviconUrlUpdated } from './event/opened-tab-favicon-url-updated';
+import { OpenedTabMoved } from './event/opened-tab-moved';
+import { OpenedTabReaderModeStateUpdated } from './event/opened-tab-reader-mode-state-updated';
+import { OpenedTabTitleUpdated } from './event/opened-tab-title-updated';
+import { OpenedTabUrlUpdated } from './event/opened-tab-url-updated';
+import { TabClosed } from './event/tab-closed';
+import { TabOpened } from './event/tab-opened';
 import { PrivilegedUrlDetector } from './privileged-url-detector';
 import { TabOpenState } from './tab-open-state';
 
 export class OpenedTabRetriever {
+    private openedTabMap = new Map<number, TabOpenState>();
+
     constructor(private privilegedUrlDetector: PrivilegedUrlDetector, private ignoreUrlsThatStartWith: string[]) {
     }
 
-    async getAll(): Promise<TabOpenState[]> {
+    async init() {
+        if (this.openedTabMap.size > 0) {
+            return;
+        }
+
+        const tabList = await this.getAllStillOpened();
+
+        for (const tab of tabList) {
+            this.openedTabMap.set(tab.id, tab);
+        }
+    }
+
+    async onTabOpen(event: TabOpened) {
+        this.openedTabMap.set(event.tabOpenState.id, event.tabOpenState);
+    }
+
+    async onTabMove(event: OpenedTabMoved) {
+        const existingTab = this.openedTabMap.get(event.tabOpenState.id);
+
+        if (existingTab) {
+            existingTab.index = event.tabOpenState.index;
+        }
+    }
+
+    async onTabTitleUpdate(event: OpenedTabTitleUpdated) {
+        const existingTab = this.openedTabMap.get(event.tabOpenState.id);
+
+        if (existingTab) {
+            existingTab.title = event.tabOpenState.title;
+        }
+    }
+
+    async onTabReaderModeStateUpdate(event: OpenedTabReaderModeStateUpdated) {
+        const existingTab = this.openedTabMap.get(event.tabOpenState.id);
+
+        if (existingTab) {
+            existingTab.isInReaderMode = event.tabOpenState.isInReaderMode;
+        }
+    }
+
+    async onTabUrlUpdate(event: OpenedTabUrlUpdated) {
+        const existingTab = this.openedTabMap.get(event.tabOpenState.id);
+
+        if (existingTab) {
+            existingTab.url = event.tabOpenState.url;
+        }
+    }
+
+    async onTabFaviconUrlUpdate(event: OpenedTabFaviconUrlUpdated) {
+        const existingTab = this.openedTabMap.get(event.tabOpenState.id);
+
+        if (existingTab) {
+            existingTab.faviconUrl = event.tabOpenState.faviconUrl;
+        }
+    }
+
+    async onTabClose(event: TabClosed) {
+        this.openedTabMap.delete(event.closedTab.id);
+    }
+
+    async getAllStillOpened(): Promise<TabOpenState[]> {
         const rawTabs = await browser.tabs.query({});
         const tabList: TabOpenState[] = [];
 
@@ -80,7 +149,7 @@ export class OpenedTabRetriever {
         return longLivedId;
     }
 
-    async getById(id: number): Promise<TabOpenState> {
+    async getStillOpenedById(id: number): Promise<TabOpenState> {
         let rawTab: browser.tabs.Tab;
 
         try {
@@ -93,15 +162,7 @@ export class OpenedTabRetriever {
         return await this.createTab(rawTab);
     }
 
-    async getByIndex(index: number): Promise<TabOpenState> {
-        const rawTabList = await browser.tabs.query({index});
-
-        for (const rawTab of rawTabList) {
-            if (rawTab.index == index) {
-                return await this.createTab(rawTab);
-            }
-        }
-
-        return null;
+    async getById(id: number): Promise<TabOpenState> {
+        return this.openedTabMap.get(id) || null;
     }
 }

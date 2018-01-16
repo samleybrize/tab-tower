@@ -19,7 +19,7 @@ export class TabRetriever {
     }
 
     async associateOpenedTabsWithFollowedTabs() {
-        const tabOpenStateList = await this.openedTabRetriever.getAll();
+        const tabOpenStateList = await this.openedTabRetriever.getAllStillOpened();
         const candidateFollowStates = await this.followedTabRetriever.getWithOpenLongLivedId();
 
         for (const tabOpenState of tabOpenStateList) {
@@ -33,7 +33,7 @@ export class TabRetriever {
     }
 
     async queryOpenedTabs(query: GetOpenedTabs): Promise<Tab[]> {
-        const tabOpenStateList = await this.openedTabRetriever.getAll();
+        const tabOpenStateList = await this.openedTabRetriever.getAllStillOpened();
         const tabList: Tab[] = [];
 
         for (const tabOpenState of tabOpenStateList) {
@@ -74,14 +74,14 @@ export class TabRetriever {
         const associatedOpenTabId = this.tabAssociationMaintainer.getAssociatedOpenedTabId(followId);
 
         if (associatedOpenTabId) {
-            return await this.openedTabRetriever.getById(associatedOpenTabId);
+            return await this.openedTabRetriever.getStillOpenedById(associatedOpenTabId);
         }
 
         return null;
     }
 
     async queryByOpenId(query: GetTabByOpenId): Promise<Tab> {
-        const tabOpenState = await this.openedTabRetriever.getById(query.openId);
+        const tabOpenState = await this.openedTabRetriever.getStillOpenedById(query.openId);
 
         if (null == tabOpenState) {
             return null;

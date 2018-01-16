@@ -34,7 +34,7 @@ export class TabOpener {
     private async associateNewTabToFollowedTab(openTabCommand: OpenTab, openedTab: browser.tabs.Tab) {
         if (openTabCommand.followId) {
             const tabFollowState = await this.followedTabRetriever.getById(openTabCommand.followId);
-            const tabOpenState = await this.openedTabRetriever.getById(openedTab.id);
+            const tabOpenState = await this.openedTabRetriever.getStillOpenedById(openedTab.id);
 
             this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(openedTab.id, openTabCommand.followId);
             this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(tabOpenState, tabFollowState));

@@ -301,7 +301,7 @@ export class FollowedTabView {
     }
 
     private async handleTabClose(event: TabClosed) {
-        const tabRow = this.getTabRowByOpenTabId(event.tabId);
+        const tabRow = this.getTabRowByOpenTabId(event.closedTab.id);
 
         if (tabRow) {
             tabRow.removeAttribute('data-opened-tab-id');

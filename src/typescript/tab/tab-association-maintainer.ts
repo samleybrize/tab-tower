@@ -32,11 +32,11 @@ export class TabAssociationMaintainer {
     }
 
     async onTabClose(event: TabClosed) {
-        const followId = this.getAssociatedFollowId(event.tabId);
+        const followId = this.getAssociatedFollowId(event.closedTab.id);
 
         if (followId) {
             this.followIdOpenTabIdAssociation.delete(followId);
-            this.openTabIdFollowIdAssociation.delete(event.tabId);
+            this.openTabIdFollowIdAssociation.delete(event.closedTab.id);
         }
     }
 }

@@ -83,6 +83,8 @@ async function main() {
     const messageReceiver = new ContentMessageReceiver(receivedMessageHandler);
     messageReceiver.listen();
 
+    await openedTabRetriever.init();
+
     const nativeEventHandler = new NativeTabEventHandler(eventBus, openedTabRetriever, tabCloser, tabOpener);
     nativeEventHandler.init();
 
@@ -98,20 +100,27 @@ async function main() {
     queryBus.register(GetTabByOpenId, tabRetriever.queryByOpenId, tabRetriever);
 
     eventBus.subscribe(TabClosed, followedTabModifier.onTabClose, followedTabModifier);
+    eventBus.subscribe(TabClosed, openedTabRetriever.onTabClose, openedTabRetriever);
     eventBus.subscribe(TabClosed, sendMessageEventHandler.onEvent, sendMessageEventHandler);
     eventBus.subscribe(TabClosed, tabAssociationMaintainer.onTabClose, tabAssociationMaintainer);
+    eventBus.subscribe(TabOpened, openedTabRetriever.onTabOpen, openedTabRetriever);
     eventBus.subscribe(TabOpened, sendMessageEventHandler.onEvent, sendMessageEventHandler);
     eventBus.subscribe(TabFollowed, sendMessageEventHandler.onEvent, sendMessageEventHandler);
     eventBus.subscribe(OpenedTabAssociatedToFollowedTab, followedTabModifier.onAssociateOpenedTabToFollowedTab, followedTabModifier);
     eventBus.subscribe(OpenedTabAssociatedToFollowedTab, sendMessageEventHandler.onEvent, sendMessageEventHandler);
     eventBus.subscribe(OpenedTabFaviconUrlUpdated, followedTabModifier.onOpenedTabFaviconUrlUpdate, followedTabModifier);
+    eventBus.subscribe(OpenedTabFaviconUrlUpdated, openedTabRetriever.onTabFaviconUrlUpdate, openedTabRetriever);
     eventBus.subscribe(OpenedTabFaviconUrlUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+    eventBus.subscribe(OpenedTabMoved, openedTabRetriever.onTabMove, openedTabRetriever);
     eventBus.subscribe(OpenedTabMoved, sendMessageEventHandler.onEvent, sendMessageEventHandler);
     eventBus.subscribe(OpenedTabReaderModeStateUpdated, followedTabModifier.onOpenedTabReaderModeStateUpdate, followedTabModifier);
+    eventBus.subscribe(OpenedTabReaderModeStateUpdated, openedTabRetriever.onTabReaderModeStateUpdate, openedTabRetriever);
     eventBus.subscribe(OpenedTabReaderModeStateUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
     eventBus.subscribe(OpenedTabTitleUpdated, followedTabModifier.onOpenedTabTitleUpdate, followedTabModifier);
+    eventBus.subscribe(OpenedTabTitleUpdated, openedTabRetriever.onTabTitleUpdate, openedTabRetriever);
     eventBus.subscribe(OpenedTabTitleUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
     eventBus.subscribe(OpenedTabUrlUpdated, followedTabModifier.onOpenedTabUrlUpdate, followedTabModifier);
+    eventBus.subscribe(OpenedTabUrlUpdated, openedTabRetriever.onTabUrlUpdate, openedTabRetriever);
     eventBus.subscribe(OpenedTabUrlUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
     eventBus.subscribe(TabUnfollowed, sendMessageEventHandler.onEvent, sendMessageEventHandler);
     eventBus.subscribe(TabUnfollowed, tabAssociationMaintainer.onTabUnfollow, tabAssociationMaintainer);

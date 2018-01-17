@@ -35,6 +35,18 @@ export class WebStorageTabPersister implements TabPersister {
         return `followState.${followId}`;
     }
 
+    async getByOpenLongLivedId(openLongLivedId: string): Promise<TabFollowState> {
+        const followStateList = await this.getAll();
+
+        for (const followState of followStateList) {
+            if (openLongLivedId && followState.openLongLivedId === openLongLivedId) {
+                return followState;
+            }
+        }
+
+        return null;
+    }
+
     async persist(tabFollowState: TabFollowState) {
         const promise = new Promise<void>((resolve, reject) => {
             this.actionStack.push(async () => {

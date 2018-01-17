@@ -3,6 +3,7 @@ import { TabPersister } from './tab-persister';
 
 export class InMemoryTabPersister implements TabPersister {
     private followStateMap = new Map<string, TabFollowState>();
+    private longLivedIdAssociationMap = new Map<string, string>();
     private isRetrievedFromDecorated = false;
 
     constructor(private decoratedTabPersister?: TabPersister) {
@@ -25,6 +26,7 @@ export class InMemoryTabPersister implements TabPersister {
 
         for (const followState of followStateList) {
             this.followStateMap.set(followState.id, followState);
+            this.updateLongLivedIdAssociationMap(followState.id, null, followState.openLongLivedId);
         }
 
         this.isRetrievedFromDecorated = true;
@@ -49,6 +51,17 @@ export class InMemoryTabPersister implements TabPersister {
         return clonedFollowState;
     }
 
+    async getByOpenLongLivedId(openLongLivedId: string): Promise<TabFollowState> {
+        if (!this.isRetrievedFromDecorated) {
+            await this.retrieveFromDecorated();
+        } else if (!this.longLivedIdAssociationMap.has(openLongLivedId)) {
+            return null;
+        }
+
+        const followId = this.longLivedIdAssociationMap.get(openLongLivedId);
+        return this.getClonedFollowState(this.followStateMap.get(followId));
+    }
+
     private copyFollowState(source: TabFollowState, destination: TabFollowState) {
         destination.faviconUrl = source.faviconUrl;
         destination.id = source.id;
@@ -67,15 +80,27 @@ export class InMemoryTabPersister implements TabPersister {
         const existingTabFollowState = this.followStateMap.get(tabFollowState.id);
 
         if (existingTabFollowState) {
+            this.updateLongLivedIdAssociationMap(tabFollowState.id, existingTabFollowState.openLongLivedId, tabFollowState.openLongLivedId);
             this.copyFollowState(tabFollowState, existingTabFollowState);
         } else {
             const clonedFollowState = this.getClonedFollowState(tabFollowState);
 
+            this.updateLongLivedIdAssociationMap(tabFollowState.id, null, tabFollowState.openLongLivedId);
             this.followStateMap.set(clonedFollowState.id, clonedFollowState);
         }
 
         if (this.decoratedTabPersister) {
             this.decoratedTabPersister.persist(tabFollowState);
+        }
+    }
+
+    private updateLongLivedIdAssociationMap(followId: string, oldOpenLongLivedId: string, newOpenLongLivedId: string) {
+        if (null != oldOpenLongLivedId) {
+            this.longLivedIdAssociationMap.delete(oldOpenLongLivedId);
+        }
+
+        if (null != newOpenLongLivedId) {
+            this.longLivedIdAssociationMap.set(newOpenLongLivedId, followId);
         }
     }
 
@@ -90,11 +115,13 @@ export class InMemoryTabPersister implements TabPersister {
             return;
         }
 
+        this.updateLongLivedIdAssociationMap(followId, existingTabFollowState.openLongLivedId, openLongLivedId);
         existingTabFollowState.openLongLivedId = openLongLivedId;
 
         if (this.decoratedTabPersister) {
             this.decoratedTabPersister.setOpenLongLivedId(followId, openLongLivedId);
         }
+
     }
 
     async setFaviconUrl(followId: string, faviconUrl: string) {
@@ -180,6 +207,7 @@ export class InMemoryTabPersister implements TabPersister {
             return;
         }
 
+        this.updateLongLivedIdAssociationMap(followId, followStateToRemove.openLongLivedId, null);
         this.followStateMap.delete(followId);
 
         if (this.decoratedTabPersister) {

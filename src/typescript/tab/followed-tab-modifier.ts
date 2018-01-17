@@ -15,6 +15,7 @@ import { OpenedTabTitleUpdated } from './event/opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from './event/opened-tab-url-updated';
 import { TabClosed } from './event/tab-closed';
 import { TabFollowed } from './event/tab-followed';
+import { TabOpened } from './event/tab-opened';
 import { TabUnfollowed } from './event/tab-unfollowed';
 import { TabPersister } from './persister/tab-persister';
 import { TabAssociationMaintainer } from './tab-association-maintainer';
@@ -74,12 +75,21 @@ export class FollowedTabModifier {
         await this.tabPersister.persist(followState);
     }
 
+    async onTabOpen(event: TabOpened): Promise<void> {
+        const associatedFollowedState = await this.tabPersister.getByOpenLongLivedId(event.tabOpenState.longLivedId);
+
+        if (associatedFollowedState) {
+            this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(event.tabOpenState.id, associatedFollowedState.id);
+            this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(event.tabOpenState, associatedFollowedState));
+        }
+    }
+
     async onTabClose(event: TabClosed): Promise<void> {
         const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.closedTab.id);
 
         if (followId) {
             // TODO will not work when a closed tab is restored
-            await this.tabPersister.setOpenLongLivedId(followId, null);
+            // await this.tabPersister.setOpenLongLivedId(followId, null);
         }
     }
 

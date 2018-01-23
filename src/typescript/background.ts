@@ -64,7 +64,7 @@ async function main() {
     const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
     const openedTabModifier = new OpenedTabModifier();
     const openedTabRetriever = new OpenedTabRetriever(privilegedUrlDetector, [uiUrlStartWith]);
-    const tabOpener = new TabOpener(openedTabRetriever, followedTabRetriever, tabAssociationMaintainer, eventBus);
+    const tabOpener = new TabOpener(openedTabRetriever, followedTabRetriever, tabAssociationMaintainer, nativeRecentlyClosedTabAssociationMaintainer, eventBus);
     const tabCloser = new TabCloser();
     const tabRetriever = new TabRetriever(followedTabRetriever, openedTabRetriever, tabAssociationMaintainer, eventBus);
 

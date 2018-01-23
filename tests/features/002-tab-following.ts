@@ -28,7 +28,7 @@ describe('Tab following', () => {
         await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
     });
     after(async () => {
-        await driver.quit();
+        // await driver.quit();
         browserInstructionSender.shutdown();
     });
 
@@ -193,7 +193,7 @@ describe('Tab following', () => {
     it('A click on a followed tab that is closed should open it', async () => {
         await testHelper.showOpenedTabsList();
         const testPage2Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2);
-        const tabFavivcon2Url = firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_2);
+        const tabFavicon2Url = firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_2);
         await testHelper.openTab(testPage2Url, 1);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
@@ -209,7 +209,7 @@ describe('Tab following', () => {
 
         assert.equal(activeTab.index, 0);
         assert.isNotNull(openedTab);
-        assert.equal(openedTab.favIconUrl, tabFavivcon2Url);
+        assert.equal(openedTab.favIconUrl, tabFavicon2Url);
         assert.equal(openedTab.url, testPage2Url);
         assert.equal(openedTab.title, 'Test page 2');
     });

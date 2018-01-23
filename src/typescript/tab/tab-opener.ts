@@ -3,6 +3,7 @@ import { sleep } from '../utils/sleep';
 import { OpenTab } from './command/open-tab';
 import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';
 import { FollowedTabRetriever } from './followed-tab-retriever';
+import { NativeRecentlyClosedTabAssociationMaintainer } from './native-recently-closed-tab/native-recently-closed-tab-association-maintainer';
 import { OpenedTabRetriever } from './opened-tab-retriever';
 import { TabAssociationMaintainer } from './tab-association-maintainer';
 
@@ -11,24 +12,40 @@ export class TabOpener {
         private openedTabRetriever: OpenedTabRetriever,
         private followedTabRetriever: FollowedTabRetriever,
         private tabAssociationMaintainer: TabAssociationMaintainer,
+        private nativeRecentlyClosedTabAssociationMaintainer: NativeRecentlyClosedTabAssociationMaintainer,
         private eventBus: EventBus,
     ) {
     }
 
     async openTab(command: OpenTab) {
-        const createTabOptions: browser.tabs.CreateProperties = {
-            active: false,
-            url: command.url,
-        };
+        let openedTab: browser.tabs.Tab = null;
 
-        if (browser.tabs.toggleReaderMode) {
-            createTabOptions.openInReaderMode = command.readerMode;
+        if (command.followId) {
+            const followState = await this.followedTabRetriever.getById(command.followId);
+            const sessionId = this.nativeRecentlyClosedTabAssociationMaintainer.getSessionIdAssociatedToOpenLongLivedId(followState.openLongLivedId);
+
+            if (null != sessionId) {
+                const session = await browser.sessions.restore(sessionId);
+                openedTab = session.tab;
+            }
         }
 
-        const tab = await browser.tabs.create(createTabOptions);
-        await this.waitForNewTabLoad(tab.id);
+        if (null == openedTab) {
+            const createTabOptions: browser.tabs.CreateProperties = {
+                active: false,
+                url: command.url,
+            };
 
-        this.associateNewTabToFollowedTab(command, tab);
+            if (browser.tabs.toggleReaderMode) {
+                createTabOptions.openInReaderMode = command.readerMode;
+            }
+
+            const tab = await browser.tabs.create(createTabOptions);
+        }
+
+        await this.waitForNewTabLoad(openedTab.id);
+
+        this.associateNewTabToFollowedTab(command, openedTab);
     }
 
     private async associateNewTabToFollowedTab(openTabCommand: OpenTab, openedTab: browser.tabs.Tab) {

@@ -56,6 +56,7 @@ export class NativeRecentlyClosedTabAssociationMaintainer {
             const uniqueId = await this.getNativeRecentlyClosedTabUniqueId(nativeRecentlyClosedSession);
             const nativeRecentlyClosedTabAssociation = new NativeRecentlyClosedTabAssociation(
                 uniqueId,
+                nativeRecentlyClosedSession.tab.sessionId,
                 nativeRecentlyClosedSession.tab.url,
                 nativeRecentlyClosedSession.tab.favIconUrl,
             );
@@ -77,7 +78,7 @@ export class NativeRecentlyClosedTabAssociationMaintainer {
             nativeRecentlyClosedTab.tab.index,
         ];
 
-        return parts.join('##'); // TODO with newlines?? tabs??
+        return parts.join('##');
     }
 
     private updateNewAssociationListFromTheExistingOne(newAssociationList: NativeRecentlyClosedTabAssociation[]) {
@@ -104,6 +105,16 @@ export class NativeRecentlyClosedTabAssociationMaintainer {
                 association.isIgnored = true;
             }
         }
+    }
+
+    getSessionIdAssociatedToOpenLongLivedId(openLongLivedId: string) {
+        for (const association of this.nativeRecentlyClosedTabAssociationList) {
+            if (association.associatedOpenedTabLongLivedId === openLongLivedId) {
+                return association.sessionId;
+            }
+        }
+
+        return null;
     }
 
     async onTabClose(event: TabClosed) {

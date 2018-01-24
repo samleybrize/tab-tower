@@ -25,7 +25,11 @@ export class TabOpener {
             const sessionId = this.nativeRecentlyClosedTabAssociationMaintainer.getSessionIdAssociatedToOpenLongLivedId(followState.openLongLivedId);
 
             if (null != sessionId) {
+                const targetIndex = (await browser.tabs.query({})).length;
+                const activeTab = (await browser.tabs.query({active: true})).shift();
                 const session = await browser.sessions.restore(sessionId);
+                await browser.tabs.update(activeTab.id, {active: true});
+                await browser.tabs.move(session.tab.id, {index: targetIndex});
                 openedTab = session.tab;
             }
         }
@@ -40,7 +44,7 @@ export class TabOpener {
                 createTabOptions.openInReaderMode = command.readerMode;
             }
 
-            const tab = await browser.tabs.create(createTabOptions);
+            openedTab = await browser.tabs.create(createTabOptions);
         }
 
         await this.waitForNewTabLoad(openedTab.id);

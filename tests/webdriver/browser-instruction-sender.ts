@@ -101,6 +101,16 @@ export class BrowserInstructionSender {
         }});
     }
 
+    async clearRecentlyClosedTabs() {
+        return new Promise<browser.tabs.Tab>((resolve, reject) => {
+            const messageId = Math.random();
+            this.receiveCallbackMap.set(messageId, (message) => {
+                resolve();
+            });
+            this.send({action: 'clear-recently-closed-tabs', data: {messageId}});
+        });
+    }
+
     async triggerDoubleClick(webdriver: WebDriver, quotelessCssSelector: string) {
         return webdriver.executeScript(`
             var doubleClickEvent = document.createEvent('MouseEvents');

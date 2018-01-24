@@ -821,6 +821,8 @@ declare namespace browser.sessions {
 
     const MAX_SESSION_RESULTS: number;
 
+    function forgetClosedTab(windowId: number, sessionId: string): Promise<void>;
+
     function getRecentlyClosed(filter?: Filter): Promise<Session[]>;
 
     function restore(sessionId: string): Promise<Session>;

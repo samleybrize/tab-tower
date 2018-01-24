@@ -58,6 +58,18 @@ client.onmessage = async (event) => {
             await browser.windows.create({incognito: !!message.data.isIncognito, url: message.data.url});
             break;
 
+        case 'clear-recently-closed-tabs':
+            const recentlyClosedTabList = await browser.sessions.getRecentlyClosed();
+
+            for (const recentlyClosedTab of recentlyClosedTabList) {
+                if (recentlyClosedTab.tab) {
+                    await browser.sessions.forgetClosedTab(recentlyClosedTab.tab.windowId, recentlyClosedTab.tab.sessionId);
+                }
+            }
+
+            client.send(JSON.stringify({messageId: message.data.messageId}));
+            break;
+
         case 'make-tab-go-to-previous-page':
             targetTabId = await getTabIdByIndex(message.data.tabIndex);
             const code = `

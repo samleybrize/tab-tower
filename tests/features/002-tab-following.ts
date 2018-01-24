@@ -28,7 +28,7 @@ describe('Tab following', () => {
         await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
     });
     after(async () => {
-        // await driver.quit();
+        await driver.quit();
         browserInstructionSender.shutdown();
     });
 
@@ -157,6 +157,7 @@ describe('Tab following', () => {
 
         await testHelper.showFollowedTabsList();
         await testHelper.closeTab(1);
+        await browserInstructionSender.clearRecentlyClosedTabs();
 
         const followedTabRowList = await followedTabsHelper.getTabRowList();
         await followedTabsHelper.assertTabOpenIndicatorIsOff(followedTabRowList[0]);
@@ -199,6 +200,7 @@ describe('Tab following', () => {
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+        await browserInstructionSender.clearRecentlyClosedTabs();
 
         await testHelper.showFollowedTabsList();
         const followedTabRowList = await followedTabsHelper.getTabRowList();
@@ -221,6 +223,7 @@ describe('Tab following', () => {
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.clickOnFollowButton(openedTabRowList[3]);
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[3]);
+        await browserInstructionSender.clearRecentlyClosedTabs();
 
         await testHelper.showFollowedTabsList();
         const followedTabRowList = await followedTabsHelper.getTabRowList();
@@ -234,6 +237,7 @@ describe('Tab following', () => {
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await testHelper.enableTabReaderMode(3, openedTabRowList[3]);
         await testHelper.closeTab(3);
+        await browserInstructionSender.clearRecentlyClosedTabs();
 
         await testHelper.showFollowedTabsList();
         const followedTabRowList = await followedTabsHelper.getTabRowList();
@@ -281,6 +285,7 @@ describe('Tab following', () => {
         await testHelper.moveTab(1, 0);
 
         await testHelper.closeTab(0);
+        await browserInstructionSender.clearRecentlyClosedTabs();
 
         const followedTabRowList = await followedTabsHelper.getTabRowList();
         await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
@@ -311,6 +316,7 @@ describe('Tab following', () => {
 
         await testHelper.switchToWindowHandle(0);
         await testHelper.closeTab(1);
+        await browserInstructionSender.clearRecentlyClosedTabs();
 
         const newFollowedTabRowList = await followedTabsHelper.getTabRowList();
         await followedTabsHelper.assertTabTitle(newFollowedTabRowList[1], 'Test page 1');
@@ -335,6 +341,7 @@ describe('Tab following', () => {
         await testHelper.makeTabGoToPreviousPage(1);
 
         await testHelper.closeTab(1);
+        await browserInstructionSender.clearRecentlyClosedTabs();
 
         const newFollowedTabRowList = await followedTabsHelper.getTabRowList();
         await followedTabsHelper.assertTabTitle(newFollowedTabRowList[1], 'Test page 2');
@@ -381,6 +388,7 @@ describe('Tab following', () => {
         await testHelper.enableTabReaderMode(2, openedTabRowList[2]);
 
         await testHelper.closeTab(2);
+        await browserInstructionSender.clearRecentlyClosedTabs();
         await testHelper.reloadExtension();
 
         await testHelper.switchToWindowHandle(0);

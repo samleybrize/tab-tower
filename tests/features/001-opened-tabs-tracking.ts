@@ -26,8 +26,10 @@ describe('Opened tabs tracking', () => {
         await driver.get(uiUrl);
     });
     after(async () => {
-        await driver.quit();
-        browserInstructionSender.shutdown();
+        await testHelper.shutdown();
+    });
+    beforeEach(async () => {
+        await testHelper.resetBrowserState();
     });
 
     it('Opened tab should appear in the opened tabs list', async () => {
@@ -45,6 +47,8 @@ describe('Opened tabs tracking', () => {
     });
 
     it("Title, url and favicon should be updated when an opened tab's url change", async () => {
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
         const testPage2Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2);
         await testHelper.changeTabUrl(1, testPage2Url);
 
@@ -57,40 +61,40 @@ describe('Opened tabs tracking', () => {
     });
 
     it('Default favicon should be shown when an opened tab have not', async () => {
-        const testPageWithoutFaviconUrl = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITHOUT_FAVICON);
-        await testHelper.changeTabUrl(1, testPageWithoutFaviconUrl);
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITHOUT_FAVICON));
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.assertTabFaviconUrl(openedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.DEFAULT_FAVICON));
     });
 
     it("Default favicon should be shown when an opened tab's favicon can't be downloaded", async () => {
-        const testPageWithNotFoundFaviconUrl = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITH_NOT_FOUND_FAVICON);
-        await testHelper.changeTabUrl(1, testPageWithNotFoundFaviconUrl);
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITH_NOT_FOUND_FAVICON));
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.assertTabFaviconUrl(openedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.DEFAULT_FAVICON));
     });
 
     it('Reader mode should be shown in the opened tabs list when enabled', async () => {
-        const openedTabRowList = await openedTabsHelper.getTabRowList();
-        const readerModeTestPageUrl = firefoxConfig.getReaderModeTestPageUrl();
+        await testHelper.openTab(firefoxConfig.getReaderModeTestPageUrl());
 
-        await testHelper.changeTabUrl(1, readerModeTestPageUrl);
+        const openedTabRowList = await openedTabsHelper.getTabRowList();
         await testHelper.enableTabReaderMode(1, openedTabRowList[1]);
 
         await openedTabsHelper.assertTabReaderModeIndicatorIsOn(openedTabRowList[1]);
     });
 
     it('Reader mode should not be shown in the opened tabs list when disabled', async () => {
-        const openedTabRowList = await openedTabsHelper.getTabRowList();
+        await testHelper.openTab(firefoxConfig.getReaderModeTestPageUrl());
 
+        const openedTabRowList = await openedTabsHelper.getTabRowList();
+        await testHelper.enableTabReaderMode(1, openedTabRowList[1]);
         await testHelper.disableTabReaderMode(1, openedTabRowList[1]);
 
         await openedTabsHelper.assertTabReaderModeIndicatorIsOff(openedTabRowList[1]);
     });
 
     it('Opened tab should be removed from opened tabs list when closed', async () => {
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
         await testHelper.closeTab(1);
 
         await openedTabsHelper.assertNumberOfTabs(1);
@@ -117,6 +121,9 @@ describe('Opened tabs tracking', () => {
     });
 
     it('Associated tab should be closed when clicking on a close button in the opened tab list', async () => {
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
 
@@ -130,17 +137,19 @@ describe('Opened tabs tracking', () => {
     });
 
     it('A click on an opened tab should focus the associated tab', async () => {
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.clickOnTabTitle(openedTabRowList[1]);
-        const activeTab = await browserInstructionSender.getActiveTab();
 
+        const activeTab = await browserInstructionSender.getActiveTab();
         assert.equal(activeTab.index, 1);
     });
 
     it('A click on an opened tab should focus the associated tab when an ignored tab was moved', async () => {
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
         await testHelper.openIgnoredTab(uiUrl, 2);
         await testHelper.moveTab(2, 1);
-        await testHelper.focusTab(0);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.clickOnTabTitle(openedTabRowList[2]);
@@ -150,8 +159,7 @@ describe('Opened tabs tracking', () => {
     });
 
     it('A click on an opened tab should focus the associated tab when an ignored tab was closed', async () => {
-        await testHelper.closeTab(1);
-        await testHelper.focusTab(0);
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.clickOnTabTitle(openedTabRowList[1]);
@@ -164,7 +172,7 @@ describe('Opened tabs tracking', () => {
         const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
         const testPage2Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2);
 
-        await testHelper.focusTab(0);
+        await testHelper.openTab(testPage1Url);
         await testHelper.openTab(testPage2Url);
         await testHelper.openTab();
 
@@ -187,11 +195,11 @@ describe('Opened tabs tracking', () => {
     });
 
     it('Should show opened tabs with reader mode enabled at startup', async () => {
-        const currentOpenedTabRowList = await openedTabsHelper.getTabRowList();
-        const currentReaderModeIndicator = await openedTabsHelper.getReaderModeIndicator(currentOpenedTabRowList[2]);
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+        await testHelper.openTab(firefoxConfig.getReaderModeTestPageUrl());
 
-        await testHelper.changeTabUrl(1, firefoxConfig.getReaderModeTestPageUrl());
-        await testHelper.enableTabReaderMode(1, currentOpenedTabRowList[1]);
+        const currentOpenedTabRowList = await openedTabsHelper.getTabRowList();
+        await testHelper.enableTabReaderMode(2, currentOpenedTabRowList[2]);
 
         await testHelper.reloadExtension();
 
@@ -205,9 +213,7 @@ describe('Opened tabs tracking', () => {
 
     it('Incognito tabs should not be shown in the opened tabs list', async () => {
         const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
-        await testHelper.closeTab(1);
-        await testHelper.closeTab(0);
-        await testHelper.createWindow(true, testPage1Url);
+        await testHelper.createWindow(true, firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
         await openedTabsHelper.assertNumberOfTabs(1);
     });

@@ -40,8 +40,7 @@ describe('Tab filter', () => {
         await openedTabsHelper.clickOnFollowButton(openedTabRowList[3]);
     });
     after(async () => {
-        await driver.quit();
-        browserInstructionSender.shutdown();
+        await testHelper.shutdown();
     });
     afterEach(async () => {
         await tabFilterHelper.clearInput();

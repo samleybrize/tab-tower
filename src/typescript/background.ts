@@ -31,6 +31,7 @@ import { TabUnfollowed } from './tab/event/tab-unfollowed';
 import { FollowedTabModifier } from './tab/followed-tab-modifier';
 import { FollowedTabRetriever } from './tab/followed-tab-retriever';
 import { NativeRecentlyClosedTabAssociationMaintainer } from './tab/native-recently-closed-tab/native-recently-closed-tab-association-maintainer';
+import { WebStoragePersister as WebStorageNativeRecentlyClosedTabAssociationPersister } from './tab/native-recently-closed-tab/web-storage-persister';
 import { NativeTabEventHandler } from './tab/native-tab-event-handler';
 import { OpenedTabModifier } from './tab/opened-tab-modifier';
 import { OpenedTabRetriever } from './tab/opened-tab-retriever';
@@ -59,7 +60,8 @@ async function main() {
     const inMemoryTabPersister = new InMemoryTabPersister(webStorageTabPersister);
     const privilegedUrlDetector = new PrivilegedUrlDetector();
     const tabAssociationMaintainer = new TabAssociationMaintainer();
-    const nativeRecentlyClosedTabAssociationMaintainer = new NativeRecentlyClosedTabAssociationMaintainer();
+    const nativeRecentlyClosedTabAssociationPersister = new WebStorageNativeRecentlyClosedTabAssociationPersister();
+    const nativeRecentlyClosedTabAssociationMaintainer = new NativeRecentlyClosedTabAssociationMaintainer(nativeRecentlyClosedTabAssociationPersister);
     const followedTabModifier = new FollowedTabModifier(inMemoryTabPersister, tabAssociationMaintainer, eventBus);
     const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
     const openedTabModifier = new OpenedTabModifier();

@@ -30,8 +30,10 @@ describe('Navigation', () => {
         await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
     });
     after(async () => {
-        await driver.quit();
-        browserInstructionSender.shutdown();
+        await testHelper.shutdown();
+    });
+    beforeEach(async () => {
+        await testHelper.resetBrowserState();
     });
 
     it('Followed tabs list should be shown when clicking on the followed tabs button', async () => {
@@ -43,6 +45,7 @@ describe('Navigation', () => {
     });
 
     it('Opened tabs list should be shown when clicking on the opened tabs button', async () => {
+        await navigationHelper.clickOnFollowedTabsButton();
         await navigationHelper.clickOnOpenedTabsButton();
 
         await navigationHelper.assertOpenedTabsListIsVisible();
@@ -63,9 +66,10 @@ describe('Navigation', () => {
     });
 
     it('Opened tabs counter should be updated when closing a tab', async () => {
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
         await testHelper.closeTab(1);
 
-        await navigationHelper.assertOpenedTabsCounter(2);
+        await navigationHelper.assertOpenedTabsCounter(1);
     });
 
     it('Followed tabs counter should indicate 0 when there is no followed tab', async () => {
@@ -85,7 +89,13 @@ describe('Navigation', () => {
     });
 
     it('Followed tabs counter should be updated when unfollowing a tab', async () => {
+        const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
+        await testHelper.openTab(testPage1Url);
+        await testHelper.openTab(testPage1Url);
+
         const openedTabRowList = await openedTabsHelper.getTabRowList();
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
         await openedTabsHelper.clickOnUnfollowButton(openedTabRowList[1]);
 
         await navigationHelper.assertFollowedTabsCounter(1);
@@ -95,23 +105,32 @@ describe('Navigation', () => {
         await navigationHelper.clickOnNewTabButton();
         await testHelper.focusTab(0);
 
-        await navigationHelper.assertOpenedTabsCounter(5);
+        await navigationHelper.assertOpenedTabsCounter(2);
     });
 
     it('Opened tabs counter should indicate the number of opened tab at startup', async () => {
+        const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
+        await testHelper.openTab(testPage1Url);
+        await testHelper.openTab(testPage1Url);
+
         await testHelper.reloadExtension();
-
+        await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.UI), 0);
         await testHelper.switchToWindowHandle(0);
-        await testHelper.changeTabUrl(0, firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
 
-        await navigationHelper.assertOpenedTabsCounter(4);
+        await navigationHelper.assertOpenedTabsCounter(3);
     });
 
     it('Followed tabs counter should indicate the number of followed tab at startup', async () => {
-        await testHelper.reloadExtension();
+        const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
+        await testHelper.openTab(testPage1Url);
+        await testHelper.openTab(testPage1Url);
 
+        const openedTabRowList = await openedTabsHelper.getTabRowList();
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+
+        await testHelper.reloadExtension();
+        await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.UI), 0);
         await testHelper.switchToWindowHandle(0);
-        await testHelper.changeTabUrl(0, firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
 
         await navigationHelper.assertFollowedTabsCounter(1);
     });

@@ -28,8 +28,7 @@ describe('Tab following', () => {
         await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
     });
     after(async () => {
-        await driver.quit();
-        browserInstructionSender.shutdown();
+        await testHelper.shutdown();
     });
 
     it('The no tab row should appear when there is no followed tab', async () => {

@@ -2,6 +2,7 @@ import { By, error as WebDriverError, until, WebDriver, WebElement } from 'selen
 
 import { sleep } from '../../../src/typescript/utils/sleep';
 import { BrowserInstructionSender } from '../browser-instruction-sender';
+import { ExtensionUrl } from '../extension-url';
 import { FirefoxConfig } from '../firefox-config';
 import { ScreenshotTaker } from '../screenshot-taker';
 import { WebDriverRetriever } from '../webdriver-retriever';
@@ -38,6 +39,14 @@ export class TestHelper {
         this.tabFilterTestHelper = new TabFilterTestHelper(this.driver, this.browserInstructionSender, this.screenshotTaker);
     }
 
+    async shutdown() {
+        if (!process.env.KEEP_BROWSER) {
+            await this.driver.quit();
+        }
+
+        await this.browserInstructionSender.shutdown();
+    }
+
     getBrowserInstructionSender() {
         return this.browserInstructionSender;
     }
@@ -64,6 +73,13 @@ export class TestHelper {
 
     getTabFilterHelper() {
         return this.tabFilterTestHelper;
+    }
+
+    async resetBrowserState() {
+        await this.browserInstructionSender.resetBrowserState();
+        await this.reloadExtension();
+        await this.changeTabUrl(0, this.firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
+        await this.switchToWindowHandle(0);
     }
 
     async switchToWindowHandle(windowIndex: number) {
@@ -219,9 +235,21 @@ export class TestHelper {
         }, 10000);
     }
 
+    // TODO use!
     async openTabWithExtensionUrl(url: string, index?: number) {
         const newTabUrl = this.firefoxConfig.getExtensionUrl(url);
         return this.openTab(newTabUrl, index);
+    }
+
+    async restoreRecentlyClosedTab(index: number) {
+        const restoredTabIndex = await this.browserInstructionSender.restoreRecentlyClosedTab(index);
+
+        await this.driver.wait(async () => {
+            const tab = await this.browserInstructionSender.getTab(restoredTabIndex);
+
+            return 'complete' == tab.status;
+        }, 10000);
+        await sleep(500);
     }
 
     async showOpenedTabsList() {

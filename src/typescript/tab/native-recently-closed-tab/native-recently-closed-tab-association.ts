@@ -9,4 +9,17 @@ export class NativeRecentlyClosedTabAssociation {
         public readonly faviconUrl: string,
     ) {
     }
+
+    static fromObject(sourceObject: any): NativeRecentlyClosedTabAssociation {
+        const association = new NativeRecentlyClosedTabAssociation(
+            sourceObject.uniqueId,
+            sourceObject.sessionId,
+            sourceObject.url,
+            sourceObject.faviconUrl,
+        );
+        association.associatedOpenedTabLongLivedId = sourceObject.associatedOpenedTabLongLivedId;
+        association.isIgnored = sourceObject.isIgnored;
+
+        return association;
+    }
 }

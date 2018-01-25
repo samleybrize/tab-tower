@@ -1,6 +1,7 @@
 import { TabClosed } from '../event/tab-closed';
 import { TabOpenState } from '../tab-open-state';
 import { NativeRecentlyClosedTabAssociation } from './native-recently-closed-tab-association';
+import { NativeRecentlyClosedTabAssociationPersister } from './native-recently-closed-tab-association-persister';
 
 export class NativeRecentlyClosedTabAssociationMaintainer {
     private nativeRecentlyClosedTabAssociationList: NativeRecentlyClosedTabAssociation[] = [];
@@ -9,12 +10,12 @@ export class NativeRecentlyClosedTabAssociationMaintainer {
     private reDoRecentlyClosedTabListChange = false;
     private isHandlingClosedTabsAssociation = false;
 
-    constructor() {
+    constructor(private associationPersister: NativeRecentlyClosedTabAssociationPersister) {
         browser.sessions.onChanged.addListener(this.onRecentlyClosedTabListChange.bind(this));
     }
 
     async init() {
-        // TODO get from persister
+        this.nativeRecentlyClosedTabAssociationList = await this.associationPersister.getAll();
         await this.refreshRecentlyClosedTabList(true);
     }
 
@@ -31,6 +32,7 @@ export class NativeRecentlyClosedTabAssociationMaintainer {
         this.reDoRecentlyClosedTabListChange = false;
         this.isHandlingRecentlyClosedTabListChange = true;
         this.nativeRecentlyClosedTabAssociationList = await this.getNativeRecentlyClosedTabList();
+        await this.saveAssociationList();
 
         if (markUnassociatedAsIgnored) {
             this.ignoreUnassociatedRecentlyClosedTabs(this.nativeRecentlyClosedTabAssociationList);
@@ -99,6 +101,10 @@ export class NativeRecentlyClosedTabAssociationMaintainer {
         }
     }
 
+    private async saveAssociationList() {
+        await this.associationPersister.setAll(this.nativeRecentlyClosedTabAssociationList);
+    }
+
     private ignoreUnassociatedRecentlyClosedTabs(associationList: NativeRecentlyClosedTabAssociation[]) {
         for (const association of associationList) {
             if (null == association.associatedOpenedTabLongLivedId) {
@@ -134,7 +140,7 @@ export class NativeRecentlyClosedTabAssociationMaintainer {
         setTimeout(this.associateNextClosedTab.bind(this, 0), 1);
     }
 
-    private associateNextClosedTab(attempt: number) {
+    private async associateNextClosedTab(attempt: number) {
         if (attempt > 50) {
             this.closedTabsToAssociate.shift();
             this.scheduleNextClosedTabAssociation(true);
@@ -155,6 +161,7 @@ export class NativeRecentlyClosedTabAssociationMaintainer {
 
         if (this.isClosedTabMatchesRecentlyClosedTab(closedTab, recentlyClosedTab)) {
             recentlyClosedTab.associatedOpenedTabLongLivedId = closedTab.longLivedId;
+            await this.saveAssociationList();
         }
 
         this.scheduleNextClosedTabAssociation(true);

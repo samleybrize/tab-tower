@@ -70,6 +70,16 @@ export class BrowserInstructionSender {
         this.websocketServer.broadcastUTF(JSON.stringify(message));
     }
 
+    async resetBrowserState() {
+        return new Promise<void>((resolve, reject) => {
+            const messageId = Math.random();
+            this.receiveCallbackMap.set(messageId, (message) => {
+                resolve();
+            });
+            this.send({action: 'reset-browser-state', data: {messageId}});
+        });
+    }
+
     async reloadTab(tabIndex: number, bypassCache?: boolean) {
         return this.send({action: 'reload-tab', data: {tabIndex, bypassCache: !!bypassCache}});
     }
@@ -101,8 +111,18 @@ export class BrowserInstructionSender {
         }});
     }
 
+    async restoreRecentlyClosedTab(index: number) {
+        return new Promise<number>((resolve, reject) => {
+            const messageId = Math.random();
+            this.receiveCallbackMap.set(messageId, (message) => {
+                resolve(message.restoredTabIndex);
+            });
+            this.send({action: 'restore-recently-closed-tab', data: {messageId, index}});
+        });
+    }
+
     async clearRecentlyClosedTabs() {
-        return new Promise<browser.tabs.Tab>((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             const messageId = Math.random();
             this.receiveCallbackMap.set(messageId, (message) => {
                 resolve();
@@ -140,7 +160,7 @@ export class BrowserInstructionSender {
     }
 
     async focusTab(tabIndex: number) {
-        return new Promise<browser.tabs.Tab>((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             const messageId = Math.random();
             this.receiveCallbackMap.set(messageId, (message) => {
                 resolve();
@@ -180,6 +200,16 @@ export class BrowserInstructionSender {
                 resolve(message ? message.tabList : null);
             });
             this.send({action: 'get-all-tabs', data: {messageId}});
+        });
+    }
+
+    async getAllRecentlyClosedTabs(): Promise<browser.sessions.Session[]> {
+        return new Promise<browser.sessions.Session[]>((resolve, reject) => {
+            const messageId = Math.random();
+            this.receiveCallbackMap.set(messageId, (message) => {
+                resolve(message ? message.recentlyClosedTabList : null);
+            });
+            this.send({action: 'get-all-recently-closed-tabs', data: {messageId}});
         });
     }
 }

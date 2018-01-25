@@ -4,8 +4,17 @@ client.onmessage = async (event) => {
     const message = JSON.parse(event.data);
     let targetTabId;
     let tabList: browser.tabs.Tab[];
+    let recentlyClosedTabList: browser.sessions.Session[];
 
     switch (message.action) {
+        case 'reset-browser-state':
+            await closeAllTabs();
+            await clearRecentlyClosedTabs();
+            await browser.storage.local.clear();
+
+            client.send(JSON.stringify({messageId: message.data.messageId}));
+            break;
+
         case 'reload-tab':
             targetTabId = await getTabIdByIndex(message.data.tabIndex);
             await browser.tabs.reload(targetTabId, {bypassCache: message.data.bypassCache});
@@ -58,14 +67,15 @@ client.onmessage = async (event) => {
             await browser.windows.create({incognito: !!message.data.isIncognito, url: message.data.url});
             break;
 
-        case 'clear-recently-closed-tabs':
-            const recentlyClosedTabList = await browser.sessions.getRecentlyClosed();
+        case 'restore-recently-closed-tab':
+            recentlyClosedTabList = await browser.sessions.getRecentlyClosed();
+            const restoredSession = await browser.sessions.restore(recentlyClosedTabList[message.data.index].tab.sessionId);
 
-            for (const recentlyClosedTab of recentlyClosedTabList) {
-                if (recentlyClosedTab.tab) {
-                    await browser.sessions.forgetClosedTab(recentlyClosedTab.tab.windowId, recentlyClosedTab.tab.sessionId);
-                }
-            }
+            client.send(JSON.stringify({messageId: message.data.messageId, restoredTabId: restoredSession.tab.id, restoredTabIndex: restoredSession.tab.index}));
+            break;
+
+        case 'clear-recently-closed-tabs':
+            await clearRecentlyClosedTabs();
 
             client.send(JSON.stringify({messageId: message.data.messageId}));
             break;
@@ -116,6 +126,15 @@ client.onmessage = async (event) => {
                 tabList,
             }));
             break;
+
+        case 'get-all-recently-closed-tabs':
+            recentlyClosedTabList = await browser.sessions.getRecentlyClosed();
+
+            client.send(JSON.stringify({
+                messageId: message.data.messageId,
+                recentlyClosedTabList,
+            }));
+            break;
     }
 };
 
@@ -137,4 +156,27 @@ function sleep(milliseconds: number) {
     return new Promise((resolve) => {
         setTimeout(resolve, milliseconds);
     });
+}
+
+async function closeAllTabs() {
+    const tabList = await browser.tabs.query({});
+    const idList: number[] = [];
+
+    for (const tab of tabList) {
+        idList.push(tab.id);
+    }
+
+    if (idList.length > 0) {
+        await browser.tabs.remove(idList);
+    }
+}
+
+async function clearRecentlyClosedTabs() {
+    const recentlyClosedTabList = await browser.sessions.getRecentlyClosed();
+
+    for (const recentlyClosedTab of recentlyClosedTabList) {
+        if (recentlyClosedTab.tab) {
+            await browser.sessions.forgetClosedTab(recentlyClosedTab.tab.windowId, recentlyClosedTab.tab.sessionId);
+        }
+    }
 }

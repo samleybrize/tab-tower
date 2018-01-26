@@ -112,21 +112,6 @@ describe('Browser recently closed tabs', () => {
         await followedTabsHelper.assertTabOpenIndicatorIsOn(followedTabRowList[0]);
     });
 
-    it('A followed tab should be restored in reader mode when it was so', async () => {
-        await testHelper.openTab(firefoxConfig.getReaderModeTestPageUrl());
-
-        const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await testHelper.enableTabReaderMode(1, openedTabRowList[1]);
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
-        await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
-
-        await testHelper.showFollowedTabsList();
-        const followedTabRowList = await followedTabsHelper.getTabRowList();
-        await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
-
-        await followedTabsHelper.assertTabReaderModeIndicatorIsOn(followedTabRowList[0]);
-    });
-
     it('A restored tab with a privileged url should be associated to the right followed tab and update its state', async () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));

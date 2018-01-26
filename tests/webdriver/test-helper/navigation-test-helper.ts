@@ -2,9 +2,10 @@ import { assert } from 'chai';
 import { By, WebDriver } from 'selenium-webdriver';
 
 import { sleep } from '../../../src/typescript/utils/sleep';
+import { ScreenshotTaker } from '../screenshot-taker';
 
 export class NavigationTestHelper {
-    constructor(private driver: WebDriver) {
+    constructor(private driver: WebDriver, private screenshotTaker: ScreenshotTaker) {
     }
 
     async getOpenedTabsListElement() {
@@ -53,6 +54,31 @@ export class NavigationTestHelper {
 
             return actualCounter > counterBefore;
         });
+    }
+
+    async changeShownNumberOfOpenedTabs(newNumber: number) {
+        await this.driver.executeScript(`
+            const element = document.querySelector('#header .openedTabs .counter');
+
+            if (element) {
+                element.innerText = '${newNumber}';
+            }
+        `);
+    }
+
+    async changeShownNumberOfFollowedTabs(newNumber: number) {
+        await this.driver.executeScript(`
+            const element = document.querySelector('#header .followedTabs .counter');
+
+            if (element) {
+                element.innerText = '${newNumber}';
+            }
+        `);
+    }
+
+    async takeHeaderScreenshot(screenshotIdentifier: string) {
+        const headerElement = this.driver.findElement(By.css('#header'));
+        await this.screenshotTaker.take(screenshotIdentifier, headerElement);
     }
 
     async assertBreadcrumbText(expectedText: string) {

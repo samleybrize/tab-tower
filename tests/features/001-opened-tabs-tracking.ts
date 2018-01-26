@@ -74,25 +74,6 @@ describe('Opened tabs tracking', () => {
         await openedTabsHelper.assertTabFaviconUrl(openedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.DEFAULT_FAVICON));
     });
 
-    it('Reader mode should be shown in the opened tabs list when enabled', async () => {
-        await testHelper.openTab(firefoxConfig.getReaderModeTestPageUrl());
-
-        const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await testHelper.enableTabReaderMode(1, openedTabRowList[1]);
-
-        await openedTabsHelper.assertTabReaderModeIndicatorIsOn(openedTabRowList[1]);
-    });
-
-    it('Reader mode should not be shown in the opened tabs list when disabled', async () => {
-        await testHelper.openTab(firefoxConfig.getReaderModeTestPageUrl());
-
-        const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await testHelper.enableTabReaderMode(1, openedTabRowList[1]);
-        await testHelper.disableTabReaderMode(1, openedTabRowList[1]);
-
-        await openedTabsHelper.assertTabReaderModeIndicatorIsOff(openedTabRowList[1]);
-    });
-
     it('Opened tab should be removed from opened tabs list when closed', async () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
         await testHelper.closeTab(1);
@@ -192,23 +173,6 @@ describe('Opened tabs tracking', () => {
         await openedTabsHelper.assertTabFaviconUrl(openedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_2));
         await openedTabsHelper.assertTabUrl(openedTabRowList[2], uiUrl);
         await openedTabsHelper.assertTabFaviconUrl(openedTabRowList[2], firefoxConfig.getExtensionUrl(ExtensionUrl.EXTENSION_FAVICON));
-    });
-
-    it('Should show opened tabs with reader mode enabled at startup', async () => {
-        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
-        await testHelper.openTab(firefoxConfig.getReaderModeTestPageUrl());
-
-        const currentOpenedTabRowList = await openedTabsHelper.getTabRowList();
-        await testHelper.enableTabReaderMode(2, currentOpenedTabRowList[2]);
-
-        await testHelper.reloadExtension();
-
-        await testHelper.openIgnoredTab(uiUrl, 2);
-        await testHelper.focusTab(2);
-        await testHelper.switchToWindowHandle(2);
-
-        const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.assertTabReaderModeIndicatorIsOn(newOpenedTabRowList[1]);
     });
 
     it('Incognito tabs should not be shown in the opened tabs list', async () => {

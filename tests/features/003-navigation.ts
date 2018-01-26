@@ -42,6 +42,8 @@ describe('Navigation', () => {
         await navigationHelper.assertOpenedTabsListIsNotVisible();
         await navigationHelper.assertFollowedTabsListIsVisible();
         await navigationHelper.assertBreadcrumbText('Followed tabs');
+
+        await navigationHelper.takeHeaderScreenshot('navigation-followed-button-clicked');
     });
 
     it('Opened tabs list should be shown when clicking on the opened tabs button', async () => {
@@ -51,6 +53,8 @@ describe('Navigation', () => {
         await navigationHelper.assertOpenedTabsListIsVisible();
         await navigationHelper.assertFollowedTabsListIsNotVisible();
         await navigationHelper.assertBreadcrumbText('Opened tabs');
+
+        await navigationHelper.takeHeaderScreenshot('navigation-opened-button-clicked');
     });
 
     it('Opened tabs counter should indicate 1 when there is no opened tab', async () => {
@@ -133,5 +137,17 @@ describe('Navigation', () => {
         await testHelper.switchToWindowHandle(0);
 
         await navigationHelper.assertFollowedTabsCounter(1);
+    });
+
+    it('State of the opened tabs button with 999 tabs', async () => {
+        await navigationHelper.changeShownNumberOfOpenedTabs(999);
+
+        await navigationHelper.takeHeaderScreenshot('navigation-opened-button-with-999-tabs');
+    });
+
+    it('State of the followed tabs button with 999 tabs', async () => {
+        await navigationHelper.changeShownNumberOfFollowedTabs(999);
+
+        await navigationHelper.takeHeaderScreenshot('navigation-followed-button-with-999-tabs');
     });
 });

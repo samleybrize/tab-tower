@@ -35,7 +35,7 @@ export class TestHelper {
         const tabsTestHelper = new TabsTestHelper(this.driver, this.browserInstructionSender);
         this.openedTabsTestHelper = new OpenedTabsTestHelper(tabsTestHelper, this.driver, this.browserInstructionSender);
         this.followedTabsTestHelper = new FollowedTabsTestHelper(tabsTestHelper, this.driver, this.browserInstructionSender);
-        this.navigationTestHelper = new NavigationTestHelper(this.driver);
+        this.navigationTestHelper = new NavigationTestHelper(this.driver, this.screenshotTaker);
         this.tabFilterTestHelper = new TabFilterTestHelper(this.driver, this.browserInstructionSender, this.screenshotTaker);
     }
 
@@ -233,12 +233,6 @@ export class TestHelper {
 
             return !isOnIndicatorVisible && isOffIndicatorVisible;
         }, 10000);
-    }
-
-    // TODO use!
-    async openTabWithExtensionUrl(url: string, index?: number) {
-        const newTabUrl = this.firefoxConfig.getExtensionUrl(url);
-        return this.openTab(newTabUrl, index);
     }
 
     async restoreRecentlyClosedTab(index: number) {

@@ -123,35 +123,6 @@ describe('Tab following', () => {
         await followedTabsHelper.assertUnfollowButtonIsVisible(followedTabRowList[0]);
     });
 
-    it('Reader mode status of a followed tab should be updated when enabling reader mode on its associated opened tab', async () => {
-        await testHelper.openTab(firefoxConfig.getReaderModeTestPageUrl());
-
-        const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
-
-        await testHelper.showFollowedTabsList();
-        const followedTabRowList = await followedTabsHelper.getTabRowList();
-        await testHelper.enableTabReaderMode(1, followedTabRowList[0]);
-
-        await followedTabsHelper.assertTabReaderModeIndicatorIsOn(followedTabRowList[0]);
-        await followedTabsHelper.assertReaderModeTestPageTitle(followedTabRowList[0]);
-    });
-
-    it('Reader mode status of a followed tab should be updated when disabling reader mode on its associated opened tab', async () => {
-        await testHelper.openTab(firefoxConfig.getReaderModeTestPageUrl());
-
-        const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
-        await testHelper.enableTabReaderMode(1, openedTabRowList[1]);
-
-        await testHelper.showFollowedTabsList();
-        const followedTabRowList = await followedTabsHelper.getTabRowList();
-        await testHelper.disableTabReaderMode(1, followedTabRowList[0]);
-
-        await followedTabsHelper.assertTabReaderModeIndicatorIsOff(followedTabRowList[0]);
-        await followedTabsHelper.assertReaderModeTestPageTitle(followedTabRowList[0]);
-    });
-
     it('Tab unfollowed from the opened tabs list should be removed from the followed tabs list', async () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
@@ -278,25 +249,6 @@ describe('Tab following', () => {
         await openedTabsHelper.assertNumberOfTabs(2);
     });
 
-    it('A click on a followed tab with reader mode enabled that is closed should open it in reader mode', async () => {
-        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
-        await testHelper.openTab(firefoxConfig.getReaderModeTestPageUrl());
-
-        const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
-
-        await testHelper.enableTabReaderMode(2, openedTabRowList[2]);
-        await testHelper.closeTab(2);
-        await browserInstructionSender.clearRecentlyClosedTabs();
-
-        await testHelper.showFollowedTabsList();
-        const followedTabRowList = await followedTabsHelper.getTabRowList();
-        await followedTabsHelper.clickOnTabTitle(followedTabRowList[1]);
-
-        await followedTabsHelper.assertTabReaderModeIndicatorIsOn(followedTabRowList[1]);
-    });
-
     it('A click on a followed tab that is opened should focus the associated opened tab', async () => {
         await testHelper.openTab(null);
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
@@ -405,7 +357,6 @@ describe('Tab following', () => {
         await followedTabsHelper.assertTabFaviconUrl(followedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_1));
     });
 
-    // TODO
     it('A followed tab should be updated to the last non-privileged url when its associated opened tab is closed (with click on previous button)', async () => {
         const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
         await testHelper.openTab(testPage1Url);
@@ -467,33 +418,6 @@ describe('Tab following', () => {
         await followedTabsHelper.assertTabFaviconUrl(newFollowedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_2));
     });
 
-    it('Should show followed tabs with reader mode enabled at startup', async () => {
-        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
-        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
-        await testHelper.openTab(firefoxConfig.getReaderModeTestPageUrl());
-
-        const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[3]);
-        await testHelper.enableTabReaderMode(3, openedTabRowList[3]);
-
-        await testHelper.closeTab(1);
-        await testHelper.closeTab(3);
-        await browserInstructionSender.clearRecentlyClosedTabs();
-        await testHelper.reloadExtension();
-
-        await testHelper.switchToWindowHandle(0);
-        await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
-
-        await testHelper.showFollowedTabsList();
-        const followedTabRowList = await followedTabsHelper.getTabRowList();
-        await followedTabsHelper.assertTabReaderModeIndicatorIsOff(followedTabRowList[0]);
-        await followedTabsHelper.assertTabReaderModeIndicatorIsOff(followedTabRowList[1]);
-        await followedTabsHelper.assertReaderModeTestPageTitle(followedTabRowList[2]);
-        await followedTabsHelper.assertTabReaderModeIndicatorIsOn(followedTabRowList[2]);
-    });
-
     it('Should show followed tabs associated to opened tabs at startup', async () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
@@ -521,30 +445,5 @@ describe('Tab following', () => {
         await followedTabsHelper.clickOnTabTitle(newFollowedTabRowList[1]);
         activeTab = await browserInstructionSender.getActiveTab();
         assert.equal(activeTab.index, 1);
-    });
-
-    it('Should show followed tabs associated to opened tabs with reader mode enabled at startup', async () => {
-        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
-        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
-
-        const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
-
-        await testHelper.changeTabUrl(2, firefoxConfig.getReaderModeTestPageUrl());
-        await testHelper.enableTabReaderMode(2, openedTabRowList[2]);
-
-        await testHelper.openTab(null, 0);
-        await testHelper.reloadExtension();
-        await testHelper.switchToWindowHandle(0);
-        await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
-
-        await testHelper.showFollowedTabsList();
-        const followedTabRowList = await followedTabsHelper.getTabRowList();
-        await followedTabsHelper.assertReaderModeTestPageTitle(followedTabRowList[0]);
-        await followedTabsHelper.assertTabOpenIndicatorIsOn(followedTabRowList[0]);
-        await followedTabsHelper.assertTabReaderModeIndicatorIsOn(followedTabRowList[0]);
-        await followedTabsHelper.assertTabOpenIndicatorIsOn(followedTabRowList[1]);
-        await followedTabsHelper.assertTabReaderModeIndicatorIsOff(followedTabRowList[1]);
     });
 });

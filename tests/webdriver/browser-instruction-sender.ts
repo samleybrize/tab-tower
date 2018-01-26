@@ -88,6 +88,16 @@ export class BrowserInstructionSender {
         return this.send({action: 'open-tab', data: {url, index}});
     }
 
+    async duplicateTab(index: number): Promise<browser.tabs.Tab> {
+        return new Promise<browser.tabs.Tab>((resolve, reject) => {
+            const messageId = Math.random();
+            this.receiveCallbackMap.set(messageId, (message) => {
+                resolve(message ? message.newTab : null);
+            });
+            this.send({action: 'duplicate-tab', data: {messageId, tabIndex: index}});
+        });
+    }
+
     async closeTab(tabIndex: number) {
         return this.send({action: 'close-tab', data: {tabIndex}});
     }

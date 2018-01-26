@@ -112,6 +112,11 @@ export class TabsTestHelper {
         assert.isTrue(isUnfollowButtonDisplayed);
     }
 
+    async assertUnfollowButtonIsNotVisible(tabRow: WebElement) {
+        const isUnfollowButtonDisplayed = await this.getUnfollowButton(tabRow).isDisplayed();
+        assert.isFalse(isUnfollowButtonDisplayed);
+    }
+
     async assertCloseButtonIsVisible(tabRow: WebElement) {
         const isCloseButtonDisplayed = await this.getCloseButton(tabRow).isDisplayed();
         assert.isTrue(isCloseButtonDisplayed);

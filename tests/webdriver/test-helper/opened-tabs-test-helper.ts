@@ -157,6 +157,10 @@ export class OpenedTabsTestHelper {
         return this.tabsTestHelper.assertUnfollowButtonIsVisible(tabRow);
     }
 
+    async assertUnfollowButtonIsNotVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertUnfollowButtonIsNotVisible(tabRow);
+    }
+
     async assertFollowButtonIsDisabled(tabRow: WebElement) {
         const followButton = await this.getFollowButton(tabRow);
         const followButtonClasses = ('' + await followButton.getAttribute('class')).split(' ');

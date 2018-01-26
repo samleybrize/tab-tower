@@ -47,8 +47,10 @@ describe('Tab following', () => {
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.assertFollowButtonIsVisible(openedTabRowList[0]);
         await openedTabsHelper.assertFollowButtonIsDisabled(openedTabRowList[0]);
+        await openedTabsHelper.assertUnfollowButtonIsNotVisible(openedTabRowList[0]);
         await openedTabsHelper.assertFollowButtonIsVisible(openedTabRowList[1]);
         await openedTabsHelper.assertFollowButtonIsNotDisabled(openedTabRowList[1]);
+        await openedTabsHelper.assertUnfollowButtonIsNotVisible(openedTabRowList[1]);
     });
 
     it('Followed tabs should be shown in the followed tabs list', async () => {
@@ -74,12 +76,14 @@ describe('Tab following', () => {
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.assertFollowButtonIsVisible(openedTabRowList[1]);
         await openedTabsHelper.assertFollowButtonIsDisabled(openedTabRowList[1]);
+        await openedTabsHelper.assertUnfollowButtonIsNotVisible(openedTabRowList[0]);
     });
 
     it('Opened tabs with an ignored url should not be followable', async () => {
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.assertFollowButtonIsVisible(openedTabRowList[0]);
         await openedTabsHelper.assertFollowButtonIsDisabled(openedTabRowList[0]);
+        await openedTabsHelper.assertUnfollowButtonIsNotVisible(openedTabRowList[0]);
     });
 
     it("Title, url and favicon should be updated when associated opened tab's url change", async () => {
@@ -381,6 +385,23 @@ describe('Tab following', () => {
         await followedTabsHelper.assertTabTitle(followedTabRowList[1], 'Test page 2');
         await followedTabsHelper.assertTabUrl(followedTabRowList[1], testPage2Url);
         await followedTabsHelper.assertTabFaviconUrl(followedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_2));
+    });
+
+    it('A duplicated tab should never be followed', async () => {
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+        const openedTabRowList = await openedTabsHelper.getTabRowList();
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+
+        await testHelper.duplicateTab(1);
+
+        const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
+        await openedTabsHelper.assertFollowButtonIsVisible(newOpenedTabRowList[2]);
+        await openedTabsHelper.assertFollowButtonIsNotDisabled(newOpenedTabRowList[2]);
+        await openedTabsHelper.assertUnfollowButtonIsNotVisible(newOpenedTabRowList[2]);
+
+        await testHelper.showFollowedTabsList();
+        await followedTabsHelper.assertNumberOfTabs(1);
     });
 
     it('Should show followed tabs at startup', async () => {

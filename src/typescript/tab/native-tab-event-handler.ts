@@ -37,7 +37,7 @@ export class NativeTabEventHandler {
 
     async onNativeTabCreate(nativeTab: browser.tabs.Tab) {
         await this.tabOpener.waitForNewTabLoad(nativeTab.id);
-        const tabOpenState = await this.openedTabRetriever.getStillOpenedById(nativeTab.id);
+        const tabOpenState = await this.openedTabRetriever.getStillOpenedById(nativeTab.id, true);
 
         if (tabOpenState) {
             this.eventBus.publish(new TabOpened(tabOpenState));

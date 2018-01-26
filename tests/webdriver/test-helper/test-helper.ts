@@ -133,6 +133,19 @@ export class TestHelper {
         }, 3000);
     }
 
+    async duplicateTab(index: number) {
+        const activeTab = await this.browserInstructionSender.getActiveTab();
+        const newTabId = await this.browserInstructionSender.duplicateTab(index);
+        await this.driver.wait(async () => {
+            const tab = await this.browserInstructionSender.getTab(newTabId.index);
+
+            if (tab && 'complete' == tab.status) {
+                return true;
+            }
+        }, 10000);
+        await this.focusTab(activeTab.index);
+    }
+
     async closeTab(tabIndex: number) {
         const openedTabRow = await this.openedTabsTestHelper.getTabRowByTabIndex(tabIndex);
         const openedTabId = openedTabRow ? +await openedTabRow.getAttribute('data-tab-id') : null;
@@ -172,7 +185,7 @@ export class TestHelper {
     }
 
     async focusTab(tabIndex: number) {
-        await this.browserInstructionSender.focusTab(0);
+        await this.browserInstructionSender.focusTab(tabIndex);
     }
 
     async moveTab(fromIndex: number, toIndex: number) {

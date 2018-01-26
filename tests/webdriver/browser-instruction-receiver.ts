@@ -30,6 +30,13 @@ client.onmessage = async (event) => {
             await browser.tabs.create({url, active: !!message.data.active, index: message.data.index});
             break;
 
+        case 'duplicate-tab':
+            const tabIdToDuplicate = await getTabIdByIndex(message.data.tabIndex);
+            const newTab = await browser.tabs.duplicate(tabIdToDuplicate);
+
+            client.send(JSON.stringify({messageId: message.data.messageId, newTab}));
+            break;
+
         case 'close-tab':
             targetTabId = await getTabIdByIndex(message.data.tabIndex);
             await browser.tabs.remove(targetTabId);

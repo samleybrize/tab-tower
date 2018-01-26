@@ -12,6 +12,7 @@ import { TabOpenState } from './tab-open-state';
 
 export class OpenedTabRetriever {
     private openedTabMap = new Map<number, TabOpenState>();
+    private longLivedIdMap = new Map<string, number>();
 
     constructor(private privilegedUrlDetector: PrivilegedUrlDetector, private ignoreUrlsThatStartWith: string[]) {
     }
@@ -30,6 +31,7 @@ export class OpenedTabRetriever {
 
     async onTabOpen(event: TabOpened) {
         this.openedTabMap.set(event.tabOpenState.id, event.tabOpenState);
+        this.longLivedIdMap.set(event.tabOpenState.longLivedId, event.tabOpenState.id);
     }
 
     async onTabMove(event: OpenedTabMoved) {
@@ -74,6 +76,7 @@ export class OpenedTabRetriever {
 
     async onTabClose(event: TabClosed) {
         this.openedTabMap.delete(event.closedTab.id);
+        this.longLivedIdMap.delete(event.closedTab.longLivedId);
     }
 
     async getAllStillOpened(): Promise<TabOpenState[]> {
@@ -100,19 +103,29 @@ export class OpenedTabRetriever {
         }
 
         const {url, isInReaderMode} = this.getUrlAndReaderModeState(rawTab);
-        const tab = new TabOpenState();
-        tab.id = rawTab.id;
-        tab.longLivedId = await this.getTabLongLivedId(rawTab.id);
-        tab.index = rawTab.index;
-        tab.title = rawTab.title;
-        tab.isIncognito = rawTab.incognito;
-        tab.isInReaderMode = isInReaderMode;
-        tab.url = url;
-        tab.faviconUrl = rawTab.favIconUrl;
-        tab.isPrivileged = this.privilegedUrlDetector.isPrivileged(url, isInReaderMode);
-        tab.isIgnored = this.isUrlIgnored(rawTab.url);
+        const tabOpenState = new TabOpenState();
+        tabOpenState.id = rawTab.id;
+        tabOpenState.longLivedId = await this.getTabLongLivedId(rawTab.id, false);
+        tabOpenState.index = rawTab.index;
+        tabOpenState.title = rawTab.title;
+        tabOpenState.isIncognito = rawTab.incognito;
+        tabOpenState.isInReaderMode = isInReaderMode;
+        tabOpenState.url = url;
+        tabOpenState.faviconUrl = rawTab.favIconUrl;
+        tabOpenState.isPrivileged = this.privilegedUrlDetector.isPrivileged(url, isInReaderMode);
+        tabOpenState.isIgnored = this.isUrlIgnored(rawTab.url);
 
-        return tab;
+        await this.assignNewLongLivedIdIfTabIsDuplicate(tabOpenState);
+
+        return tabOpenState;
+    }
+
+    private async assignNewLongLivedIdIfTabIsDuplicate(tabOpenState: TabOpenState) {
+        const tabIdCorrespondingToLongLivedId = this.longLivedIdMap.get(tabOpenState.longLivedId);
+
+        if (tabIdCorrespondingToLongLivedId && tabOpenState.id != tabIdCorrespondingToLongLivedId) {
+            tabOpenState.longLivedId = await this.getTabLongLivedId(tabOpenState.id, true);
+        }
     }
 
     private isUrlIgnored(url: string) {
@@ -138,10 +151,10 @@ export class OpenedTabRetriever {
         return {url, isInReaderMode};
     }
 
-    private async getTabLongLivedId(tabId: number): Promise<string> {
+    private async getTabLongLivedId(tabId: number, alwaysRegenerate: boolean): Promise<string> {
         let longLivedId = await browser.sessions.getTabValue(tabId, 'longLivedId');
 
-        if ('string' != typeof longLivedId) {
+        if (alwaysRegenerate || 'string' != typeof longLivedId) {
             longLivedId = uuid.v1();
             await browser.sessions.setTabValue(tabId, 'longLivedId', longLivedId);
         }
@@ -149,7 +162,7 @@ export class OpenedTabRetriever {
         return longLivedId;
     }
 
-    async getStillOpenedById(id: number): Promise<TabOpenState> {
+    async getStillOpenedById(id: number, checkIfIsDuplicate?: boolean): Promise<TabOpenState> {
         let rawTab: browser.tabs.Tab;
 
         try {

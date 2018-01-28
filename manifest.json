@@ -5,7 +5,9 @@
     "description": "Description",
     "applications": {
         "gecko": {
-            "id": "tab-tower@stephen.berquet"
+            "id": "tab-tower@stephen.berquet",
+            "strict_min_version": "57.0",
+            "strict_max_version": "58.9"
         }
     },
     "icons": {

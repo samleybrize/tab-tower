@@ -169,6 +169,10 @@ describe('Browser recently closed tabs', () => {
         assert.strictEqual(focusedTab.index, 0);
     });
 
+    xit('Restoring a tab from the browser then clicking on a followed tab should not open it twice', async () => {
+        // TODO restore a rct without await, click on followed tab title without await, sleep 1000ms
+    });
+
     it('After a restart, a recently closed tab restored from the browser should be associated to its followed tab', async () => {
         const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
         const testPage2Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2);

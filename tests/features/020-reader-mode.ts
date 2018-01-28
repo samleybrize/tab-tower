@@ -173,6 +173,10 @@ describe('Reader mode', () => {
             await followedTabsHelper.assertTabOpenIndicatorIsOn(followedTabRowList[1]);
             await followedTabsHelper.assertTabReaderModeIndicatorIsOff(followedTabRowList[1]);
         });
+
+        xit('Should show followed tabs associated to opened tabs with reader mode enabled at startup', async () => {
+            // TODO follow a tab in reader mode, modify the webstorage value, reload extension
+        });
     });
 
     describe('Browser recently closed tabs', () => {
@@ -189,6 +193,10 @@ describe('Reader mode', () => {
             await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
 
             await followedTabsHelper.assertTabReaderModeIndicatorIsOn(followedTabRowList[0]);
+        });
+
+        xit('Should update associated followed tab reader mode indicator when a recently closed tab is restored from the browser', async () => {
+            // TODO follow a tab in reader mode, close it, modify the webstorage value, restore it from the browser
         });
     });
 });

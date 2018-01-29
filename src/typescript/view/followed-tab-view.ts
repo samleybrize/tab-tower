@@ -2,7 +2,7 @@ import { CommandBus } from '../bus/command-bus';
 import { QueryBus } from '../bus/query-bus';
 import { CloseTab } from '../tab/command/close-tab';
 import { FocusTab } from '../tab/command/focus-tab';
-import { OpenTab } from '../tab/command/open-tab';
+import { RestoreFollowedTab } from '../tab/command/restore-followed-tab';
 import { UnfollowTab } from '../tab/command/unfollow-tab';
 import { OpenedTabAssociatedToFollowedTab } from '../tab/event/opened-tab-associated-to-followed-tab';
 import { OpenedTabFaviconUrlUpdated } from '../tab/event/opened-tab-favicon-url-updated';
@@ -170,7 +170,7 @@ export class FollowedTabView {
                 row.setAttribute('data-is-opening-tab', '1');
                 const url = row.getAttribute('data-url');
                 const readerMode = !!row.getAttribute('data-reader-mode');
-                this.commandBus.handle(new OpenTab(url, readerMode, tab.followState.id));
+                this.commandBus.handle(new RestoreFollowedTab(tab.followState.id));
             }
         });
         linkElement.querySelector('img').addEventListener('error', (event) => {

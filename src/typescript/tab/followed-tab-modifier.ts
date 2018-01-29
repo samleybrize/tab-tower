@@ -84,15 +84,6 @@ export class FollowedTabModifier {
         }
     }
 
-    async onTabClose(event: TabClosed): Promise<void> {
-        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.closedTab.id);
-
-        if (followId) {
-            // TODO will not work when a closed tab is restored
-            // await this.tabPersister.setOpenLongLivedId(followId, null);
-        }
-    }
-
     async onOpenedTabFaviconUrlUpdate(event: OpenedTabFaviconUrlUpdated): Promise<void> {
         if (event.tabOpenState.isPrivileged) {
             return;

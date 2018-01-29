@@ -1,11 +1,12 @@
 import { EventBus } from '../bus/event-bus';
 import { sleep } from '../utils/sleep';
-import { OpenTab } from './command/open-tab';
+import { RestoreFollowedTab } from './command/restore-followed-tab';
 import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';
 import { FollowedTabRetriever } from './followed-tab-retriever';
 import { NativeRecentlyClosedTabAssociationMaintainer } from './native-recently-closed-tab/native-recently-closed-tab-association-maintainer';
 import { OpenedTabRetriever } from './opened-tab-retriever';
 import { TabAssociationMaintainer } from './tab-association-maintainer';
+import { TabFollowState } from './tab-follow-state';
 
 export class TabOpener {
     constructor(
@@ -17,49 +18,54 @@ export class TabOpener {
     ) {
     }
 
-    async openTab(command: OpenTab) {
-        let openedTab: browser.tabs.Tab = null;
-
-        if (command.followId) {
-            const followState = await this.followedTabRetriever.getById(command.followId);
-            const sessionId = this.nativeRecentlyClosedTabAssociationMaintainer.getSessionIdAssociatedToOpenLongLivedId(followState.openLongLivedId);
-
-            if (null != sessionId) {
-                const targetIndex = (await browser.tabs.query({})).length;
-                const activeTab = (await browser.tabs.query({active: true})).shift();
-                const session = await browser.sessions.restore(sessionId);
-                await browser.tabs.update(activeTab.id, {active: true});
-                await browser.tabs.move(session.tab.id, {index: targetIndex});
-                openedTab = session.tab;
-            }
-        }
+    async restoreFollowedTab(command: RestoreFollowedTab) {
+        const followState = await this.followedTabRetriever.getById(command.followId);
+        let openedTab: browser.tabs.Tab = await this.restoreFromRecentlyClosedTabs(followState);
 
         if (null == openedTab) {
-            const createTabOptions: browser.tabs.CreateProperties = {
-                active: false,
-                url: command.url,
-            };
-
-            if (browser.tabs.toggleReaderMode) {
-                createTabOptions.openInReaderMode = command.readerMode;
-            }
-
-            openedTab = await browser.tabs.create(createTabOptions);
+            openedTab = await this.restoreFromNewTab(followState);
         }
 
         await this.waitForNewTabLoad(openedTab.id);
-
         this.associateNewTabToFollowedTab(command, openedTab);
     }
 
-    private async associateNewTabToFollowedTab(openTabCommand: OpenTab, openedTab: browser.tabs.Tab) {
-        if (openTabCommand.followId) {
-            const tabFollowState = await this.followedTabRetriever.getById(openTabCommand.followId);
-            const tabOpenState = await this.openedTabRetriever.getStillOpenedById(openedTab.id);
+    private async restoreFromRecentlyClosedTabs(followState: TabFollowState) {
+        const sessionId = this.nativeRecentlyClosedTabAssociationMaintainer.getSessionIdAssociatedToOpenLongLivedId(followState.openLongLivedId);
 
-            this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(openedTab.id, openTabCommand.followId);
-            this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(tabOpenState, tabFollowState));
+        if (null != sessionId) {
+            const targetIndex = (await browser.tabs.query({})).length;
+            const activeTab = (await browser.tabs.query({active: true})).shift();
+            const session = await browser.sessions.restore(sessionId);
+
+            await browser.tabs.update(activeTab.id, {active: true});
+            await browser.tabs.move(session.tab.id, {index: targetIndex});
+
+            return session.tab;
         }
+
+        return null;
+    }
+
+    private async restoreFromNewTab(followState: TabFollowState) {
+        const createTabOptions: browser.tabs.CreateProperties = {
+            active: false,
+            url: followState.url,
+        };
+
+        if (browser.tabs.toggleReaderMode) {
+            createTabOptions.openInReaderMode = followState.isInReaderMode;
+        }
+
+        return await browser.tabs.create(createTabOptions);
+    }
+
+    private async associateNewTabToFollowedTab(openTabCommand: RestoreFollowedTab, openedTab: browser.tabs.Tab) {
+        const tabFollowState = await this.followedTabRetriever.getById(openTabCommand.followId);
+        const tabOpenState = await this.openedTabRetriever.getStillOpenedById(openedTab.id);
+
+        this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(openedTab.id, openTabCommand.followId);
+        this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(tabOpenState, tabFollowState));
     }
 
     async waitForNewTabLoad(tabId: number) {

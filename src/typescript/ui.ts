@@ -13,7 +13,7 @@ import { SendMessageQueryHandler } from './message/sender/send-message-query-han
 import { CloseTab } from './tab/command/close-tab';
 import { FocusTab } from './tab/command/focus-tab';
 import { FollowTab } from './tab/command/follow-tab';
-import { OpenTab } from './tab/command/open-tab';
+import { RestoreFollowedTab } from './tab/command/restore-followed-tab';
 import { tabCommands } from './tab/command/tab-commands';
 import { UnfollowTab } from './tab/command/unfollow-tab';
 import { OpenedTabAssociatedToFollowedTab } from './tab/event/opened-tab-associated-to-followed-tab';
@@ -78,7 +78,7 @@ async function main() {
     commandBus.register(CloseTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(FocusTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(FollowTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
-    commandBus.register(OpenTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
+    commandBus.register(RestoreFollowedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(UnfollowTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
 
     queryBus.register(GetFollowedTabs, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);

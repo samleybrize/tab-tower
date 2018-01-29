@@ -1,6 +1,11 @@
 import { sleep } from '../utils/sleep';
+import { CloseTab } from './command/close-tab';
 
 export class TabCloser {
+    async closeTab(command: CloseTab) {
+        browser.tabs.remove(command.tabId);
+    }
+
     async waitForTabClose(tabId: number) {
         const maxRetries = 300;
 

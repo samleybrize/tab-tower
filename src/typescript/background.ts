@@ -13,7 +13,7 @@ import { SendMessageQueryHandler } from './message/sender/send-message-query-han
 import { CloseTab } from './tab/command/close-tab';
 import { FocusTab } from './tab/command/focus-tab';
 import { FollowTab } from './tab/command/follow-tab';
-import { OpenTab } from './tab/command/open-tab';
+import { RestoreFollowedTab } from './tab/command/restore-followed-tab';
 import { tabCommands } from './tab/command/tab-commands';
 import { UnfollowTab } from './tab/command/unfollow-tab';
 import { OpenedTabAssociatedToFollowedTab } from './tab/event/opened-tab-associated-to-followed-tab';
@@ -33,7 +33,6 @@ import { FollowedTabRetriever } from './tab/followed-tab-retriever';
 import { NativeRecentlyClosedTabAssociationMaintainer } from './tab/native-recently-closed-tab/native-recently-closed-tab-association-maintainer';
 import { WebStoragePersister as WebStorageNativeRecentlyClosedTabAssociationPersister } from './tab/native-recently-closed-tab/web-storage-persister';
 import { NativeTabEventHandler } from './tab/native-tab-event-handler';
-import { OpenedTabModifier } from './tab/opened-tab-modifier';
 import { OpenedTabRetriever } from './tab/opened-tab-retriever';
 import { InMemoryTabPersister } from './tab/persister/in-memory-tab-persister';
 import { WebStorageTabPersister } from './tab/persister/web-storage-tab-persister';
@@ -45,6 +44,7 @@ import { GetTabByOpenId } from './tab/query/get-tab-by-open-id';
 import { tabQueries } from './tab/query/tab-queries';
 import { TabAssociationMaintainer } from './tab/tab-association-maintainer';
 import { TabCloser } from './tab/tab-closer';
+import { TabFocuser } from './tab/tab-focuser';
 import { TabOpener } from './tab/tab-opener';
 import { TabRetriever } from './tab/tab-retriever';
 import { ObjectUnserializer } from './utils/object-unserializer';
@@ -64,7 +64,7 @@ async function main() {
     const nativeRecentlyClosedTabAssociationMaintainer = new NativeRecentlyClosedTabAssociationMaintainer(nativeRecentlyClosedTabAssociationPersister);
     const followedTabModifier = new FollowedTabModifier(inMemoryTabPersister, tabAssociationMaintainer, eventBus);
     const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
-    const openedTabModifier = new OpenedTabModifier();
+    const tabFocuser = new TabFocuser();
     const openedTabRetriever = new OpenedTabRetriever(privilegedUrlDetector, [uiUrlStartWith]);
     const tabOpener = new TabOpener(openedTabRetriever, followedTabRetriever, tabAssociationMaintainer, nativeRecentlyClosedTabAssociationMaintainer, eventBus);
     const tabCloser = new TabCloser();
@@ -93,10 +93,10 @@ async function main() {
     const nativeEventHandler = new NativeTabEventHandler(eventBus, openedTabRetriever, tabCloser, tabOpener);
     nativeEventHandler.init();
 
-    commandBus.register(CloseTab, openedTabModifier.closeTab, followedTabModifier);
-    commandBus.register(FocusTab, openedTabModifier.focusTab, followedTabModifier);
+    commandBus.register(CloseTab, tabCloser.closeTab, followedTabModifier);
+    commandBus.register(FocusTab, tabFocuser.focusTab, followedTabModifier);
     commandBus.register(FollowTab, followedTabModifier.followTab, followedTabModifier);
-    commandBus.register(OpenTab, tabOpener.openTab, tabOpener);
+    commandBus.register(RestoreFollowedTab, tabOpener.restoreFollowedTab, tabOpener);
     commandBus.register(UnfollowTab, followedTabModifier.unfollowTab, followedTabModifier);
 
     queryBus.register(GetFollowedTabs, tabRetriever.queryFollowedTabs, tabRetriever);
@@ -104,7 +104,6 @@ async function main() {
     queryBus.register(GetTabByFollowId, tabRetriever.queryByFollowId, tabRetriever);
     queryBus.register(GetTabByOpenId, tabRetriever.queryByOpenId, tabRetriever);
 
-    eventBus.subscribe(TabClosed, followedTabModifier.onTabClose, followedTabModifier);
     eventBus.subscribe(TabClosed, nativeRecentlyClosedTabAssociationMaintainer.onTabClose, nativeRecentlyClosedTabAssociationMaintainer);
     eventBus.subscribe(TabClosed, openedTabRetriever.onTabClose, openedTabRetriever);
     eventBus.subscribe(TabClosed, sendMessageEventHandler.onEvent, sendMessageEventHandler);

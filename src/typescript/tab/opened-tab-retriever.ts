@@ -114,6 +114,7 @@ export class OpenedTabRetriever {
         tabOpenState.faviconUrl = rawTab.favIconUrl;
         tabOpenState.isPrivileged = this.privilegedUrlDetector.isPrivileged(url, isInReaderMode);
         tabOpenState.isIgnored = this.isUrlIgnored(rawTab.url);
+        tabOpenState.lastAccess = new Date(rawTab.lastAccessed);
 
         await this.assignNewLongLivedIdIfTabIsDuplicate(tabOpenState);
 

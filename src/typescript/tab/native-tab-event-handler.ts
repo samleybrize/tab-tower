@@ -1,5 +1,6 @@
 import { EventBus } from '../bus/event-bus';
 import { OpenedTabFaviconUrlUpdated } from './event/opened-tab-favicon-url-updated';
+import { OpenedTabFocused } from './event/opened-tab-focused';
 import { OpenedTabIsLoading } from './event/opened-tab-is-loading';
 import { OpenedTabLoadingIsComplete } from './event/opened-tab-loading-is-complete';
 import { OpenedTabMoved } from './event/opened-tab-moved';
@@ -29,9 +30,10 @@ export class NativeTabEventHandler {
         }
 
         this.isInited = true;
+        browser.tabs.onActivated.addListener(this.onTabActivated.bind(this));
         browser.tabs.onCreated.addListener(this.onNativeTabCreate.bind(this));
-        browser.tabs.onRemoved.addListener(this.onNativeTabClose.bind(this));
         browser.tabs.onMoved.addListener(this.onNativeTabMove.bind(this));
+        browser.tabs.onRemoved.addListener(this.onNativeTabClose.bind(this));
         browser.tabs.onUpdated.addListener(this.onNativeTabUpdate.bind(this));
     }
 
@@ -52,6 +54,14 @@ export class NativeTabEventHandler {
             if (tabOpenState.index >= fromIndex) {
                 this.eventBus.publish(new OpenedTabMoved(tabOpenState));
             }
+        }
+    }
+
+    private async onTabActivated(activatedInfo: browser.tabs.ActivatedInfo) {
+        const tabOpenState = await this.openedTabRetriever.getStillOpenedById(activatedInfo.tabId, true);
+
+        if (tabOpenState) {
+            this.eventBus.publish(new OpenedTabFocused(tabOpenState));
         }
     }
 

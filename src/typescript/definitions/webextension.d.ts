@@ -1058,6 +1058,10 @@ declare namespace browser.tabs {
         url?: string,
     }): Promise<Tab>;
 
+    export interface ActivatedInfo {
+        tabId: number;
+        windowId: number;
+    }
     export interface RemoveInfo {
         windowId: number;
         isWindowClosing: boolean;
@@ -1077,7 +1081,7 @@ declare namespace browser.tabs {
         title?: string;
     }
 
-    const onActivated: Listener<{ tabId: number, windowId: number }>;
+    const onActivated: Listener<ActivatedInfo>;
     const onAttached: EvListener<(tabId: number, attachInfo: {
         newWindowId: number,
         newPosition: number,

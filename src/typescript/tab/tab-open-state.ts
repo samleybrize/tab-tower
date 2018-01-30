@@ -9,4 +9,5 @@ export class TabOpenState {
     faviconUrl: string = null;
     isPrivileged: boolean = false;
     isIgnored: boolean = false;
+    lastAccess: Date = null;
 }

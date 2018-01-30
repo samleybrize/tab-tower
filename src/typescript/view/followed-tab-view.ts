@@ -1,3 +1,5 @@
+import * as moment from 'moment';
+
 import { CommandBus } from '../bus/command-bus';
 import { QueryBus } from '../bus/query-bus';
 import { CloseTab } from '../tab/command/close-tab';
@@ -249,7 +251,7 @@ export class FollowedTabView {
 
     private updateTabLastAccess(row: HTMLElement, lastAccess: Date) {
         if (lastAccess) {
-            row.querySelector('.lastAccess').innerHTML = lastAccess.toLocaleString(); // TODO use moment
+            row.querySelector('.lastAccess').innerHTML = moment(lastAccess).format('LLL');
         }
     }
 

@@ -132,7 +132,7 @@ export class OpenedTabView {
         this.updateTabReaderModeState(row, tabOpenState.isInReaderMode);
         this.updateTabTitle(row, tabOpenState.title);
         this.updateTabUrl(row, tabOpenState.url, tabOpenState.isPrivileged, tabOpenState.isIgnored);
-        this.updateLastAccess(row, tabOpenState.lastAccess);
+        this.updateTabLastAccess(row, tabOpenState.lastAccess);
         this.updateFollowState(row, isFollowed);
 
         return row;
@@ -284,7 +284,7 @@ export class OpenedTabView {
         }
     }
 
-    private updateLastAccess(row: HTMLElement, lastAccess: Date) {
+    private updateTabLastAccess(row: HTMLElement, lastAccess: Date) {
         if (lastAccess) {
             row.querySelector('.lastAccess').innerHTML = lastAccess.toLocaleString(); // TODO use moment
         }
@@ -434,7 +434,7 @@ export class OpenedTabView {
         if (tabRow) {
             this.insertRowAtIndex(tabRow, event.tabOpenState.index);
             this.updateTabIndex(tabRow, event.tabOpenState.index);
-            this.updateLastAccess(tabRow, event.tabOpenState.lastAccess);
+            this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }
 
@@ -452,7 +452,7 @@ export class OpenedTabView {
 
         if (tabRow) {
             this.updateTabFavicon(tabRow, event.tabOpenState.faviconUrl);
-            this.updateLastAccess(tabRow, event.tabOpenState.lastAccess);
+            this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }
 
@@ -470,7 +470,7 @@ export class OpenedTabView {
 
         if (tabRow) {
             this.updateTabTitle(tabRow, event.tabOpenState.title);
-            this.updateLastAccess(tabRow, event.tabOpenState.lastAccess);
+            this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }
 
@@ -488,7 +488,7 @@ export class OpenedTabView {
 
         if (tabRow) {
             this.updateTabUrl(tabRow, event.tabOpenState.url, event.tabOpenState.isPrivileged, event.tabOpenState.isIgnored);
-            this.updateLastAccess(tabRow, event.tabOpenState.lastAccess);
+            this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }
 
@@ -506,7 +506,7 @@ export class OpenedTabView {
 
         if (tabRow) {
             this.updateTabReaderModeState(tabRow, event.tabOpenState.isInReaderMode);
-            this.updateLastAccess(tabRow, event.tabOpenState.lastAccess);
+            this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }
 
@@ -564,10 +564,19 @@ export class OpenedTabView {
     }
 
     async onTabFocus(event: OpenedTabFocused) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.handleTabFocus.bind(this, event));
+            return;
+        }
+
+        await this.handleTabFocus(event);
+    }
+
+    async handleTabFocus(event: OpenedTabFocused) {
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
-            this.updateLastAccess(tabRow, event.tabOpenState.lastAccess);
+            this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }
 

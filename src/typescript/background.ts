@@ -118,6 +118,7 @@ async function main() {
     eventBus.subscribe(OpenedTabFaviconUrlUpdated, followedTabModifier.onOpenedTabFaviconUrlUpdate, followedTabModifier);
     eventBus.subscribe(OpenedTabFaviconUrlUpdated, openedTabRetriever.onTabFaviconUrlUpdate, openedTabRetriever);
     eventBus.subscribe(OpenedTabFaviconUrlUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+    eventBus.subscribe(OpenedTabFocused, followedTabModifier.onOpenedTabFocus, followedTabModifier);
     eventBus.subscribe(OpenedTabFocused, sendMessageEventHandler.onEvent, sendMessageEventHandler);
     eventBus.subscribe(OpenedTabMoved, openedTabRetriever.onTabMove, openedTabRetriever);
     eventBus.subscribe(OpenedTabMoved, sendMessageEventHandler.onEvent, sendMessageEventHandler);

@@ -104,6 +104,22 @@ export class WebStorageTabPersister implements TabPersister {
         return promise;
     }
 
+    async setOpenLastAccess(followId: string, openLastAccess: Date) {
+        const promise = new Promise<void>((resolve, reject) => {
+            this.actionStack.push(async () => {
+                const followState = await this.getByFollowId(followId);
+                followState.openLastAccess = openLastAccess;
+
+                await this.persistImmediately(followState);
+                resolve();
+            });
+        });
+
+        this.startActionStackPlaying();
+
+        return promise;
+    }
+
     async setFaviconUrl(followId: string, faviconUrl: string) {
         const promise = new Promise<void>((resolve, reject) => {
             this.actionStack.push(async () => {

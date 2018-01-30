@@ -121,7 +121,24 @@ export class InMemoryTabPersister implements TabPersister {
         if (this.decoratedTabPersister) {
             this.decoratedTabPersister.setOpenLongLivedId(followId, openLongLivedId);
         }
+    }
 
+    async setOpenLastAccess(followId: string, openLastAccess: Date) {
+        if (!this.isRetrievedFromDecorated) {
+            await this.retrieveFromDecorated();
+        }
+
+        const existingTabFollowState = this.followStateMap.get(followId);
+
+        if (null == existingTabFollowState) {
+            return;
+        }
+
+        existingTabFollowState.openLastAccess = openLastAccess;
+
+        if (this.decoratedTabPersister) {
+            this.decoratedTabPersister.setOpenLastAccess(followId, openLastAccess);
+        }
     }
 
     async setFaviconUrl(followId: string, faviconUrl: string) {

@@ -93,6 +93,7 @@ async function main() {
     eventBus.subscribe(TabFollowed, followedTabView.onTabFollow, followedTabView);
     eventBus.subscribe(TabFollowed, openedTabView.onTabFollow, openedTabView);
     eventBus.subscribe(OpenedTabFocused, openedTabView.onTabFocus, openedTabView);
+    eventBus.subscribe(OpenedTabFocused, followedTabView.onTabFocus, followedTabView);
     eventBus.subscribe(OpenedTabAssociatedToFollowedTab, followedTabView.onAssociateOpenedTabToFollowedTab, followedTabView);
     eventBus.subscribe(OpenedTabAssociatedToFollowedTab, openedTabView.onAssociateOpenedTabToFollowedTab, openedTabView);
     eventBus.subscribe(OpenedTabMoved, openedTabView.onOpenTabMove, openedTabView);

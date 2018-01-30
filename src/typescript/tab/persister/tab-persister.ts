@@ -6,6 +6,7 @@ export interface TabPersister {
     getByOpenLongLivedId(openLongLivedId: string): Promise<TabFollowState>;
     persist(tab: TabFollowState): Promise<void>;
     setOpenLongLivedId(followId: string, openLongLivedId: string): Promise<void>;
+    setOpenLastAccess(followId: string, openLastAccess: Date): Promise<void>;
     setFaviconUrl(followId: string, faviconUrl: string): Promise<void>;
     setTitle(followId: string, title: string): Promise<void>;
     setUrl(followId: string, url: string): Promise<void>;

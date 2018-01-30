@@ -7,6 +7,7 @@ import { FollowTab } from './command/follow-tab';
 import { UnfollowTab } from './command/unfollow-tab';
 import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';
 import { OpenedTabFaviconUrlUpdated } from './event/opened-tab-favicon-url-updated';
+import { OpenedTabFocused } from './event/opened-tab-focused';
 import { OpenedTabIsLoading } from './event/opened-tab-is-loading';
 import { OpenedTabLoadingIsComplete } from './event/opened-tab-loading-is-complete';
 import { OpenedTabMoved } from './event/opened-tab-moved';
@@ -50,6 +51,7 @@ export class FollowedTabModifier {
         followState.url = openState.url;
         followState.faviconUrl = openState.faviconUrl;
         followState.openLongLivedId = openState.longLivedId;
+        followState.openLastAccess = openState.lastAccess;
 
         this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(openState.id, followState.id);
 
@@ -129,6 +131,18 @@ export class FollowedTabModifier {
 
         if (followId) {
             await this.tabPersister.setReaderMode(followId, event.tabOpenState.isInReaderMode);
+        }
+    }
+
+    async onOpenedTabFocus(event: OpenedTabFocused) {
+        if (event.tabOpenState.isPrivileged) {
+            return;
+        }
+
+        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
+
+        if (followId) {
+            await this.tabPersister.setOpenLastAccess(followId, event.tabOpenState.lastAccess);
         }
     }
 }

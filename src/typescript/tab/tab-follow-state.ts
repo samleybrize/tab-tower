@@ -6,6 +6,7 @@ export class TabFollowState {
     url: string = null;
     faviconUrl: string = null;
     openLongLivedId: string = null;
+    openLastAccess: Date = null;
 
     static fromObject(sourceObject: any): TabFollowState {
         const followState = new TabFollowState();
@@ -16,6 +17,7 @@ export class TabFollowState {
         followState.url = sourceObject.url;
         followState.faviconUrl = sourceObject.faviconUrl;
         followState.openLongLivedId = sourceObject.openLongLivedId;
+        followState.openLastAccess = sourceObject.openLastAccess;
 
         return followState;
     }

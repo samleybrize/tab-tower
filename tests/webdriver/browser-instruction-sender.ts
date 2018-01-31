@@ -114,6 +114,10 @@ export class BrowserInstructionSender {
         return this.send({action: 'toggle-reader-mode', data: {tabIndex}});
     }
 
+    async setFollowedTabReaderModeStatusAsDisabled(followId: string) {
+        return this.send({action: 'set-followed-tab-reader-mode-status-as-disabled', data: {followId}});
+    }
+
     async createWindow(isIncognito: boolean, url: string) {
         return this.send({action: 'create-window', data: {
             isIncognito,

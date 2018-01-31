@@ -163,6 +163,29 @@ export class FollowedTabsTestHelper {
         `);
     }
 
+    async toggleFollowedTabReaderModeIndicator(tabRow: WebElement) {
+        const followId = await tabRow.getAttribute('data-follow-id');
+        await this.driver.executeScript(`
+            const on = document.querySelector('#followedTabList tbody tr[data-follow-id="${followId}"] .readerModeIndicator .on');
+            const off = document.querySelector('#followedTabList tbody tr[data-follow-id="${followId}"] .readerModeIndicator .off');
+
+            if (on) {
+                on.classList.toggle('transparent');
+            }
+
+            if (off) {
+                off.classList.toggle('transparent');
+            }
+        `);
+        await sleep(700);
+    }
+
+    async setFollowedTabReaderModeStatusAsDisabled(tabRow: WebElement) {
+        const followId = await tabRow.getAttribute('data-follow-id');
+        await this.browserInstructionSender.setFollowedTabReaderModeStatusAsDisabled(followId);
+        await sleep(500);
+    }
+
     async assertNumberOfTabs(expectedNumberOfTabs: number) {
         const followedTabRowList = await this.getTabRowList();
         await this.tabsTestHelper.assertNumberOfTabs(followedTabRowList, expectedNumberOfTabs);
@@ -214,12 +237,12 @@ export class FollowedTabsTestHelper {
 
     async assertTabOpenIndicatorIsOn(tabRow: WebElement) {
         const openIndicator = this.getOpenIndicator(tabRow);
-        await this.tabsTestHelper.assertIndicatorIsOn(openIndicator);
+        await this.tabsTestHelper.assertIndicatorIsOn(openIndicator, 'Tab open');
     }
 
     async assertTabOpenIndicatorIsOff(tabRow: WebElement) {
         const openIndicator = this.getOpenIndicator(tabRow);
-        await this.tabsTestHelper.assertIndicatorIsOff(openIndicator);
+        await this.tabsTestHelper.assertIndicatorIsOff(openIndicator, 'Tab open');
     }
 
     async assertUnfollowButtonIsVisible(tabRow: WebElement) {

@@ -93,22 +93,22 @@ export class TabsTestHelper {
 
     async assertTabReaderModeIndicatorIsOn(tabRow: WebElement) {
         const readerModeIndicator = this.getReaderModeIndicator(tabRow);
-        await this.assertIndicatorIsOn(readerModeIndicator);
+        await this.assertIndicatorIsOn(readerModeIndicator, 'Tab reader mode');
     }
 
     async assertTabReaderModeIndicatorIsOff(tabRow: WebElement) {
         const readerModeIndicator = this.getReaderModeIndicator(tabRow);
-        await this.assertIndicatorIsOff(readerModeIndicator);
+        await this.assertIndicatorIsOff(readerModeIndicator, 'Tab reader mode');
     }
 
-    async assertIndicatorIsOn(indicator: TabIndicator) {
-        assert.isTrue(await indicator.on.isDisplayed(), 'Tab open on indicator is not visible');
-        assert.isFalse(await indicator.off.isDisplayed(), 'Tab open off indicator is visible');
+    async assertIndicatorIsOn(indicator: TabIndicator, subject: string) {
+        assert.isTrue(await indicator.on.isDisplayed(), `${subject} on indicator is not visible`);
+        assert.isFalse(await indicator.off.isDisplayed(), `${subject} off indicator is visible`);
     }
 
-    async assertIndicatorIsOff(indicator: TabIndicator) {
-        assert.isFalse(await indicator.on.isDisplayed(), 'Tab open on indicator is visible');
-        assert.isTrue(await indicator.off.isDisplayed(), 'Tab open off indicator is not visible');
+    async assertIndicatorIsOff(indicator: TabIndicator, subject: string) {
+        assert.isFalse(await indicator.on.isDisplayed(), `${subject} on indicator is visible`);
+        assert.isTrue(await indicator.off.isDisplayed(), `${subject} off indicator is not visible`);
     }
 
     async assertUnfollowButtonIsVisible(tabRow: WebElement) {

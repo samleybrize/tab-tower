@@ -174,8 +174,25 @@ describe('Reader mode', () => {
             await followedTabsHelper.assertTabReaderModeIndicatorIsOff(followedTabRowList[1]);
         });
 
-        xit('Should show followed tabs associated to opened tabs with reader mode enabled at startup', async () => {
-            // TODO follow a tab in reader mode, modify the webstorage value, reload extension
+        it('Should update reader mode indicator at startup', async () => {
+            await testHelper.openTab(firefoxConfig.getReaderModeTestPageUrl());
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await testHelper.enableTabReaderMode(1, openedTabRowList[1]);
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.setFollowedTabReaderModeStatusAsDisabled(followedTabRowList[0]);
+
+            await testHelper.openTab(null, 0);
+            await testHelper.reloadExtension();
+            await testHelper.switchToWindowHandle(0);
+            await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
+
+            await testHelper.showFollowedTabsList();
+            const newFollowedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertTabReaderModeIndicatorIsOn(newFollowedTabRowList[0]);
         });
     });
 
@@ -195,8 +212,22 @@ describe('Reader mode', () => {
             await followedTabsHelper.assertTabReaderModeIndicatorIsOn(followedTabRowList[0]);
         });
 
-        xit('Should update associated followed tab reader mode indicator when a recently closed tab is restored from the browser', async () => {
-            // TODO follow a tab in reader mode, close it, modify the webstorage value, restore it from the browser
+        it('Should update associated followed tab reader mode indicator when a recently closed tab is restored from the browser', async () => {
+            await testHelper.openTab(firefoxConfig.getReaderModeTestPageUrl());
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await testHelper.enableTabReaderMode(1, openedTabRowList[1]);
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.toggleFollowedTabReaderModeIndicator(followedTabRowList[0]);
+
+            await testHelper.restoreRecentlyClosedTab(0);
+            await testHelper.focusTab(0);
+
+            await followedTabsHelper.assertTabReaderModeIndicatorIsOn(followedTabRowList[0]);
         });
     });
 });

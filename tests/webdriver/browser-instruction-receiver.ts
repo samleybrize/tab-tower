@@ -1,3 +1,5 @@
+import { TabFollowState } from '../../src/typescript/tab/tab-follow-state';
+
 const client = new WebSocket('ws://localhost:8888'); // TODO param
 
 client.onmessage = async (event) => {
@@ -68,6 +70,13 @@ client.onmessage = async (event) => {
             await sleep(500);
             await browser.tabs.toggleReaderMode(targetTabId);
             await browser.tabs.update(currentTabId, {active: true});
+            break;
+
+        case 'set-followed-tab-reader-mode-status-as-disabled':
+            const objectId = `followState.${message.data.followId}`;
+            const storageObject = await browser.storage.local.get(objectId);
+            (storageObject[objectId] as TabFollowState).isInReaderMode = false;
+            await browser.storage.local.set(storageObject);
             break;
 
         case 'create-window':

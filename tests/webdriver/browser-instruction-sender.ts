@@ -179,6 +179,12 @@ export class BrowserInstructionSender {
         });
     }
 
+    async changeElementText(webdriver: WebDriver, quotelessCssSelector: string, newText: string) {
+        return webdriver.executeScript(`
+            document.querySelector('${quotelessCssSelector}').innerHtml = '${newText}';
+        `);
+    }
+
     async reloadExtension() {
         return this.send({action: 'reload-extension', data: {}});
     }

@@ -52,6 +52,10 @@ export class TabsTestHelper {
         return tabRow.findElement(By.css('.closeButton'));
     }
 
+    getTabLastAccessText(tabRow: WebElement) {
+        return tabRow.findElement(By.css('.lastAccess')).getText();
+    }
+
     async assertNumberOfTabs(tabRowList: WebElement[], expectedNumberOfTabs: number) {
         assert.strictEqual(tabRowList.length, expectedNumberOfTabs);
     }
@@ -72,19 +76,19 @@ export class TabsTestHelper {
     }
 
     async assertNoTabRowIsVisible(noTabRow: WebElement) {
-        assert.isTrue(await noTabRow.isDisplayed());
+        assert.isTrue(await noTabRow.isDisplayed(), 'The no tab row is not visible');
     }
 
     async assertNoTabRowIsNotVisible(noTabRow: WebElement) {
-        assert.isFalse(await noTabRow.isDisplayed());
+        assert.isFalse(await noTabRow.isDisplayed(), 'The no tab row is visible');
     }
 
     async assertTabRowIsVisible(tabRow: WebElement) {
-        assert.isTrue(await tabRow.isDisplayed());
+        assert.isTrue(await tabRow.isDisplayed(), 'Tab row is not visible');
     }
 
     async assertTabRowIsNotVisible(tabRow: WebElement) {
-        assert.isFalse(await tabRow.isDisplayed());
+        assert.isFalse(await tabRow.isDisplayed(), 'Tab row is visible');
     }
 
     async assertTabReaderModeIndicatorIsOn(tabRow: WebElement) {
@@ -98,32 +102,51 @@ export class TabsTestHelper {
     }
 
     async assertIndicatorIsOn(indicator: TabIndicator) {
-        assert.isTrue(await indicator.on.isDisplayed());
-        assert.isFalse(await indicator.off.isDisplayed());
+        assert.isTrue(await indicator.on.isDisplayed(), 'Tab open on indicator is not visible');
+        assert.isFalse(await indicator.off.isDisplayed(), 'Tab open off indicator is visible');
     }
 
     async assertIndicatorIsOff(indicator: TabIndicator) {
-        assert.isFalse(await indicator.on.isDisplayed());
-        assert.isTrue(await indicator.off.isDisplayed());
+        assert.isFalse(await indicator.on.isDisplayed(), 'Tab open on indicator is visible');
+        assert.isTrue(await indicator.off.isDisplayed(), 'Tab open off indicator is not visible');
     }
 
     async assertUnfollowButtonIsVisible(tabRow: WebElement) {
         const isUnfollowButtonDisplayed = await this.getUnfollowButton(tabRow).isDisplayed();
-        assert.isTrue(isUnfollowButtonDisplayed);
+        assert.isTrue(isUnfollowButtonDisplayed, 'Tab unfollow button is not visible');
     }
 
     async assertUnfollowButtonIsNotVisible(tabRow: WebElement) {
         const isUnfollowButtonDisplayed = await this.getUnfollowButton(tabRow).isDisplayed();
-        assert.isFalse(isUnfollowButtonDisplayed);
+        assert.isFalse(isUnfollowButtonDisplayed, 'Tab unfollow button is visible');
     }
 
     async assertCloseButtonIsVisible(tabRow: WebElement) {
         const isCloseButtonDisplayed = await this.getCloseButton(tabRow).isDisplayed();
-        assert.isTrue(isCloseButtonDisplayed);
+        assert.isTrue(isCloseButtonDisplayed, 'Tab close button is not visible');
     }
 
     async assertCloseButtonIsNotVisible(tabRow: WebElement) {
         const isCloseButtonDisplayed = await this.getCloseButton(tabRow).isDisplayed();
-        assert.isFalse(isCloseButtonDisplayed);
+        assert.isFalse(isCloseButtonDisplayed, 'Tab close button is visible');
+    }
+
+    async assertLastAccessDateIsRoughlyEqualToDate(tabRow: WebElement, date: Date) {
+        const lastAccessText = await this.getTabLastAccessText(tabRow);
+        const lastAccessDate = new Date(lastAccessText);
+        const lastAccessTimestamp = lastAccessDate.getTime();
+        const toleranceInSeconds = 10;
+
+        const minAcceptedTimestamp = lastAccessTimestamp - toleranceInSeconds;
+        const maxAcceptedTimestamp = lastAccessTimestamp + toleranceInSeconds;
+
+        const isDateAccepted = lastAccessTimestamp >= minAcceptedTimestamp && lastAccessTimestamp <= maxAcceptedTimestamp;
+        assert.isTrue(isDateAccepted, 'Shown tab last access date is not acceptable');
+    }
+
+    async assertLastAccessDateIsEqualToString(tabRow: WebElement, text: string) {
+        const lastAccessText = await this.getTabLastAccessText(tabRow);
+
+        assert.equal(text, lastAccessText);
     }
 }

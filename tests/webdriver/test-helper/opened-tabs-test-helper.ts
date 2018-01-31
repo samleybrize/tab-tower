@@ -100,6 +100,17 @@ export class OpenedTabsTestHelper {
         return this.tabsTestHelper.getUnfollowButton(tabRow);
     }
 
+    async changeTabLastAccessText(tabRow: WebElement, newText: string) {
+        const tabId = await tabRow.getAttribute('data-tab-id');
+        await this.driver.executeScript(`
+            const element = document.querySelector('#openedTabList tbody tr[data-tab-id="${tabId}"] .lastAccess');
+
+            if (element) {
+                element.innerText = '${newText}';
+            }
+        `);
+    }
+
     async assertNumberOfTabs(expectedNumberOfTabs: number) {
         const openedTabRowList = await this.getTabRowList();
         await this.tabsTestHelper.assertNumberOfTabs(openedTabRowList, expectedNumberOfTabs);
@@ -145,12 +156,12 @@ export class OpenedTabsTestHelper {
 
     async assertFollowButtonIsVisible(tabRow: WebElement) {
         const isFollowButtonDisplayed = await this.getFollowButton(tabRow).isDisplayed();
-        assert.isTrue(isFollowButtonDisplayed);
+        assert.isTrue(isFollowButtonDisplayed, 'Tab follow button is not visible');
     }
 
     async assertFollowButtonIsNotVisible(tabRow: WebElement) {
         const isFollowButtonDisplayed = await this.getFollowButton(tabRow).isDisplayed();
-        assert.isFalse(isFollowButtonDisplayed);
+        assert.isFalse(isFollowButtonDisplayed, 'Tab follow button is visible');
     }
 
     async assertUnfollowButtonIsVisible(tabRow: WebElement) {
@@ -173,5 +184,13 @@ export class OpenedTabsTestHelper {
         const followButtonClasses = ('' + await followButton.getAttribute('class')).split(' ');
 
         assert.notInclude(followButtonClasses, 'disabled');
+    }
+
+    async assertLastAccessDateIsRoughlyEqualToDate(tabRow: WebElement, date: Date) {
+        return this.tabsTestHelper.assertLastAccessDateIsRoughlyEqualToDate(tabRow, date);
+    }
+
+    async assertLastAccessDateIsEqualToString(tabRow: WebElement, text: string) {
+        return this.tabsTestHelper.assertLastAccessDateIsEqualToString(tabRow, text);
     }
 }

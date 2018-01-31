@@ -60,6 +60,20 @@ describe('Opened tabs tracking', () => {
         await openedTabsHelper.assertTabFaviconUrl(openedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_2));
     });
 
+    it('Should update the last access date when focusing a tab', async () => {
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+        const openedTabRowList = await openedTabsHelper.getTabRowList();
+        await openedTabsHelper.changeTabLastAccessText(openedTabRowList[1], 'text 1');
+        await openedTabsHelper.changeTabLastAccessText(openedTabRowList[2], 'text 2');
+        await testHelper.focusTab(1);
+        await testHelper.focusTab(0);
+
+        await openedTabsHelper.assertLastAccessDateIsRoughlyEqualToDate(openedTabRowList[1], new Date());
+        await openedTabsHelper.assertLastAccessDateIsEqualToString(openedTabRowList[2], 'text 2');
+    });
+
     it('Default favicon should be shown when an opened tab have not', async () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITHOUT_FAVICON));
 

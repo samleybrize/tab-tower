@@ -152,6 +152,17 @@ export class FollowedTabsTestHelper {
         return this.tabsTestHelper.getUnfollowButton(tabRow);
     }
 
+    async changeTabLastAccessText(tabRow: WebElement, newText: string) {
+        const followId = await tabRow.getAttribute('data-follow-id');
+        await this.driver.executeScript(`
+            const element = document.querySelector('#followedTabList tbody tr[data-follow-id="${followId}"] .lastAccess');
+
+            if (element) {
+                element.innerText = '${newText}';
+            }
+        `);
+    }
+
     async assertNumberOfTabs(expectedNumberOfTabs: number) {
         const followedTabRowList = await this.getTabRowList();
         await this.tabsTestHelper.assertNumberOfTabs(followedTabRowList, expectedNumberOfTabs);
@@ -221,5 +232,13 @@ export class FollowedTabsTestHelper {
 
     async assertCloseButtonIsNotVisible(tabRow: WebElement) {
         return this.tabsTestHelper.assertCloseButtonIsNotVisible(tabRow);
+    }
+
+    async assertLastAccessDateIsRoughlyEqualToDate(tabRow: WebElement, date: Date) {
+        return this.tabsTestHelper.assertLastAccessDateIsRoughlyEqualToDate(tabRow, date);
+    }
+
+    async assertLastAccessDateIsEqualToString(tabRow: WebElement, text: string) {
+        return this.tabsTestHelper.assertLastAccessDateIsEqualToString(tabRow, text);
     }
 }

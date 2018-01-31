@@ -68,6 +68,7 @@ describe('Tab following', () => {
         await followedTabsHelper.assertTabUrl(followedTabRowList[0], testPage1Url);
         await followedTabsHelper.assertTabFaviconUrl(followedTabRowList[0], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_1));
         await followedTabsHelper.assertTabOpenIndicatorIsOn(followedTabRowList[0]);
+        await followedTabsHelper.assertLastAccessDateIsRoughlyEqualToDate(followedTabRowList[0], new Date());
     });
 
     it('Opened tabs with a privileged url should not be followable', async () => {
@@ -104,6 +105,25 @@ describe('Tab following', () => {
         await followedTabsHelper.assertTabUrl(followedTabRowList[0], testPage2Url);
         await followedTabsHelper.assertTabFaviconUrl(followedTabRowList[0], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_2));
         await followedTabsHelper.assertTabOpenIndicatorIsOn(followedTabRowList[0]);
+    });
+
+    it('Should update the last access date when focusing associated opened tab', async () => {
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+        const openedTabRowList = await openedTabsHelper.getTabRowList();
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
+
+        await testHelper.showFollowedTabsList();
+        const followedTabRowList = await followedTabsHelper.getTabRowList();
+        await followedTabsHelper.changeTabLastAccessText(followedTabRowList[0], 'text 1');
+        await followedTabsHelper.changeTabLastAccessText(followedTabRowList[1], 'text 2');
+        await testHelper.focusTab(1);
+        await testHelper.focusTab(0);
+
+        await followedTabsHelper.assertLastAccessDateIsRoughlyEqualToDate(followedTabRowList[0], new Date());
+        await followedTabsHelper.assertLastAccessDateIsEqualToString(followedTabRowList[1], 'text 2');
     });
 
     it('A tab should be unfollowable in the opened tabs list', async () => {
@@ -407,6 +427,7 @@ describe('Tab following', () => {
     it('Should show followed tabs at startup', async () => {
         const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
         const testPage2Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2);
+        const tabOpenDate = new Date();
         await testHelper.openTab(testPage1Url);
         await testHelper.openTab(testPage2Url);
         await testHelper.openTab(testPage2Url);
@@ -437,6 +458,7 @@ describe('Tab following', () => {
         await followedTabsHelper.assertTabTitle(newFollowedTabRowList[1], 'Test page 2');
         await followedTabsHelper.assertTabUrl(newFollowedTabRowList[1], testPage2Url);
         await followedTabsHelper.assertTabFaviconUrl(newFollowedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_2));
+        await followedTabsHelper.assertLastAccessDateIsRoughlyEqualToDate(followedTabRowList[1], tabOpenDate);
     });
 
     it('Should show followed tabs associated to opened tabs at startup', async () => {

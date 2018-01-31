@@ -88,12 +88,12 @@ export class NavigationTestHelper {
 
     async assertOpenedTabsListIsVisible() {
         const openedTabsListElement = await this.getOpenedTabsListElement();
-        assert.isTrue(await openedTabsListElement.isDisplayed());
+        assert.isTrue(await openedTabsListElement.isDisplayed(), 'Opened tab list is not visible');
     }
 
     async assertOpenedTabsListIsNotVisible() {
         const openedTabsListElement = await this.getOpenedTabsListElement();
-        assert.isFalse(await openedTabsListElement.isDisplayed());
+        assert.isFalse(await openedTabsListElement.isDisplayed(), 'Opened tab list is visible');
     }
 
     async assertOpenedTabsCounter(expectedNumber: number) {
@@ -103,12 +103,12 @@ export class NavigationTestHelper {
 
     async assertFollowedTabsListIsVisible() {
         const followedTabsListElement = await this.getFollowedTabsListElement();
-        assert.isTrue(await followedTabsListElement.isDisplayed());
+        assert.isTrue(await followedTabsListElement.isDisplayed(), 'Followed tab list is not visible');
     }
 
     async assertFollowedTabsListIsNotVisible() {
         const followedTabsListElement = await this.getFollowedTabsListElement();
-        assert.isFalse(await followedTabsListElement.isDisplayed());
+        assert.isFalse(await followedTabsListElement.isDisplayed(), 'Followed tab list is visible');
     }
 
     async assertFollowedTabsCounter(expectedNumber: number) {

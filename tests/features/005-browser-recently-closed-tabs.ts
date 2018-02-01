@@ -1,6 +1,7 @@
 import { assert } from 'chai';
 import { By, until, WebDriver } from 'selenium-webdriver';
 
+import { sleep } from '../../src/typescript/utils/sleep';
 import { BrowserInstructionSender } from '../webdriver/browser-instruction-sender';
 import { ExtensionUrl } from '../webdriver/extension-url';
 import { FirefoxConfig } from '../webdriver/firefox-config';
@@ -169,8 +170,20 @@ describe('Browser recently closed tabs', () => {
         assert.strictEqual(focusedTab.index, 0);
     });
 
-    xit('Restoring a tab from the browser then clicking on a followed tab should not open it twice', async () => {
-        // TODO restore a rct without await, click on followed tab title without await, sleep 1000ms
+    it('Restoring a tab from the browser then clicking on a followed tab should not open it twice', async () => {
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+        const openedTabRowList = await openedTabsHelper.getTabRowList();
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+        await testHelper.showFollowedTabsList();
+        const followedTabRowList = await followedTabsHelper.getTabRowList();
+        testHelper.restoreRecentlyClosedTab(0);
+        followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
+        await sleep(1000);
+
+        await openedTabsHelper.assertNumberOfTabs(2);
     });
 
     it('After a restart, a recently closed tab restored from the browser should be associated to its followed tab', async () => {

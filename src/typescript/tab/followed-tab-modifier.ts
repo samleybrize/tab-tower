@@ -74,6 +74,7 @@ export class FollowedTabModifier {
     async onAssociateOpenedTabToFollowedTab(event: OpenedTabAssociatedToFollowedTab) {
         const followState = event.tabFollowState;
         followState.openLongLivedId = event.tabOpenState.longLivedId;
+        followState.isInReaderMode = event.tabOpenState.isInReaderMode;
         await this.tabPersister.persist(followState);
     }
 

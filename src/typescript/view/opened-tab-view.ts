@@ -18,10 +18,10 @@ import { TabFilterRequested } from '../tab/event/tab-filter-requested';
 import { TabFollowed } from '../tab/event/tab-followed';
 import { TabOpened } from '../tab/event/tab-opened';
 import { TabUnfollowed } from '../tab/event/tab-unfollowed';
+import { TabOpenState } from '../tab/opened-tab/tab-open-state';
 import { GetOpenedTabs } from '../tab/query/get-opened-tabs';
 import { GetTabByOpenId } from '../tab/query/get-tab-by-open-id';
 import { Tab } from '../tab/tab';
-import { TabOpenState } from '../tab/tab-open-state';
 import { StringMatcher } from '../utils/string-matcher';
 import { TabCounter } from './tab-counter';
 

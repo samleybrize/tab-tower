@@ -458,7 +458,7 @@ describe('Tab following', () => {
         await followedTabsHelper.assertTabTitle(newFollowedTabRowList[1], 'Test page 2');
         await followedTabsHelper.assertTabUrl(newFollowedTabRowList[1], testPage2Url);
         await followedTabsHelper.assertTabFaviconUrl(newFollowedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_2));
-        await followedTabsHelper.assertLastAccessDateIsRoughlyEqualToDate(followedTabRowList[1], tabOpenDate);
+        await followedTabsHelper.assertLastAccessDateIsRoughlyEqualToDate(newFollowedTabRowList[1], tabOpenDate);
     });
 
     it('Should show followed tabs associated to opened tabs at startup', async () => {

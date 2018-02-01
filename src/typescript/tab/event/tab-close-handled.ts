@@ -1,6 +1,6 @@
 import { TabOpenState } from '../opened-tab/tab-open-state';
 
-export class TabClosed {
+export class TabCloseHandled {
     constructor(public readonly closedTab: TabOpenState) {
     }
 }

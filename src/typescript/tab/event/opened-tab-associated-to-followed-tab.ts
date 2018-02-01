@@ -1,5 +1,5 @@
+import { TabOpenState } from '../opened-tab/tab-open-state';
 import { TabFollowState } from '../tab-follow-state';
-import { TabOpenState } from '../tab-open-state';
 
 export class OpenedTabAssociatedToFollowedTab {
     constructor(

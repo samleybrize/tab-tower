@@ -4,7 +4,7 @@ import { RestoreFollowedTab } from './command/restore-followed-tab';
 import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';
 import { FollowedTabRetriever } from './followed-tab-retriever';
 import { NativeRecentlyClosedTabAssociationMaintainer } from './native-recently-closed-tab/native-recently-closed-tab-association-maintainer';
-import { OpenedTabRetriever } from './opened-tab-retriever';
+import { OpenedTabRetriever } from './opened-tab/opened-tab-retriever';
 import { TabAssociationMaintainer } from './tab-association-maintainer';
 import { TabFollowState } from './tab-follow-state';
 
@@ -19,6 +19,7 @@ export class TabOpener {
     }
 
     async restoreFollowedTab(command: RestoreFollowedTab) {
+        console.log('OK'); // TODO
         const followState = await this.followedTabRetriever.getById(command.followId);
         let openedTab: browser.tabs.Tab = await this.restoreFromRecentlyClosedTabs(followState);
 
@@ -32,6 +33,7 @@ export class TabOpener {
 
     private async restoreFromRecentlyClosedTabs(followState: TabFollowState) {
         const sessionId = this.nativeRecentlyClosedTabAssociationMaintainer.getSessionIdAssociatedToOpenLongLivedId(followState.openLongLivedId);
+        console.log(sessionId); // TODO
 
         if (null != sessionId) {
             const targetIndex = (await browser.tabs.query({})).length;
@@ -62,7 +64,7 @@ export class TabOpener {
 
     private async associateNewTabToFollowedTab(openTabCommand: RestoreFollowedTab, openedTab: browser.tabs.Tab) {
         const tabFollowState = await this.followedTabRetriever.getById(openTabCommand.followId);
-        const tabOpenState = await this.openedTabRetriever.getStillOpenedById(openedTab.id);
+        const tabOpenState = await this.openedTabRetriever.getById(openedTab.id);
 
         this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(openedTab.id, openTabCommand.followId);
         this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(tabOpenState, tabFollowState));

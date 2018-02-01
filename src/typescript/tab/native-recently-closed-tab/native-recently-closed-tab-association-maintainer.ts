@@ -1,5 +1,5 @@
 import { TabClosed } from '../event/tab-closed';
-import { TabOpenState } from '../tab-open-state';
+import { TabOpenState } from '../opened-tab/tab-open-state';
 import { NativeRecentlyClosedTabAssociation } from './native-recently-closed-tab-association';
 import { NativeRecentlyClosedTabAssociationPersister } from './native-recently-closed-tab-association-persister';
 

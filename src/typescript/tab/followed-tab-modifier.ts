@@ -1,8 +1,8 @@
 import * as uuid from 'uuid';
 
 import { EventBus } from '../bus/event-bus';
+import { TabOpenState } from '../tab/opened-tab/tab-open-state';
 import { TabFollowState } from '../tab/tab-follow-state';
-import { TabOpenState } from '../tab/tab-open-state';
 import { FollowTab } from './command/follow-tab';
 import { UnfollowTab } from './command/unfollow-tab';
 import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';

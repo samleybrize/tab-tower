@@ -1,4 +1,4 @@
-import { TabFollowState } from '../../src/typescript/tab/tab-follow-state';
+import { TabFollowState } from '../../src/typescript/tab/followed-tab/tab-follow-state';
 
 const client = new WebSocket('ws://localhost:8888'); // TODO param
 

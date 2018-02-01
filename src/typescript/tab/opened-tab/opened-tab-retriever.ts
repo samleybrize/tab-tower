@@ -1,10 +1,5 @@
 import * as uuid from 'uuid';
 
-import { OpenedTabFaviconUrlUpdated } from '../event/opened-tab-favicon-url-updated';
-import { OpenedTabMoved } from '../event/opened-tab-moved';
-import { OpenedTabReaderModeStateUpdated } from '../event/opened-tab-reader-mode-state-updated';
-import { OpenedTabTitleUpdated } from '../event/opened-tab-title-updated';
-import { OpenedTabUrlUpdated } from '../event/opened-tab-url-updated';
 import { TabClosed } from '../event/tab-closed';
 import { TabOpened } from '../event/tab-opened';
 import { PrivilegedUrlDetector } from '../privileged-url-detector';

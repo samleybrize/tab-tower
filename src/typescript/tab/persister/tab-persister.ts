@@ -1,4 +1,4 @@
-import { TabFollowState } from '../tab-follow-state';
+import { TabFollowState } from '../followed-tab/tab-follow-state';
 
 export interface TabPersister {
     getAll(): Promise<TabFollowState[]>;

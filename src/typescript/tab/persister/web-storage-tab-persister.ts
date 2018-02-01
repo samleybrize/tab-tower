@@ -1,4 +1,4 @@
-import { TabFollowState } from '../tab-follow-state';
+import { TabFollowState } from '../followed-tab/tab-follow-state';
 import { TabPersister } from './tab-persister';
 
 export class WebStorageTabPersister implements TabPersister {

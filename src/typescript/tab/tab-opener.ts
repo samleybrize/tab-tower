@@ -2,11 +2,11 @@ import { EventBus } from '../bus/event-bus';
 import { sleep } from '../utils/sleep';
 import { RestoreFollowedTab } from './command/restore-followed-tab';
 import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';
-import { FollowedTabRetriever } from './followed-tab-retriever';
+import { FollowedTabRetriever } from './followed-tab/followed-tab-retriever';
+import { TabFollowState } from './followed-tab/tab-follow-state';
 import { NativeRecentlyClosedTabAssociationMaintainer } from './native-recently-closed-tab/native-recently-closed-tab-association-maintainer';
 import { OpenedTabRetriever } from './opened-tab/opened-tab-retriever';
 import { TabAssociationMaintainer } from './tab-association-maintainer';
-import { TabFollowState } from './tab-follow-state';
 
 export class TabOpener {
     constructor(
@@ -19,7 +19,6 @@ export class TabOpener {
     }
 
     async restoreFollowedTab(command: RestoreFollowedTab) {
-        console.log('OK'); // TODO
         const followState = await this.followedTabRetriever.getById(command.followId);
         let openedTab: browser.tabs.Tab = await this.restoreFromRecentlyClosedTabs(followState);
 
@@ -33,7 +32,6 @@ export class TabOpener {
 
     private async restoreFromRecentlyClosedTabs(followState: TabFollowState) {
         const sessionId = this.nativeRecentlyClosedTabAssociationMaintainer.getSessionIdAssociatedToOpenLongLivedId(followState.openLongLivedId);
-        console.log(sessionId); // TODO
 
         if (null != sessionId) {
             const targetIndex = (await browser.tabs.query({})).length;

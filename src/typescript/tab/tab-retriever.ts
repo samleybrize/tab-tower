@@ -1,6 +1,6 @@
 import { EventBus } from '../bus/event-bus';
 import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';
-import { FollowedTabRetriever } from './followed-tab-retriever';
+import { FollowedTabRetriever } from './followed-tab/followed-tab-retriever';
 import { OpenedTabRetriever } from './opened-tab/opened-tab-retriever';
 import { GetFollowedTabs } from './query/get-followed-tabs';
 import { GetOpenedTabs } from './query/get-opened-tabs';

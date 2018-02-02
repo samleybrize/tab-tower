@@ -34,7 +34,7 @@ export class TabAssociationRetriever {
     }
 
     private async getAssociatedTabFollowedState(openTabId: number) {
-        const associatedFollowId = this.tabAssociationMaintainer.getAssociatedFollowId(openTabId);
+        const associatedFollowId = this.tabAssociationMaintainer.getAssociatedFollowId(openTabId); // TODO query
 
         if (associatedFollowId) {
             return await this.queryBus.query(new GetTabFollowStateByFollowId(associatedFollowId));
@@ -58,7 +58,7 @@ export class TabAssociationRetriever {
     }
 
     private async getAssociatedTabOpenState(followId: string) {
-        const associatedOpenTabId = this.tabAssociationMaintainer.getAssociatedOpenedTabId(followId);
+        const associatedOpenTabId = this.tabAssociationMaintainer.getAssociatedOpenedTabId(followId); // TODO query
 
         if (associatedOpenTabId) {
             return await this.queryBus.query(new GetTabOpenStateByOpenId(associatedOpenTabId));

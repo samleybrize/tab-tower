@@ -33,8 +33,7 @@ export class FollowedTabUpdater {
         const associatedFollowedState = await this.tabPersister.getByOpenLongLivedId(event.tabOpenState.longLivedId);
 
         if (associatedFollowedState) {
-            this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(event.tabOpenState, associatedFollowedState);
-            this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(event.tabOpenState, associatedFollowedState));
+            this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(event.tabOpenState, associatedFollowedState); // TODO command
         }
     }
 
@@ -43,7 +42,7 @@ export class FollowedTabUpdater {
             return;
         }
 
-        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
+        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id); // TODO query
 
         if (followId) {
             await this.tabPersister.setFaviconUrl(followId, event.tabOpenState.faviconUrl);
@@ -55,7 +54,7 @@ export class FollowedTabUpdater {
             return;
         }
 
-        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
+        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id); // TODO query
 
         if (followId) {
             await this.tabPersister.setTitle(followId, event.tabOpenState.title);
@@ -67,7 +66,7 @@ export class FollowedTabUpdater {
             return;
         }
 
-        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
+        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id); // TODO query
 
         if (followId) {
             await this.tabPersister.setUrl(followId, event.tabOpenState.url);
@@ -79,7 +78,7 @@ export class FollowedTabUpdater {
             return;
         }
 
-        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
+        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id); // TODO query
 
         if (followId) {
             await this.tabPersister.setReaderMode(followId, event.tabOpenState.isInReaderMode);
@@ -91,7 +90,7 @@ export class FollowedTabUpdater {
             return;
         }
 
-        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id);
+        const followId = this.tabAssociationMaintainer.getAssociatedFollowId(event.tabOpenState.id); // TODO query
 
         if (followId) {
             await this.tabPersister.setOpenLastAccess(followId, event.tabOpenState.lastAccess);

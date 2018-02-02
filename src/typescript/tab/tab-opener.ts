@@ -31,7 +31,7 @@ export class TabOpener {
     }
 
     private async restoreFromRecentlyClosedTabs(followState: TabFollowState) {
-        const sessionId = this.nativeRecentlyClosedTabAssociationMaintainer.getSessionIdAssociatedToOpenLongLivedId(followState.openLongLivedId);
+        const sessionId = this.nativeRecentlyClosedTabAssociationMaintainer.getSessionIdAssociatedToOpenLongLivedId(followState.openLongLivedId); // TODO query
 
         if (null != sessionId) {
             const targetIndex = (await browser.tabs.query({})).length;
@@ -64,8 +64,7 @@ export class TabOpener {
         const tabFollowState = await this.queryBus.query(new GetTabFollowStateByFollowId(restoreTabCommand.followId));
         const tabOpenState = await this.queryBus.query(new GetTabOpenStateByOpenId(openedTab.id));
 
-        this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(tabOpenState, tabFollowState);
-        this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(tabOpenState, tabFollowState));
+        this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(tabOpenState, tabFollowState); // TODO command
     }
 
     async waitForNewTabLoad(tabId: number) {

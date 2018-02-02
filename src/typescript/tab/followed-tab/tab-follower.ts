@@ -28,7 +28,7 @@ export class TabFollower {
         await this.tabPersister.persist(tabFollowState);
         this.eventBus.publish(new TabFollowed(tab));
 
-        this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(tab.openState, tab.followState);
+        this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(tab.openState, tab.followState); // TODO command
     }
 
     private createTabFollowStateFromOpenState(openState: TabOpenState): TabFollowState {

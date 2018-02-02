@@ -1,25 +1,23 @@
 import { EventBus } from '../bus/event-bus';
+import { QueryBus } from '../bus/query-bus';
 import { sleep } from '../utils/sleep';
 import { RestoreFollowedTab } from './command/restore-followed-tab';
 import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';
-import { FollowedTabRetriever } from './followed-tab/followed-tab-retriever';
 import { TabFollowState } from './followed-tab/tab-follow-state';
 import { NativeRecentlyClosedTabAssociationMaintainer } from './native-recently-closed-tab/native-recently-closed-tab-association-maintainer';
-import { OpenedTabRetriever } from './opened-tab/opened-tab-retriever';
 import { TabAssociationMaintainer } from './tab-association/tab-association-maintainer';
 
 export class TabOpener {
     constructor(
-        private openedTabRetriever: OpenedTabRetriever,
-        private followedTabRetriever: FollowedTabRetriever,
         private tabAssociationMaintainer: TabAssociationMaintainer,
         private nativeRecentlyClosedTabAssociationMaintainer: NativeRecentlyClosedTabAssociationMaintainer,
         private eventBus: EventBus,
+        private queryBus: QueryBus,
     ) {
     }
 
     async restoreFollowedTab(command: RestoreFollowedTab) {
-        const followState = await this.followedTabRetriever.getById(command.followId);
+        const followState = await this.followedTabRetriever.getById(command.followId); // TODO query
         let openedTab: browser.tabs.Tab = await this.restoreFromRecentlyClosedTabs(followState);
 
         if (null == openedTab) {
@@ -62,7 +60,7 @@ export class TabOpener {
 
     private async associateNewTabToFollowedTab(openTabCommand: RestoreFollowedTab, openedTab: browser.tabs.Tab) {
         const tabFollowState = await this.followedTabRetriever.getById(openTabCommand.followId);
-        const tabOpenState = await this.openedTabRetriever.getById(openedTab.id);
+        const tabOpenState = await this.openedTabRetriever.getById(openedTab.id); // TODO query
 
         this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(tabOpenState, tabFollowState);
         this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(tabOpenState, tabFollowState));

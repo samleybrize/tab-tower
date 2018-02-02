@@ -1,9 +1,9 @@
 import { Query } from '../../bus/query-bus';
 import { TabAssociation } from '../tab-association/tab-association';
 
-export class GetTabByFollowId implements Query<TabAssociation> {
+export class GetTabAssociationByOpenId implements Query<TabAssociation> {
     readonly resultType: TabAssociation;
 
-    constructor(public readonly followId: string) {
+    constructor(public readonly openId: number) {
     }
 }

@@ -16,8 +16,8 @@ import { TabClosed } from '../tab/event/tab-closed';
 import { TabFilterRequested } from '../tab/event/tab-filter-requested';
 import { TabFollowed } from '../tab/event/tab-followed';
 import { TabUnfollowed } from '../tab/event/tab-unfollowed';
-import { GetFollowedTabs } from '../tab/query/get-followed-tabs';
-import { GetTabByFollowId } from '../tab/query/get-tab-by-follow-id';
+import { GetTabAssociationByFollowId } from '../tab/query/get-tab-association-by-follow-id';
+import { GetTabAssociationsWithFollowState } from '../tab/query/get-tab-associations-with-follow-state';
 import { TabAssociation } from '../tab/tab-association/tab-association';
 import { StringMatcher } from '../utils/string-matcher';
 import { TabCounter } from './tab-counter';
@@ -68,7 +68,7 @@ export class FollowedTabView {
     }
 
     async init() {
-        const tabList = await this.queryBus.query(new GetFollowedTabs());
+        const tabList = await this.queryBus.query(new GetTabAssociationsWithFollowState());
         this.noTabRow = this.createNoTabRow();
         this.tbodyElement.appendChild(this.noTabRow);
         let numberOfFollowedTabs = 0;
@@ -201,7 +201,7 @@ export class FollowedTabView {
         jQuery(unfollowButton).tooltip();
 
         unfollowButton.addEventListener('dblclick', async (event) => {
-            const upToDateTab = await this.queryBus.query(new GetTabByFollowId(tab.followState.id));
+            const upToDateTab = await this.queryBus.query(new GetTabAssociationByFollowId(tab.followState.id));
             this.commandBus.handle(new UnfollowTab(upToDateTab));
         });
 
@@ -319,7 +319,7 @@ export class FollowedTabView {
         if (tabRow) {
             tabRow.removeAttribute('data-opened-tab-id');
             const followId = tabRow.getAttribute('data-follow-id');
-            const upToDateTab = await this.queryBus.query(new GetTabByFollowId(followId));
+            const upToDateTab = await this.queryBus.query(new GetTabAssociationByFollowId(followId));
             this.updateTabTitle(tabRow, upToDateTab.followState.title);
             this.updateTabUrl(tabRow, upToDateTab.followState.url);
             this.updateTabFavicon(tabRow, upToDateTab.followState.faviconUrl);

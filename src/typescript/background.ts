@@ -42,10 +42,10 @@ import { OpenedTabRetriever } from './tab/opened-tab/opened-tab-retriever';
 import { InMemoryTabPersister } from './tab/persister/in-memory-tab-persister';
 import { WebStorageTabPersister } from './tab/persister/web-storage-tab-persister';
 import { PrivilegedUrlDetector } from './tab/privileged-url-detector';
-import { GetFollowedTabs } from './tab/query/get-followed-tabs';
-import { GetOpenedTabs } from './tab/query/get-opened-tabs';
-import { GetTabByFollowId } from './tab/query/get-tab-by-follow-id';
-import { GetTabByOpenId } from './tab/query/get-tab-by-open-id';
+import { GetTabAssociationByFollowId } from './tab/query/get-tab-association-by-follow-id';
+import { GetTabAssociationByOpenId } from './tab/query/get-tab-association-by-open-id';
+import { GetTabAssociationsWithFollowState } from './tab/query/get-tab-associations-with-follow-state';
+import { GetTabAssociationsWithOpenState } from './tab/query/get-tab-associations-with-open-state';
 import { tabQueries } from './tab/query/tab-queries';
 import { TabAssociationMaintainer } from './tab/tab-association/tab-association-maintainer';
 import { TabAssociationRetriever } from './tab/tab-association/tab-association-retriever';
@@ -70,13 +70,13 @@ async function main() {
     const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
     const tabFocuser = new TabFocuser();
     const openedTabRetriever = new OpenedTabRetriever(privilegedUrlDetector, [uiUrlStartWith]);
-    const closedTabRetriever = new ClosedTabRetriever(openedTabRetriever);
+    const closedTabRetriever = new ClosedTabRetriever(queryBus);
     const tabCloser = new TabCloser();
-    const tabAssociationMaintainer = new TabAssociationMaintainer(followedTabRetriever, openedTabRetriever, eventBus);
+    const tabAssociationMaintainer = new TabAssociationMaintainer(eventBus, queryBus);
     const followedTabUpdater = new FollowedTabUpdater(inMemoryTabPersister, tabAssociationMaintainer, eventBus);
     const tabFollower = new TabFollower(inMemoryTabPersister, tabAssociationMaintainer, eventBus);
-    const tabOpener = new TabOpener(openedTabRetriever, followedTabRetriever, tabAssociationMaintainer, nativeRecentlyClosedTabAssociationMaintainer, eventBus);
-    const tabAssociationRetriever = new TabAssociationRetriever(followedTabRetriever, openedTabRetriever, tabAssociationMaintainer);
+    const tabOpener = new TabOpener(tabAssociationMaintainer, nativeRecentlyClosedTabAssociationMaintainer, eventBus, queryBus);
+    const tabAssociationRetriever = new TabAssociationRetriever(tabAssociationMaintainer, queryBus);
 
     const objectUnserializer = new ObjectUnserializer();
     objectUnserializer.addSupportedClasses(tabCommands);
@@ -107,10 +107,10 @@ async function main() {
     commandBus.register(RestoreFollowedTab, tabOpener.restoreFollowedTab, tabOpener);
     commandBus.register(UnfollowTab, tabUnfollower.unfollowTab, tabUnfollower);
 
-    queryBus.register(GetFollowedTabs, tabAssociationRetriever.queryFollowedTabs, tabAssociationRetriever);
-    queryBus.register(GetOpenedTabs, tabAssociationRetriever.queryOpenedTabs, tabAssociationRetriever);
-    queryBus.register(GetTabByFollowId, tabAssociationRetriever.queryByFollowId, tabAssociationRetriever);
-    queryBus.register(GetTabByOpenId, tabAssociationRetriever.queryByOpenId, tabAssociationRetriever);
+    queryBus.register(GetTabAssociationsWithFollowState, tabAssociationRetriever.queryFollowedTabs, tabAssociationRetriever);
+    queryBus.register(GetTabAssociationsWithOpenState, tabAssociationRetriever.queryOpenedTabs, tabAssociationRetriever);
+    queryBus.register(GetTabAssociationByFollowId, tabAssociationRetriever.queryByFollowId, tabAssociationRetriever);
+    queryBus.register(GetTabAssociationByOpenId, tabAssociationRetriever.queryByOpenId, tabAssociationRetriever);
 
     eventBus.subscribe(TabClosed, nativeRecentlyClosedTabAssociationMaintainer.onTabClose, nativeRecentlyClosedTabAssociationMaintainer);
     eventBus.subscribe(TabClosed, openedTabRetriever.onTabClose, openedTabRetriever);

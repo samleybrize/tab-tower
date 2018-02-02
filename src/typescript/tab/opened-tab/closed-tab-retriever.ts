@@ -1,3 +1,4 @@
+import { QueryBus } from '../../bus/query-bus';
 import { OpenedTabFaviconUrlUpdated } from '../event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from '../event/opened-tab-focused';
 import { OpenedTabMoved } from '../event/opened-tab-moved';
@@ -6,13 +7,12 @@ import { OpenedTabTitleUpdated } from '../event/opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from '../event/opened-tab-url-updated';
 import { TabCloseHandled } from '../event/tab-close-handled';
 import { TabOpened } from '../event/tab-opened';
-import { OpenedTabRetriever } from './opened-tab-retriever';
 import { TabOpenState } from './tab-open-state';
 
 export class ClosedTabRetriever {
     private openedTabMap = new Map<number, TabOpenState>();
 
-    constructor(private openedTabRetriever: OpenedTabRetriever) {
+    constructor(private queryBus: QueryBus) {
     }
 
     async init() {
@@ -20,7 +20,7 @@ export class ClosedTabRetriever {
             return;
         }
 
-        const tabList = await this.openedTabRetriever.getAll();
+        const tabList = await this.openedTabRetriever.getAll(); // TODO query
 
         for (const tab of tabList) {
             this.openedTabMap.set(tab.id, tab);

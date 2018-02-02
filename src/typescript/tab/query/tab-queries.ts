@@ -1,11 +1,11 @@
-import { GetFollowedTabs } from './get-followed-tabs';
-import { GetOpenedTabs } from './get-opened-tabs';
-import { GetTabByFollowId } from './get-tab-by-follow-id';
-import { GetTabByOpenId } from './get-tab-by-open-id';
+import { GetTabAssociationByFollowId } from './get-tab-association-by-follow-id';
+import { GetTabAssociationByOpenId } from './get-tab-association-by-open-id';
+import { GetTabAssociationsWithFollowState } from './get-tab-associations-with-follow-state';
+import { GetTabAssociationsWithOpenState } from './get-tab-associations-with-open-state';
 
 export const tabQueries = [
-    GetFollowedTabs,
-    GetOpenedTabs,
-    GetTabByFollowId,
-    GetTabByOpenId,
+    GetTabAssociationsWithFollowState,
+    GetTabAssociationsWithOpenState,
+    GetTabAssociationByFollowId,
+    GetTabAssociationByOpenId,
 ];

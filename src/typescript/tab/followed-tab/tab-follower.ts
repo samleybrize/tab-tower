@@ -5,7 +5,7 @@ import { FollowTab } from '../command/follow-tab';
 import { TabFollowed } from '../event/tab-followed';
 import { TabOpenState } from '../opened-tab/tab-open-state';
 import { TabPersister } from '../persister/tab-persister';
-import { TabAssociationMaintainer } from '../tab-association-maintainer';
+import { TabAssociationMaintainer } from '../tab-association/tab-association-maintainer';
 import { TabFollowState } from './tab-follow-state';
 
 export class TabFollower {
@@ -27,6 +27,8 @@ export class TabFollower {
         tab.followState = tabFollowState;
         await this.tabPersister.persist(tabFollowState);
         this.eventBus.publish(new TabFollowed(tab));
+
+        this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(tab.openState, tab.followState);
     }
 
     private createTabFollowStateFromOpenState(openState: TabOpenState): TabFollowState {
@@ -39,8 +41,6 @@ export class TabFollower {
         followState.faviconUrl = openState.faviconUrl;
         followState.openLongLivedId = openState.longLivedId;
         followState.openLastAccess = openState.lastAccess;
-
-        this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(openState, followState);
 
         return followState;
     }

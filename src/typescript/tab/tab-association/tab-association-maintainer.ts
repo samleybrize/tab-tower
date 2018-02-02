@@ -1,11 +1,11 @@
-import { EventBus } from '../bus/event-bus';
-import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';
-import { TabClosed } from './event/tab-closed';
-import { TabUnfollowed } from './event/tab-unfollowed';
-import { FollowedTabRetriever } from './followed-tab/followed-tab-retriever';
-import { TabFollowState } from './followed-tab/tab-follow-state';
-import { OpenedTabRetriever } from './opened-tab/opened-tab-retriever';
-import { TabOpenState } from './opened-tab/tab-open-state';
+import { EventBus } from '../../bus/event-bus';
+import { OpenedTabAssociatedToFollowedTab } from '../event/opened-tab-associated-to-followed-tab';
+import { TabClosed } from '../event/tab-closed';
+import { TabUnfollowed } from '../event/tab-unfollowed';
+import { FollowedTabRetriever } from '../followed-tab/followed-tab-retriever';
+import { TabFollowState } from '../followed-tab/tab-follow-state';
+import { OpenedTabRetriever } from '../opened-tab/opened-tab-retriever';
+import { TabOpenState } from '../opened-tab/tab-open-state';
 
 export class TabAssociationMaintainer {
     private openTabIdFollowIdAssociation = new Map<number, string>();
@@ -27,7 +27,6 @@ export class TabAssociationMaintainer {
 
             if (followState) {
                 this.associateOpenedTabToFollowedTab(tabOpenState, followState);
-                this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(tabOpenState, followState));
             }
         }
     }
@@ -35,6 +34,8 @@ export class TabAssociationMaintainer {
     associateOpenedTabToFollowedTab(openState: TabOpenState, followState: TabFollowState) {
         this.openTabIdFollowIdAssociation.set(openState.id, followState.id);
         this.followIdOpenTabIdAssociation.set(followState.id, openState.id);
+
+        this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(openState, followState));
     }
 
     getAssociatedOpenedTabId(followId: string): number {

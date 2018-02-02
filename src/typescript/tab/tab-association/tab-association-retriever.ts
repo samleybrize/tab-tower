@@ -1,11 +1,11 @@
-import { EventBus } from '../bus/event-bus';
-import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';
-import { FollowedTabRetriever } from './followed-tab/followed-tab-retriever';
-import { OpenedTabRetriever } from './opened-tab/opened-tab-retriever';
-import { GetFollowedTabs } from './query/get-followed-tabs';
-import { GetOpenedTabs } from './query/get-opened-tabs';
-import { GetTabByFollowId } from './query/get-tab-by-follow-id';
-import { GetTabByOpenId } from './query/get-tab-by-open-id';
+import { EventBus } from '../../bus/event-bus';
+import { OpenedTabAssociatedToFollowedTab } from '../event/opened-tab-associated-to-followed-tab';
+import { FollowedTabRetriever } from '../followed-tab/followed-tab-retriever';
+import { OpenedTabRetriever } from '../opened-tab/opened-tab-retriever';
+import { GetFollowedTabs } from '../query/get-followed-tabs';
+import { GetOpenedTabs } from '../query/get-opened-tabs';
+import { GetTabByFollowId } from '../query/get-tab-by-follow-id';
+import { GetTabByOpenId } from '../query/get-tab-by-open-id';
 import { TabAssociation } from './tab-association';
 import { TabAssociationMaintainer } from './tab-association-maintainer';
 

@@ -12,7 +12,7 @@ import { OpenedTabTitleUpdated } from '../event/opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from '../event/opened-tab-url-updated';
 import { TabOpened } from '../event/tab-opened';
 import { TabPersister } from '../persister/tab-persister';
-import { TabAssociationMaintainer } from '../tab-association-maintainer';
+import { TabAssociationMaintainer } from '../tab-association/tab-association-maintainer';
 
 export class FollowedTabUpdater {
     constructor(

@@ -6,7 +6,7 @@ import { FollowedTabRetriever } from './followed-tab/followed-tab-retriever';
 import { TabFollowState } from './followed-tab/tab-follow-state';
 import { NativeRecentlyClosedTabAssociationMaintainer } from './native-recently-closed-tab/native-recently-closed-tab-association-maintainer';
 import { OpenedTabRetriever } from './opened-tab/opened-tab-retriever';
-import { TabAssociationMaintainer } from './tab-association-maintainer';
+import { TabAssociationMaintainer } from './tab-association/tab-association-maintainer';
 
 export class TabOpener {
     constructor(

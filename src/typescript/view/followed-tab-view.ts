@@ -18,7 +18,7 @@ import { TabFollowed } from '../tab/event/tab-followed';
 import { TabUnfollowed } from '../tab/event/tab-unfollowed';
 import { GetFollowedTabs } from '../tab/query/get-followed-tabs';
 import { GetTabByFollowId } from '../tab/query/get-tab-by-follow-id';
-import { TabAssociation } from '../tab/tab-association';
+import { TabAssociation } from '../tab/tab-association/tab-association';
 import { StringMatcher } from '../utils/string-matcher';
 import { TabCounter } from './tab-counter';
 

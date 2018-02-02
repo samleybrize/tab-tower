@@ -40,7 +40,7 @@ export class TabFollower {
         followState.openLongLivedId = openState.longLivedId;
         followState.openLastAccess = openState.lastAccess;
 
-        this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(openState.id, followState.id);
+        this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(openState, followState);
 
         return followState;
     }

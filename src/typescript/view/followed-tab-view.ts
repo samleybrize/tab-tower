@@ -18,7 +18,7 @@ import { TabFollowed } from '../tab/event/tab-followed';
 import { TabUnfollowed } from '../tab/event/tab-unfollowed';
 import { GetFollowedTabs } from '../tab/query/get-followed-tabs';
 import { GetTabByFollowId } from '../tab/query/get-tab-by-follow-id';
-import { Tab } from '../tab/tab';
+import { TabAssociation } from '../tab/tab-association';
 import { StringMatcher } from '../utils/string-matcher';
 import { TabCounter } from './tab-counter';
 
@@ -103,7 +103,7 @@ export class FollowedTabView {
         return row;
     }
 
-    private createTabRow(tab: Tab): HTMLElement {
+    private createTabRow(tab: TabAssociation): HTMLElement {
         const row = document.createElement('tr');
 
         const titleCell = this.createTitleCell(tab, row);
@@ -135,7 +135,7 @@ export class FollowedTabView {
         return row;
     }
 
-    private isTabOpened(tab: Tab) {
+    private isTabOpened(tab: TabAssociation) {
         return !!tab.openState;
     }
 
@@ -161,7 +161,7 @@ export class FollowedTabView {
         return cell;
     }
 
-    private createTitleCell(tab: Tab, row: HTMLElement): HTMLElement {
+    private createTitleCell(tab: TabAssociation, row: HTMLElement): HTMLElement {
         const linkElement = document.createElement('a');
         linkElement.innerHTML = `
             <img />
@@ -190,7 +190,7 @@ export class FollowedTabView {
         return cell;
     }
 
-    private addUnfollowButton(cell: HTMLElement, tab: Tab) {
+    private addUnfollowButton(cell: HTMLElement, tab: TabAssociation) {
         const unfollowButton = document.createElement('a');
         unfollowButton.textContent = 'Unfollow';
         unfollowButton.setAttribute('data-tooltip', 'Please double click to unfollow this tab');

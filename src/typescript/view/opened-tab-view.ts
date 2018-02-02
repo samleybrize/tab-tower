@@ -21,7 +21,7 @@ import { TabUnfollowed } from '../tab/event/tab-unfollowed';
 import { TabOpenState } from '../tab/opened-tab/tab-open-state';
 import { GetOpenedTabs } from '../tab/query/get-opened-tabs';
 import { GetTabByOpenId } from '../tab/query/get-tab-by-open-id';
-import { Tab } from '../tab/tab';
+import { TabAssociation } from '../tab/tab-association';
 import { StringMatcher } from '../utils/string-matcher';
 import { TabCounter } from './tab-counter';
 
@@ -92,7 +92,7 @@ export class OpenedTabView {
         this.showNoTabRowIfTableIsEmpty();
     }
 
-    private isTabFollowed(tab: Tab) {
+    private isTabFollowed(tab: TabAssociation) {
         return !!tab.followState;
     }
 

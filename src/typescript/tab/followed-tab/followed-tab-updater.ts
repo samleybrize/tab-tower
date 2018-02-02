@@ -33,7 +33,7 @@ export class FollowedTabUpdater {
         const associatedFollowedState = await this.tabPersister.getByOpenLongLivedId(event.tabOpenState.longLivedId);
 
         if (associatedFollowedState) {
-            this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(event.tabOpenState.id, associatedFollowedState.id);
+            this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(event.tabOpenState, associatedFollowedState);
             this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(event.tabOpenState, associatedFollowedState));
         }
     }

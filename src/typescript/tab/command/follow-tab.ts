@@ -1,6 +1,6 @@
-import { Tab } from '../tab';
+import { TabAssociation } from '../tab-association';
 
 export class FollowTab {
-    constructor(public readonly tab: Tab) {
+    constructor(public readonly tab: TabAssociation) {
     }
 }

@@ -64,7 +64,7 @@ export class TabOpener {
         const tabFollowState = await this.followedTabRetriever.getById(openTabCommand.followId);
         const tabOpenState = await this.openedTabRetriever.getById(openedTab.id);
 
-        this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(openedTab.id, openTabCommand.followId);
+        this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(tabOpenState, tabFollowState);
         this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(tabOpenState, tabFollowState));
     }
 

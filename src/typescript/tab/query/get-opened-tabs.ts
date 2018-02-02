@@ -1,6 +1,6 @@
 import { Query } from '../../bus/query-bus';
-import { Tab } from '../tab';
+import { TabAssociation } from '../tab-association';
 
-export class GetOpenedTabs implements Query<Tab[]> {
-    readonly resultType: Tab[];
+export class GetOpenedTabs implements Query<TabAssociation[]> {
+    readonly resultType: TabAssociation[];
 }

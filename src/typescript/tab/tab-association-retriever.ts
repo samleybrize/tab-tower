@@ -6,38 +6,23 @@ import { GetFollowedTabs } from './query/get-followed-tabs';
 import { GetOpenedTabs } from './query/get-opened-tabs';
 import { GetTabByFollowId } from './query/get-tab-by-follow-id';
 import { GetTabByOpenId } from './query/get-tab-by-open-id';
-import { Tab } from './tab';
+import { TabAssociation } from './tab-association';
 import { TabAssociationMaintainer } from './tab-association-maintainer';
 
-export class TabRetriever {
+export class TabAssociationRetriever {
     constructor(
         private followedTabRetriever: FollowedTabRetriever,
         private openedTabRetriever: OpenedTabRetriever,
         private tabAssociationMaintainer: TabAssociationMaintainer,
-        private eventBus: EventBus,
     ) {
     }
 
-    async associateOpenedTabsWithFollowedTabs() {
+    async queryOpenedTabs(query: GetOpenedTabs): Promise<TabAssociation[]> {
         const tabOpenStateList = await this.openedTabRetriever.getAll();
-        const candidateFollowStates = await this.followedTabRetriever.getWithOpenLongLivedId();
+        const tabList: TabAssociation[] = [];
 
         for (const tabOpenState of tabOpenStateList) {
-            const followState = candidateFollowStates.get(tabOpenState.longLivedId);
-
-            if (followState) {
-                this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(tabOpenState.id, followState.id);
-                this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(tabOpenState, followState));
-            }
-        }
-    }
-
-    async queryOpenedTabs(query: GetOpenedTabs): Promise<Tab[]> {
-        const tabOpenStateList = await this.openedTabRetriever.getAll();
-        const tabList: Tab[] = [];
-
-        for (const tabOpenState of tabOpenStateList) {
-            const tab = new Tab();
+            const tab = new TabAssociation();
             tab.openState = tabOpenState;
             tab.followState = await this.getAssociatedTabFollowedState(tabOpenState.id);
             tabList.push(tab);
@@ -56,12 +41,12 @@ export class TabRetriever {
         return null;
     }
 
-    async queryFollowedTabs(query: GetFollowedTabs): Promise<Tab[]> {
+    async queryFollowedTabs(query: GetFollowedTabs): Promise<TabAssociation[]> {
         const tabFollowStateList = await this.followedTabRetriever.getAll();
-        const tabList: Tab[] = [];
+        const tabList: TabAssociation[] = [];
 
         for (const tabFollowState of tabFollowStateList) {
-            const tab = new Tab();
+            const tab = new TabAssociation();
             tab.followState = tabFollowState;
             tab.openState = await this.getAssociatedTabOpenState(tabFollowState.id);
             tabList.push(tab);
@@ -80,28 +65,28 @@ export class TabRetriever {
         return null;
     }
 
-    async queryByOpenId(query: GetTabByOpenId): Promise<Tab> {
+    async queryByOpenId(query: GetTabByOpenId): Promise<TabAssociation> {
         const tabOpenState = await this.openedTabRetriever.getById(query.openId);
 
         if (null == tabOpenState) {
             return null;
         }
 
-        const tab = new Tab();
+        const tab = new TabAssociation();
         tab.openState = tabOpenState;
         tab.followState = await this.getAssociatedTabFollowedState(query.openId);
 
         return tab;
     }
 
-    async queryByFollowId(query: GetTabByFollowId): Promise<Tab> {
+    async queryByFollowId(query: GetTabByFollowId): Promise<TabAssociation> {
         const tabFollowState = await this.followedTabRetriever.getById(query.followId);
 
         if (null == tabFollowState) {
             return null;
         }
 
-        const tab = new Tab();
+        const tab = new TabAssociation();
         tab.followState = tabFollowState;
         tab.openState = await this.getAssociatedTabOpenState(query.followId);
 

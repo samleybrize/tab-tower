@@ -48,10 +48,10 @@ import { GetTabByFollowId } from './tab/query/get-tab-by-follow-id';
 import { GetTabByOpenId } from './tab/query/get-tab-by-open-id';
 import { tabQueries } from './tab/query/tab-queries';
 import { TabAssociationMaintainer } from './tab/tab-association-maintainer';
+import { TabAssociationRetriever } from './tab/tab-association-retriever';
 import { TabCloser } from './tab/tab-closer';
 import { TabFocuser } from './tab/tab-focuser';
 import { TabOpener } from './tab/tab-opener';
-import { TabRetriever } from './tab/tab-retriever';
 import { ObjectUnserializer } from './utils/object-unserializer';
 
 const uiUrlStartWith = `moz-extension://${location.host}/ui/tab-tower.html`;
@@ -64,19 +64,19 @@ async function main() {
     const webStorageTabPersister = new WebStorageTabPersister();
     const inMemoryTabPersister = new InMemoryTabPersister(webStorageTabPersister);
     const privilegedUrlDetector = new PrivilegedUrlDetector();
-    const tabAssociationMaintainer = new TabAssociationMaintainer();
     const nativeRecentlyClosedTabAssociationPersister = new WebStorageNativeRecentlyClosedTabAssociationPersister();
     const nativeRecentlyClosedTabAssociationMaintainer = new NativeRecentlyClosedTabAssociationMaintainer(nativeRecentlyClosedTabAssociationPersister);
-    const followedTabUpdater = new FollowedTabUpdater(inMemoryTabPersister, tabAssociationMaintainer, eventBus);
-    const tabFollower = new TabFollower(inMemoryTabPersister, tabAssociationMaintainer, eventBus);
     const tabUnfollower = new TabUnfollower(inMemoryTabPersister, eventBus);
     const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
     const tabFocuser = new TabFocuser();
     const openedTabRetriever = new OpenedTabRetriever(privilegedUrlDetector, [uiUrlStartWith]);
     const closedTabRetriever = new ClosedTabRetriever(openedTabRetriever);
-    const tabOpener = new TabOpener(openedTabRetriever, followedTabRetriever, tabAssociationMaintainer, nativeRecentlyClosedTabAssociationMaintainer, eventBus);
     const tabCloser = new TabCloser();
-    const tabRetriever = new TabRetriever(followedTabRetriever, openedTabRetriever, tabAssociationMaintainer, eventBus);
+    const tabAssociationMaintainer = new TabAssociationMaintainer(followedTabRetriever, openedTabRetriever, eventBus);
+    const followedTabUpdater = new FollowedTabUpdater(inMemoryTabPersister, tabAssociationMaintainer, eventBus);
+    const tabFollower = new TabFollower(inMemoryTabPersister, tabAssociationMaintainer, eventBus);
+    const tabOpener = new TabOpener(openedTabRetriever, followedTabRetriever, tabAssociationMaintainer, nativeRecentlyClosedTabAssociationMaintainer, eventBus);
+    const tabAssociationRetriever = new TabAssociationRetriever(followedTabRetriever, openedTabRetriever, tabAssociationMaintainer);
 
     const objectUnserializer = new ObjectUnserializer();
     objectUnserializer.addSupportedClasses(tabCommands);
@@ -107,10 +107,10 @@ async function main() {
     commandBus.register(RestoreFollowedTab, tabOpener.restoreFollowedTab, tabOpener);
     commandBus.register(UnfollowTab, tabUnfollower.unfollowTab, tabUnfollower);
 
-    queryBus.register(GetFollowedTabs, tabRetriever.queryFollowedTabs, tabRetriever);
-    queryBus.register(GetOpenedTabs, tabRetriever.queryOpenedTabs, tabRetriever);
-    queryBus.register(GetTabByFollowId, tabRetriever.queryByFollowId, tabRetriever);
-    queryBus.register(GetTabByOpenId, tabRetriever.queryByOpenId, tabRetriever);
+    queryBus.register(GetFollowedTabs, tabAssociationRetriever.queryFollowedTabs, tabAssociationRetriever);
+    queryBus.register(GetOpenedTabs, tabAssociationRetriever.queryOpenedTabs, tabAssociationRetriever);
+    queryBus.register(GetTabByFollowId, tabAssociationRetriever.queryByFollowId, tabAssociationRetriever);
+    queryBus.register(GetTabByOpenId, tabAssociationRetriever.queryByOpenId, tabAssociationRetriever);
 
     eventBus.subscribe(TabClosed, nativeRecentlyClosedTabAssociationMaintainer.onTabClose, nativeRecentlyClosedTabAssociationMaintainer);
     eventBus.subscribe(TabClosed, openedTabRetriever.onTabClose, openedTabRetriever);
@@ -144,7 +144,7 @@ async function main() {
     eventBus.subscribe(TabUnfollowed, sendMessageEventHandler.onEvent, sendMessageEventHandler);
     eventBus.subscribe(TabUnfollowed, tabAssociationMaintainer.onTabUnfollow, tabAssociationMaintainer);
 
-    await tabRetriever.associateOpenedTabsWithFollowedTabs();
+    await tabAssociationMaintainer.associateOpenedTabsWithFollowedTabs();
 
     const uiUrl = `moz-extension://${location.host}/ui/tab-tower.html`;
     browser.browserAction.onClicked.addListener(async () => {

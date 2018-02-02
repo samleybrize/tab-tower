@@ -1,6 +1,8 @@
 import { EventBus } from '../../bus/event-bus';
 import { QueryBus } from '../../bus/query-bus';
 import { OpenedTabAssociatedToFollowedTab } from '../event/opened-tab-associated-to-followed-tab';
+import { GetFollowIdAssociatedToOpenId } from '../query/get-follow-id-associated-to-open-id';
+import { GetOpenIdAssociatedToFollowId } from '../query/get-open-id-associated-to-follow-id';
 import { GetTabAssociationByFollowId } from '../query/get-tab-association-by-follow-id';
 import { GetTabAssociationByOpenId } from '../query/get-tab-association-by-open-id';
 import { GetTabAssociationsWithFollowState } from '../query/get-tab-associations-with-follow-state';
@@ -10,13 +12,9 @@ import { GetTabFollowStates } from '../query/get-tab-follow-states';
 import { GetTabOpenStateByOpenId } from '../query/get-tab-open-state-by-open-id';
 import { GetTabOpenStates } from '../query/get-tab-open-states';
 import { TabAssociation } from './tab-association';
-import { TabAssociationMaintainer } from './tab-association-maintainer';
 
 export class TabAssociationRetriever {
-    constructor(
-        private tabAssociationMaintainer: TabAssociationMaintainer,
-        private queryBus: QueryBus,
-    ) {
+    constructor(private queryBus: QueryBus) {
     }
 
     async queryOpenedTabs(query: GetTabAssociationsWithOpenState): Promise<TabAssociation[]> {
@@ -34,7 +32,7 @@ export class TabAssociationRetriever {
     }
 
     private async getAssociatedTabFollowedState(openTabId: number) {
-        const associatedFollowId = this.tabAssociationMaintainer.getAssociatedFollowId(openTabId); // TODO query
+        const associatedFollowId = await this.queryBus.query(new GetFollowIdAssociatedToOpenId(openTabId));
 
         if (associatedFollowId) {
             return await this.queryBus.query(new GetTabFollowStateByFollowId(associatedFollowId));
@@ -58,7 +56,7 @@ export class TabAssociationRetriever {
     }
 
     private async getAssociatedTabOpenState(followId: string) {
-        const associatedOpenTabId = this.tabAssociationMaintainer.getAssociatedOpenedTabId(followId); // TODO query
+        const associatedOpenTabId = await this.queryBus.query(new GetOpenIdAssociatedToFollowId(followId));
 
         if (associatedOpenTabId) {
             return await this.queryBus.query(new GetTabOpenStateByOpenId(associatedOpenTabId));

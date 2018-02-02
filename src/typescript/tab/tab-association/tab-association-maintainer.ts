@@ -1,10 +1,13 @@
 import { EventBus } from '../../bus/event-bus';
 import { QueryBus } from '../../bus/query-bus';
+import { AssociateOpenedTabToFollowedTab } from '../command/associate-opened-tab-to-followed-tab';
 import { OpenedTabAssociatedToFollowedTab } from '../event/opened-tab-associated-to-followed-tab';
 import { TabClosed } from '../event/tab-closed';
 import { TabUnfollowed } from '../event/tab-unfollowed';
 import { TabFollowState } from '../followed-tab/tab-follow-state';
 import { TabOpenState } from '../opened-tab/tab-open-state';
+import { GetFollowIdAssociatedToOpenId } from '../query/get-follow-id-associated-to-open-id';
+import { GetOpenIdAssociatedToFollowId } from '../query/get-open-id-associated-to-follow-id';
 import { GetTabFollowStatesWithOpenLongLivedId } from '../query/get-tab-follow-states-with-open-long-lived-id';
 import { GetTabOpenStates } from '../query/get-tab-open-states';
 
@@ -26,23 +29,35 @@ export class TabAssociationMaintainer {
             const followState = candidateFollowStates.get(tabOpenState.longLivedId);
 
             if (followState) {
-                this.associateOpenedTabToFollowedTab(tabOpenState, followState);
+                this.doAssociateOpenedTabToFollowedTab(tabOpenState, followState);
             }
         }
     }
 
-    associateOpenedTabToFollowedTab(openState: TabOpenState, followState: TabFollowState) {
+    async associateOpenedTabToFollowedTab(command: AssociateOpenedTabToFollowedTab) {
+        this.doAssociateOpenedTabToFollowedTab(command.openState, command.followState);
+    }
+
+    private doAssociateOpenedTabToFollowedTab(openState: TabOpenState, followState: TabFollowState) {
         this.openTabIdFollowIdAssociation.set(openState.id, followState.id);
         this.followIdOpenTabIdAssociation.set(followState.id, openState.id);
 
         this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(openState, followState));
     }
 
-    getAssociatedOpenedTabId(followId: string): number {
+    async queryAssociatedOpenId(query: GetOpenIdAssociatedToFollowId): Promise<number> {
+        return this.getAssociatedOpenId(query.followId);
+    }
+
+    private getAssociatedOpenId(followId: string): number {
         return this.followIdOpenTabIdAssociation.get(followId);
     }
 
-    getAssociatedFollowId(openTabId: number): string {
+    async queryAssociatedFollowId(query: GetFollowIdAssociatedToOpenId): Promise<string> {
+        return this.getAssociatedFollowId(query.openId);
+    }
+
+    private getAssociatedFollowId(openTabId: number): string {
         return this.openTabIdFollowIdAssociation.get(openTabId);
     }
 

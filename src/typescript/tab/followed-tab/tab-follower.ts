@@ -1,18 +1,21 @@
 import * as uuid from 'uuid';
 
+import { CommandBus } from '../../bus/command-bus';
 import { EventBus } from '../../bus/event-bus';
+import { QueryBus } from '../../bus/query-bus';
+import { AssociateOpenedTabToFollowedTab } from '../command/associate-opened-tab-to-followed-tab';
 import { FollowTab } from '../command/follow-tab';
 import { TabFollowed } from '../event/tab-followed';
 import { TabOpenState } from '../opened-tab/tab-open-state';
 import { TabPersister } from '../persister/tab-persister';
-import { TabAssociationMaintainer } from '../tab-association/tab-association-maintainer';
 import { TabFollowState } from './tab-follow-state';
 
 export class TabFollower {
     constructor(
         private tabPersister: TabPersister,
-        private tabAssociationMaintainer: TabAssociationMaintainer,
+        private commandBus: CommandBus,
         private eventBus: EventBus,
+        private queryBus: QueryBus,
     ) {
     }
 
@@ -28,7 +31,7 @@ export class TabFollower {
         await this.tabPersister.persist(tabFollowState);
         this.eventBus.publish(new TabFollowed(tab));
 
-        this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(tab.openState, tab.followState); // TODO command
+        await this.commandBus.handle(new AssociateOpenedTabToFollowedTab(tab.openState, tab.followState));
     }
 
     private createTabFollowStateFromOpenState(openState: TabOpenState): TabFollowState {

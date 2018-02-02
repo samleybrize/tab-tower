@@ -1,4 +1,6 @@
 import { GetClosedTabOpenStateByOpenId } from './get-closed-tab-open-state-by-open-id';
+import { GetFollowIdAssociatedToOpenId } from './get-follow-id-associated-to-open-id';
+import { GetOpenIdAssociatedToFollowId } from './get-open-id-associated-to-follow-id';
 import { GetTabAssociationByFollowId } from './get-tab-association-by-follow-id';
 import { GetTabAssociationByOpenId } from './get-tab-association-by-open-id';
 import { GetTabAssociationsWithFollowState } from './get-tab-associations-with-follow-state';
@@ -11,6 +13,8 @@ import { GetTabOpenStates } from './get-tab-open-states';
 
 export const tabQueries = [
     GetClosedTabOpenStateByOpenId,
+    GetFollowIdAssociatedToOpenId,
+    GetOpenIdAssociatedToFollowId,
     GetTabAssociationsWithFollowState,
     GetTabAssociationsWithOpenState,
     GetTabAssociationByFollowId,

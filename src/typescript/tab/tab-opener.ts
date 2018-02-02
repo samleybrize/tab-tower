@@ -1,18 +1,19 @@
+import { CommandBus } from '../bus/command-bus';
 import { EventBus } from '../bus/event-bus';
 import { QueryBus } from '../bus/query-bus';
 import { sleep } from '../utils/sleep';
+import { AssociateOpenedTabToFollowedTab } from './command/associate-opened-tab-to-followed-tab';
 import { RestoreFollowedTab } from './command/restore-followed-tab';
 import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';
 import { TabFollowState } from './followed-tab/tab-follow-state';
 import { NativeRecentlyClosedTabAssociationMaintainer } from './native-recently-closed-tab/native-recently-closed-tab-association-maintainer';
 import { GetTabFollowStateByFollowId } from './query/get-tab-follow-state-by-follow-id';
 import { GetTabOpenStateByOpenId } from './query/get-tab-open-state-by-open-id';
-import { TabAssociationMaintainer } from './tab-association/tab-association-maintainer';
 
 export class TabOpener {
     constructor(
-        private tabAssociationMaintainer: TabAssociationMaintainer,
         private nativeRecentlyClosedTabAssociationMaintainer: NativeRecentlyClosedTabAssociationMaintainer,
+        private commandBus: CommandBus,
         private eventBus: EventBus,
         private queryBus: QueryBus,
     ) {
@@ -64,7 +65,7 @@ export class TabOpener {
         const tabFollowState = await this.queryBus.query(new GetTabFollowStateByFollowId(restoreTabCommand.followId));
         const tabOpenState = await this.queryBus.query(new GetTabOpenStateByOpenId(openedTab.id));
 
-        this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(tabOpenState, tabFollowState); // TODO command
+        await this.commandBus.handle(new AssociateOpenedTabToFollowedTab(tabOpenState, tabFollowState));
     }
 
     async waitForNewTabLoad(tabId: number) {

@@ -10,6 +10,7 @@ import { ReceivedQueryMessageHandler } from './message/receiver/received-query-m
 import { BackgroundMessageSender } from './message/sender/background-message-sender';
 import { SendMessageEventHandler } from './message/sender/send-message-event-handler';
 import { SendMessageQueryHandler } from './message/sender/send-message-query-handler';
+import { AssociateOpenedTabToFollowedTab } from './tab/command/associate-opened-tab-to-followed-tab';
 import { CloseTab } from './tab/command/close-tab';
 import { FocusTab } from './tab/command/focus-tab';
 import { FollowTab } from './tab/command/follow-tab';
@@ -43,6 +44,8 @@ import { InMemoryTabPersister } from './tab/persister/in-memory-tab-persister';
 import { WebStorageTabPersister } from './tab/persister/web-storage-tab-persister';
 import { PrivilegedUrlDetector } from './tab/privileged-url-detector';
 import { GetClosedTabOpenStateByOpenId } from './tab/query/get-closed-tab-open-state-by-open-id';
+import { GetFollowIdAssociatedToOpenId } from './tab/query/get-follow-id-associated-to-open-id';
+import { GetOpenIdAssociatedToFollowId } from './tab/query/get-open-id-associated-to-follow-id';
 import { GetTabAssociationByFollowId } from './tab/query/get-tab-association-by-follow-id';
 import { GetTabAssociationByOpenId } from './tab/query/get-tab-association-by-open-id';
 import { GetTabAssociationsWithFollowState } from './tab/query/get-tab-associations-with-follow-state';
@@ -79,10 +82,10 @@ async function main() {
     const closedTabRetriever = new ClosedTabRetriever(queryBus);
     const tabCloser = new TabCloser();
     const tabAssociationMaintainer = new TabAssociationMaintainer(eventBus, queryBus);
-    const followedTabUpdater = new FollowedTabUpdater(inMemoryTabPersister, tabAssociationMaintainer, eventBus);
-    const tabFollower = new TabFollower(inMemoryTabPersister, tabAssociationMaintainer, eventBus);
-    const tabOpener = new TabOpener(tabAssociationMaintainer, nativeRecentlyClosedTabAssociationMaintainer, eventBus, queryBus);
-    const tabAssociationRetriever = new TabAssociationRetriever(tabAssociationMaintainer, queryBus);
+    const followedTabUpdater = new FollowedTabUpdater(inMemoryTabPersister, commandBus, eventBus, queryBus);
+    const tabFollower = new TabFollower(inMemoryTabPersister, commandBus, eventBus, queryBus);
+    const tabOpener = new TabOpener(nativeRecentlyClosedTabAssociationMaintainer, commandBus, eventBus, queryBus);
+    const tabAssociationRetriever = new TabAssociationRetriever(queryBus);
     const nativeEventHandler = new NativeTabEventHandler(eventBus, queryBus, tabCloser, tabOpener);
 
     const objectUnserializer = new ObjectUnserializer();
@@ -100,6 +103,7 @@ async function main() {
     receivedMessageHandler = new ReceivedEventMessageHandler(eventBus, objectUnserializer, receivedMessageHandler);
     const messageReceiver = new ContentMessageReceiver(receivedMessageHandler);
 
+    commandBus.register(AssociateOpenedTabToFollowedTab, tabAssociationMaintainer.associateOpenedTabToFollowedTab, tabAssociationMaintainer);
     commandBus.register(CloseTab, tabCloser.closeTab, tabCloser);
     commandBus.register(FocusTab, tabFocuser.focusTab, tabFocuser);
     commandBus.register(FollowTab, tabFollower.followTab, tabFollower);
@@ -107,6 +111,8 @@ async function main() {
     commandBus.register(UnfollowTab, tabUnfollower.unfollowTab, tabUnfollower);
 
     queryBus.register(GetClosedTabOpenStateByOpenId, closedTabRetriever.queryById, closedTabRetriever);
+    queryBus.register(GetFollowIdAssociatedToOpenId, tabAssociationMaintainer.queryAssociatedFollowId, tabAssociationMaintainer);
+    queryBus.register(GetOpenIdAssociatedToFollowId, tabAssociationMaintainer.queryAssociatedOpenId, tabAssociationMaintainer);
     queryBus.register(GetTabAssociationsWithFollowState, tabAssociationRetriever.queryFollowedTabs, tabAssociationRetriever);
     queryBus.register(GetTabAssociationsWithOpenState, tabAssociationRetriever.queryOpenedTabs, tabAssociationRetriever);
     queryBus.register(GetTabAssociationByFollowId, tabAssociationRetriever.queryByFollowId, tabAssociationRetriever);

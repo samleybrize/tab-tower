@@ -6,13 +6,12 @@ import { AssociateOpenedTabToFollowedTab } from './command/associate-opened-tab-
 import { RestoreFollowedTab } from './command/restore-followed-tab';
 import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';
 import { TabFollowState } from './followed-tab/tab-follow-state';
-import { NativeRecentlyClosedTabAssociationMaintainer } from './native-recently-closed-tab/native-recently-closed-tab-association-maintainer';
+import { GetSessionIdAssociatedToOpenLongLivedId } from './query/get-session-id-associated-to-open-long-lived-id';
 import { GetTabFollowStateByFollowId } from './query/get-tab-follow-state-by-follow-id';
 import { GetTabOpenStateByOpenId } from './query/get-tab-open-state-by-open-id';
 
 export class TabOpener {
     constructor(
-        private nativeRecentlyClosedTabAssociationMaintainer: NativeRecentlyClosedTabAssociationMaintainer,
         private commandBus: CommandBus,
         private eventBus: EventBus,
         private queryBus: QueryBus,
@@ -32,7 +31,7 @@ export class TabOpener {
     }
 
     private async restoreFromRecentlyClosedTabs(followState: TabFollowState) {
-        const sessionId = this.nativeRecentlyClosedTabAssociationMaintainer.getSessionIdAssociatedToOpenLongLivedId(followState.openLongLivedId); // TODO query
+        const sessionId = await this.queryBus.query(new GetSessionIdAssociatedToOpenLongLivedId(followState.openLongLivedId));
 
         if (null != sessionId) {
             const targetIndex = (await browser.tabs.query({})).length;

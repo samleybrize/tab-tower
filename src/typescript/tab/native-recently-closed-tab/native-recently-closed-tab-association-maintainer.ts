@@ -2,6 +2,7 @@ import { TabClosed } from '../event/tab-closed';
 import { TabOpenState } from '../opened-tab/tab-open-state';
 import { NativeRecentlyClosedTabAssociation } from './native-recently-closed-tab-association';
 import { NativeRecentlyClosedTabAssociationPersister } from './native-recently-closed-tab-association-persister';
+import { GetSessionIdAssociatedToOpenLongLivedId } from 'src/typescript/tab/query/get-session-id-associated-to-open-long-lived-id';
 
 export class NativeRecentlyClosedTabAssociationMaintainer {
     private nativeRecentlyClosedTabAssociationList: NativeRecentlyClosedTabAssociation[] = [];
@@ -113,9 +114,9 @@ export class NativeRecentlyClosedTabAssociationMaintainer {
         }
     }
 
-    getSessionIdAssociatedToOpenLongLivedId(openLongLivedId: string) {
+    async querySessionIdAssociatedToOpenLongLivedId(command: GetSessionIdAssociatedToOpenLongLivedId) {
         for (const association of this.nativeRecentlyClosedTabAssociationList) {
-            if (association.associatedOpenedTabLongLivedId === openLongLivedId) {
+            if (association.associatedOpenedTabLongLivedId === command.openLongLivedId) {
                 return association.sessionId;
             }
         }

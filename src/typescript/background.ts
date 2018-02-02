@@ -46,6 +46,7 @@ import { PrivilegedUrlDetector } from './tab/privileged-url-detector';
 import { GetClosedTabOpenStateByOpenId } from './tab/query/get-closed-tab-open-state-by-open-id';
 import { GetFollowIdAssociatedToOpenId } from './tab/query/get-follow-id-associated-to-open-id';
 import { GetOpenIdAssociatedToFollowId } from './tab/query/get-open-id-associated-to-follow-id';
+import { GetSessionIdAssociatedToOpenLongLivedId } from './tab/query/get-session-id-associated-to-open-long-lived-id';
 import { GetTabAssociationByFollowId } from './tab/query/get-tab-association-by-follow-id';
 import { GetTabAssociationByOpenId } from './tab/query/get-tab-association-by-open-id';
 import { GetTabAssociationsWithFollowState } from './tab/query/get-tab-associations-with-follow-state';
@@ -84,7 +85,7 @@ async function main() {
     const tabAssociationMaintainer = new TabAssociationMaintainer(eventBus, queryBus);
     const followedTabUpdater = new FollowedTabUpdater(inMemoryTabPersister, commandBus, eventBus, queryBus);
     const tabFollower = new TabFollower(inMemoryTabPersister, commandBus, eventBus, queryBus);
-    const tabOpener = new TabOpener(nativeRecentlyClosedTabAssociationMaintainer, commandBus, eventBus, queryBus);
+    const tabOpener = new TabOpener(commandBus, eventBus, queryBus);
     const tabAssociationRetriever = new TabAssociationRetriever(queryBus);
     const nativeEventHandler = new NativeTabEventHandler(eventBus, queryBus, tabCloser, tabOpener);
 
@@ -113,6 +114,7 @@ async function main() {
     queryBus.register(GetClosedTabOpenStateByOpenId, closedTabRetriever.queryById, closedTabRetriever);
     queryBus.register(GetFollowIdAssociatedToOpenId, tabAssociationMaintainer.queryAssociatedFollowId, tabAssociationMaintainer);
     queryBus.register(GetOpenIdAssociatedToFollowId, tabAssociationMaintainer.queryAssociatedOpenId, tabAssociationMaintainer);
+    queryBus.register(GetSessionIdAssociatedToOpenLongLivedId, nativeRecentlyClosedTabAssociationMaintainer.querySessionIdAssociatedToOpenLongLivedId, nativeRecentlyClosedTabAssociationMaintainer);
     queryBus.register(GetTabAssociationsWithFollowState, tabAssociationRetriever.queryFollowedTabs, tabAssociationRetriever);
     queryBus.register(GetTabAssociationsWithOpenState, tabAssociationRetriever.queryOpenedTabs, tabAssociationRetriever);
     queryBus.register(GetTabAssociationByFollowId, tabAssociationRetriever.queryByFollowId, tabAssociationRetriever);

@@ -64,8 +64,6 @@ import { TabFocuser } from './tab/tab-focuser';
 import { TabOpener } from './tab/tab-opener';
 import { ObjectUnserializer } from './utils/object-unserializer';
 
-const uiUrlStartWith = `moz-extension://${location.host}/ui/tab-tower.html`;
-
 async function main() {
     const commandBus = new CommandBus();
     const eventBus = new EventBus();
@@ -73,113 +71,137 @@ async function main() {
 
     const webStorageTabPersister = new WebStorageTabPersister();
     const inMemoryTabPersister = new InMemoryTabPersister(webStorageTabPersister);
-    const privilegedUrlDetector = new PrivilegedUrlDetector();
-    const nativeRecentlyClosedTabAssociationPersister = new WebStorageNativeRecentlyClosedTabAssociationPersister();
-    const nativeRecentlyClosedTabAssociationMaintainer = new NativeRecentlyClosedTabAssociationMaintainer(nativeRecentlyClosedTabAssociationPersister);
+    const tabFollower = new TabFollower(inMemoryTabPersister, commandBus, eventBus, queryBus);
     const tabUnfollower = new TabUnfollower(inMemoryTabPersister, eventBus);
+    const followedTabUpdater = new FollowedTabUpdater(inMemoryTabPersister, commandBus, eventBus, queryBus);
     const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
-    const tabFocuser = new TabFocuser();
+
+    const uiUrlStartWith = `moz-extension://${location.host}/ui/tab-tower.html`;
+    const privilegedUrlDetector = new PrivilegedUrlDetector();
     const openedTabRetriever = new OpenedTabRetriever(privilegedUrlDetector, [uiUrlStartWith]);
     const closedTabRetriever = new ClosedTabRetriever(queryBus);
-    const tabCloser = new TabCloser();
-    const tabAssociationMaintainer = new TabAssociationMaintainer(eventBus, queryBus);
-    const followedTabUpdater = new FollowedTabUpdater(inMemoryTabPersister, commandBus, eventBus, queryBus);
-    const tabFollower = new TabFollower(inMemoryTabPersister, commandBus, eventBus, queryBus);
     const tabOpener = new TabOpener(commandBus, eventBus, queryBus);
+
+    const nativeRecentlyClosedTabAssociationPersister = new WebStorageNativeRecentlyClosedTabAssociationPersister();
+    const nativeRecentlyClosedTabAssociationMaintainer = new NativeRecentlyClosedTabAssociationMaintainer(nativeRecentlyClosedTabAssociationPersister);
+
+    const tabAssociationMaintainer = new TabAssociationMaintainer(eventBus, queryBus);
     const tabAssociationRetriever = new TabAssociationRetriever(queryBus);
+
+    const tabFocuser = new TabFocuser();
+    const tabCloser = new TabCloser();
     const nativeEventHandler = new NativeTabEventHandler(eventBus, queryBus, tabCloser, tabOpener);
 
     const objectUnserializer = new ObjectUnserializer();
-    objectUnserializer.addSupportedClasses(tabCommands);
-    objectUnserializer.addSupportedClasses(tabEvents);
-    objectUnserializer.addSupportedClasses(tabQueries);
-
     const messageSender = new BackgroundMessageSender();
     const sendMessageEventHandler = new SendMessageEventHandler(messageSender);
     const sendMessageQueryHandler = new SendMessageQueryHandler(messageSender);
 
-    const receivedQueryMessageHandler = new ReceivedQueryMessageHandler(queryBus, objectUnserializer);
-    const bidirectionalQueryMessageHandler = new BidirectionalQueryMessageHandler(receivedQueryMessageHandler, sendMessageQueryHandler);
-    let receivedMessageHandler: ReceivedMessageHandler = new ReceivedCommandMessageHandler(commandBus, objectUnserializer, bidirectionalQueryMessageHandler);
-    receivedMessageHandler = new ReceivedEventMessageHandler(eventBus, objectUnserializer, receivedMessageHandler);
-    const messageReceiver = new ContentMessageReceiver(receivedMessageHandler);
+    function initMessaging() {
+        objectUnserializer.addSupportedClasses(tabCommands);
+        objectUnserializer.addSupportedClasses(tabEvents);
+        objectUnserializer.addSupportedClasses(tabQueries);
 
-    commandBus.register(AssociateOpenedTabToFollowedTab, tabAssociationMaintainer.associateOpenedTabToFollowedTab, tabAssociationMaintainer);
-    commandBus.register(CloseTab, tabCloser.closeTab, tabCloser);
-    commandBus.register(FocusTab, tabFocuser.focusTab, tabFocuser);
-    commandBus.register(FollowTab, tabFollower.followTab, tabFollower);
-    commandBus.register(RestoreFollowedTab, tabOpener.restoreFollowedTab, tabOpener);
-    commandBus.register(UnfollowTab, tabUnfollower.unfollowTab, tabUnfollower);
+        const receivedQueryMessageHandler = new ReceivedQueryMessageHandler(queryBus, objectUnserializer);
+        const bidirectionalQueryMessageHandler = new BidirectionalQueryMessageHandler(receivedQueryMessageHandler, sendMessageQueryHandler);
+        let receivedMessageHandler: ReceivedMessageHandler = new ReceivedCommandMessageHandler(commandBus, objectUnserializer, bidirectionalQueryMessageHandler);
+        receivedMessageHandler = new ReceivedEventMessageHandler(eventBus, objectUnserializer, receivedMessageHandler);
+        const messageReceiver = new ContentMessageReceiver(receivedMessageHandler);
 
-    queryBus.register(GetClosedTabOpenStateByOpenId, closedTabRetriever.queryById, closedTabRetriever);
-    queryBus.register(GetFollowIdAssociatedToOpenId, tabAssociationMaintainer.queryAssociatedFollowId, tabAssociationMaintainer);
-    queryBus.register(GetOpenIdAssociatedToFollowId, tabAssociationMaintainer.queryAssociatedOpenId, tabAssociationMaintainer);
-    queryBus.register(GetSessionIdAssociatedToOpenLongLivedId, nativeRecentlyClosedTabAssociationMaintainer.querySessionIdAssociatedToOpenLongLivedId, nativeRecentlyClosedTabAssociationMaintainer);
-    queryBus.register(GetTabAssociationsWithFollowState, tabAssociationRetriever.queryFollowedTabs, tabAssociationRetriever);
-    queryBus.register(GetTabAssociationsWithOpenState, tabAssociationRetriever.queryOpenedTabs, tabAssociationRetriever);
-    queryBus.register(GetTabAssociationByFollowId, tabAssociationRetriever.queryByFollowId, tabAssociationRetriever);
-    queryBus.register(GetTabAssociationByOpenId, tabAssociationRetriever.queryByOpenId, tabAssociationRetriever);
-    queryBus.register(GetTabFollowStateByFollowId, followedTabRetriever.queryById, followedTabRetriever);
-    queryBus.register(GetTabFollowStates, followedTabRetriever.queryAll, followedTabRetriever);
-    queryBus.register(GetTabFollowStatesWithOpenLongLivedId, followedTabRetriever.queryAllWithOpenLongLivedId, followedTabRetriever);
-    queryBus.register(GetTabOpenStateByOpenId, openedTabRetriever.queryById, openedTabRetriever);
-    queryBus.register(GetTabOpenStates, openedTabRetriever.queryAll, openedTabRetriever);
+        messageReceiver.listen();
+    }
 
-    eventBus.subscribe(TabClosed, nativeRecentlyClosedTabAssociationMaintainer.onTabClose, nativeRecentlyClosedTabAssociationMaintainer);
-    eventBus.subscribe(TabClosed, openedTabRetriever.onTabClose, openedTabRetriever);
-    eventBus.subscribe(TabClosed, sendMessageEventHandler.onEvent, sendMessageEventHandler);
-    eventBus.subscribe(TabClosed, tabAssociationMaintainer.onTabClose, tabAssociationMaintainer);
-    eventBus.subscribe(TabCloseHandled, closedTabRetriever.onTabCloseHandled, closedTabRetriever);
-    eventBus.subscribe(TabOpened, closedTabRetriever.onTabOpen, closedTabRetriever);
-    eventBus.subscribe(TabOpened, followedTabUpdater.onTabOpen, followedTabUpdater);
-    eventBus.subscribe(TabOpened, openedTabRetriever.onTabOpen, openedTabRetriever);
-    eventBus.subscribe(TabOpened, sendMessageEventHandler.onEvent, sendMessageEventHandler);
-    eventBus.subscribe(TabFollowed, sendMessageEventHandler.onEvent, sendMessageEventHandler);
-    eventBus.subscribe(OpenedTabAssociatedToFollowedTab, followedTabUpdater.onAssociateOpenedTabToFollowedTab, followedTabUpdater);
-    eventBus.subscribe(OpenedTabAssociatedToFollowedTab, sendMessageEventHandler.onEvent, sendMessageEventHandler);
-    eventBus.subscribe(OpenedTabFaviconUrlUpdated, followedTabUpdater.onOpenedTabFaviconUrlUpdate, followedTabUpdater);
-    eventBus.subscribe(OpenedTabFaviconUrlUpdated, closedTabRetriever.onTabFaviconUrlUpdate, closedTabRetriever);
-    eventBus.subscribe(OpenedTabFaviconUrlUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
-    eventBus.subscribe(OpenedTabFocused, closedTabRetriever.onTabFocus, closedTabRetriever);
-    eventBus.subscribe(OpenedTabFocused, followedTabUpdater.onOpenedTabFocus, followedTabUpdater);
-    eventBus.subscribe(OpenedTabFocused, sendMessageEventHandler.onEvent, sendMessageEventHandler);
-    eventBus.subscribe(OpenedTabMoved, closedTabRetriever.onTabMove, closedTabRetriever);
-    eventBus.subscribe(OpenedTabMoved, sendMessageEventHandler.onEvent, sendMessageEventHandler);
-    eventBus.subscribe(OpenedTabReaderModeStateUpdated, followedTabUpdater.onOpenedTabReaderModeStateUpdate, followedTabUpdater);
-    eventBus.subscribe(OpenedTabReaderModeStateUpdated, closedTabRetriever.onTabReaderModeStateUpdate, closedTabRetriever);
-    eventBus.subscribe(OpenedTabReaderModeStateUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
-    eventBus.subscribe(OpenedTabTitleUpdated, followedTabUpdater.onOpenedTabTitleUpdate, followedTabUpdater);
-    eventBus.subscribe(OpenedTabTitleUpdated, closedTabRetriever.onTabTitleUpdate, closedTabRetriever);
-    eventBus.subscribe(OpenedTabTitleUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
-    eventBus.subscribe(OpenedTabUrlUpdated, followedTabUpdater.onOpenedTabUrlUpdate, followedTabUpdater);
-    eventBus.subscribe(OpenedTabUrlUpdated, closedTabRetriever.onTabUrlUpdate, closedTabRetriever);
-    eventBus.subscribe(OpenedTabUrlUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
-    eventBus.subscribe(TabUnfollowed, sendMessageEventHandler.onEvent, sendMessageEventHandler);
-    eventBus.subscribe(TabUnfollowed, tabAssociationMaintainer.onTabUnfollow, tabAssociationMaintainer);
+    function initCommandBus() {
+        commandBus.register(AssociateOpenedTabToFollowedTab, tabAssociationMaintainer.associateOpenedTabToFollowedTab, tabAssociationMaintainer);
+        commandBus.register(CloseTab, tabCloser.closeTab, tabCloser);
+        commandBus.register(FocusTab, tabFocuser.focusTab, tabFocuser);
+        commandBus.register(FollowTab, tabFollower.followTab, tabFollower);
+        commandBus.register(RestoreFollowedTab, tabOpener.restoreFollowedTab, tabOpener);
+        commandBus.register(UnfollowTab, tabUnfollower.unfollowTab, tabUnfollower);
+    }
 
-    messageReceiver.listen();
+    function initQueryBus() {
+        queryBus.register(GetClosedTabOpenStateByOpenId, closedTabRetriever.queryById, closedTabRetriever);
+        queryBus.register(GetFollowIdAssociatedToOpenId, tabAssociationMaintainer.queryAssociatedFollowId, tabAssociationMaintainer);
+        queryBus.register(GetOpenIdAssociatedToFollowId, tabAssociationMaintainer.queryAssociatedOpenId, tabAssociationMaintainer);
+        queryBus.register(GetSessionIdAssociatedToOpenLongLivedId, nativeRecentlyClosedTabAssociationMaintainer.querySessionIdAssociatedToOpenLongLivedId, nativeRecentlyClosedTabAssociationMaintainer);
+        queryBus.register(GetTabAssociationsWithFollowState, tabAssociationRetriever.queryFollowedTabs, tabAssociationRetriever);
+        queryBus.register(GetTabAssociationsWithOpenState, tabAssociationRetriever.queryOpenedTabs, tabAssociationRetriever);
+        queryBus.register(GetTabAssociationByFollowId, tabAssociationRetriever.queryByFollowId, tabAssociationRetriever);
+        queryBus.register(GetTabAssociationByOpenId, tabAssociationRetriever.queryByOpenId, tabAssociationRetriever);
+        queryBus.register(GetTabFollowStateByFollowId, followedTabRetriever.queryById, followedTabRetriever);
+        queryBus.register(GetTabFollowStates, followedTabRetriever.queryAll, followedTabRetriever);
+        queryBus.register(GetTabFollowStatesWithOpenLongLivedId, followedTabRetriever.queryAllWithOpenLongLivedId, followedTabRetriever);
+        queryBus.register(GetTabOpenStateByOpenId, openedTabRetriever.queryById, openedTabRetriever);
+        queryBus.register(GetTabOpenStates, openedTabRetriever.queryAll, openedTabRetriever);
+    }
 
-    await closedTabRetriever.init();
-    await nativeRecentlyClosedTabAssociationMaintainer.init();
-    nativeEventHandler.init();
-    await tabAssociationMaintainer.associateOpenedTabsWithFollowedTabs();
+    function initEventBus() {
+        eventBus.subscribe(TabClosed, nativeRecentlyClosedTabAssociationMaintainer.onTabClose, nativeRecentlyClosedTabAssociationMaintainer);
+        eventBus.subscribe(TabClosed, openedTabRetriever.onTabClose, openedTabRetriever);
+        eventBus.subscribe(TabClosed, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(TabClosed, tabAssociationMaintainer.onTabClose, tabAssociationMaintainer);
+        eventBus.subscribe(TabCloseHandled, closedTabRetriever.onTabCloseHandled, closedTabRetriever);
+        eventBus.subscribe(TabOpened, closedTabRetriever.onTabOpen, closedTabRetriever);
+        eventBus.subscribe(TabOpened, followedTabUpdater.onTabOpen, followedTabUpdater);
+        eventBus.subscribe(TabOpened, openedTabRetriever.onTabOpen, openedTabRetriever);
+        eventBus.subscribe(TabOpened, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(TabFollowed, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(OpenedTabAssociatedToFollowedTab, followedTabUpdater.onAssociateOpenedTabToFollowedTab, followedTabUpdater);
+        eventBus.subscribe(OpenedTabAssociatedToFollowedTab, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(OpenedTabFaviconUrlUpdated, followedTabUpdater.onOpenedTabFaviconUrlUpdate, followedTabUpdater);
+        eventBus.subscribe(OpenedTabFaviconUrlUpdated, closedTabRetriever.onTabFaviconUrlUpdate, closedTabRetriever);
+        eventBus.subscribe(OpenedTabFaviconUrlUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(OpenedTabFocused, closedTabRetriever.onTabFocus, closedTabRetriever);
+        eventBus.subscribe(OpenedTabFocused, followedTabUpdater.onOpenedTabFocus, followedTabUpdater);
+        eventBus.subscribe(OpenedTabFocused, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(OpenedTabMoved, closedTabRetriever.onTabMove, closedTabRetriever);
+        eventBus.subscribe(OpenedTabMoved, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(OpenedTabReaderModeStateUpdated, followedTabUpdater.onOpenedTabReaderModeStateUpdate, followedTabUpdater);
+        eventBus.subscribe(OpenedTabReaderModeStateUpdated, closedTabRetriever.onTabReaderModeStateUpdate, closedTabRetriever);
+        eventBus.subscribe(OpenedTabReaderModeStateUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(OpenedTabTitleUpdated, followedTabUpdater.onOpenedTabTitleUpdate, followedTabUpdater);
+        eventBus.subscribe(OpenedTabTitleUpdated, closedTabRetriever.onTabTitleUpdate, closedTabRetriever);
+        eventBus.subscribe(OpenedTabTitleUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(OpenedTabUrlUpdated, followedTabUpdater.onOpenedTabUrlUpdate, followedTabUpdater);
+        eventBus.subscribe(OpenedTabUrlUpdated, closedTabRetriever.onTabUrlUpdate, closedTabRetriever);
+        eventBus.subscribe(OpenedTabUrlUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(TabUnfollowed, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(TabUnfollowed, tabAssociationMaintainer.onTabUnfollow, tabAssociationMaintainer);
+    }
 
-    const uiUrl = `moz-extension://${location.host}/ui/tab-tower.html`;
-    browser.browserAction.onClicked.addListener(async () => {
-        const uiTabs = await browser.tabs.query({url: uiUrl});
+    async function initTabHandling() {
+        await closedTabRetriever.init();
+        await nativeRecentlyClosedTabAssociationMaintainer.init();
+        nativeEventHandler.init();
+        await tabAssociationMaintainer.associateOpenedTabsWithFollowedTabs();
+    }
 
-        if (uiTabs.length > 0) {
-            browser.tabs.update(uiTabs[0].id, {active: true});
+    async function initBrowserAction() {
+        const uiUrl = `moz-extension://${location.host}/ui/tab-tower.html`;
+        browser.browserAction.onClicked.addListener(async () => {
+            const uiTabs = await browser.tabs.query({url: uiUrl});
 
-            return;
-        }
+            if (uiTabs.length > 0) {
+                browser.tabs.update(uiTabs[0].id, {active: true});
 
-        browser.tabs.create({
-            active: true,
-            index: 0,
-            url: uiUrl,
+                return;
+            }
+
+            browser.tabs.create({
+                active: true,
+                index: 0,
+                url: uiUrl,
+            });
         });
-    });
+    }
+
+    initMessaging();
+    initCommandBus();
+    initQueryBus();
+    initEventBus();
+    await initTabHandling();
+    await initBrowserAction();
 }
 
 main();

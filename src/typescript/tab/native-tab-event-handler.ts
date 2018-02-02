@@ -11,8 +11,6 @@ import { OpenedTabUrlUpdated } from './event/opened-tab-url-updated';
 import { TabCloseHandled } from './event/tab-close-handled';
 import { TabClosed } from './event/tab-closed';
 import { TabOpened } from './event/tab-opened';
-import { ClosedTabRetriever } from './opened-tab/closed-tab-retriever';
-import { OpenedTabRetriever } from './opened-tab/opened-tab-retriever';
 import { GetClosedTabOpenStateByOpenId } from './query/get-closed-tab-open-state-by-open-id';
 import { GetTabOpenStateByOpenId } from './query/get-tab-open-state-by-open-id';
 import { GetTabOpenStates } from './query/get-tab-open-states';

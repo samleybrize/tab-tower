@@ -1,6 +1,4 @@
-import { EventBus } from '../../bus/event-bus';
 import { QueryBus } from '../../bus/query-bus';
-import { OpenedTabAssociatedToFollowedTab } from '../event/opened-tab-associated-to-followed-tab';
 import { GetFollowIdAssociatedToOpenId } from '../query/get-follow-id-associated-to-open-id';
 import { GetOpenIdAssociatedToFollowId } from '../query/get-open-id-associated-to-follow-id';
 import { GetTabAssociationByFollowId } from '../query/get-tab-association-by-follow-id';

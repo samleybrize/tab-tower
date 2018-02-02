@@ -20,7 +20,6 @@ import { UnfollowTab } from './tab/command/unfollow-tab';
 import { OpenedTabAssociatedToFollowedTab } from './tab/event/opened-tab-associated-to-followed-tab';
 import { OpenedTabFaviconUrlUpdated } from './tab/event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from './tab/event/opened-tab-focused';
-import { OpenedTabLoadingIsComplete } from './tab/event/opened-tab-loading-is-complete';
 import { OpenedTabMoved } from './tab/event/opened-tab-moved';
 import { OpenedTabReaderModeStateUpdated } from './tab/event/opened-tab-reader-mode-state-updated';
 import { OpenedTabTitleUpdated } from './tab/event/opened-tab-title-updated';
@@ -71,16 +70,16 @@ async function main() {
 
     const webStorageTabPersister = new WebStorageTabPersister();
     const inMemoryTabPersister = new InMemoryTabPersister(webStorageTabPersister);
-    const tabFollower = new TabFollower(inMemoryTabPersister, commandBus, eventBus, queryBus);
+    const tabFollower = new TabFollower(inMemoryTabPersister, commandBus, eventBus);
     const tabUnfollower = new TabUnfollower(inMemoryTabPersister, eventBus);
-    const followedTabUpdater = new FollowedTabUpdater(inMemoryTabPersister, commandBus, eventBus, queryBus);
+    const followedTabUpdater = new FollowedTabUpdater(inMemoryTabPersister, commandBus, queryBus);
     const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
 
     const uiUrlStartWith = `moz-extension://${location.host}/ui/tab-tower.html`;
     const privilegedUrlDetector = new PrivilegedUrlDetector();
     const openedTabRetriever = new OpenedTabRetriever(privilegedUrlDetector, [uiUrlStartWith]);
     const closedTabRetriever = new ClosedTabRetriever(queryBus);
-    const tabOpener = new TabOpener(commandBus, eventBus, queryBus);
+    const tabOpener = new TabOpener(commandBus, queryBus);
 
     const nativeRecentlyClosedTabAssociationPersister = new WebStorageNativeRecentlyClosedTabAssociationPersister();
     const nativeRecentlyClosedTabAssociationMaintainer = new NativeRecentlyClosedTabAssociationMaintainer(nativeRecentlyClosedTabAssociationPersister);

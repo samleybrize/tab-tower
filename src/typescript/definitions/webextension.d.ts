@@ -2,11 +2,13 @@
 // license, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+/* tslint:disable:ban-types */
 interface EvListener<T extends Function> {
     addListener: (callback: T) => void;
     removeListener: (listener: T) => void;
     hasListener: (listener: T) => boolean;
 }
+/* tslint:enable:ban-types */
 
 type Listener<T> = EvListener<(arg: T) => void>;
 
@@ -733,20 +735,13 @@ declare namespace browser.runtime {
     // function RequestUpdateCheck(): Promise<RequestUpdateCheckStatus>;
     function connect(
         extensionId?: string,
-        connectInfo?: { name?: string, includeTlsChannelId?: boolean }
+        connectInfo?: { name?: string, includeTlsChannelId?: boolean },
     ): Port;
     function connectNative(application: string): Port;
 
     function sendMessage(
         message: any,
-    ): Promise<any>;
-    function sendMessage(
-        message: any,
-        options: { includeTlsChannelId?: boolean, toProxyScript?: boolean },
-    ): Promise<any>;
-    function sendMessage(
-        extensionId: string,
-        message: any,
+        options?: { includeTlsChannelId?: boolean, toProxyScript?: boolean },
     ): Promise<any>;
     function sendMessage(
         extensionId: string,

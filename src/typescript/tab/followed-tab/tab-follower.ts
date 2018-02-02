@@ -2,7 +2,6 @@ import * as uuid from 'uuid';
 
 import { CommandBus } from '../../bus/command-bus';
 import { EventBus } from '../../bus/event-bus';
-import { QueryBus } from '../../bus/query-bus';
 import { AssociateOpenedTabToFollowedTab } from '../command/associate-opened-tab-to-followed-tab';
 import { FollowTab } from '../command/follow-tab';
 import { TabFollowed } from '../event/tab-followed';
@@ -15,7 +14,6 @@ export class TabFollower {
         private tabPersister: TabPersister,
         private commandBus: CommandBus,
         private eventBus: EventBus,
-        private queryBus: QueryBus,
     ) {
     }
 

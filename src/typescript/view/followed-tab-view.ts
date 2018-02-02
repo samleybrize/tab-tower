@@ -175,8 +175,6 @@ export class FollowedTabView {
                 this.commandBus.handle(new FocusTab(openTabId));
             } else if (!isOpeningTab) {
                 row.setAttribute('data-is-opening-tab', '1');
-                const url = row.getAttribute('data-url');
-                const readerMode = !!row.getAttribute('data-reader-mode');
                 this.commandBus.handle(new RestoreFollowedTab(tab.followState.id));
             }
         });

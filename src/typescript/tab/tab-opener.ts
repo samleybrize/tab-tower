@@ -1,10 +1,8 @@
 import { CommandBus } from '../bus/command-bus';
-import { EventBus } from '../bus/event-bus';
 import { QueryBus } from '../bus/query-bus';
 import { sleep } from '../utils/sleep';
 import { AssociateOpenedTabToFollowedTab } from './command/associate-opened-tab-to-followed-tab';
 import { RestoreFollowedTab } from './command/restore-followed-tab';
-import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';
 import { TabFollowState } from './followed-tab/tab-follow-state';
 import { GetSessionIdAssociatedToOpenLongLivedId } from './query/get-session-id-associated-to-open-long-lived-id';
 import { GetTabFollowStateByFollowId } from './query/get-tab-follow-state-by-follow-id';
@@ -13,7 +11,6 @@ import { GetTabOpenStateByOpenId } from './query/get-tab-open-state-by-open-id';
 export class TabOpener {
     constructor(
         private commandBus: CommandBus,
-        private eventBus: EventBus,
         private queryBus: QueryBus,
     ) {
     }

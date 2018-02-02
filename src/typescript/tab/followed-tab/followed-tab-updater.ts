@@ -1,15 +1,9 @@
-import * as uuid from 'uuid';
-
 import { CommandBus } from '../../bus/command-bus';
-import { EventBus } from '../../bus/event-bus';
 import { QueryBus } from '../../bus/query-bus';
 import { AssociateOpenedTabToFollowedTab } from '../command/associate-opened-tab-to-followed-tab';
 import { OpenedTabAssociatedToFollowedTab } from '../event/opened-tab-associated-to-followed-tab';
 import { OpenedTabFaviconUrlUpdated } from '../event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from '../event/opened-tab-focused';
-import { OpenedTabIsLoading } from '../event/opened-tab-is-loading';
-import { OpenedTabLoadingIsComplete } from '../event/opened-tab-loading-is-complete';
-import { OpenedTabMoved } from '../event/opened-tab-moved';
 import { OpenedTabReaderModeStateUpdated } from '../event/opened-tab-reader-mode-state-updated';
 import { OpenedTabTitleUpdated } from '../event/opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from '../event/opened-tab-url-updated';
@@ -21,7 +15,6 @@ export class FollowedTabUpdater {
     constructor(
         private tabPersister: TabPersister,
         private commandBus: CommandBus,
-        private eventBus: EventBus,
         private queryBus: QueryBus,
     ) {
     }

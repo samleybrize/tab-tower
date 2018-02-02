@@ -7,6 +7,8 @@ import { OpenedTabTitleUpdated } from '../event/opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from '../event/opened-tab-url-updated';
 import { TabCloseHandled } from '../event/tab-close-handled';
 import { TabOpened } from '../event/tab-opened';
+import { GetClosedTabOpenStateByOpenId } from '../query/get-closed-tab-open-state-by-open-id';
+import { GetTabOpenStates } from '../query/get-tab-open-states';
 import { TabOpenState } from './tab-open-state';
 
 export class ClosedTabRetriever {
@@ -20,7 +22,7 @@ export class ClosedTabRetriever {
             return;
         }
 
-        const tabList = await this.openedTabRetriever.getAll(); // TODO query
+        const tabList = await this.queryBus.query(new GetTabOpenStates());
 
         for (const tab of tabList) {
             this.openedTabMap.set(tab.id, tab);
@@ -83,7 +85,7 @@ export class ClosedTabRetriever {
         this.openedTabMap.delete(event.closedTab.id);
     }
 
-    async getById(id: number): Promise<TabOpenState> {
-        return this.openedTabMap.get(id) || null;
+    async queryById(query: GetClosedTabOpenStateByOpenId): Promise<TabOpenState> {
+        return this.openedTabMap.get(query.openId) || null;
     }
 }

@@ -3,6 +3,8 @@ import * as uuid from 'uuid';
 import { TabClosed } from '../event/tab-closed';
 import { TabOpened } from '../event/tab-opened';
 import { PrivilegedUrlDetector } from '../privileged-url-detector';
+import { GetTabOpenStateByOpenId } from '../query/get-tab-open-state-by-open-id';
+import { GetTabOpenStates } from '../query/get-tab-open-states';
 import { TabOpenState } from './tab-open-state';
 
 export class OpenedTabRetriever {
@@ -19,7 +21,7 @@ export class OpenedTabRetriever {
         this.longLivedIdMap.delete(event.closedTab.longLivedId);
     }
 
-    async getAll(): Promise<TabOpenState[]> {
+    async queryAll(query: GetTabOpenStates): Promise<TabOpenState[]> {
         const rawTabs = await browser.tabs.query({});
         const tabList: TabOpenState[] = [];
 
@@ -103,12 +105,12 @@ export class OpenedTabRetriever {
         return longLivedId;
     }
 
-    async getById(id: number, checkIfIsDuplicate?: boolean): Promise<TabOpenState> {
+    async queryById(query: GetTabOpenStateByOpenId): Promise<TabOpenState> {
         let rawTab: browser.tabs.Tab;
 
         try {
             // a not found id throws an error
-            rawTab = await browser.tabs.get(id);
+            rawTab = await browser.tabs.get(query.openId);
         } catch (error) {
             return null;
         }

@@ -5,6 +5,8 @@ import { RestoreFollowedTab } from './command/restore-followed-tab';
 import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';
 import { TabFollowState } from './followed-tab/tab-follow-state';
 import { NativeRecentlyClosedTabAssociationMaintainer } from './native-recently-closed-tab/native-recently-closed-tab-association-maintainer';
+import { GetTabFollowStateByFollowId } from './query/get-tab-follow-state-by-follow-id';
+import { GetTabOpenStateByOpenId } from './query/get-tab-open-state-by-open-id';
 import { TabAssociationMaintainer } from './tab-association/tab-association-maintainer';
 
 export class TabOpener {
@@ -17,7 +19,7 @@ export class TabOpener {
     }
 
     async restoreFollowedTab(command: RestoreFollowedTab) {
-        const followState = await this.followedTabRetriever.getById(command.followId); // TODO query
+        const followState = await this.queryBus.query(new GetTabFollowStateByFollowId(command.followId));
         let openedTab: browser.tabs.Tab = await this.restoreFromRecentlyClosedTabs(followState);
 
         if (null == openedTab) {
@@ -58,9 +60,9 @@ export class TabOpener {
         return await browser.tabs.create(createTabOptions);
     }
 
-    private async associateNewTabToFollowedTab(openTabCommand: RestoreFollowedTab, openedTab: browser.tabs.Tab) {
-        const tabFollowState = await this.followedTabRetriever.getById(openTabCommand.followId);
-        const tabOpenState = await this.openedTabRetriever.getById(openedTab.id); // TODO query
+    private async associateNewTabToFollowedTab(restoreTabCommand: RestoreFollowedTab, openedTab: browser.tabs.Tab) {
+        const tabFollowState = await this.queryBus.query(new GetTabFollowStateByFollowId(restoreTabCommand.followId));
+        const tabOpenState = await this.queryBus.query(new GetTabOpenStateByOpenId(openedTab.id));
 
         this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(tabOpenState, tabFollowState);
         this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(tabOpenState, tabFollowState));

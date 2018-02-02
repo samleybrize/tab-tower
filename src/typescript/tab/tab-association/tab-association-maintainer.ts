@@ -5,6 +5,8 @@ import { TabClosed } from '../event/tab-closed';
 import { TabUnfollowed } from '../event/tab-unfollowed';
 import { TabFollowState } from '../followed-tab/tab-follow-state';
 import { TabOpenState } from '../opened-tab/tab-open-state';
+import { GetTabFollowStatesWithOpenLongLivedId } from '../query/get-tab-follow-states-with-open-long-lived-id';
+import { GetTabOpenStates } from '../query/get-tab-open-states';
 
 export class TabAssociationMaintainer {
     private openTabIdFollowIdAssociation = new Map<number, string>();
@@ -17,8 +19,8 @@ export class TabAssociationMaintainer {
     }
 
     async associateOpenedTabsWithFollowedTabs() {
-        const tabOpenStateList = await this.openedTabRetriever.getAll(); // TODO query
-        const candidateFollowStates = await this.followedTabRetriever.getWithOpenLongLivedId(); // TODO query
+        const tabOpenStateList = await this.queryBus.query(new GetTabOpenStates());
+        const candidateFollowStates = await this.queryBus.query(new GetTabFollowStatesWithOpenLongLivedId());
 
         for (const tabOpenState of tabOpenStateList) {
             const followState = candidateFollowStates.get(tabOpenState.longLivedId);

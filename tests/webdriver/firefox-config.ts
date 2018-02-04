@@ -8,13 +8,10 @@ import * as which from 'which';
 import { TestsConfig } from '../tests-config';
 
 export class FirefoxConfig {
-    private testsConfig: TestsConfig;
     private isExtensionBuilded = false;
 
     getWebdriverOptions() {
         this.buildExtension();
-
-        this.testsConfig = TestsConfig.getInstance();
 
         const firefoxProfile = new Profile();
         firefoxProfile.addExtension(this.getExtensionPath());
@@ -27,8 +24,9 @@ export class FirefoxConfig {
 
         const firefoxPath = this.getFirefoxBinaryPath();
         const firefoxBinary = new Binary(firefoxPath);
+        const testsConfig = TestsConfig.getInstance();
 
-        if (this.testsConfig.isHeadlessModeEnabled) {
+        if (testsConfig.isHeadlessModeEnabled) {
             firefoxBinary.addArguments('-headless');
         }
 

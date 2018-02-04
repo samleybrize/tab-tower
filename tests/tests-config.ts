@@ -3,6 +3,7 @@ export class TestsConfig {
 
     public readonly isHeadlessModeEnabled: boolean = true;
     public readonly keepBrowserOpened: boolean = false;
+    public readonly browserInstructionPort: number = 8888;
 
     static getInstance() {
         if (null == this.instance) {
@@ -20,6 +21,10 @@ export class TestsConfig {
         if (process.env.KEEP_BROWSER) {
             this.isHeadlessModeEnabled = false;
             this.keepBrowserOpened = true;
+        }
+
+        if (+process.env.BROWSER_INSTRUCTION_PORT > 0) {
+            this.browserInstructionPort = +process.env.BROWSER_INSTRUCTION_PORT;
         }
     }
 }

@@ -1,6 +1,7 @@
 import * as http from 'http';
 import { WebDriver } from 'selenium-webdriver';
 import { IMessage, server as WebSocketServer } from 'websocket';
+import { TestsConfig } from '../tests-config';
 
 interface Message {
     action: string;
@@ -27,11 +28,12 @@ export class BrowserInstructionSender {
             return;
         }
 
+        const testsConfig = TestsConfig.getInstance();
         this.httpServer = http.createServer((request, response) => {
             response.writeHead(404);
             response.end();
         });
-        this.httpServer.listen(8888); // TODO param
+        this.httpServer.listen(testsConfig.browserInstructionPort);
 
         this.websocketServer = new WebSocketServer({
             httpServer: this.httpServer,

@@ -1,6 +1,8 @@
 import { TabFollowState } from '../../src/typescript/tab/followed-tab/tab-follow-state';
+import { TestsConfig } from '../tests-config';
 
-const client = new WebSocket('ws://localhost:8888'); // TODO param
+const testsConfig = TestsConfig.getInstance();
+const client = new WebSocket('ws://localhost:' + testsConfig.browserInstructionPort);
 
 client.onmessage = async (event) => {
     const message = JSON.parse(event.data);

@@ -19,9 +19,9 @@ import { TabFollowed } from '../tab/event/tab-followed';
 import { TabOpened } from '../tab/event/tab-opened';
 import { TabUnfollowed } from '../tab/event/tab-unfollowed';
 import { TabOpenState } from '../tab/opened-tab/tab-open-state';
-import { GetOpenedTabs } from '../tab/query/get-opened-tabs';
-import { GetTabByOpenId } from '../tab/query/get-tab-by-open-id';
-import { Tab } from '../tab/tab';
+import { GetTabAssociationByOpenId } from '../tab/query/get-tab-association-by-open-id';
+import { GetTabAssociationsWithOpenState } from '../tab/query/get-tab-associations-with-open-state';
+import { TabAssociation } from '../tab/tab-association/tab-association';
 import { StringMatcher } from '../utils/string-matcher';
 import { TabCounter } from './tab-counter';
 
@@ -70,7 +70,7 @@ export class OpenedTabView {
     }
 
     async init() {
-        const tabList = await this.queryBus.query(new GetOpenedTabs());
+        const tabList = await this.queryBus.query(new GetTabAssociationsWithOpenState());
         this.noTabRow = this.createNoTabRow();
         this.tbodyElement.appendChild(this.noTabRow);
         let numberOfOpenedTabs = 0;
@@ -92,7 +92,7 @@ export class OpenedTabView {
         this.showNoTabRowIfTableIsEmpty();
     }
 
-    private isTabFollowed(tab: Tab) {
+    private isTabFollowed(tab: TabAssociation) {
         return !!tab.followState;
     }
 
@@ -201,7 +201,7 @@ export class OpenedTabView {
                 return;
             }
 
-            const upToDateTab = await this.queryBus.query(new GetTabByOpenId(tabOpenState.id));
+            const upToDateTab = await this.queryBus.query(new GetTabAssociationByOpenId(tabOpenState.id));
             this.commandBus.handle(new FollowTab(upToDateTab));
         });
 
@@ -223,7 +223,7 @@ export class OpenedTabView {
                 return;
             }
 
-            const upToDateTab = await this.queryBus.query(new GetTabByOpenId(tabOpenState.id));
+            const upToDateTab = await this.queryBus.query(new GetTabAssociationByOpenId(tabOpenState.id));
             this.commandBus.handle(new UnfollowTab(upToDateTab));
         });
 

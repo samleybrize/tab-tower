@@ -1,17 +1,18 @@
 import * as uuid from 'uuid';
 
+import { CommandBus } from '../../bus/command-bus';
 import { EventBus } from '../../bus/event-bus';
+import { AssociateOpenedTabToFollowedTab } from '../command/associate-opened-tab-to-followed-tab';
 import { FollowTab } from '../command/follow-tab';
 import { TabFollowed } from '../event/tab-followed';
 import { TabOpenState } from '../opened-tab/tab-open-state';
 import { TabPersister } from '../persister/tab-persister';
-import { TabAssociationMaintainer } from '../tab-association-maintainer';
 import { TabFollowState } from './tab-follow-state';
 
 export class TabFollower {
     constructor(
         private tabPersister: TabPersister,
-        private tabAssociationMaintainer: TabAssociationMaintainer,
+        private commandBus: CommandBus,
         private eventBus: EventBus,
     ) {
     }
@@ -27,6 +28,8 @@ export class TabFollower {
         tab.followState = tabFollowState;
         await this.tabPersister.persist(tabFollowState);
         this.eventBus.publish(new TabFollowed(tab));
+
+        await this.commandBus.handle(new AssociateOpenedTabToFollowedTab(tab.openState, tab.followState));
     }
 
     private createTabFollowStateFromOpenState(openState: TabOpenState): TabFollowState {
@@ -39,8 +42,6 @@ export class TabFollower {
         followState.faviconUrl = openState.faviconUrl;
         followState.openLongLivedId = openState.longLivedId;
         followState.openLastAccess = openState.lastAccess;
-
-        this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(openState.id, followState.id);
 
         return followState;
     }

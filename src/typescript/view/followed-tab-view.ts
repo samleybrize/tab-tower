@@ -16,9 +16,9 @@ import { TabClosed } from '../tab/event/tab-closed';
 import { TabFilterRequested } from '../tab/event/tab-filter-requested';
 import { TabFollowed } from '../tab/event/tab-followed';
 import { TabUnfollowed } from '../tab/event/tab-unfollowed';
-import { GetFollowedTabs } from '../tab/query/get-followed-tabs';
-import { GetTabByFollowId } from '../tab/query/get-tab-by-follow-id';
-import { Tab } from '../tab/tab';
+import { GetTabAssociationByFollowId } from '../tab/query/get-tab-association-by-follow-id';
+import { GetTabAssociationsWithFollowState } from '../tab/query/get-tab-associations-with-follow-state';
+import { TabAssociation } from '../tab/tab-association/tab-association';
 import { StringMatcher } from '../utils/string-matcher';
 import { TabCounter } from './tab-counter';
 
@@ -68,7 +68,7 @@ export class FollowedTabView {
     }
 
     async init() {
-        const tabList = await this.queryBus.query(new GetFollowedTabs());
+        const tabList = await this.queryBus.query(new GetTabAssociationsWithFollowState());
         this.noTabRow = this.createNoTabRow();
         this.tbodyElement.appendChild(this.noTabRow);
         let numberOfFollowedTabs = 0;
@@ -103,7 +103,7 @@ export class FollowedTabView {
         return row;
     }
 
-    private createTabRow(tab: Tab): HTMLElement {
+    private createTabRow(tab: TabAssociation): HTMLElement {
         const row = document.createElement('tr');
 
         const titleCell = this.createTitleCell(tab, row);
@@ -135,7 +135,7 @@ export class FollowedTabView {
         return row;
     }
 
-    private isTabOpened(tab: Tab) {
+    private isTabOpened(tab: TabAssociation) {
         return !!tab.openState;
     }
 
@@ -161,7 +161,7 @@ export class FollowedTabView {
         return cell;
     }
 
-    private createTitleCell(tab: Tab, row: HTMLElement): HTMLElement {
+    private createTitleCell(tab: TabAssociation, row: HTMLElement): HTMLElement {
         const linkElement = document.createElement('a');
         linkElement.innerHTML = `
             <img />
@@ -175,8 +175,6 @@ export class FollowedTabView {
                 this.commandBus.handle(new FocusTab(openTabId));
             } else if (!isOpeningTab) {
                 row.setAttribute('data-is-opening-tab', '1');
-                const url = row.getAttribute('data-url');
-                const readerMode = !!row.getAttribute('data-reader-mode');
                 this.commandBus.handle(new RestoreFollowedTab(tab.followState.id));
             }
         });
@@ -190,7 +188,7 @@ export class FollowedTabView {
         return cell;
     }
 
-    private addUnfollowButton(cell: HTMLElement, tab: Tab) {
+    private addUnfollowButton(cell: HTMLElement, tab: TabAssociation) {
         const unfollowButton = document.createElement('a');
         unfollowButton.textContent = 'Unfollow';
         unfollowButton.setAttribute('data-tooltip', 'Please double click to unfollow this tab');
@@ -201,7 +199,7 @@ export class FollowedTabView {
         jQuery(unfollowButton).tooltip();
 
         unfollowButton.addEventListener('dblclick', async (event) => {
-            const upToDateTab = await this.queryBus.query(new GetTabByFollowId(tab.followState.id));
+            const upToDateTab = await this.queryBus.query(new GetTabAssociationByFollowId(tab.followState.id));
             this.commandBus.handle(new UnfollowTab(upToDateTab));
         });
 
@@ -319,7 +317,7 @@ export class FollowedTabView {
         if (tabRow) {
             tabRow.removeAttribute('data-opened-tab-id');
             const followId = tabRow.getAttribute('data-follow-id');
-            const upToDateTab = await this.queryBus.query(new GetTabByFollowId(followId));
+            const upToDateTab = await this.queryBus.query(new GetTabAssociationByFollowId(followId));
             this.updateTabTitle(tabRow, upToDateTab.followState.title);
             this.updateTabUrl(tabRow, upToDateTab.followState.url);
             this.updateTabFavicon(tabRow, upToDateTab.followState.faviconUrl);

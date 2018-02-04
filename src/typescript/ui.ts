@@ -29,10 +29,10 @@ import { TabFilterRequested } from './tab/event/tab-filter-requested';
 import { TabFollowed } from './tab/event/tab-followed';
 import { TabOpened } from './tab/event/tab-opened';
 import { TabUnfollowed } from './tab/event/tab-unfollowed';
-import { GetFollowedTabs } from './tab/query/get-followed-tabs';
-import { GetOpenedTabs } from './tab/query/get-opened-tabs';
-import { GetTabByFollowId } from './tab/query/get-tab-by-follow-id';
-import { GetTabByOpenId } from './tab/query/get-tab-by-open-id';
+import { GetTabAssociationByFollowId } from './tab/query/get-tab-association-by-follow-id';
+import { GetTabAssociationByOpenId } from './tab/query/get-tab-association-by-open-id';
+import { GetTabAssociationsWithFollowState } from './tab/query/get-tab-associations-with-follow-state';
+import { GetTabAssociationsWithOpenState } from './tab/query/get-tab-associations-with-open-state';
 import { tabQueries } from './tab/query/tab-queries';
 import { ObjectUnserializer } from './utils/object-unserializer';
 import { StringMatcher } from './utils/string-matcher';
@@ -82,10 +82,10 @@ async function main() {
     commandBus.register(RestoreFollowedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(UnfollowTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
 
-    queryBus.register(GetFollowedTabs, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
-    queryBus.register(GetOpenedTabs, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
-    queryBus.register(GetTabByFollowId, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
-    queryBus.register(GetTabByOpenId, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
+    queryBus.register(GetTabAssociationsWithFollowState, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
+    queryBus.register(GetTabAssociationsWithOpenState, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
+    queryBus.register(GetTabAssociationByFollowId, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
+    queryBus.register(GetTabAssociationByOpenId, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
 
     eventBus.subscribe(TabClosed, followedTabView.onTabClose, followedTabView);
     eventBus.subscribe(TabClosed, openedTabView.onTabClose, openedTabView);

@@ -1,4 +1,5 @@
 import { EventBus } from '../bus/event-bus';
+import { QueryBus } from '../bus/query-bus';
 import { OpenedTabFaviconUrlUpdated } from './event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from './event/opened-tab-focused';
 import { OpenedTabIsLoading } from './event/opened-tab-is-loading';
@@ -10,8 +11,9 @@ import { OpenedTabUrlUpdated } from './event/opened-tab-url-updated';
 import { TabCloseHandled } from './event/tab-close-handled';
 import { TabClosed } from './event/tab-closed';
 import { TabOpened } from './event/tab-opened';
-import { ClosedTabRetriever } from './opened-tab/closed-tab-retriever';
-import { OpenedTabRetriever } from './opened-tab/opened-tab-retriever';
+import { GetClosedTabOpenStateByOpenId } from './query/get-closed-tab-open-state-by-open-id';
+import { GetTabOpenStateByOpenId } from './query/get-tab-open-state-by-open-id';
+import { GetTabOpenStates } from './query/get-tab-open-states';
 import { TabCloser } from './tab-closer';
 import { TabOpener } from './tab-opener';
 
@@ -20,8 +22,7 @@ export class NativeTabEventHandler {
 
     constructor(
         private eventBus: EventBus,
-        private openedTabRetriever: OpenedTabRetriever,
-        private closedTabRetriever: ClosedTabRetriever,
+        private queryBus: QueryBus,
         private tabCloser: TabCloser,
         private tabOpener: TabOpener,
     ) {
@@ -42,7 +43,7 @@ export class NativeTabEventHandler {
 
     async onNativeTabCreate(nativeTab: browser.tabs.Tab) {
         await this.tabOpener.waitForNewTabLoad(nativeTab.id);
-        const tabOpenState = await this.openedTabRetriever.getById(nativeTab.id, true);
+        const tabOpenState = await this.queryBus.query(new GetTabOpenStateByOpenId(nativeTab.id));
 
         if (tabOpenState) {
             this.eventBus.publish(new TabOpened(tabOpenState));
@@ -51,7 +52,7 @@ export class NativeTabEventHandler {
     }
 
     private async notifyTabMoveFromIndex(fromIndex: number) {
-        const tabOpenStateList = await this.openedTabRetriever.getAll();
+        const tabOpenStateList = await this.queryBus.query(new GetTabOpenStates());
 
         for (const tabOpenState of tabOpenStateList) {
             if (tabOpenState.index >= fromIndex) {
@@ -61,7 +62,7 @@ export class NativeTabEventHandler {
     }
 
     private async onTabActivated(activatedInfo: browser.tabs.ActivatedInfo) {
-        const tabOpenState = await this.openedTabRetriever.getById(activatedInfo.tabId, true);
+        const tabOpenState = await this.queryBus.query(new GetTabOpenStateByOpenId(activatedInfo.tabId));
 
         if (tabOpenState) {
             this.eventBus.publish(new OpenedTabFocused(tabOpenState));
@@ -69,7 +70,7 @@ export class NativeTabEventHandler {
     }
 
     async onNativeTabClose(tabId: number, removeInfo: browser.tabs.RemoveInfo) {
-        const closedTab = await this.closedTabRetriever.getById(tabId);
+        const closedTab = await this.queryBus.query(new GetClosedTabOpenStateByOpenId(tabId));
 
         await this.tabCloser.waitForTabClose(tabId);
         await this.eventBus.publish(new TabClosed(closedTab));
@@ -85,7 +86,7 @@ export class NativeTabEventHandler {
     }
 
     async onNativeTabUpdate(tabId: number, updateInfo: browser.tabs.UpdateInfo) {
-        const tabOpenState = await this.openedTabRetriever.getById(tabId);
+        const tabOpenState = await this.queryBus.query(new GetTabOpenStateByOpenId(tabId));
 
         if (null == tabOpenState) {
             return;

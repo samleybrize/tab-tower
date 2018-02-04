@@ -1,25 +1,22 @@
-import { EventBus } from '../bus/event-bus';
+import { CommandBus } from '../bus/command-bus';
+import { QueryBus } from '../bus/query-bus';
 import { sleep } from '../utils/sleep';
+import { AssociateOpenedTabToFollowedTab } from './command/associate-opened-tab-to-followed-tab';
 import { RestoreFollowedTab } from './command/restore-followed-tab';
-import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';
-import { FollowedTabRetriever } from './followed-tab/followed-tab-retriever';
 import { TabFollowState } from './followed-tab/tab-follow-state';
-import { NativeRecentlyClosedTabAssociationMaintainer } from './native-recently-closed-tab/native-recently-closed-tab-association-maintainer';
-import { OpenedTabRetriever } from './opened-tab/opened-tab-retriever';
-import { TabAssociationMaintainer } from './tab-association-maintainer';
+import { GetSessionIdAssociatedToOpenLongLivedId } from './query/get-session-id-associated-to-open-long-lived-id';
+import { GetTabFollowStateByFollowId } from './query/get-tab-follow-state-by-follow-id';
+import { GetTabOpenStateByOpenId } from './query/get-tab-open-state-by-open-id';
 
 export class TabOpener {
     constructor(
-        private openedTabRetriever: OpenedTabRetriever,
-        private followedTabRetriever: FollowedTabRetriever,
-        private tabAssociationMaintainer: TabAssociationMaintainer,
-        private nativeRecentlyClosedTabAssociationMaintainer: NativeRecentlyClosedTabAssociationMaintainer,
-        private eventBus: EventBus,
+        private commandBus: CommandBus,
+        private queryBus: QueryBus,
     ) {
     }
 
     async restoreFollowedTab(command: RestoreFollowedTab) {
-        const followState = await this.followedTabRetriever.getById(command.followId);
+        const followState = await this.queryBus.query(new GetTabFollowStateByFollowId(command.followId));
         let openedTab: browser.tabs.Tab = await this.restoreFromRecentlyClosedTabs(followState);
 
         if (null == openedTab) {
@@ -31,7 +28,7 @@ export class TabOpener {
     }
 
     private async restoreFromRecentlyClosedTabs(followState: TabFollowState) {
-        const sessionId = this.nativeRecentlyClosedTabAssociationMaintainer.getSessionIdAssociatedToOpenLongLivedId(followState.openLongLivedId);
+        const sessionId = await this.queryBus.query(new GetSessionIdAssociatedToOpenLongLivedId(followState.openLongLivedId));
 
         if (null != sessionId) {
             const targetIndex = (await browser.tabs.query({})).length;
@@ -60,12 +57,11 @@ export class TabOpener {
         return await browser.tabs.create(createTabOptions);
     }
 
-    private async associateNewTabToFollowedTab(openTabCommand: RestoreFollowedTab, openedTab: browser.tabs.Tab) {
-        const tabFollowState = await this.followedTabRetriever.getById(openTabCommand.followId);
-        const tabOpenState = await this.openedTabRetriever.getById(openedTab.id);
+    private async associateNewTabToFollowedTab(restoreTabCommand: RestoreFollowedTab, openedTab: browser.tabs.Tab) {
+        const tabFollowState = await this.queryBus.query(new GetTabFollowStateByFollowId(restoreTabCommand.followId));
+        const tabOpenState = await this.queryBus.query(new GetTabOpenStateByOpenId(openedTab.id));
 
-        this.tabAssociationMaintainer.associateOpenedTabToFollowedTab(openedTab.id, openTabCommand.followId);
-        this.eventBus.publish(new OpenedTabAssociatedToFollowedTab(tabOpenState, tabFollowState));
+        await this.commandBus.handle(new AssociateOpenedTabToFollowedTab(tabOpenState, tabFollowState));
     }
 
     async waitForNewTabLoad(tabId: number) {

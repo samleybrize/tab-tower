@@ -42,7 +42,7 @@
                 "variable-declaration": "nospace"
             }, {
                 "call-signature": "onespace",
-                "index-signature": "nospace",
+                "index-signature": "onespace",
                 "parameter": "onespace",
                 "property-declaration": "onespace",
                 "variable-declaration": "onespace"

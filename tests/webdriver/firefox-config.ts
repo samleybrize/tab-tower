@@ -11,8 +11,6 @@ export class FirefoxConfig {
     private isExtensionBuilded = false;
 
     getWebdriverOptions() {
-        this.buildExtension();
-
         const firefoxProfile = new Profile();
         firefoxProfile.addExtension(this.getExtensionPath());
         firefoxProfile.setPreference('xpinstall.signatures.required', false);
@@ -35,25 +33,12 @@ export class FirefoxConfig {
         return firefoxOptions;
     }
 
-    private buildExtension() {
-        if (this.isExtensionBuilded) {
-            return;
-        }
-
-        const extensionPath = this.getExtensionPath();
-        const rootPath = this.getRootProjectPath();
-
-        childProcess.execSync(`cd '${rootPath}' && zip -r ${extensionPath} dist icons ui manifest.json tests/resources`); // TODO
-
-        this.isExtensionBuilded = true;
-    }
-
     private getRootProjectPath() {
         return path.join(__dirname, '../../../..');
     }
 
     private getExtensionPath() {
-        return path.join(os.tmpdir(), 'tab-tower.xpi');
+        return path.join(this.getRootProjectPath(), 'dist', 'tab-tower-test.xpi');
     }
 
     private getFirefoxBinaryPath() {

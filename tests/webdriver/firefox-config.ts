@@ -2,14 +2,19 @@ import * as childProcess from 'child_process';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { Options, Profile } from 'selenium-webdriver/firefox';
+import { Binary, Options, Profile } from 'selenium-webdriver/firefox';
 import * as which from 'which';
 
+import { TestsConfig } from '../tests-config';
+
 export class FirefoxConfig {
+    private testsConfig: TestsConfig;
     private isExtensionBuilded = false;
 
     getWebdriverOptions() {
         this.buildExtension();
+
+        this.testsConfig = TestsConfig.getInstance();
 
         const firefoxProfile = new Profile();
         firefoxProfile.addExtension(this.getExtensionPath());
@@ -21,7 +26,13 @@ export class FirefoxConfig {
         firefoxProfile.setPreference('extensions.webextensions.uuids', `{"${extensionId}":"${extensionInternalId}"}`);
 
         const firefoxPath = this.getFirefoxBinaryPath();
-        const firefoxOptions = new Options().setProfile(firefoxProfile).setBinary(firefoxPath);
+        const firefoxBinary = new Binary(firefoxPath);
+
+        if (this.testsConfig.isHeadlessModeEnabled) {
+            firefoxBinary.addArguments('-headless');
+        }
+
+        const firefoxOptions = new Options().setProfile(firefoxProfile).setBinary(firefoxBinary);
 
         return firefoxOptions;
     }

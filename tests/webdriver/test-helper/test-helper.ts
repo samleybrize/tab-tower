@@ -1,6 +1,7 @@
 import { By, error as WebDriverError, until, WebDriver, WebElement } from 'selenium-webdriver';
 
 import { sleep } from '../../../src/typescript/utils/sleep';
+import { TestsConfig } from '../../tests-config';
 import { BrowserInstructionSender } from '../browser-instruction-sender';
 import { ExtensionUrl } from '../extension-url';
 import { FirefoxConfig } from '../firefox-config';
@@ -13,6 +14,7 @@ import { TabFilterTestHelper } from './tab-filter-test-helper';
 import { TabsTestHelper } from './tabs-test-helper';
 
 export class TestHelper {
+    private testsConfig: TestsConfig;
     private browserInstructionSender: BrowserInstructionSender;
     private driver: WebDriver;
     private firefoxConfig: FirefoxConfig;
@@ -24,6 +26,7 @@ export class TestHelper {
     private tabFilterTestHelper: TabFilterTestHelper;
 
     constructor() {
+        this.testsConfig = TestsConfig.getInstance();
         this.browserInstructionSender = BrowserInstructionSender.getInstance();
         this.screenshotTaker = ScreenshotTaker.getInstance();
         this.webdriverRetriever = WebDriverRetriever.getInstance();
@@ -40,7 +43,7 @@ export class TestHelper {
     }
 
     async shutdown() {
-        if (!process.env.KEEP_BROWSER) {
+        if (!this.testsConfig.keepBrowserOpened) {
             await this.driver.quit();
         }
 

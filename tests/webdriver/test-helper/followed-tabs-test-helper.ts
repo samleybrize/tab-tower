@@ -77,12 +77,23 @@ export class FollowedTabsTestHelper {
             }, 10000);
         } else {
             await this.driver.wait(async () => {
+                let numberOfMatchingTabs = 0;
                 const tabList = await this.browserInstructionSender.getAllTabs();
 
                 for (const tab of tabList) {
-                    if (tab.url == url && 'complete' != tab.status) {
+                    if (tab.url != url) {
+                        continue;
+                    }
+
+                    numberOfMatchingTabs++;
+
+                    if ('complete' != tab.status) {
                         return false;
                     }
+                }
+
+                if (0 == numberOfMatchingTabs) {
+                    return false;
                 }
 
                 return true;

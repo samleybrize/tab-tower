@@ -251,6 +251,10 @@ export class TestHelper {
         }, 10000);
     }
 
+    async clearRecentlyClosedTabs() {
+        await this.browserInstructionSender.clearRecentlyClosedTabs();
+    }
+
     async restoreRecentlyClosedTab(index: number) {
         const restoredTabIndex = await this.browserInstructionSender.restoreRecentlyClosedTab(index);
 

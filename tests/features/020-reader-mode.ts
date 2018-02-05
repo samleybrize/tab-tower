@@ -113,7 +113,7 @@ describe('Reader mode', () => {
 
             await testHelper.enableTabReaderMode(2, openedTabRowList[2]);
             await testHelper.closeTab(2);
-            await browserInstructionSender.clearRecentlyClosedTabs();
+            await testHelper.clearRecentlyClosedTabs();
 
             await testHelper.showFollowedTabsList();
             const followedTabRowList = await followedTabsHelper.getTabRowList();
@@ -135,7 +135,7 @@ describe('Reader mode', () => {
 
             await testHelper.closeTab(1);
             await testHelper.closeTab(3);
-            await browserInstructionSender.clearRecentlyClosedTabs();
+            await testHelper.clearRecentlyClosedTabs();
             await testHelper.reloadExtension();
 
             await testHelper.switchToWindowHandle(0);

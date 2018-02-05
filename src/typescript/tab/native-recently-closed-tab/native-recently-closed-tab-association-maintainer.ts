@@ -1,3 +1,4 @@
+import { sleep } from '../../utils/sleep';
 import { TabClosed } from '../event/tab-closed';
 import { TabOpenState } from '../opened-tab/tab-open-state';
 import { GetSessionIdAssociatedToOpenLongLivedId } from '../query/get-session-id-associated-to-open-long-lived-id';
@@ -17,16 +18,17 @@ export class NativeRecentlyClosedTabAssociationMaintainer {
 
     async init() {
         this.nativeRecentlyClosedTabAssociationList = await this.associationPersister.getAll();
-        await this.refreshRecentlyClosedTabList(true);
+        await this.refreshRecentlyClosedTabList(true, false);
     }
 
     private async onRecentlyClosedTabListChange() {
-        this.refreshRecentlyClosedTabList(false);
+        this.refreshRecentlyClosedTabList(false, false);
     }
 
-    private async refreshRecentlyClosedTabList(markUnassociatedAsIgnored: boolean) {
-        if (this.isHandlingRecentlyClosedTabListChange) {
+    private async refreshRecentlyClosedTabList(markUnassociatedAsIgnored: boolean, evenIfHandlingRecentlyClosedTabListChange: boolean) {
+        if (this.isHandlingRecentlyClosedTabListChange && !evenIfHandlingRecentlyClosedTabListChange) {
             this.reDoRecentlyClosedTabListChange = true;
+
             return;
         }
 
@@ -40,7 +42,8 @@ export class NativeRecentlyClosedTabAssociationMaintainer {
         }
 
         if (this.reDoRecentlyClosedTabListChange) {
-            this.refreshRecentlyClosedTabList(false);
+            this.refreshRecentlyClosedTabList(false, true);
+
             return;
         }
 
@@ -115,6 +118,8 @@ export class NativeRecentlyClosedTabAssociationMaintainer {
     }
 
     async querySessionIdAssociatedToOpenLongLivedId(command: GetSessionIdAssociatedToOpenLongLivedId) {
+        await this.waitAllPendingTasksCompleted();
+
         for (const association of this.nativeRecentlyClosedTabAssociationList) {
             if (association.associatedOpenedTabLongLivedId === command.openLongLivedId) {
                 return association.sessionId;
@@ -122,6 +127,16 @@ export class NativeRecentlyClosedTabAssociationMaintainer {
         }
 
         return null;
+    }
+
+    private async waitAllPendingTasksCompleted() {
+        let iterationCount = 0;
+        const maxAllowedIterations = 50;
+
+        while (iterationCount < maxAllowedIterations && (this.isHandlingClosedTabsAssociation || this.isHandlingRecentlyClosedTabListChange)) {
+            iterationCount++;
+            await sleep(50);
+        }
     }
 
     async onTabClose(event: TabClosed) {

@@ -181,7 +181,7 @@ describe('Tab following', () => {
         await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
 
         await testHelper.closeTab(1);
-        await browserInstructionSender.clearRecentlyClosedTabs();
+        await testHelper.clearRecentlyClosedTabs();
 
         await testHelper.showFollowedTabsList();
         const followedTabRowList = await followedTabsHelper.getTabRowList();
@@ -242,7 +242,7 @@ describe('Tab following', () => {
         await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
-        await browserInstructionSender.clearRecentlyClosedTabs();
+        await testHelper.clearRecentlyClosedTabs();
 
         await testHelper.showFollowedTabsList();
         const followedTabRowList = await followedTabsHelper.getTabRowList();
@@ -264,7 +264,7 @@ describe('Tab following', () => {
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
-        await browserInstructionSender.clearRecentlyClosedTabs();
+        await testHelper.clearRecentlyClosedTabs();
 
         await testHelper.showFollowedTabsList();
         const followedTabRowList = await followedTabsHelper.getTabRowList();
@@ -345,7 +345,7 @@ describe('Tab following', () => {
         await testHelper.moveTab(1, 0);
 
         await testHelper.closeTab(0);
-        await browserInstructionSender.clearRecentlyClosedTabs();
+        await testHelper.clearRecentlyClosedTabs();
 
         await testHelper.showFollowedTabsList();
         const followedTabRowList = await followedTabsHelper.getTabRowList();
@@ -372,7 +372,7 @@ describe('Tab following', () => {
 
         await testHelper.switchToWindowHandle(0);
         await testHelper.closeTab(1);
-        await browserInstructionSender.clearRecentlyClosedTabs();
+        await testHelper.clearRecentlyClosedTabs();
 
         await testHelper.showFollowedTabsList();
         const followedTabRowList = await followedTabsHelper.getTabRowList();
@@ -399,7 +399,7 @@ describe('Tab following', () => {
         await testHelper.makeTabGoToPreviousPage(2);
 
         await testHelper.closeTab(2);
-        await browserInstructionSender.clearRecentlyClosedTabs();
+        await testHelper.clearRecentlyClosedTabs();
 
         const followedTabRowList = await followedTabsHelper.getTabRowList();
         await followedTabsHelper.assertTabTitle(followedTabRowList[1], 'Test page 2');

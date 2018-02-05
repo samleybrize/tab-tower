@@ -28,6 +28,10 @@ export class FirefoxConfig {
             firefoxBinary.addArguments('-headless');
         }
 
+        if (testsConfig.isBrowserConsoleEnabled) {
+            firefoxBinary.addArguments('-jsconsole');
+        }
+
         const firefoxOptions = new Options().setProfile(firefoxProfile).setBinary(firefoxBinary);
 
         return firefoxOptions;

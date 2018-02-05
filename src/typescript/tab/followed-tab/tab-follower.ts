@@ -6,7 +6,7 @@ import { AssociateOpenedTabToFollowedTab } from '../command/associate-opened-tab
 import { FollowTab } from '../command/follow-tab';
 import { TabFollowed } from '../event/tab-followed';
 import { TabOpenState } from '../opened-tab/tab-open-state';
-import { TabPersister } from '../persister/tab-persister';
+import { TabPersister } from './persister/tab-persister';
 import { TabFollowState } from './tab-follow-state';
 
 export class TabFollower {

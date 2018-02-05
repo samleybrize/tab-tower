@@ -1,7 +1,7 @@
-import { TabPersister } from '../persister/tab-persister';
 import { GetTabFollowStateByFollowId } from '../query/get-tab-follow-state-by-follow-id';
 import { GetTabFollowStates } from '../query/get-tab-follow-states';
 import { GetTabFollowStatesWithOpenLongLivedId } from '../query/get-tab-follow-states-with-open-long-lived-id';
+import { TabPersister } from './persister/tab-persister';
 import { TabFollowState } from './tab-follow-state';
 
 export class FollowedTabRetriever {

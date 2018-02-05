@@ -32,6 +32,8 @@ import { TabOpened } from './tab/event/tab-opened';
 import { TabUnfollowed } from './tab/event/tab-unfollowed';
 import { FollowedTabRetriever } from './tab/followed-tab/followed-tab-retriever';
 import { FollowedTabUpdater } from './tab/followed-tab/followed-tab-updater';
+import { InMemoryTabPersister } from './tab/followed-tab/persister/in-memory-tab-persister';
+import { WebStorageTabPersister } from './tab/followed-tab/persister/web-storage-tab-persister';
 import { TabFollower } from './tab/followed-tab/tab-follower';
 import { TabUnfollower } from './tab/followed-tab/tab-unfollower';
 import { NativeRecentlyClosedTabAssociationMaintainer } from './tab/native-recently-closed-tab/native-recently-closed-tab-association-maintainer';
@@ -39,8 +41,6 @@ import { WebStoragePersister as WebStorageNativeRecentlyClosedTabAssociationPers
 import { NativeTabEventHandler } from './tab/native-tab-event-handler';
 import { ClosedTabRetriever } from './tab/opened-tab/closed-tab-retriever';
 import { OpenedTabRetriever } from './tab/opened-tab/opened-tab-retriever';
-import { InMemoryTabPersister } from './tab/persister/in-memory-tab-persister';
-import { WebStorageTabPersister } from './tab/persister/web-storage-tab-persister';
 import { PrivilegedUrlDetector } from './tab/privileged-url-detector';
 import { GetClosedTabOpenStateByOpenId } from './tab/query/get-closed-tab-open-state-by-open-id';
 import { GetFollowIdAssociatedToOpenId } from './tab/query/get-follow-id-associated-to-open-id';

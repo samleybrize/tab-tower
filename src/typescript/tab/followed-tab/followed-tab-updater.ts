@@ -8,8 +8,8 @@ import { OpenedTabReaderModeStateUpdated } from '../event/opened-tab-reader-mode
 import { OpenedTabTitleUpdated } from '../event/opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from '../event/opened-tab-url-updated';
 import { TabOpened } from '../event/tab-opened';
-import { TabPersister } from '../persister/tab-persister';
 import { GetFollowIdAssociatedToOpenId } from '../query/get-follow-id-associated-to-open-id';
+import { TabPersister } from './persister/tab-persister';
 
 export class FollowedTabUpdater {
     constructor(

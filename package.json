@@ -31,7 +31,7 @@
     "which": "^1.3.0"
   },
   "scripts": {
-    "start": "web-ext run --ignore-files='**/*'",
+    "start": "web-ext run --ignore-files='**/*' -f firefox-developer-edition --bc",
     "prebuild-extension:firefox": "node bin/clean.js && npm run build && tsc -p tsconfig.bin.json",
     "build-extension:firefox": "node ./dist/bin/build-extension.js",
     "build": "npm run build:ts && npm run build:sass",

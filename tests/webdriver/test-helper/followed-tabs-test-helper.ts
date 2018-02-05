@@ -214,6 +214,10 @@ export class FollowedTabsTestHelper {
         await this.tabsTestHelper.assertTabTitle(tabRow, expectedTitle);
     }
 
+    async assertTabTitleTooltip(tabRow: WebElement, expectedText: string) {
+        await this.tabsTestHelper.assertTabTitleTooltip(tabRow, expectedText);
+    }
+
     async assertNoTabRowIsVisible() {
         const noTabRow = this.getNoTabRow();
         await this.tabsTestHelper.assertNoTabRowIsVisible(noTabRow);

@@ -75,6 +75,11 @@ export class TabsTestHelper {
         assert.equal(tabShownTitle, expectedTitle);
     }
 
+    async assertTabTitleTooltip(tabRow: WebElement, expectedText: string) {
+        const tooltipText = await tabRow.findElement(By.css('.title')).getAttribute('data-tooltip');
+        assert.equal(tooltipText, expectedText);
+    }
+
     async assertNoTabRowIsVisible(noTabRow: WebElement) {
         assert.isTrue(await noTabRow.isDisplayed(), 'The no tab row is not visible');
     }

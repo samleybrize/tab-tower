@@ -69,6 +69,7 @@ describe('Tab following', () => {
         await followedTabsHelper.assertTabFaviconUrl(followedTabRowList[0], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_1));
         await followedTabsHelper.assertTabOpenIndicatorIsOn(followedTabRowList[0]);
         await followedTabsHelper.assertLastAccessDateIsRoughlyEqualToDate(followedTabRowList[0], new Date());
+        await followedTabsHelper.assertTabTitleTooltip(followedTabRowList[0], 'Go to tab');
     });
 
     it('Opened tabs with a privileged url should not be followable', async () => {
@@ -186,6 +187,7 @@ describe('Tab following', () => {
         await testHelper.showFollowedTabsList();
         const followedTabRowList = await followedTabsHelper.getTabRowList();
         await followedTabsHelper.assertTabOpenIndicatorIsOff(followedTabRowList[0]);
+        await followedTabsHelper.assertTabTitleTooltip(followedTabRowList[0], 'Open tab');
     });
 
     it('Close button should not be shown when there is no associated opened tab', async () => {

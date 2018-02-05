@@ -14,10 +14,7 @@
         "typeRoots": [
             "node_modules/@types",
             "src/typescript/definitions/webextension.d.ts"
-        ],
-        "paths": {
-            "zip-dir": ["src/typescript/definitions/zip-dir"]
-        }
+        ]
     },
     "exclude": [
         "dist",

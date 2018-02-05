@@ -10,10 +10,7 @@
             "dom",
             "es2015"
         ],
-        "baseUrl": ".",
-        "paths": {
-            "zip-dir": ["src/typescript/definitions/zip-dir"]
-        }
+        "baseUrl": "."
     },
     "include": [
         "src/typescript/bin"

@@ -1,8 +1,8 @@
 import { assert } from 'chai';
 import { WebDriver } from 'selenium-webdriver';
 
-import { BrowserInstructionSender } from '../webdriver/browser-instruction-sender';
-import { ExtensionUrl } from '../webdriver/extension-url';
+import { BrowserInstructionSender } from '../utils/browser-instruction-sender';
+import { ExtensionUrl } from '../utils/extension-url';
 import { FirefoxConfig } from '../webdriver/firefox-config';
 import { OpenedTabsTestHelper } from '../webdriver/test-helper/opened-tabs-test-helper';
 import { TestHelper } from '../webdriver/test-helper/test-helper';

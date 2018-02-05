@@ -2,8 +2,8 @@ import { By, error as WebDriverError, until, WebDriver, WebElement } from 'selen
 
 import { sleep } from '../../../src/typescript/utils/sleep';
 import { TestsConfig } from '../../tests-config';
-import { BrowserInstructionSender } from '../browser-instruction-sender';
-import { ExtensionUrl } from '../extension-url';
+import { BrowserInstructionSender } from '../../utils/browser-instruction-sender';
+import { ExtensionUrl } from '../../utils/extension-url';
 import { FirefoxConfig } from '../firefox-config';
 import { ScreenshotTaker } from '../screenshot-taker';
 import { WebDriverRetriever } from '../webdriver-retriever';

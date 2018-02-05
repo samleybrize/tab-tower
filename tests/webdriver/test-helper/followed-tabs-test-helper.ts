@@ -2,7 +2,7 @@ import { assert } from 'chai';
 import { By, error as WebDriverError, WebDriver, WebElement } from 'selenium-webdriver';
 
 import { sleep } from '../../../src/typescript/utils/sleep';
-import { BrowserInstructionSender } from '../browser-instruction-sender';
+import { BrowserInstructionSender } from '../../utils/browser-instruction-sender';
 import { TabsTestHelper } from './tabs-test-helper';
 
 export class FollowedTabsTestHelper {

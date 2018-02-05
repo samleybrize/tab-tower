@@ -1,9 +1,15 @@
 const path = require('path');
 
 const backgroundEntries = ['./src/typescript/background.ts'];
+const uiEntries = [
+    './node_modules/jquery/dist/jquery.min.js',
+    './node_modules/materialize-css/dist/js/materialize.min.js',
+    './src/typescript/ui.ts',
+];
 
 if ('test' == process.env.NODE_ENV) {
-    backgroundEntries.push('./tests/webdriver/browser-instruction-receiver.ts');
+    backgroundEntries.push('./tests/utils/browser-instruction-receiver.ts');
+    uiEntries.push('./tests/utils/test-tab-opener.ts');
 }
 
 module.exports = [
@@ -30,11 +36,7 @@ module.exports = [
         },
     },
     {
-        entry: [
-            './node_modules/jquery/dist/jquery.min.js',
-            './node_modules/materialize-css/dist/js/materialize.min.js',
-            './src/typescript/ui.ts'
-        ],
+        entry: uiEntries,
         output: {
             filename: 'ui.js',
             path: path.resolve(__dirname, 'dist/js'),

@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import { By, error as WebDriverError, WebDriver, WebElement } from 'selenium-webdriver';
 
-import { BrowserInstructionSender } from '../browser-instruction-sender';
+import { BrowserInstructionSender } from '../../utils/browser-instruction-sender';
 import { WebDriverRetriever } from '../webdriver-retriever';
 
 export interface TabIndicator {

@@ -72,6 +72,10 @@ export class NativeTabEventHandler {
     async onNativeTabClose(tabId: number, removeInfo: browser.tabs.RemoveInfo) {
         const closedTab = await this.queryBus.query(new GetClosedTabOpenStateByOpenId(tabId));
 
+        if (null == closedTab) {
+            return;
+        }
+
         await this.tabCloser.waitForTabClose(tabId);
         await this.eventBus.publish(new TabClosed(closedTab));
         await this.eventBus.publish(new TabCloseHandled(closedTab));

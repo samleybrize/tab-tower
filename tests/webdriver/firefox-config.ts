@@ -1,6 +1,3 @@
-import * as childProcess from 'child_process';
-import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
 import { Binary, Options, Profile } from 'selenium-webdriver/firefox';
 import * as which from 'which';
@@ -8,8 +5,6 @@ import * as which from 'which';
 import { TestsConfig } from '../tests-config';
 
 export class FirefoxConfig {
-    private isExtensionBuilded = false;
-
     getWebdriverOptions() {
         const firefoxProfile = new Profile();
         firefoxProfile.addExtension(this.getExtensionPath());

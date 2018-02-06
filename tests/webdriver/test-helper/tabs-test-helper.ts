@@ -1,8 +1,5 @@
 import { assert } from 'chai';
-import { By, error as WebDriverError, WebDriver, WebElement } from 'selenium-webdriver';
-
-import { BrowserInstructionSender } from '../../utils/browser-instruction-sender';
-import { WebDriverRetriever } from '../webdriver-retriever';
+import { By, WebElement } from 'selenium-webdriver';
 
 export interface TabIndicator {
     on: WebElement;
@@ -10,9 +7,6 @@ export interface TabIndicator {
 }
 
 export class TabsTestHelper {
-    constructor(private driver: WebDriver, private browserInstructionSender: BrowserInstructionSender) {
-    }
-
     async getNumberOfTabsWithUrl(titleElementList: WebElement[], url: string) {
         let count = 0;
 

@@ -44,7 +44,7 @@
     "watch:ts": "webpack --watch",
     "watch:sass": "npm run build:sass && node-sass -w src/scss/main.scss dist/css/style.css --source-map true",
     "lint": "npm run lint:ts && npm run lint:sass",
-    "lint:ts": "tslint -p tsconfig.json --type-check './src/**/*.ts'",
+    "lint:ts": "tslint -p tsconfig.json",
     "lint:sass": "sass-lint -v -q",
     "pretest": "NODE_ENV=test npm run build-extension:firefox && tsc -p tsconfig.test.json",
     "test": "mocha --require source-map-support/register dist/tests --recursive --timeout 20000 --slow 5000 -b"

@@ -1,4 +1,4 @@
-import { Builder, WebDriver } from 'selenium-webdriver';
+import { Builder } from 'selenium-webdriver';
 
 import { FirefoxConfig } from './firefox-config';
 

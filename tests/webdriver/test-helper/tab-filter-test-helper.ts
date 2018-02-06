@@ -1,4 +1,3 @@
-import { assert } from 'chai';
 import { By, WebDriver } from 'selenium-webdriver';
 
 import { sleep } from '../../../src/typescript/utils/sleep';

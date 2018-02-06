@@ -37,11 +37,6 @@ export class FollowedTabsTestHelper {
     async clickOnTabTitle(tabRow: WebElement) {
         const openIndicator = this.getOpenIndicator(tabRow);
         const tabId = await this.getWebElementAttribute(tabRow, 'data-opened-tab-id');
-        let url: string;
-
-        if (null === tabId) {
-            url = await this.getWebElementAttribute(tabRow.findElement(By.css('.title a')), 'data-url');
-        }
 
         const titleElement = tabRow.findElement(By.css('.title a'));
         await titleElement.click();

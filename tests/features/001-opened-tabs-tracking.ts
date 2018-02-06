@@ -191,7 +191,6 @@ describe('Opened tabs tracking', () => {
     });
 
     it('Incognito tabs should not be shown in the opened tabs list', async () => {
-        const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
         await testHelper.createWindow(true, firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
         await openedTabsHelper.assertNumberOfTabs(1);

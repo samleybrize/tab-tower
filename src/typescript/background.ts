@@ -75,7 +75,7 @@ async function main() {
     const followedTabUpdater = new FollowedTabUpdater(inMemoryTabPersister, commandBus, queryBus);
     const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
 
-    const uiUrlStartWith = `moz-extension://${location.host}/ui/tab-tower.html`;
+    const uiUrlStartWith = `moz-extension://${location.host}/ui/control-center-desktop.html`;
     const privilegedUrlDetector = new PrivilegedUrlDetector();
     const openedTabRetriever = new OpenedTabRetriever(privilegedUrlDetector, [uiUrlStartWith]);
     const closedTabRetriever = new ClosedTabRetriever(queryBus);
@@ -177,7 +177,7 @@ async function main() {
     }
 
     async function initBrowserAction() {
-        const uiUrl = `moz-extension://${location.host}/ui/tab-tower.html`;
+        const uiUrl = `moz-extension://${location.host}/ui/control-center-desktop.html`;
         browser.browserAction.onClicked.addListener(async () => {
             const uiTabs = await browser.tabs.query({url: uiUrl});
 

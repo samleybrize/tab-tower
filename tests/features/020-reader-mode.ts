@@ -158,7 +158,7 @@ describe('Reader mode', () => {
             await testHelper.openTab(null, 0);
             await testHelper.reloadExtension();
             await testHelper.switchToWindowHandle(0);
-            await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
+            await driver.get(firefoxConfig.getExtensionUrl('/ui/control-center-desktop.html'));
 
             await testHelper.showFollowedTabsList();
             const followedTabRowList = await followedTabsHelper.getTabRowList();
@@ -183,7 +183,7 @@ describe('Reader mode', () => {
             await testHelper.openTab(null, 0);
             await testHelper.reloadExtension();
             await testHelper.switchToWindowHandle(0);
-            await driver.get(firefoxConfig.getExtensionUrl('/ui/tab-tower.html'));
+            await driver.get(firefoxConfig.getExtensionUrl('/ui/control-center-desktop.html'));
 
             await testHelper.showFollowedTabsList();
             const newFollowedTabRowList = await followedTabsHelper.getTabRowList();

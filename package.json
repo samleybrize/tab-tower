@@ -1,6 +1,9 @@
 {
   "name": "tab-tower",
-  "version": "1.0.0",
+  "title": "Tab Tower",
+  "description": "Advanced browser tabs manager.",
+  "author": "Stephen Berquet",
+  "version": "0.1.0",
   "main": "dist/src/main.js",
   "license": "MIT",
   "devDependencies": {

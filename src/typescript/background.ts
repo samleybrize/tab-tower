@@ -21,6 +21,7 @@ import { OpenedTabAssociatedToFollowedTab } from './tab/event/opened-tab-associa
 import { OpenedTabFaviconUrlUpdated } from './tab/event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from './tab/event/opened-tab-focused';
 import { OpenedTabMoved } from './tab/event/opened-tab-moved';
+import { OpenedTabPinStateUpdated } from './tab/event/opened-tab-pin-state-updated';
 import { OpenedTabReaderModeStateUpdated } from './tab/event/opened-tab-reader-mode-state-updated';
 import { OpenedTabTitleUpdated } from './tab/event/opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from './tab/event/opened-tab-url-updated';
@@ -156,6 +157,8 @@ async function main() {
         eventBus.subscribe(OpenedTabFocused, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(OpenedTabMoved, closedTabRetriever.onTabMove, closedTabRetriever);
         eventBus.subscribe(OpenedTabMoved, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(OpenedTabPinStateUpdated, closedTabRetriever.onTabPinStateUpdate, closedTabRetriever);
+        eventBus.subscribe(OpenedTabPinStateUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(OpenedTabReaderModeStateUpdated, followedTabUpdater.onOpenedTabReaderModeStateUpdate, followedTabUpdater);
         eventBus.subscribe(OpenedTabReaderModeStateUpdated, closedTabRetriever.onTabReaderModeStateUpdate, closedTabRetriever);
         eventBus.subscribe(OpenedTabReaderModeStateUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);

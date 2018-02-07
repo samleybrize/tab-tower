@@ -5,6 +5,7 @@ import { OpenedTabFocused } from './event/opened-tab-focused';
 import { OpenedTabIsLoading } from './event/opened-tab-is-loading';
 import { OpenedTabLoadingIsComplete } from './event/opened-tab-loading-is-complete';
 import { OpenedTabMoved } from './event/opened-tab-moved';
+import { OpenedTabPinStateUpdated } from './event/opened-tab-pin-state-updated';
 import { OpenedTabReaderModeStateUpdated } from './event/opened-tab-reader-mode-state-updated';
 import { OpenedTabTitleUpdated } from './event/opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from './event/opened-tab-url-updated';
@@ -125,6 +126,11 @@ export class NativeTabEventHandler {
         if (undefined !== updateInfo.favIconUrl) {
             tabOpenState.faviconUrl = updateInfo.favIconUrl;
             this.eventBus.publish(new OpenedTabFaviconUrlUpdated(tabOpenState));
+        }
+
+        if (undefined !== updateInfo.pinned) {
+            tabOpenState.isPinned = updateInfo.pinned;
+            this.eventBus.publish(new OpenedTabPinStateUpdated(tabOpenState));
         }
     }
 }

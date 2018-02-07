@@ -4,6 +4,7 @@ import { OpenedTabFocused } from './opened-tab-focused';
 import { OpenedTabIsLoading } from './opened-tab-is-loading';
 import { OpenedTabLoadingIsComplete } from './opened-tab-loading-is-complete';
 import { OpenedTabMoved } from './opened-tab-moved';
+import { OpenedTabPinStateUpdated } from './opened-tab-pin-state-updated';
 import { OpenedTabReaderModeStateUpdated } from './opened-tab-reader-mode-state-updated';
 import { OpenedTabTitleUpdated } from './opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from './opened-tab-url-updated';
@@ -21,6 +22,7 @@ export const tabEvents = [
     OpenedTabIsLoading,
     OpenedTabLoadingIsComplete,
     OpenedTabMoved,
+    OpenedTabPinStateUpdated,
     OpenedTabReaderModeStateUpdated,
     OpenedTabTitleUpdated,
     OpenedTabUrlUpdated,

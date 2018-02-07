@@ -2,6 +2,7 @@ import { QueryBus } from '../../bus/query-bus';
 import { OpenedTabFaviconUrlUpdated } from '../event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from '../event/opened-tab-focused';
 import { OpenedTabMoved } from '../event/opened-tab-moved';
+import { OpenedTabPinStateUpdated } from '../event/opened-tab-pin-state-updated';
 import { OpenedTabReaderModeStateUpdated } from '../event/opened-tab-reader-mode-state-updated';
 import { OpenedTabTitleUpdated } from '../event/opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from '../event/opened-tab-url-updated';
@@ -54,6 +55,14 @@ export class ClosedTabRetriever {
 
         if (existingTab) {
             existingTab.isInReaderMode = event.tabOpenState.isInReaderMode;
+        }
+    }
+
+    async onTabPinStateUpdate(event: OpenedTabPinStateUpdated) {
+        const existingTab = this.openedTabMap.get(event.tabOpenState.id);
+
+        if (existingTab) {
+            existingTab.isPinned = event.tabOpenState.isPinned;
         }
     }
 

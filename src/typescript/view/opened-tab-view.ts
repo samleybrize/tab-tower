@@ -10,6 +10,7 @@ import { OpenedTabAssociatedToFollowedTab } from '../tab/event/opened-tab-associ
 import { OpenedTabFaviconUrlUpdated } from '../tab/event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from '../tab/event/opened-tab-focused';
 import { OpenedTabMoved } from '../tab/event/opened-tab-moved';
+import { OpenedTabPinStateUpdated } from '../tab/event/opened-tab-pin-state-updated';
 import { OpenedTabReaderModeStateUpdated } from '../tab/event/opened-tab-reader-mode-state-updated';
 import { OpenedTabTitleUpdated } from '../tab/event/opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from '../tab/event/opened-tab-url-updated';
@@ -58,6 +59,7 @@ export class OpenedTabView {
                 <tr>
                     <th>Title</th>
                     <th class="incognitoIndicator">Incognito</th>
+                    <th class="readerModeIndicator">Pinned</th>
                     <th class="readerModeIndicator">Reader mode</th>
                     <th class="lastAccess">Last access</th>
                     <th></th>
@@ -114,6 +116,7 @@ export class OpenedTabView {
 
         const titleCell = this.createTitleCell(row);
         const incognitoCell = this.createOnOffIndicatorCell('incognitoIndicator');
+        const pinCell = this.createOnOffIndicatorCell('pinIndicator');
         const readerModeCell = this.createOnOffIndicatorCell('readerModeIndicator');
         const lastAccessCell = this.createCell('lastAccess');
         const actionsCell = this.createCell('actions');
@@ -124,6 +127,7 @@ export class OpenedTabView {
         row.setAttribute('data-tab-id', '' + tabOpenState.id);
         row.appendChild(titleCell);
         row.appendChild(incognitoCell);
+        row.appendChild(pinCell);
         row.appendChild(readerModeCell);
         row.appendChild(lastAccessCell);
         row.appendChild(actionsCell);
@@ -132,6 +136,7 @@ export class OpenedTabView {
         this.updateTabIncognitoState(row, tabOpenState.isIncognito);
         this.updateTabIndex(row, tabOpenState.index);
         this.updateTabReaderModeState(row, tabOpenState.isInReaderMode);
+        this.updateTabPinState(row, tabOpenState.isPinned);
         this.updateTabTitle(row, tabOpenState.title);
         this.updateTabUrl(row, tabOpenState.url, tabOpenState.isPrivileged, tabOpenState.isIgnored);
         this.updateTabLastAccess(row, tabOpenState.lastAccess);
@@ -313,6 +318,10 @@ export class OpenedTabView {
             iconOnElement.classList.add('transparent');
             iconOffElement.classList.remove('transparent');
         }
+    }
+
+    private updateTabPinState(row: HTMLElement, isPinned: boolean) {
+        this.updateOnOffIndicator(isPinned, row.querySelector('.pinIndicator'));
     }
 
     private updateTabIncognitoState(row: HTMLElement, isIncognito: boolean) {
@@ -508,6 +517,24 @@ export class OpenedTabView {
 
         if (tabRow) {
             this.updateTabReaderModeState(tabRow, event.tabOpenState.isInReaderMode);
+            this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
+        }
+    }
+
+    async onOpenTabPinStateUpdate(event: OpenedTabPinStateUpdated) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.handleOpenTabPinStateUpdate.bind(this, event));
+            return;
+        }
+
+        await this.handleOpenTabPinStateUpdate(event);
+    }
+
+    private async handleOpenTabPinStateUpdate(event: OpenedTabPinStateUpdated) {
+        const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
+
+        if (tabRow) {
+            this.updateTabPinState(tabRow, event.tabOpenState.isPinned);
             this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }

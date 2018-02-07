@@ -5,7 +5,9 @@ import { QueryBus } from '../bus/query-bus';
 import { CloseTab } from '../tab/command/close-tab';
 import { FocusTab } from '../tab/command/focus-tab';
 import { FollowTab } from '../tab/command/follow-tab';
+import { PinTab } from '../tab/command/pin-tab';
 import { UnfollowTab } from '../tab/command/unfollow-tab';
+import { UnpinTab } from '../tab/command/unpin-tab';
 import { OpenedTabAssociatedToFollowedTab } from '../tab/event/opened-tab-associated-to-followed-tab';
 import { OpenedTabFaviconUrlUpdated } from '../tab/event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from '../tab/event/opened-tab-focused';
@@ -122,6 +124,8 @@ export class OpenedTabView {
         const actionsCell = this.createCell('actions');
         this.addFollowButton(actionsCell, tabOpenState);
         this.addUnfollowButton(actionsCell, tabOpenState);
+        this.addPinButton(actionsCell, tabOpenState);
+        this.addUnpinButton(actionsCell, tabOpenState);
         this.addCloseButton(actionsCell, tabOpenState);
 
         row.setAttribute('data-tab-id', '' + tabOpenState.id);
@@ -235,6 +239,36 @@ export class OpenedTabView {
         cell.appendChild(unfollowButton);
     }
 
+    private addPinButton(cell: HTMLElement, tabOpenState: TabOpenState) {
+        const pinButton = document.createElement('a');
+        pinButton.textContent = 'Pin';
+        pinButton.classList.add('pinButton');
+        pinButton.classList.add('btn');
+        pinButton.classList.add('waves-effect');
+        pinButton.classList.add('waves-light');
+
+        pinButton.addEventListener('click', async (event) => {
+            this.commandBus.handle(new PinTab(tabOpenState.id));
+        });
+
+        cell.appendChild(pinButton);
+    }
+
+    private addUnpinButton(cell: HTMLElement, tabOpenState: TabOpenState) {
+        const unpinButton = document.createElement('a');
+        unpinButton.textContent = 'Unpin';
+        unpinButton.classList.add('unpinButton');
+        unpinButton.classList.add('btn');
+        unpinButton.classList.add('waves-effect');
+        unpinButton.classList.add('waves-light');
+
+        unpinButton.addEventListener('click', async (event) => {
+            this.commandBus.handle(new UnpinTab(tabOpenState.id));
+        });
+
+        cell.appendChild(unpinButton);
+    }
+
     private addCloseButton(cell: HTMLElement, tabOpenState: TabOpenState) {
         const closeButton = document.createElement('a');
         closeButton.textContent = 'Close';
@@ -322,6 +356,16 @@ export class OpenedTabView {
 
     private updateTabPinState(row: HTMLElement, isPinned: boolean) {
         this.updateOnOffIndicator(isPinned, row.querySelector('.pinIndicator'));
+        const pinButton = row.querySelector('.pinButton');
+        const unpinButton = row.querySelector('.unpinButton');
+
+        if (isPinned) {
+            pinButton.classList.add('transparent');
+            unpinButton.classList.remove('transparent');
+        } else {
+            pinButton.classList.remove('transparent');
+            unpinButton.classList.add('transparent');
+        }
     }
 
     private updateTabIncognitoState(row: HTMLElement, isIncognito: boolean) {

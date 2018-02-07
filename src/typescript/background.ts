@@ -14,9 +14,11 @@ import { AssociateOpenedTabToFollowedTab } from './tab/command/associate-opened-
 import { CloseTab } from './tab/command/close-tab';
 import { FocusTab } from './tab/command/focus-tab';
 import { FollowTab } from './tab/command/follow-tab';
+import { PinTab } from './tab/command/pin-tab';
 import { RestoreFollowedTab } from './tab/command/restore-followed-tab';
 import { tabCommands } from './tab/command/tab-commands';
 import { UnfollowTab } from './tab/command/unfollow-tab';
+import { UnpinTab } from './tab/command/unpin-tab';
 import { OpenedTabAssociatedToFollowedTab } from './tab/event/opened-tab-associated-to-followed-tab';
 import { OpenedTabFaviconUrlUpdated } from './tab/event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from './tab/event/opened-tab-focused';
@@ -62,6 +64,8 @@ import { TabAssociationRetriever } from './tab/tab-association/tab-association-r
 import { TabCloser } from './tab/tab-closer';
 import { TabFocuser } from './tab/tab-focuser';
 import { TabOpener } from './tab/tab-opener';
+import { TabPinner } from './tab/tab-pinner';
+import { TabUnpinner } from './tab/tab-unpinner';
 import { ObjectUnserializer } from './utils/object-unserializer';
 
 async function main() {
@@ -88,8 +92,10 @@ async function main() {
     const tabAssociationMaintainer = new TabAssociationMaintainer(eventBus, queryBus);
     const tabAssociationRetriever = new TabAssociationRetriever(queryBus);
 
-    const tabFocuser = new TabFocuser();
     const tabCloser = new TabCloser();
+    const tabFocuser = new TabFocuser();
+    const tabPinner = new TabPinner();
+    const tabUnpinner = new TabUnpinner();
     const nativeEventHandler = new NativeTabEventHandler(eventBus, queryBus, tabCloser, tabOpener);
 
     const objectUnserializer = new ObjectUnserializer();
@@ -116,8 +122,10 @@ async function main() {
         commandBus.register(CloseTab, tabCloser.closeTab, tabCloser);
         commandBus.register(FocusTab, tabFocuser.focusTab, tabFocuser);
         commandBus.register(FollowTab, tabFollower.followTab, tabFollower);
+        commandBus.register(PinTab, tabPinner.pinTab, tabPinner);
         commandBus.register(RestoreFollowedTab, tabOpener.restoreFollowedTab, tabOpener);
         commandBus.register(UnfollowTab, tabUnfollower.unfollowTab, tabUnfollower);
+        commandBus.register(UnpinTab, tabUnpinner.unpinTab, tabUnpinner);
     }
 
     function initQueryBus() {

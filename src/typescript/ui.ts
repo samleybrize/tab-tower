@@ -13,9 +13,11 @@ import { SendMessageQueryHandler } from './message/sender/send-message-query-han
 import { CloseTab } from './tab/command/close-tab';
 import { FocusTab } from './tab/command/focus-tab';
 import { FollowTab } from './tab/command/follow-tab';
+import { PinTab } from './tab/command/pin-tab';
 import { RestoreFollowedTab } from './tab/command/restore-followed-tab';
 import { tabCommands } from './tab/command/tab-commands';
 import { UnfollowTab } from './tab/command/unfollow-tab';
+import { UnpinTab } from './tab/command/unpin-tab';
 import { OpenedTabAssociatedToFollowedTab } from './tab/event/opened-tab-associated-to-followed-tab';
 import { OpenedTabFaviconUrlUpdated } from './tab/event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from './tab/event/opened-tab-focused';
@@ -80,8 +82,10 @@ async function main() {
     commandBus.register(CloseTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(FocusTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(FollowTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
+    commandBus.register(PinTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(RestoreFollowedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(UnfollowTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
+    commandBus.register(UnpinTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
 
     queryBus.register(GetTabAssociationsWithFollowState, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
     queryBus.register(GetTabAssociationsWithOpenState, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);

@@ -125,6 +125,11 @@ export class FollowedTabsTestHelper {
         }, 3000);
     }
 
+    async showTitleTooltip(tabRow: WebElement) {
+        const followId = await tabRow.getAttribute('data-follow-id');
+        await this.tabsTestHelper.showElementTooltip(`#followedTabList tbody tr[data-follow-id="${followId}"] .title a`);
+    }
+
     async getNumberOfTabsWithUrl(url?: string) {
         const titleElementList = await this.driver.findElements(By.css('#followedTabList tbody tr[data-follow-id] .title a'));
 

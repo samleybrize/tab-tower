@@ -35,7 +35,7 @@ export class TestHelper {
 
         this.browserInstructionSender.init();
 
-        const tabsTestHelper = new TabsTestHelper();
+        const tabsTestHelper = new TabsTestHelper(this.driver, this.browserInstructionSender);
         this.openedTabsTestHelper = new OpenedTabsTestHelper(tabsTestHelper, this.driver, this.browserInstructionSender);
         this.followedTabsTestHelper = new FollowedTabsTestHelper(tabsTestHelper, this.driver, this.browserInstructionSender);
         this.navigationTestHelper = new NavigationTestHelper(this.driver, this.screenshotTaker);
@@ -264,6 +264,10 @@ export class TestHelper {
             return 'complete' == tab.status;
         }, 10000);
         await sleep(1500);
+    }
+
+    async takeViewportScreenshot(screenshotIdentifier: string) {
+        await this.screenshotTaker.takeViewport(screenshotIdentifier, this.driver);
     }
 
     async showOpenedTabsList() {

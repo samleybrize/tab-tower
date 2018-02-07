@@ -66,6 +66,11 @@ export class OpenedTabsTestHelper {
         }, 3000);
     }
 
+    async showTitleTooltip(tabRow: WebElement) {
+        const tabId = await tabRow.getAttribute('data-tab-id');
+        await this.tabsTestHelper.showElementTooltip(`#openedTabList tbody tr[data-tab-id="${tabId}"] .title a`);
+    }
+
     async getNumberOfTabsWithUrl(url?: string) {
         if ('string' != typeof url || '' == url) {
             url = 'about:newtab';

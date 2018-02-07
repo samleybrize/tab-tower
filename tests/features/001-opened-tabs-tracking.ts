@@ -195,4 +195,20 @@ describe('Opened tabs tracking', () => {
 
         await openedTabsHelper.assertNumberOfTabs(1);
     });
+
+    it('Tooltips must be positioned inside the window', async () => {
+        const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
+        await testHelper.openTab(testPage1Url);
+        await testHelper.openTab(testPage1Url);
+        await testHelper.openTab(testPage1Url);
+        await testHelper.openTab(testPage1Url);
+        await testHelper.openTab(testPage1Url);
+        await testHelper.openTab(testPage1Url);
+        await testHelper.openTab(testPage1Url);
+
+        const openedTabRowList = await openedTabsHelper.getTabRowList();
+        await openedTabsHelper.showTitleTooltip(openedTabRowList[7]);
+
+        await testHelper.takeViewportScreenshot('opened-tab-list-tooltip-inside-window');
+    });
 });

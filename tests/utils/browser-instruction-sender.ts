@@ -159,6 +159,12 @@ export class BrowserInstructionSender {
         `);
     }
 
+    async showElementTooltip(webdriver: WebDriver, quotelessCssSelector: string) {
+        return webdriver.executeScript(`
+            jQuery('${quotelessCssSelector}').mouseenter();
+        `);
+    }
+
     async focusElement(webdriver: WebDriver, quotelessCssSelector: string) {
         return webdriver.executeScript(`
             document.querySelector('${quotelessCssSelector}').focus();

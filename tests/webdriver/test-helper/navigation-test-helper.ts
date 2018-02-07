@@ -78,7 +78,7 @@ export class NavigationTestHelper {
 
     async takeHeaderScreenshot(screenshotIdentifier: string) {
         const headerElement = this.driver.findElement(By.css('#header'));
-        await this.screenshotTaker.take(screenshotIdentifier, headerElement);
+        await this.screenshotTaker.takeElement(screenshotIdentifier, headerElement);
     }
 
     async assertBreadcrumbText(expectedText: string) {

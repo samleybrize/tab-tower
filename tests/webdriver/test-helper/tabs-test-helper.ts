@@ -1,5 +1,8 @@
 import { assert } from 'chai';
-import { By, WebElement } from 'selenium-webdriver';
+import { By, WebDriver, WebElement } from 'selenium-webdriver';
+
+import { sleep } from '../../../src/typescript/utils/sleep';
+import { BrowserInstructionSender } from '../../utils/browser-instruction-sender';
 
 export interface TabIndicator {
     on: WebElement;
@@ -7,6 +10,9 @@ export interface TabIndicator {
 }
 
 export class TabsTestHelper {
+    constructor(private driver: WebDriver, private browserInstructionSender: BrowserInstructionSender) {
+    }
+
     async getNumberOfTabsWithUrl(titleElementList: WebElement[], url: string) {
         let count = 0;
 
@@ -48,6 +54,11 @@ export class TabsTestHelper {
 
     getTabLastAccessText(tabRow: WebElement) {
         return tabRow.findElement(By.css('.lastAccess')).getText();
+    }
+
+    async showElementTooltip(quotelessCssSelector: string) {
+        this.browserInstructionSender.showElementTooltip(this.driver, quotelessCssSelector);
+        await sleep(1000);
     }
 
     async assertNumberOfTabs(tabRowList: WebElement[], expectedNumberOfTabs: number) {

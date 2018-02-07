@@ -491,4 +491,32 @@ describe('Tab following', () => {
         activeTab = await browserInstructionSender.getActiveTab();
         assert.equal(activeTab.index, 1);
     });
+
+    it('Tooltips must be positioned inside the window', async () => {
+        const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
+        await testHelper.openTab(testPage1Url);
+        await testHelper.openTab(testPage1Url);
+        await testHelper.openTab(testPage1Url);
+        await testHelper.openTab(testPage1Url);
+        await testHelper.openTab(testPage1Url);
+        await testHelper.openTab(testPage1Url);
+        await testHelper.openTab(testPage1Url);
+        await testHelper.openTab(testPage1Url);
+
+        const openedTabRowList = await openedTabsHelper.getTabRowList();
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[3]);
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[4]);
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[5]);
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[6]);
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[7]);
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[8]);
+
+        await testHelper.showFollowedTabsList();
+        const followedTabRowList = await followedTabsHelper.getTabRowList();
+        await followedTabsHelper.showTitleTooltip(followedTabRowList[7]);
+
+        await testHelper.takeViewportScreenshot('followed-tab-list-tooltip-inside-window');
+    });
 });

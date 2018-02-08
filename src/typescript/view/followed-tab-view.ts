@@ -244,7 +244,7 @@ export class FollowedTabView {
         unpinButton.classList.add('waves-effect');
         unpinButton.classList.add('waves-light');
 
-        unpinButton.addEventListener('dblclick', async (event) => {
+        unpinButton.addEventListener('click', async (event) => {
             const upToDateTab = await this.queryBus.query(new GetTabAssociationByFollowId(tab.followState.id));
 
             if (null == upToDateTab.openState) {

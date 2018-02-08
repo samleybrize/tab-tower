@@ -116,6 +116,14 @@ export class BrowserInstructionSender {
         return this.send({action: 'toggle-reader-mode', data: {tabIndex}});
     }
 
+    async pinTab(tabIndex: number) {
+        return this.send({action: 'pin-tab', data: {tabIndex}});
+    }
+
+    async unpinTab(tabIndex: number) {
+        return this.send({action: 'unpin-tab', data: {tabIndex}});
+    }
+
     async setFollowedTabReaderModeStatusAsDisabled(followId: string) {
         return this.send({action: 'set-followed-tab-reader-mode-status-as-disabled', data: {followId}});
     }

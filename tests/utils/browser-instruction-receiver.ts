@@ -74,6 +74,16 @@ client.onmessage = async (event) => {
             await browser.tabs.update(currentTabId, {active: true});
             break;
 
+        case 'pin-tab':
+            targetTabId = await getTabIdByIndex(message.data.tabIndex);
+            await browser.tabs.update(targetTabId, {pinned: true});
+            break;
+
+        case 'unpin-tab':
+            targetTabId = await getTabIdByIndex(message.data.tabIndex);
+            await browser.tabs.update(targetTabId, {pinned: false});
+            break;
+
         case 'set-followed-tab-reader-mode-status-as-disabled':
             const objectId = `followState.${message.data.followId}`;
             const storageObject = await browser.storage.local.get(objectId);

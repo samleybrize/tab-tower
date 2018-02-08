@@ -7,7 +7,7 @@ const path = require('path');
 const materializePath = path.join(__dirname, '../node_modules/materialize-css');
 
 checkMaterializeVersion();
-patchTooltipFile();
+patchOriginalFile();
 patchMinifiedDistFile();
 
 function checkMaterializeVersion() {
@@ -21,7 +21,7 @@ function checkMaterializeVersion() {
     }
 }
 
-function patchTooltipFile() {
+function patchOriginalFile() {
     // 10 is tooltip margin * 2
     const tooltipFilePath = path.join(materializePath, 'dist/js/materialize.js');
     const tooltipFileContent = '' + fsExtra.readFileSync(tooltipFilePath);
@@ -29,7 +29,7 @@ function patchTooltipFile() {
     const replacementString1 = 'newY + height + 10 > window.innerHeight + $(window).scrollTop()';
     const stringToReplace2 = 'newY -= newY + height - window.innerHeight;';
     const replacementString2 = 'newY -= (newY + height) - (window.innerHeight + $(window).scrollTop()) + 10;';
-    const stringToReplace3 = "tooltipEl.css({ visibility: 'hidden', });";
+    const stringToReplace3 = "tooltipEl.css({ visibility: 'hidden' });";
     const replacementString3 = "tooltipEl.css({ visibility: 'hidden', left: '0px', top: '0px' });";
     let patchedContent = tooltipFileContent;
 

@@ -44,8 +44,23 @@ export class TabsTestHelper {
         };
     }
 
+    getPinIndicator(tabRow: WebElement) {
+        return {
+            on: tabRow.findElement(By.css('.pinIndicator .on')),
+            off: tabRow.findElement(By.css('.pinIndicator .off')),
+        };
+    }
+
     getUnfollowButton(tabRow: WebElement) {
         return tabRow.findElement(By.css('.unfollowButton'));
+    }
+
+    getPinButton(tabRow: WebElement) {
+        return tabRow.findElement(By.css('.pinButton'));
+    }
+
+    getUnpinButton(tabRow: WebElement) {
+        return tabRow.findElement(By.css('.unpinButton'));
     }
 
     getCloseButton(tabRow: WebElement) {
@@ -54,6 +69,26 @@ export class TabsTestHelper {
 
     getTabLastAccessText(tabRow: WebElement) {
         return tabRow.findElement(By.css('.lastAccess')).getText();
+    }
+
+    async clickOnPinButton(tabRow: WebElement) {
+        const pinButton = this.getPinButton(tabRow);
+        const pinIndicator = this.getPinIndicator(tabRow);
+
+        await pinButton.click();
+        await this.driver.wait(async () => {
+            return !await pinIndicator.off.isDisplayed();
+        }, 3000);
+    }
+
+    async clickOnUnpinButton(tabRow: WebElement) {
+        const unpinButton = this.getUnpinButton(tabRow);
+        const pinIndicator = this.getPinIndicator(tabRow);
+
+        await unpinButton.click();
+        await this.driver.wait(async () => {
+            return !await pinIndicator.on.isDisplayed();
+        }, 3000);
     }
 
     async showElementTooltip(quotelessCssSelector: string) {
@@ -121,6 +156,16 @@ export class TabsTestHelper {
         assert.isTrue(await indicator.off.isDisplayed(), `${subject} off indicator is not visible`);
     }
 
+    async assertTabPinIndicatorIsOn(tabRow: WebElement) {
+        const pinIndicator = this.getPinIndicator(tabRow);
+        await this.assertIndicatorIsOn(pinIndicator, 'Tab pin');
+    }
+
+    async assertTabPinIndicatorIsOff(tabRow: WebElement) {
+        const pinIndicator = this.getPinIndicator(tabRow);
+        await this.assertIndicatorIsOff(pinIndicator, 'Tab pin');
+    }
+
     async assertUnfollowButtonIsVisible(tabRow: WebElement) {
         const isUnfollowButtonDisplayed = await this.getUnfollowButton(tabRow).isDisplayed();
         assert.isTrue(isUnfollowButtonDisplayed, 'Tab unfollow button is not visible');
@@ -129,6 +174,26 @@ export class TabsTestHelper {
     async assertUnfollowButtonIsNotVisible(tabRow: WebElement) {
         const isUnfollowButtonDisplayed = await this.getUnfollowButton(tabRow).isDisplayed();
         assert.isFalse(isUnfollowButtonDisplayed, 'Tab unfollow button is visible');
+    }
+
+    async assertPinButtonIsVisible(tabRow: WebElement) {
+        const isPinButtonDisplayed = await this.getPinButton(tabRow).isDisplayed();
+        assert.isTrue(isPinButtonDisplayed, 'Tab pin button is not visible');
+    }
+
+    async assertPinButtonIsNotVisible(tabRow: WebElement) {
+        const isPinButtonDisplayed = await this.getPinButton(tabRow).isDisplayed();
+        assert.isFalse(isPinButtonDisplayed, 'Tab pin button is visible');
+    }
+
+    async assertUnpinButtonIsVisible(tabRow: WebElement) {
+        const isUnpinButtonDisplayed = await this.getUnpinButton(tabRow).isDisplayed();
+        assert.isTrue(isUnpinButtonDisplayed, 'Tab unpin button is not visible');
+    }
+
+    async assertUnpinButtonIsNotVisible(tabRow: WebElement) {
+        const isUnpinButtonDisplayed = await this.getUnpinButton(tabRow).isDisplayed();
+        assert.isFalse(isUnpinButtonDisplayed, 'Tab unpin button is visible');
     }
 
     async assertCloseButtonIsVisible(tabRow: WebElement) {

@@ -66,6 +66,50 @@ export class OpenedTabsTestHelper {
         }, 3000);
     }
 
+    async clickOnPinButton(tabRow: WebElement) {
+        await this.tabsTestHelper.clickOnPinButton(tabRow);
+    }
+
+    async clickOnUnpinButton(tabRow: WebElement) {
+        await this.tabsTestHelper.clickOnUnpinButton(tabRow);
+    }
+
+    async pinTab(tabIndex: number, row: WebElement) {
+        const isOn = await row.findElement(By.css('.pinIndicator .on')).isDisplayed();
+
+        if (null == row || isOn) {
+            return;
+        }
+
+        const tabId = await row.getAttribute('data-tab-id');
+        await this.browserInstructionSender.pinTab(tabIndex);
+        await this.driver.wait(async () => {
+            const tabRow = this.driver.findElement(By.css(`#openedTabList tbody tr[data-tab-id="${tabId}"]`));
+            const isOnIndicatorVisible = await tabRow.findElement(By.css('.pinIndicator .on')).isDisplayed();
+            const isOffIndicatorVisible = await tabRow.findElement(By.css('.pinIndicator .off')).isDisplayed();
+
+            return isOnIndicatorVisible && !isOffIndicatorVisible;
+        }, 10000);
+    }
+
+    async unpinTab(tabIndex: number, row: WebElement) {
+        const isOff = await row.findElement(By.css('.pinIndicator .off')).isDisplayed();
+
+        if (null == row || isOff) {
+            return;
+        }
+
+        const tabId = await row.getAttribute('data-tab-id');
+        await this.browserInstructionSender.unpinTab(tabIndex);
+        await this.driver.wait(async () => {
+            const tabRow = this.driver.findElement(By.css(`#openedTabList tbody tr[data-tab-id="${tabId}"]`));
+            const isOnIndicatorVisible = await tabRow.findElement(By.css('.pinIndicator .on')).isDisplayed();
+            const isOffIndicatorVisible = await tabRow.findElement(By.css('.pinIndicator .off')).isDisplayed();
+
+            return !isOnIndicatorVisible && isOffIndicatorVisible;
+        }, 10000);
+    }
+
     async showTitleTooltip(tabRow: WebElement) {
         const tabId = await tabRow.getAttribute('data-tab-id');
         await this.tabsTestHelper.showElementTooltip(`#openedTabList tbody tr[data-tab-id="${tabId}"] .title a`);
@@ -163,6 +207,14 @@ export class OpenedTabsTestHelper {
         await this.tabsTestHelper.assertTabReaderModeIndicatorIsOff(tabRow);
     }
 
+    async assertTabPinIndicatorIsOn(tabRow: WebElement) {
+        await this.tabsTestHelper.assertTabPinIndicatorIsOn(tabRow);
+    }
+
+    async assertTabPinIndicatorIsOff(tabRow: WebElement) {
+        await this.tabsTestHelper.assertTabPinIndicatorIsOff(tabRow);
+    }
+
     async assertFollowButtonIsVisible(tabRow: WebElement) {
         const isFollowButtonDisplayed = await this.getFollowButton(tabRow).isDisplayed();
         assert.isTrue(isFollowButtonDisplayed, 'Tab follow button is not visible');
@@ -179,6 +231,22 @@ export class OpenedTabsTestHelper {
 
     async assertUnfollowButtonIsNotVisible(tabRow: WebElement) {
         return this.tabsTestHelper.assertUnfollowButtonIsNotVisible(tabRow);
+    }
+
+    async assertPinButtonIsVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertPinButtonIsVisible(tabRow);
+    }
+
+    async assertPinButtonIsNotVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertPinButtonIsNotVisible(tabRow);
+    }
+
+    async assertUnpinButtonIsVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertUnpinButtonIsVisible(tabRow);
+    }
+
+    async assertUnpinButtonIsNotVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertUnpinButtonIsNotVisible(tabRow);
     }
 
     async assertFollowButtonIsDisabled(tabRow: WebElement) {

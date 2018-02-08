@@ -197,6 +197,14 @@ export class FollowedTabsTestHelper {
         await sleep(500);
     }
 
+    async clickOnPinButton(tabRow: WebElement) {
+        await this.tabsTestHelper.clickOnPinButton(tabRow);
+    }
+
+    async clickOnUnpinButton(tabRow: WebElement) {
+        await this.tabsTestHelper.clickOnUnpinButton(tabRow);
+    }
+
     async assertNumberOfTabs(expectedNumberOfTabs: number) {
         const followedTabRowList = await this.getTabRowList();
         await this.tabsTestHelper.assertNumberOfTabs(followedTabRowList, expectedNumberOfTabs);
@@ -248,6 +256,14 @@ export class FollowedTabsTestHelper {
         const title = await tabRow.findElement(By.css('.title a')).getText();
         assert.match(title, /mozilla/i);
         assert.notMatch(title, /http/i);
+    }
+
+    async assertTabPinIndicatorIsOn(tabRow: WebElement) {
+        await this.tabsTestHelper.assertTabPinIndicatorIsOn(tabRow);
+    }
+
+    async assertTabPinIndicatorIsOff(tabRow: WebElement) {
+        await this.tabsTestHelper.assertTabPinIndicatorIsOff(tabRow);
     }
 
     async assertTabOpenIndicatorIsOn(tabRow: WebElement) {

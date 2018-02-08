@@ -220,7 +220,7 @@ export class TestHelper {
     }
 
     async enableTabReaderMode(tabIndex: number, row?: WebElement) {
-        const isOn = await row.findElement(By.css('.readerModeIndicator .on')).isDisplayed();
+        const isOn = row ? await row.findElement(By.css('.readerModeIndicator .on')).isDisplayed() : null;
 
         if (null == row || isOn) {
             return;
@@ -236,7 +236,7 @@ export class TestHelper {
     }
 
     async disableTabReaderMode(tabIndex: number, row?: WebElement) {
-        const isOff = await row.findElement(By.css('.readerModeIndicator .off')).isDisplayed();
+        const isOff = row ? await row.findElement(By.css('.readerModeIndicator .off')).isDisplayed() : null;
 
         if (null == row || isOff) {
             return;

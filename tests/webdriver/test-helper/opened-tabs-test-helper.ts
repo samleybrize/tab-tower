@@ -75,7 +75,8 @@ export class OpenedTabsTestHelper {
     }
 
     async pinTab(tabIndex: number, row: WebElement) {
-        const isOn = await row.findElement(By.css('.pinIndicator .on')).isDisplayed();
+        const pinIndicator = await this.tabsTestHelper.getPinIndicator(row);
+        const isOn = await this.tabsTestHelper.hasClass(pinIndicator, 'on');
 
         if (null == row || isOn) {
             return;
@@ -85,15 +86,15 @@ export class OpenedTabsTestHelper {
         await this.browserInstructionSender.pinTab(tabIndex);
         await this.driver.wait(async () => {
             const tabRow = this.driver.findElement(By.css(`#openedTabList tbody tr[data-tab-id="${tabId}"]`));
-            const isOnIndicatorVisible = await tabRow.findElement(By.css('.pinIndicator .on')).isDisplayed();
-            const isOffIndicatorVisible = await tabRow.findElement(By.css('.pinIndicator .off')).isDisplayed();
+            const tabPinIndicator = await this.tabsTestHelper.getPinIndicator(row);
 
-            return isOnIndicatorVisible && !isOffIndicatorVisible;
+            return this.tabsTestHelper.hasClass(tabPinIndicator, 'on');
         }, 10000);
     }
 
     async unpinTab(tabIndex: number, row: WebElement) {
-        const isOff = await row.findElement(By.css('.pinIndicator .off')).isDisplayed();
+        const pinIndicator = await this.tabsTestHelper.getPinIndicator(row);
+        const isOff = await this.tabsTestHelper.hasClass(pinIndicator, 'off');
 
         if (null == row || isOff) {
             return;
@@ -103,10 +104,9 @@ export class OpenedTabsTestHelper {
         await this.browserInstructionSender.unpinTab(tabIndex);
         await this.driver.wait(async () => {
             const tabRow = this.driver.findElement(By.css(`#openedTabList tbody tr[data-tab-id="${tabId}"]`));
-            const isOnIndicatorVisible = await tabRow.findElement(By.css('.pinIndicator .on')).isDisplayed();
-            const isOffIndicatorVisible = await tabRow.findElement(By.css('.pinIndicator .off')).isDisplayed();
+            const tabPinIndicator = await this.tabsTestHelper.getPinIndicator(row);
 
-            return !isOnIndicatorVisible && isOffIndicatorVisible;
+            return this.tabsTestHelper.hasClass(tabPinIndicator, 'off');
         }, 10000);
     }
 
@@ -135,10 +135,6 @@ export class OpenedTabsTestHelper {
 
     getTabFaviconUrl(tabRow: WebElement) {
         return this.tabsTestHelper.getTabFaviconUrl(tabRow);
-    }
-
-    getReaderModeIndicator(tabRow: WebElement) {
-        return this.tabsTestHelper.getReaderModeIndicator(tabRow);
     }
 
     getFollowButton(tabRow: WebElement) {

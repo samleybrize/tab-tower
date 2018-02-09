@@ -14,46 +14,49 @@
         a {
             display: block;
             color: #444;
-        }
 
-        img {
-            height: 16px;
-            margin-right: 8px;
-            vertical-align: middle;
+            img {
+                height: 16px;
+                margin-right: 8px;
+                vertical-align: middle;
+            }
+
+            span {
+                vertical-align: middle;
+            }
         }
     }
 
-    .incognitoIndicator,
-    .openIndicator,
-    .pinIndicator,
-    .readerModeIndicator {
-        text-align: center;
+    .indicators {
+        white-space: nowrap;
 
-        div {
-            position: relative;
-            min-height: 24px;
-        }
+        .badge {
+            // sass-lint:disable placeholder-in-extend
+            @extend span.badge.new;
+            // sass-lint:enable placeholder-in-extend
 
-        .off,
-        .on {
-            position: absolute;
-            top: 0;
-            left: calc(50% - 12px);
-            font-size: 24px;
-            opacity: 1;
-            transition: opacity 0.3s ease;
+            transition: background-color 0.6s ease;
 
-            &.transparent {
-                opacity: 0;
+            &:after {
+                content: none;
             }
-        }
 
-        .off {
-            color: #999;
-        }
+            // sass-lint:disable class-name-format
+            .material-icons {
+                font-size: inherit;
+                line-height: inherit;
+                vertical-align: middle;
+            }
+            // sass-lint:enable class-name-format
 
-        .on {
-            color: #64dd17;
+            span {
+                font-weight: 400;
+                vertical-align: middle;
+            }
+
+            &.off {
+                background-color: map-get($grey, base);
+            }
         }
     }
 

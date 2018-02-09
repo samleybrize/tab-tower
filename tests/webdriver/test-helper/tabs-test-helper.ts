@@ -38,17 +38,11 @@ export class TabsTestHelper {
     }
 
     getReaderModeIndicator(tabRow: WebElement) {
-        return {
-            on: tabRow.findElement(By.css('.readerModeIndicator .on')),
-            off: tabRow.findElement(By.css('.readerModeIndicator .off')),
-        };
+        return tabRow.findElement(By.css('.readerModeIndicator'));
     }
 
     getPinIndicator(tabRow: WebElement) {
-        return {
-            on: tabRow.findElement(By.css('.pinIndicator .on')),
-            off: tabRow.findElement(By.css('.pinIndicator .off')),
-        };
+        return tabRow.findElement(By.css('.pinIndicator'));
     }
 
     getUnfollowButton(tabRow: WebElement) {
@@ -77,8 +71,20 @@ export class TabsTestHelper {
 
         await pinButton.click();
         await this.driver.wait(async () => {
-            return !await pinIndicator.off.isDisplayed();
+            return await this.hasClass(pinIndicator, 'on');
         }, 3000);
+    }
+
+    async hasClass(element: WebElement, className: string) {
+        const classAttribute = await element.getAttribute('class');
+
+        if (null == classAttribute) {
+            return false;
+        }
+
+        const classList = classAttribute.split(' ');
+
+        return classList.indexOf(className) >= 0;
     }
 
     async clickOnUnpinButton(tabRow: WebElement) {
@@ -87,7 +93,7 @@ export class TabsTestHelper {
 
         await unpinButton.click();
         await this.driver.wait(async () => {
-            return !await pinIndicator.on.isDisplayed();
+            return await this.hasClass(pinIndicator, 'off');
         }, 3000);
     }
 
@@ -146,14 +152,12 @@ export class TabsTestHelper {
         await this.assertIndicatorIsOff(readerModeIndicator, 'Tab reader mode');
     }
 
-    async assertIndicatorIsOn(indicator: TabIndicator, subject: string) {
-        assert.isTrue(await indicator.on.isDisplayed(), `${subject} on indicator is not visible`);
-        assert.isFalse(await indicator.off.isDisplayed(), `${subject} off indicator is visible`);
+    async assertIndicatorIsOn(indicator: WebElement, subject: string) {
+        assert.isTrue(await this.hasClass(indicator, 'on'), `${subject} indicator is not on`);
     }
 
-    async assertIndicatorIsOff(indicator: TabIndicator, subject: string) {
-        assert.isFalse(await indicator.on.isDisplayed(), `${subject} on indicator is visible`);
-        assert.isTrue(await indicator.off.isDisplayed(), `${subject} off indicator is not visible`);
+    async assertIndicatorIsOff(indicator: WebElement, subject: string) {
+        assert.isTrue(await this.hasClass(indicator, 'off'), `${subject} indicator is not off`);
     }
 
     async assertTabPinIndicatorIsOn(tabRow: WebElement) {

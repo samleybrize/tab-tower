@@ -19,6 +19,7 @@ export class TestHelper {
     private driver: WebDriver;
     private firefoxConfig: FirefoxConfig;
     private webdriverRetriever: WebDriverRetriever;
+    private tabsTestHelper: TabsTestHelper;
     private openedTabsTestHelper: OpenedTabsTestHelper;
     private followedTabsTestHelper: FollowedTabsTestHelper;
     private navigationTestHelper: NavigationTestHelper;
@@ -35,9 +36,9 @@ export class TestHelper {
 
         this.browserInstructionSender.init();
 
-        const tabsTestHelper = new TabsTestHelper(this.driver, this.browserInstructionSender);
-        this.openedTabsTestHelper = new OpenedTabsTestHelper(tabsTestHelper, this.driver, this.browserInstructionSender);
-        this.followedTabsTestHelper = new FollowedTabsTestHelper(tabsTestHelper, this.driver, this.browserInstructionSender);
+        this.tabsTestHelper = new TabsTestHelper(this.driver, this.browserInstructionSender);
+        this.openedTabsTestHelper = new OpenedTabsTestHelper(this.tabsTestHelper, this.driver, this.browserInstructionSender);
+        this.followedTabsTestHelper = new FollowedTabsTestHelper(this.tabsTestHelper, this.driver, this.browserInstructionSender);
         this.navigationTestHelper = new NavigationTestHelper(this.driver, this.screenshotTaker);
         this.tabFilterTestHelper = new TabFilterTestHelper(this.driver, this.browserInstructionSender, this.screenshotTaker);
     }
@@ -181,9 +182,7 @@ export class TestHelper {
         const followedOpenIndicator = this.followedTabsTestHelper.getOpenIndicator(followedTabRow);
 
         return this.driver.wait(async () => {
-            const isOnDisplayed = await followedOpenIndicator.on.isDisplayed();
-
-            return !isOnDisplayed;
+            return await this.tabsTestHelper.hasClass(followedOpenIndicator, 'off');
         }, 3000);
     }
 
@@ -219,24 +218,24 @@ export class TestHelper {
         await sleep(500);
     }
 
-    async enableTabReaderMode(tabIndex: number, row?: WebElement) {
-        const isOn = row ? await row.findElement(By.css('.readerModeIndicator .on')).isDisplayed() : null;
+    async enableTabReaderMode(tabIndex: number, row: WebElement) {
+        const readerModeIndicator = await this.tabsTestHelper.getReaderModeIndicator(row);
+        const isOn = await this.tabsTestHelper.hasClass(readerModeIndicator, 'on');
 
-        if (null == row || isOn) {
+        if (isOn) {
             return;
         }
 
         await this.browserInstructionSender.toggleReaderMode(tabIndex);
         await this.driver.wait(async () => {
-            const isOnIndicatorVisible = await row.findElement(By.css('.readerModeIndicator .on')).isDisplayed();
-            const isOffIndicatorVisible = await row.findElement(By.css('.readerModeIndicator .off')).isDisplayed();
-
-            return isOnIndicatorVisible && !isOffIndicatorVisible;
+            return await this.tabsTestHelper.hasClass(readerModeIndicator, 'on');
         }, 10000);
+        await sleep(300);
     }
 
     async disableTabReaderMode(tabIndex: number, row?: WebElement) {
-        const isOff = row ? await row.findElement(By.css('.readerModeIndicator .off')).isDisplayed() : null;
+        const readerModeIndicator = await this.tabsTestHelper.getReaderModeIndicator(row);
+        const isOff = await this.tabsTestHelper.hasClass(readerModeIndicator, 'off');
 
         if (null == row || isOff) {
             return;
@@ -244,11 +243,9 @@ export class TestHelper {
 
         await this.browserInstructionSender.toggleReaderMode(tabIndex);
         await this.driver.wait(async () => {
-            const isOnIndicatorVisible = await row.findElement(By.css('.readerModeIndicator .on')).isDisplayed();
-            const isOffIndicatorVisible = await row.findElement(By.css('.readerModeIndicator .off')).isDisplayed();
-
-            return !isOnIndicatorVisible && isOffIndicatorVisible;
+            return await this.tabsTestHelper.hasClass(readerModeIndicator, 'off');
         }, 10000);
+        await sleep(300);
     }
 
     async clearRecentlyClosedTabs() {

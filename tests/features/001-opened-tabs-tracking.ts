@@ -190,12 +190,6 @@ describe('Opened tabs tracking', () => {
         await openedTabsHelper.assertTabFaviconUrl(openedTabRowList[2], firefoxConfig.getExtensionUrl(ExtensionUrl.EXTENSION_FAVICON));
     });
 
-    it('Incognito tabs should not be shown in the opened tabs list', async () => {
-        await testHelper.createWindow(true, firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
-
-        await openedTabsHelper.assertNumberOfTabs(1);
-    });
-
     it('Tooltips must be positioned inside the window', async () => {
         const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
         await testHelper.openTab(testPage1Url);
@@ -210,5 +204,11 @@ describe('Opened tabs tracking', () => {
         await openedTabsHelper.showTitleTooltip(openedTabRowList[7]);
 
         await testHelper.takeViewportScreenshot('opened-tab-list-tooltip-inside-window');
+    });
+
+    it('Incognito tabs should not be shown in the opened tabs list', async () => {
+        await testHelper.createWindow(true, firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+        await openedTabsHelper.assertNumberOfTabs(1);
     });
 });

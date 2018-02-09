@@ -28,9 +28,7 @@ export class FollowedTabsTestHelper {
 
         await tabRow.findElement(By.css('.closeButton')).click();
         await this.driver.wait(async () => {
-            const isOnDisplayed = await openIndicator.on.isDisplayed();
-
-            return !isOnDisplayed;
+            return await this.tabsTestHelper.hasClass(openIndicator, 'off');
         }, 3000);
     }
 
@@ -45,7 +43,7 @@ export class FollowedTabsTestHelper {
             if (null !== tabId) {
                 return +tabId === (await this.browserInstructionSender.getActiveTab()).id;
             } else {
-                return !await openIndicator.off.isDisplayed();
+                return await this.tabsTestHelper.hasClass(openIndicator, 'on');
             }
         }, 10000);
     }
@@ -148,15 +146,8 @@ export class FollowedTabsTestHelper {
         return this.tabsTestHelper.getTabFaviconUrl(tabRow);
     }
 
-    getReaderModeIndicator(tabRow: WebElement) {
-        return this.tabsTestHelper.getReaderModeIndicator(tabRow);
-    }
-
     getOpenIndicator(tabRow: WebElement) {
-        return {
-            on: tabRow.findElement(By.css('.openIndicator .on')),
-            off: tabRow.findElement(By.css('.openIndicator .off')),
-        };
+        return tabRow.findElement(By.css('.openIndicator'));
     }
 
     getUnfollowButton(tabRow: WebElement) {
@@ -177,15 +168,14 @@ export class FollowedTabsTestHelper {
     async toggleFollowedTabReaderModeIndicator(tabRow: WebElement) {
         const followId = await tabRow.getAttribute('data-follow-id');
         await this.driver.executeScript(`
-            const on = document.querySelector('#followedTabList tbody tr[data-follow-id="${followId}"] .readerModeIndicator .on');
-            const off = document.querySelector('#followedTabList tbody tr[data-follow-id="${followId}"] .readerModeIndicator .off');
+            const readerModeIndicator = document.querySelector('#followedTabList tbody tr[data-follow-id="${followId}"] .readerModeIndicator');
 
-            if (on) {
-                on.classList.toggle('transparent');
-            }
-
-            if (off) {
-                off.classList.toggle('transparent');
+            if (readerModeIndicator.classList.contains('on')) {
+                readerModeIndicator.classList.remove('on');
+                readerModeIndicator.classList.add('off');
+            } else {
+                readerModeIndicator.classList.add('on');
+                readerModeIndicator.classList.remove('off');
             }
         `);
         await sleep(700);

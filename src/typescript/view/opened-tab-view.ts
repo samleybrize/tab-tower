@@ -60,9 +60,7 @@ export class OpenedTabView {
             <thead>
                 <tr>
                     <th>Title</th>
-                    <th class="incognitoIndicator">Incognito</th>
-                    <th class="readerModeIndicator">Pinned</th>
-                    <th class="readerModeIndicator">Reader mode</th>
+                    <th class="indicators"></th>
                     <th class="lastAccess">Last access</th>
                     <th></th>
                 </tr>
@@ -117,11 +115,12 @@ export class OpenedTabView {
         const row = document.createElement('tr');
 
         const titleCell = this.createTitleCell(row);
-        const incognitoCell = this.createOnOffIndicatorCell('incognitoIndicator');
-        const pinCell = this.createOnOffIndicatorCell('pinIndicator');
-        const readerModeCell = this.createOnOffIndicatorCell('readerModeIndicator');
+        const onOffIndicatorsCell = this.createCell('indicators');
         const lastAccessCell = this.createCell('lastAccess');
         const actionsCell = this.createCell('actions');
+        this.addOnOffIndicator(onOffIndicatorsCell, 'incognitoIndicator', 'incognito');
+        this.addOnOffIndicator(onOffIndicatorsCell, 'pinIndicator', 'pinned');
+        this.addOnOffIndicator(onOffIndicatorsCell, 'readerModeIndicator', 'reader view');
         this.addFollowButton(actionsCell, tabOpenState);
         this.addUnfollowButton(actionsCell, tabOpenState);
         this.addPinButton(actionsCell, tabOpenState);
@@ -130,9 +129,7 @@ export class OpenedTabView {
 
         row.setAttribute('data-tab-id', '' + tabOpenState.id);
         row.appendChild(titleCell);
-        row.appendChild(incognitoCell);
-        row.appendChild(pinCell);
-        row.appendChild(readerModeCell);
+        row.appendChild(onOffIndicatorsCell);
         row.appendChild(lastAccessCell);
         row.appendChild(actionsCell);
 
@@ -159,16 +156,13 @@ export class OpenedTabView {
         return cell;
     }
 
-    private createOnOffIndicatorCell(className?: string) {
-        const cell = this.createCell(className);
-        cell.innerHTML = `
-            <div>
-                <i class="material-icons off">highlight_off</i>
-                <i class="material-icons on">check_circle</i>
-            </div>
-        `;
+    private addOnOffIndicator(cell: HTMLElement, className: string, label: string) {
+        const badgeElement = document.createElement('span');
+        badgeElement.classList.add(className);
+        badgeElement.classList.add('badge');
+        badgeElement.innerHTML = `<i class="material-icons"></i> <span>${label}</span>`;
 
-        return cell;
+        cell.appendChild(badgeElement);
     }
 
     private createTitleCell(row: HTMLElement): HTMLElement {
@@ -338,24 +332,25 @@ export class OpenedTabView {
     private updateTabReaderModeState(row: HTMLElement, isInReaderMode: boolean) {
         row.setAttribute('data-reader-mode', isInReaderMode ? '1' : '');
 
-        this.updateOnOffIndicator(isInReaderMode, row.querySelector('.readerModeIndicator'));
+        this.updateOnOffIndicator(row, 'readerModeIndicator', isInReaderMode);
     }
 
-    private updateOnOffIndicator(isOn: boolean, cell: HTMLElement) {
-        const iconOnElement = cell.querySelector('.on');
-        const iconOffElement = cell.querySelector('.off');
+    private updateOnOffIndicator(row: HTMLElement, className: string, isOn: boolean) {
+        const indicatorElement = row.querySelector(`.${className}`);
 
         if (isOn) {
-            iconOnElement.classList.remove('transparent');
-            iconOffElement.classList.add('transparent');
+            indicatorElement.classList.remove('off');
+            indicatorElement.classList.add('on');
+            indicatorElement.querySelector('.material-icons').textContent = 'check_circle';
         } else {
-            iconOnElement.classList.add('transparent');
-            iconOffElement.classList.remove('transparent');
+            indicatorElement.classList.add('off');
+            indicatorElement.classList.remove('on');
+            indicatorElement.querySelector('.material-icons').textContent = 'cancel';
         }
     }
 
     private updateTabPinState(row: HTMLElement, isPinned: boolean) {
-        this.updateOnOffIndicator(isPinned, row.querySelector('.pinIndicator'));
+        this.updateOnOffIndicator(row, 'pinIndicator', isPinned);
         const pinButton = row.querySelector('.pinButton');
         const unpinButton = row.querySelector('.unpinButton');
 
@@ -369,7 +364,7 @@ export class OpenedTabView {
     }
 
     private updateTabIncognitoState(row: HTMLElement, isIncognito: boolean) {
-        this.updateOnOffIndicator(isIncognito, row.querySelector('.incognitoIndicator'));
+        this.updateOnOffIndicator(row, 'incognitoIndicator', isIncognito);
     }
 
     private updateFollowState(row: HTMLElement, isFollowed: boolean) {

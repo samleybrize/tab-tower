@@ -12,3 +12,12 @@
     -ms-user-select: none; // Internet Explorer/Edge
     user-select: none;
 }
+
+.dropdown-content li {
+    min-height: 10px;
+
+    & > a,
+    & > span {
+        padding: 7px 16px;
+    }
+}

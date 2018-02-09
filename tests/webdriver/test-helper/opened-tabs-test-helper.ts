@@ -23,6 +23,7 @@ export class OpenedTabsTestHelper {
     }
 
     async clickOnTabCloseButton(tabRow: WebElement) {
+        await this.tabsTestHelper.clickOnMoreButton(tabRow);
         await tabRow.findElement(By.css('.closeButton')).click();
         await this.driver.wait(async () => {
             try {
@@ -47,6 +48,7 @@ export class OpenedTabsTestHelper {
     async clickOnFollowButton(tabRow: WebElement) {
         const followButton = this.getFollowButton(tabRow);
 
+        await this.tabsTestHelper.clickOnMoreButton(tabRow);
         await followButton.click();
         await this.driver.wait(async () => {
             return !await followButton.isDisplayed();
@@ -55,12 +57,9 @@ export class OpenedTabsTestHelper {
 
     async clickOnUnfollowButton(tabRow: WebElement) {
         const unfollowButton = this.getUnfollowButton(tabRow);
-        const tabId = await tabRow.getAttribute('data-tab-id');
 
-        await this.browserInstructionSender.triggerDoubleClick(
-            this.driver,
-            `#openedTabList tbody tr[data-tab-id="${tabId}"] .unfollowButton`,
-        );
+        await this.tabsTestHelper.clickOnMoreButton(tabRow);
+        await unfollowButton.click();
         await this.driver.wait(async () => {
             return !await unfollowButton.isDisplayed();
         }, 3000);
@@ -212,11 +211,13 @@ export class OpenedTabsTestHelper {
     }
 
     async assertFollowButtonIsVisible(tabRow: WebElement) {
+        await this.tabsTestHelper.clickOnMoreButton(tabRow);
         const isFollowButtonDisplayed = await this.getFollowButton(tabRow).isDisplayed();
         assert.isTrue(isFollowButtonDisplayed, 'Tab follow button is not visible');
     }
 
     async assertFollowButtonIsNotVisible(tabRow: WebElement) {
+        await this.tabsTestHelper.clickOnMoreButton(tabRow);
         const isFollowButtonDisplayed = await this.getFollowButton(tabRow).isDisplayed();
         assert.isFalse(isFollowButtonDisplayed, 'Tab follow button is visible');
     }

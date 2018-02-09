@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { By, WebDriver, WebElement } from 'selenium-webdriver';
+import { By, error as WebDriverError, WebDriver, WebElement } from 'selenium-webdriver';
 
 import { sleep } from '../../../src/typescript/utils/sleep';
 import { BrowserInstructionSender } from '../../utils/browser-instruction-sender';
@@ -65,10 +65,27 @@ export class TabsTestHelper {
         return tabRow.findElement(By.css('.lastAccess')).getText();
     }
 
+    async clickOnMoreButton(tabRow: WebElement) {
+        await this.driver.findElement(By.tagName('body')).click();
+        const moreButton = tabRow.findElement(By.css('.more'));
+
+        try {
+            await moreButton.click();
+        } catch (error) {
+            // TODO explain why
+            if (error instanceof WebDriverError.WebDriverError && error.message.indexOf('obscures it') > 0) {
+                return;
+            }
+
+            throw error;
+        }
+    }
+
     async clickOnPinButton(tabRow: WebElement) {
         const pinButton = this.getPinButton(tabRow);
         const pinIndicator = this.getPinIndicator(tabRow);
 
+        await this.clickOnMoreButton(tabRow);
         await pinButton.click();
         await this.driver.wait(async () => {
             return await this.hasClass(pinIndicator, 'on');
@@ -91,6 +108,7 @@ export class TabsTestHelper {
         const unpinButton = this.getUnpinButton(tabRow);
         const pinIndicator = this.getPinIndicator(tabRow);
 
+        await this.clickOnMoreButton(tabRow);
         await unpinButton.click();
         await this.driver.wait(async () => {
             return await this.hasClass(pinIndicator, 'off');
@@ -171,41 +189,49 @@ export class TabsTestHelper {
     }
 
     async assertUnfollowButtonIsVisible(tabRow: WebElement) {
+        await this.clickOnMoreButton(tabRow);
         const isUnfollowButtonDisplayed = await this.getUnfollowButton(tabRow).isDisplayed();
         assert.isTrue(isUnfollowButtonDisplayed, 'Tab unfollow button is not visible');
     }
 
     async assertUnfollowButtonIsNotVisible(tabRow: WebElement) {
+        await this.clickOnMoreButton(tabRow);
         const isUnfollowButtonDisplayed = await this.getUnfollowButton(tabRow).isDisplayed();
         assert.isFalse(isUnfollowButtonDisplayed, 'Tab unfollow button is visible');
     }
 
     async assertPinButtonIsVisible(tabRow: WebElement) {
+        await this.clickOnMoreButton(tabRow);
         const isPinButtonDisplayed = await this.getPinButton(tabRow).isDisplayed();
         assert.isTrue(isPinButtonDisplayed, 'Tab pin button is not visible');
     }
 
     async assertPinButtonIsNotVisible(tabRow: WebElement) {
+        await this.clickOnMoreButton(tabRow);
         const isPinButtonDisplayed = await this.getPinButton(tabRow).isDisplayed();
         assert.isFalse(isPinButtonDisplayed, 'Tab pin button is visible');
     }
 
     async assertUnpinButtonIsVisible(tabRow: WebElement) {
+        await this.clickOnMoreButton(tabRow);
         const isUnpinButtonDisplayed = await this.getUnpinButton(tabRow).isDisplayed();
         assert.isTrue(isUnpinButtonDisplayed, 'Tab unpin button is not visible');
     }
 
     async assertUnpinButtonIsNotVisible(tabRow: WebElement) {
+        await this.clickOnMoreButton(tabRow);
         const isUnpinButtonDisplayed = await this.getUnpinButton(tabRow).isDisplayed();
         assert.isFalse(isUnpinButtonDisplayed, 'Tab unpin button is visible');
     }
 
     async assertCloseButtonIsVisible(tabRow: WebElement) {
+        await this.clickOnMoreButton(tabRow);
         const isCloseButtonDisplayed = await this.getCloseButton(tabRow).isDisplayed();
         assert.isTrue(isCloseButtonDisplayed, 'Tab close button is not visible');
     }
 
     async assertCloseButtonIsNotVisible(tabRow: WebElement) {
+        await this.clickOnMoreButton(tabRow);
         const isCloseButtonDisplayed = await this.getCloseButton(tabRow).isDisplayed();
         assert.isFalse(isCloseButtonDisplayed, 'Tab close button is visible');
     }

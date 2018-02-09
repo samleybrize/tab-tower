@@ -35,7 +35,7 @@
             @extend span.badge.new;
             // sass-lint:enable placeholder-in-extend
 
-            transition: background-color 0.6s ease;
+            transition: background-color 0.6s ease, opacity 0.6s ease;
 
             &:after {
                 content: none;
@@ -54,10 +54,20 @@
                 vertical-align: middle;
             }
 
+            &.on {
+                background-color: $primary-color;
+            }
+
             &.off {
-                background-color: map-get($grey, base);
+                background-color: map-get($grey, lighten-1);
+                opacity: 0.7;
             }
         }
+    }
+
+    .lastAccess {
+        width: 1%;
+        white-space: nowrap;
     }
 
     .incognitoIndicator {
@@ -65,24 +75,47 @@
     }
 
     .actions {
-        text-align: right;
-        white-space: nowrap;
+        width: 1%;
 
-        .transparent {
-            display: none;
+        .more {
+            padding-right: 10px;
+            padding-left: 10px;
         }
 
-        .pinButton,
-        .unpinButton,
-        .closeButton {
-            margin-left: 8px;
-        }
+        .tabRowDropdown {
+            // sass-lint:disable class-name-format
+            .material-icons {
+                width: auto;
+                margin: 0 7px 0 0;
+                font-size: 16px;
+                line-height: 20px;
+                vertical-align: middle;
+            }
+            // sass-lint:enable class-name-format
 
-        .unfollowButton {
-            background-color: #ff9800;
+            .warning {
+                a {
+                    color: map-get($orange, darken-2);
+                }
 
-            &:hover {
-                background-color: lighten(#ff9800, 5%);
+                &:hover {
+                    background-color: map-get($orange, lighten-4);
+                }
+            }
+
+            .disabled {
+                a {
+                    color: silver;
+                    cursor: default;
+                }
+
+                &:hover {
+                    background-color: transparent;
+                }
+            }
+
+            .transparent {
+                display: none;
             }
         }
     }

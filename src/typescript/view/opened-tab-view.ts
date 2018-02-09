@@ -28,6 +28,13 @@ import { TabAssociation } from '../tab/tab-association/tab-association';
 import { StringMatcher } from '../utils/string-matcher';
 import { TabCounter } from './tab-counter';
 
+// TODO
+declare global {
+    interface JQuery {
+        dropdown(...args: any[]): any;
+    }
+}
+
 export class OpenedTabView {
     private tbodyElement: HTMLElement;
     private noTabRow: HTMLElement;
@@ -84,6 +91,7 @@ export class OpenedTabView {
 
             const row = this.createTabRow(tab.openState, this.isTabFollowed(tab));
             this.tbodyElement.appendChild(row);
+            this.initActionsDropdown(row);
             numberOfOpenedTabs++;
         }
 
@@ -117,15 +125,11 @@ export class OpenedTabView {
         const titleCell = this.createTitleCell(row);
         const onOffIndicatorsCell = this.createCell('indicators');
         const lastAccessCell = this.createCell('lastAccess');
-        const actionsCell = this.createCell('actions');
+        const actionsCell = this.createActionsCell(tabOpenState);
         this.addOnOffIndicator(onOffIndicatorsCell, 'incognitoIndicator', 'incognito');
-        this.addOnOffIndicator(onOffIndicatorsCell, 'pinIndicator', 'pinned');
         this.addOnOffIndicator(onOffIndicatorsCell, 'readerModeIndicator', 'reader view');
-        this.addFollowButton(actionsCell, tabOpenState);
-        this.addUnfollowButton(actionsCell, tabOpenState);
-        this.addPinButton(actionsCell, tabOpenState);
-        this.addUnpinButton(actionsCell, tabOpenState);
-        this.addCloseButton(actionsCell, tabOpenState);
+        this.addOnOffIndicator(onOffIndicatorsCell, 'pinIndicator', 'pinned');
+        this.addOnOffIndicator(onOffIndicatorsCell, 'followedIndicator', 'followed');
 
         row.setAttribute('data-tab-id', '' + tabOpenState.id);
         row.appendChild(titleCell);
@@ -156,15 +160,6 @@ export class OpenedTabView {
         return cell;
     }
 
-    private addOnOffIndicator(cell: HTMLElement, className: string, label: string) {
-        const badgeElement = document.createElement('span');
-        badgeElement.classList.add(className);
-        badgeElement.classList.add('badge');
-        badgeElement.innerHTML = `<i class="material-icons"></i> <span>${label}</span>`;
-
-        cell.appendChild(badgeElement);
-    }
-
     private createTitleCell(row: HTMLElement): HTMLElement {
         const linkElement = document.createElement('a');
         linkElement.innerHTML = `
@@ -191,16 +186,62 @@ export class OpenedTabView {
         return cell;
     }
 
-    private addFollowButton(cell: HTMLElement, tabOpenState: TabOpenState) {
-        const followButton = document.createElement('a');
-        followButton.textContent = 'Follow';
-        followButton.classList.add('followButton');
-        followButton.classList.add('btn');
-        followButton.classList.add('waves-effect');
-        followButton.classList.add('waves-light');
+    private addOnOffIndicator(cell: HTMLElement, className: string, label: string) {
+        const badgeElement = document.createElement('span');
+        badgeElement.classList.add(className);
+        badgeElement.classList.add('badge');
+        badgeElement.innerHTML = `<i class="material-icons"></i> <span>${label}</span>`;
+
+        cell.appendChild(badgeElement);
+    }
+
+    private createActionsCell(tabOpenState: TabOpenState): HTMLElement {
+        const dropdownId = `opened-tab-action-${tabOpenState.id}`;
+        const moreButton = document.createElement('a');
+        moreButton.classList.add('more');
+        moreButton.classList.add('waves-effect');
+        moreButton.classList.add('waves-teal');
+        moreButton.classList.add('btn-flat');
+        moreButton.classList.add('dropdown-button');
+        moreButton.setAttribute('data-activates', dropdownId);
+        moreButton.setAttribute('href', '#');
+        moreButton.setAttribute('data-tooltip', 'Actions');
+        moreButton.innerHTML = '<i class="material-icons">more_vert</i>';
+        jQuery(moreButton).tooltip();
+
+        const cell = this.createCell('actions');
+        cell.appendChild(moreButton);
+
+        const dropdownContainer = document.createElement('div');
+        dropdownContainer.innerHTML = `<ul id='${dropdownId}' class='dropdown-content tabRowDropdown'></ul>`;
+        const dropdownElement = dropdownContainer.querySelector('.tabRowDropdown') as HTMLElement;
+        cell.appendChild(dropdownElement);
+
+        this.addFollowTabAction(dropdownElement, tabOpenState);
+        this.addPinTabAction(dropdownElement, tabOpenState);
+        this.addUnpinTabAction(dropdownElement, tabOpenState);
+        this.addActionSeparator(dropdownElement);
+        this.addCloseTabAction(dropdownElement, tabOpenState);
+        this.addUnfollowTabAction(dropdownElement, tabOpenState);
+
+        return cell;
+    }
+
+    private addActionSeparator(dropdownElement: HTMLElement) {
+        const separatorElement = document.createElement('li');
+        separatorElement.classList.add('divider');
+
+        dropdownElement.appendChild(separatorElement);
+    }
+
+    private addFollowTabAction(dropdownElement: HTMLElement, tabOpenState: TabOpenState) {
+        const containerElement = document.createElement('li');
+        containerElement.classList.add('followButton');
+        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">settings_backup_restore</i> Follow</a>`;
+        const followButton = containerElement.querySelector('a');
 
         followButton.addEventListener('click', async (event) => {
-            if (followButton.classList.contains('disabled')) {
+            if (followButton.parentElement.classList.contains('disabled')) {
                 return;
             }
 
@@ -208,21 +249,18 @@ export class OpenedTabView {
             this.commandBus.handle(new FollowTab(upToDateTab));
         });
 
-        cell.appendChild(followButton);
+        dropdownElement.appendChild(containerElement);
     }
 
-    private addUnfollowButton(cell: HTMLElement, tabOpenState: TabOpenState) {
-        const unfollowButton = document.createElement('a');
-        unfollowButton.textContent = 'Unfollow';
-        unfollowButton.setAttribute('data-tooltip', 'Please double click to unfollow this tab');
-        unfollowButton.classList.add('unfollowButton');
-        unfollowButton.classList.add('btn');
-        unfollowButton.classList.add('waves-effect');
-        unfollowButton.classList.add('waves-light');
-        jQuery(unfollowButton).tooltip();
+    private addUnfollowTabAction(dropdownElement: HTMLElement, tabOpenState: TabOpenState) {
+        const containerElement = document.createElement('li');
+        containerElement.classList.add('unfollowButton');
+        containerElement.classList.add('warning');
+        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">not_interested</i> Unfollow</a>`;
+        const unfollowButton = containerElement.querySelector('a');
 
-        unfollowButton.addEventListener('dblclick', async (event) => {
-            if (unfollowButton.classList.contains('disabled')) {
+        unfollowButton.addEventListener('click', async (event) => {
+            if (unfollowButton.parentElement.classList.contains('disabled')) {
                 return;
             }
 
@@ -230,56 +268,56 @@ export class OpenedTabView {
             this.commandBus.handle(new UnfollowTab(upToDateTab));
         });
 
-        cell.appendChild(unfollowButton);
+        dropdownElement.appendChild(containerElement);
     }
 
-    private addPinButton(cell: HTMLElement, tabOpenState: TabOpenState) {
-        const pinButton = document.createElement('a');
-        pinButton.textContent = 'Pin';
-        pinButton.classList.add('pinButton');
-        pinButton.classList.add('btn');
-        pinButton.classList.add('waves-effect');
-        pinButton.classList.add('waves-light');
+    private addPinTabAction(dropdownElement: HTMLElement, tabOpenState: TabOpenState) {
+        const containerElement = document.createElement('li');
+        containerElement.classList.add('pinButton');
+        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">stars</i> Pin</a>`;
+        const pinButton = containerElement.querySelector('a');
 
         pinButton.addEventListener('click', async (event) => {
             this.commandBus.handle(new PinTab(tabOpenState.id));
         });
 
-        cell.appendChild(pinButton);
+        dropdownElement.appendChild(containerElement);
     }
 
-    private addUnpinButton(cell: HTMLElement, tabOpenState: TabOpenState) {
-        const unpinButton = document.createElement('a');
-        unpinButton.textContent = 'Unpin';
-        unpinButton.classList.add('unpinButton');
-        unpinButton.classList.add('btn');
-        unpinButton.classList.add('waves-effect');
-        unpinButton.classList.add('waves-light');
+    private addUnpinTabAction(dropdownElement: HTMLElement, tabOpenState: TabOpenState) {
+        const containerElement = document.createElement('li');
+        containerElement.classList.add('unpinButton');
+        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">stars</i> Unpin</a>`;
+        const unpinButton = containerElement.querySelector('a');
 
         unpinButton.addEventListener('click', async (event) => {
             this.commandBus.handle(new UnpinTab(tabOpenState.id));
         });
 
-        cell.appendChild(unpinButton);
+        dropdownElement.appendChild(containerElement);
     }
 
-    private addCloseButton(cell: HTMLElement, tabOpenState: TabOpenState) {
-        const closeButton = document.createElement('a');
-        closeButton.textContent = 'Close';
-        closeButton.classList.add('closeButton');
-        closeButton.classList.add('btn');
-        closeButton.classList.add('waves-effect');
-        closeButton.classList.add('waves-light');
+    private addCloseTabAction(dropdownElement: HTMLElement, tabOpenState: TabOpenState) {
+        const containerElement = document.createElement('li');
+        containerElement.classList.add('closeButton');
+        containerElement.classList.add('warning');
+        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">close</i> Close</a>`;
+        const closeButton = containerElement.querySelector('a');
 
         closeButton.addEventListener('click', async (event) => {
-            if (closeButton.classList.contains('disabled')) {
+            if (closeButton.parentElement.classList.contains('disabled')) {
                 return;
             }
 
             this.commandBus.handle(new CloseTab(tabOpenState.id));
         });
 
-        cell.appendChild(closeButton);
+        dropdownElement.appendChild(containerElement);
+    }
+
+    private initActionsDropdown(row: HTMLElement) {
+        const dropdownId = row.querySelector('.dropdown-button').getAttribute('data-activates');
+        jQuery(`.dropdown-button[data-activates='${dropdownId}']`).dropdown({constrainWidth: false});
     }
 
     private updateTabTitle(row: HTMLElement, title: string) {
@@ -368,6 +406,7 @@ export class OpenedTabView {
     }
 
     private updateFollowState(row: HTMLElement, isFollowed: boolean) {
+        this.updateOnOffIndicator(row, 'followedIndicator', isFollowed);
         const followButton = row.querySelector('.followButton');
         const unfollowButton = row.querySelector('.unfollowButton');
 
@@ -408,11 +447,11 @@ export class OpenedTabView {
 
         if (0 == event.tabOpenState.index) {
             this.noTabRow.insertAdjacentElement('afterend', rowToInsert);
-
-            return;
+        } else {
+            this.insertRowAtIndex(rowToInsert, event.tabOpenState.index);
         }
 
-        this.insertRowAtIndex(rowToInsert, event.tabOpenState.index);
+        this.initActionsDropdown(rowToInsert);
         this.applyTabFilter();
         this.showNoTabRowIfTableIsEmpty();
         this.tabCounter.incrementNumberOfOpenedTabs();

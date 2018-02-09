@@ -26,6 +26,7 @@ export class FollowedTabsTestHelper {
     async clickOnTabCloseButton(tabRow: WebElement) {
         const openIndicator = this.getOpenIndicator(tabRow);
 
+        await this.tabsTestHelper.clickOnMoreButton(tabRow);
         await tabRow.findElement(By.css('.closeButton')).click();
         await this.driver.wait(async () => {
             return await this.tabsTestHelper.hasClass(openIndicator, 'off');
@@ -106,12 +107,10 @@ export class FollowedTabsTestHelper {
     }
 
     async clickOnUnfollowButton(tabRow: WebElement) {
-        const followId = await this.getWebElementAttribute(tabRow, 'data-follow-id');
+        const unfollowButton = this.getUnfollowButton(tabRow);
 
-        await this.browserInstructionSender.triggerDoubleClick(
-            this.driver,
-            `#followedTabList tbody tr[data-follow-id="${followId}"] .unfollowButton`,
-        );
+        await this.tabsTestHelper.clickOnMoreButton(tabRow);
+        await unfollowButton.click();
         await this.driver.wait(async () => {
             try {
                 await tabRow.isDisplayed();

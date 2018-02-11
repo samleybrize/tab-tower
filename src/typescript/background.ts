@@ -15,14 +15,17 @@ import { CloseTab } from './tab/command/close-tab';
 import { DuplicateTab } from './tab/command/duplicate-tab';
 import { FocusTab } from './tab/command/focus-tab';
 import { FollowTab } from './tab/command/follow-tab';
+import { MuteTab } from './tab/command/mute-tab';
 import { PinTab } from './tab/command/pin-tab';
 import { ReloadTab } from './tab/command/reload-tab';
 import { RestoreFollowedTab } from './tab/command/restore-followed-tab';
 import { tabCommands } from './tab/command/tab-commands';
 import { UnfollowTab } from './tab/command/unfollow-tab';
+import { UnmuteTab } from './tab/command/unmute-tab';
 import { UnpinTab } from './tab/command/unpin-tab';
 import { OpenedTabAssociatedToFollowedTab } from './tab/event/opened-tab-associated-to-followed-tab';
 import { OpenedTabAudibleStateUpdated } from './tab/event/opened-tab-audible-state-updated';
+import { OpenedTabAudioMuteStateUpdated } from './tab/event/opened-tab-audio-mute-state-updated';
 import { OpenedTabFaviconUrlUpdated } from './tab/event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from './tab/event/opened-tab-focused';
 import { OpenedTabMoved } from './tab/event/opened-tab-moved';
@@ -67,9 +70,11 @@ import { TabAssociationRetriever } from './tab/tab-association/tab-association-r
 import { TabCloser } from './tab/tab-closer';
 import { TabDuplicator } from './tab/tab-duplicator';
 import { TabFocuser } from './tab/tab-focuser';
+import { TabMuter } from './tab/tab-muter';
 import { TabOpener } from './tab/tab-opener';
 import { TabPinner } from './tab/tab-pinner';
 import { TabReloader } from './tab/tab-reloader';
+import { TabUnmuter } from './tab/tab-unmuter';
 import { TabUnpinner } from './tab/tab-unpinner';
 import { ObjectUnserializer } from './utils/object-unserializer';
 
@@ -100,8 +105,10 @@ async function main() {
     const tabCloser = new TabCloser();
     const tabDuplicator = new TabDuplicator();
     const tabFocuser = new TabFocuser();
+    const tabMuter = new TabMuter();
     const tabPinner = new TabPinner();
     const tabReloader = new TabReloader();
+    const tabUnmuter = new TabUnmuter();
     const tabUnpinner = new TabUnpinner();
     const nativeEventHandler = new NativeTabEventHandler(eventBus, queryBus, tabCloser, tabOpener);
 
@@ -130,10 +137,12 @@ async function main() {
         commandBus.register(DuplicateTab, tabDuplicator.duplicateTab, tabDuplicator);
         commandBus.register(FocusTab, tabFocuser.focusTab, tabFocuser);
         commandBus.register(FollowTab, tabFollower.followTab, tabFollower);
+        commandBus.register(MuteTab, tabMuter.muteTab, tabMuter);
         commandBus.register(PinTab, tabPinner.pinTab, tabPinner);
         commandBus.register(ReloadTab, tabReloader.reloadTab, tabReloader);
         commandBus.register(RestoreFollowedTab, tabOpener.restoreFollowedTab, tabOpener);
         commandBus.register(UnfollowTab, tabUnfollower.unfollowTab, tabUnfollower);
+        commandBus.register(UnmuteTab, tabUnmuter.unmuteTab, tabUnmuter);
         commandBus.register(UnpinTab, tabUnpinner.unpinTab, tabUnpinner);
     }
 
@@ -167,6 +176,7 @@ async function main() {
         eventBus.subscribe(OpenedTabAssociatedToFollowedTab, followedTabUpdater.onAssociateOpenedTabToFollowedTab, followedTabUpdater);
         eventBus.subscribe(OpenedTabAssociatedToFollowedTab, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(OpenedTabAudibleStateUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(OpenedTabAudioMuteStateUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(OpenedTabFaviconUrlUpdated, followedTabUpdater.onOpenedTabFaviconUrlUpdate, followedTabUpdater);
         eventBus.subscribe(OpenedTabFaviconUrlUpdated, closedTabRetriever.onTabFaviconUrlUpdate, closedTabRetriever);
         eventBus.subscribe(OpenedTabFaviconUrlUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);

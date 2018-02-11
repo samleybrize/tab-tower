@@ -66,6 +66,7 @@ export class OpenedTabRetriever {
         tabOpenState.isInReaderMode = isInReaderMode;
         tabOpenState.isPinned = !!rawTab.pinned;
         tabOpenState.isAudible = !!rawTab.audible;
+        tabOpenState.isAudioMuted = rawTab.mutedInfo ? !!rawTab.mutedInfo.muted : false;
         tabOpenState.url = url;
         tabOpenState.faviconUrl = rawTab.favIconUrl;
         tabOpenState.isPrivileged = this.privilegedUrlDetector.isPrivileged(url, isInReaderMode);

@@ -6,12 +6,15 @@ import { CloseTab } from '../tab/command/close-tab';
 import { DuplicateTab } from '../tab/command/duplicate-tab';
 import { FocusTab } from '../tab/command/focus-tab';
 import { FollowTab } from '../tab/command/follow-tab';
+import { MuteTab } from '../tab/command/mute-tab';
 import { PinTab } from '../tab/command/pin-tab';
 import { ReloadTab } from '../tab/command/reload-tab';
 import { UnfollowTab } from '../tab/command/unfollow-tab';
+import { UnmuteTab } from '../tab/command/unmute-tab';
 import { UnpinTab } from '../tab/command/unpin-tab';
 import { OpenedTabAssociatedToFollowedTab } from '../tab/event/opened-tab-associated-to-followed-tab';
 import { OpenedTabAudibleStateUpdated } from '../tab/event/opened-tab-audible-state-updated';
+import { OpenedTabAudioMuteStateUpdated } from '../tab/event/opened-tab-audio-mute-state-updated';
 import { OpenedTabFaviconUrlUpdated } from '../tab/event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from '../tab/event/opened-tab-focused';
 import { OpenedTabMoved } from '../tab/event/opened-tab-moved';
@@ -35,6 +38,7 @@ import { TabCounter } from './tab-counter';
 declare global {
     interface JQuery {
         dropdown(...args: any[]): any;
+        tooltip(method: 'open' | 'close' | 'remove'): JQuery;
     }
 }
 
@@ -129,11 +133,12 @@ export class OpenedTabView {
         const onOffIndicatorsCell = this.createCell('indicators');
         const lastAccessCell = this.createCell('lastAccess');
         const actionsCell = this.createActionsCell(tabOpenState);
-        this.addOnOffIndicator(onOffIndicatorsCell, 'incognitoIndicator', 'incognito');
-        this.addOnOffIndicator(onOffIndicatorsCell, 'readerModeIndicator', 'reader view');
-        this.addOnOffIndicator(onOffIndicatorsCell, 'pinIndicator', 'pinned');
-        this.addOnOffIndicator(onOffIndicatorsCell, 'followedIndicator', 'followed');
         this.addAudibleIndicator(onOffIndicatorsCell);
+        this.addOnOffIndicator(onOffIndicatorsCell, 'muteIndicator', 'muted');
+        this.addOnOffIndicator(onOffIndicatorsCell, 'followedIndicator', 'followed');
+        this.addOnOffIndicator(onOffIndicatorsCell, 'pinIndicator', 'pinned');
+        this.addOnOffIndicator(onOffIndicatorsCell, 'readerModeIndicator', 'reader view');
+        this.addOnOffIndicator(onOffIndicatorsCell, 'incognitoIndicator', 'incognito');
 
         row.setAttribute('data-tab-id', '' + tabOpenState.id);
         row.appendChild(titleCell);
@@ -146,6 +151,7 @@ export class OpenedTabView {
         this.updateTabIndex(row, tabOpenState.index);
         this.updateTabReaderModeState(row, tabOpenState.isInReaderMode);
         this.updateTabAudibleIndicator(row, tabOpenState.isAudible);
+        this.updateTabAudioMuteState(row, tabOpenState.isAudioMuted);
         this.updateTabPinState(row, tabOpenState.isPinned);
         this.updateTabTitle(row, tabOpenState.title);
         this.updateTabUrl(row, tabOpenState.url, tabOpenState.isPrivileged, tabOpenState.isIgnored);
@@ -233,6 +239,8 @@ export class OpenedTabView {
         this.addFollowTabAction(dropdownElement, tabOpenState);
         this.addPinTabAction(dropdownElement, tabOpenState);
         this.addUnpinTabAction(dropdownElement, tabOpenState);
+        this.addMuteTabAction(dropdownElement, tabOpenState);
+        this.addUnmuteTabAction(dropdownElement, tabOpenState);
         this.addDuplicateTabAction(dropdownElement, tabOpenState);
         this.addReloadTabAction(dropdownElement, tabOpenState);
         this.addActionSeparator(dropdownElement);
@@ -307,6 +315,32 @@ export class OpenedTabView {
 
         unpinButton.addEventListener('click', async (event) => {
             this.commandBus.handle(new UnpinTab(tabOpenState.id));
+        });
+
+        dropdownElement.appendChild(containerElement);
+    }
+
+    private addMuteTabAction(dropdownElement: HTMLElement, tabOpenState: TabOpenState) {
+        const containerElement = document.createElement('li');
+        containerElement.classList.add('muteButton');
+        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">volume_off</i> Mute</a>`;
+        const muteButton = containerElement.querySelector('a');
+
+        muteButton.addEventListener('click', async (event) => {
+            this.commandBus.handle(new MuteTab(tabOpenState.id));
+        });
+
+        dropdownElement.appendChild(containerElement);
+    }
+
+    private addUnmuteTabAction(dropdownElement: HTMLElement, tabOpenState: TabOpenState) {
+        const containerElement = document.createElement('li');
+        containerElement.classList.add('unmuteButton');
+        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">volume_up</i> Unmute</a>`;
+        const unmuteButton = containerElement.querySelector('a');
+
+        unmuteButton.addEventListener('click', async (event) => {
+            this.commandBus.handle(new UnmuteTab(tabOpenState.id));
         });
 
         dropdownElement.appendChild(containerElement);
@@ -435,13 +469,26 @@ export class OpenedTabView {
             indicatorElement.classList.remove('off');
             indicatorElement.classList.add('on');
             indicatorElement.setAttribute('data-tooltip', 'Producing sound');
+            jQuery(indicatorElement).tooltip();
         } else {
             indicatorElement.classList.add('off');
             indicatorElement.classList.remove('on');
-            indicatorElement.setAttribute('data-tooltip', 'Not producing any sound');
+            jQuery(indicatorElement).tooltip('remove');
         }
+    }
 
-        jQuery(indicatorElement).tooltip();
+    private updateTabAudioMuteState(row: HTMLElement, isAudioMuted: boolean) {
+        this.updateOnOffIndicator(row, 'muteIndicator', isAudioMuted);
+        const muteButton = row.querySelector('.muteButton');
+        const unmuteButton = row.querySelector('.unmuteButton');
+
+        if (isAudioMuted) {
+            muteButton.classList.add('transparent');
+            unmuteButton.classList.remove('transparent');
+        } else {
+            muteButton.classList.remove('transparent');
+            unmuteButton.classList.add('transparent');
+        }
     }
 
     private updateTabPinState(row: HTMLElement, isPinned: boolean) {
@@ -670,6 +717,24 @@ export class OpenedTabView {
 
         if (tabRow) {
             this.updateTabAudibleIndicator(tabRow, event.tabOpenState.isAudible);
+            this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
+        }
+    }
+
+    async onOpenTabAudioMuteStateUpdate(event: OpenedTabAudioMuteStateUpdated) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.handleOpenTabAudibleStateUpdate.bind(this, event));
+            return;
+        }
+
+        await this.handleOpenTabAudioMuteStateUpdate(event);
+    }
+
+    private async handleOpenTabAudioMuteStateUpdate(event: OpenedTabAudioMuteStateUpdated) {
+        const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
+
+        if (tabRow) {
+            this.updateTabAudioMuteState(tabRow, event.tabOpenState.isAudioMuted);
             this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }

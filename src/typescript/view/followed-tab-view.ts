@@ -5,13 +5,16 @@ import { QueryBus } from '../bus/query-bus';
 import { CloseTab } from '../tab/command/close-tab';
 import { DuplicateTab } from '../tab/command/duplicate-tab';
 import { FocusTab } from '../tab/command/focus-tab';
+import { MuteTab } from '../tab/command/mute-tab';
 import { PinTab } from '../tab/command/pin-tab';
 import { ReloadTab } from '../tab/command/reload-tab';
 import { RestoreFollowedTab } from '../tab/command/restore-followed-tab';
 import { UnfollowTab } from '../tab/command/unfollow-tab';
+import { UnmuteTab } from '../tab/command/unmute-tab';
 import { UnpinTab } from '../tab/command/unpin-tab';
 import { OpenedTabAssociatedToFollowedTab } from '../tab/event/opened-tab-associated-to-followed-tab';
 import { OpenedTabAudibleStateUpdated } from '../tab/event/opened-tab-audible-state-updated';
+import { OpenedTabAudioMuteStateUpdated } from '../tab/event/opened-tab-audio-mute-state-updated';
 import { OpenedTabFaviconUrlUpdated } from '../tab/event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from '../tab/event/opened-tab-focused';
 import { OpenedTabPinStateUpdated } from '../tab/event/opened-tab-pin-state-updated';
@@ -32,6 +35,7 @@ import { TabCounter } from './tab-counter';
 declare global {
     interface JQuery {
         dropdown(...args: any[]): any;
+        tooltip(method: 'open' | 'close' | 'remove'): JQuery;
     }
 }
 
@@ -122,11 +126,12 @@ export class FollowedTabView {
         const onOffIndicatorsCell = this.createCell('indicators');
         const lastAccessCell = this.createCell('lastAccess');
         const actionsCell = this.createActionsCell(tab);
-        this.addOnOffIndicator(onOffIndicatorsCell, 'incognitoIndicator', 'incognito');
+        this.addAudibleIndicator(onOffIndicatorsCell);
+        this.addOnOffIndicator(onOffIndicatorsCell, 'muteIndicator', 'muted');
+        this.addOnOffIndicator(onOffIndicatorsCell, 'openIndicator', 'opened');
         this.addOnOffIndicator(onOffIndicatorsCell, 'pinIndicator', 'pinned');
         this.addOnOffIndicator(onOffIndicatorsCell, 'readerModeIndicator', 'reader view');
-        this.addOnOffIndicator(onOffIndicatorsCell, 'openIndicator', 'opened');
-        this.addAudibleIndicator(onOffIndicatorsCell);
+        this.addOnOffIndicator(onOffIndicatorsCell, 'incognitoIndicator', 'incognito');
 
         row.setAttribute('data-follow-id', '' + tab.followState.id);
         row.appendChild(titleCell);
@@ -140,6 +145,7 @@ export class FollowedTabView {
         this.updateTabOpenState(row, this.isTabOpened(tab), tabOpenId);
         this.updateTabReaderModeState(row, tab.followState.isInReaderMode);
         this.updateTabAudibleIndicator(row, tab.openState ? tab.openState.isAudible : false);
+        this.updateTabAudioMuteState(row, tab.openState ? tab.openState.isAudioMuted : false);
         this.updateTabPinState(row, tab.openState ? tab.openState.isPinned : false);
         this.updateTabTitle(row, tab.followState.title);
         this.updateTabUrl(row, tab.followState.url);
@@ -230,6 +236,8 @@ export class FollowedTabView {
 
         this.addPinTabAction(dropdownElement, tab);
         this.addUnpinTabAction(dropdownElement, tab);
+        this.addMuteTabAction(dropdownElement, tab);
+        this.addUnmuteTabAction(dropdownElement, tab);
         this.addDuplicateTabAction(dropdownElement, tab);
         this.addReloadTabAction(dropdownElement, tab);
         this.addActionSeparator(dropdownElement);
@@ -297,6 +305,32 @@ export class FollowedTabView {
         });
 
         cell.appendChild(containerElement);
+    }
+
+    private addMuteTabAction(dropdownElement: HTMLElement, tab: TabAssociation) {
+        const containerElement = document.createElement('li');
+        containerElement.classList.add('muteButton');
+        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">volume_off</i> Mute</a>`;
+        const muteButton = containerElement.querySelector('a');
+
+        muteButton.addEventListener('click', async (event) => {
+            this.commandBus.handle(new MuteTab(tab.openState.id));
+        });
+
+        dropdownElement.appendChild(containerElement);
+    }
+
+    private addUnmuteTabAction(dropdownElement: HTMLElement, tab: TabAssociation) {
+        const containerElement = document.createElement('li');
+        containerElement.classList.add('unmuteButton');
+        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">volume_up</i> Unmute</a>`;
+        const unmuteButton = containerElement.querySelector('a');
+
+        unmuteButton.addEventListener('click', async (event) => {
+            this.commandBus.handle(new UnmuteTab(tab.openState.id));
+        });
+
+        dropdownElement.appendChild(containerElement);
     }
 
     private addDuplicateTabAction(dropdownElement: HTMLElement, tab: TabAssociation) {
@@ -414,13 +448,26 @@ export class FollowedTabView {
             indicatorElement.classList.remove('off');
             indicatorElement.classList.add('on');
             indicatorElement.setAttribute('data-tooltip', 'Producing sound');
+            jQuery(indicatorElement).tooltip();
         } else {
             indicatorElement.classList.add('off');
             indicatorElement.classList.remove('on');
-            indicatorElement.setAttribute('data-tooltip', 'Not producing any sound');
+            jQuery(indicatorElement).tooltip('remove');
         }
+    }
 
-        jQuery(indicatorElement).tooltip();
+    private updateTabAudioMuteState(row: HTMLElement, isAudioMuted: boolean) {
+        this.updateOnOffIndicator(row, 'muteIndicator', isAudioMuted);
+        const muteButton = row.querySelector('.muteButton');
+        const unmuteButton = row.querySelector('.unmuteButton');
+
+        if (isAudioMuted) {
+            muteButton.classList.add('transparent');
+            unmuteButton.classList.remove('transparent');
+        } else {
+            muteButton.classList.remove('transparent');
+            unmuteButton.classList.add('transparent');
+        }
     }
 
     private updateTabReaderModeState(row: HTMLElement, isInReaderMode: boolean) {
@@ -574,6 +621,24 @@ export class FollowedTabView {
 
         if (tabRow) {
             this.updateTabAudibleIndicator(tabRow, event.tabOpenState.isAudible);
+            this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
+        }
+    }
+
+    async onOpenTabAudioMuteStateUpdate(event: OpenedTabAudioMuteStateUpdated) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.handleOpenTabAudibleStateUpdate.bind(this, event));
+            return;
+        }
+
+        await this.handleOpenTabAudioMuteStateUpdate(event);
+    }
+
+    private async handleOpenTabAudioMuteStateUpdate(event: OpenedTabAudioMuteStateUpdated) {
+        const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
+
+        if (tabRow) {
+            this.updateTabAudioMuteState(tabRow, event.tabOpenState.isAudioMuted);
             this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }

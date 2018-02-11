@@ -1,5 +1,6 @@
 import { OpenedTabAssociatedToFollowedTab } from './opened-tab-associated-to-followed-tab';
 import { OpenedTabAudibleStateUpdated } from './opened-tab-audible-state-updated';
+import { OpenedTabAudioMuteStateUpdated } from './opened-tab-audio-mute-state-updated';
 import { OpenedTabFaviconUrlUpdated } from './opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from './opened-tab-focused';
 import { OpenedTabIsLoading } from './opened-tab-is-loading';
@@ -19,6 +20,7 @@ import { TabUnfollowed } from './tab-unfollowed';
 export const tabEvents = [
     OpenedTabAssociatedToFollowedTab,
     OpenedTabAudibleStateUpdated,
+    OpenedTabAudioMuteStateUpdated,
     OpenedTabFaviconUrlUpdated,
     OpenedTabFocused,
     OpenedTabIsLoading,

@@ -12,6 +12,7 @@ import { SendMessageEventHandler } from './message/sender/send-message-event-han
 import { SendMessageQueryHandler } from './message/sender/send-message-query-handler';
 import { AssociateOpenedTabToFollowedTab } from './tab/command/associate-opened-tab-to-followed-tab';
 import { CloseTab } from './tab/command/close-tab';
+import { DuplicateTab } from './tab/command/duplicate-tab';
 import { FocusTab } from './tab/command/focus-tab';
 import { FollowTab } from './tab/command/follow-tab';
 import { PinTab } from './tab/command/pin-tab';
@@ -63,6 +64,7 @@ import { tabQueries } from './tab/query/tab-queries';
 import { TabAssociationMaintainer } from './tab/tab-association/tab-association-maintainer';
 import { TabAssociationRetriever } from './tab/tab-association/tab-association-retriever';
 import { TabCloser } from './tab/tab-closer';
+import { TabDuplicator } from './tab/tab-duplicator';
 import { TabFocuser } from './tab/tab-focuser';
 import { TabOpener } from './tab/tab-opener';
 import { TabPinner } from './tab/tab-pinner';
@@ -95,6 +97,7 @@ async function main() {
     const tabAssociationRetriever = new TabAssociationRetriever(queryBus);
 
     const tabCloser = new TabCloser();
+    const tabDuplicator = new TabDuplicator();
     const tabFocuser = new TabFocuser();
     const tabPinner = new TabPinner();
     const tabReloader = new TabReloader();
@@ -123,6 +126,7 @@ async function main() {
     function initCommandBus() {
         commandBus.register(AssociateOpenedTabToFollowedTab, tabAssociationMaintainer.associateOpenedTabToFollowedTab, tabAssociationMaintainer);
         commandBus.register(CloseTab, tabCloser.closeTab, tabCloser);
+        commandBus.register(DuplicateTab, tabDuplicator.duplicateTab, tabDuplicator);
         commandBus.register(FocusTab, tabFocuser.focusTab, tabFocuser);
         commandBus.register(FollowTab, tabFollower.followTab, tabFollower);
         commandBus.register(PinTab, tabPinner.pinTab, tabPinner);
@@ -185,6 +189,7 @@ async function main() {
     }
 
     async function initTabHandling() {
+        await openedTabRetriever.init();
         await closedTabRetriever.init();
         await nativeRecentlyClosedTabAssociationMaintainer.init();
         nativeEventHandler.init();

@@ -11,6 +11,7 @@ import { ContentMessageSender } from './message/sender/content-message-sender';
 import { SendMessageCommandHandler } from './message/sender/send-message-command-handler';
 import { SendMessageQueryHandler } from './message/sender/send-message-query-handler';
 import { CloseTab } from './tab/command/close-tab';
+import { DuplicateTab } from './tab/command/duplicate-tab';
 import { FocusTab } from './tab/command/focus-tab';
 import { FollowTab } from './tab/command/follow-tab';
 import { PinTab } from './tab/command/pin-tab';
@@ -81,6 +82,7 @@ async function main() {
     messageReceiver.listen();
 
     commandBus.register(CloseTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
+    commandBus.register(DuplicateTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(FocusTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(FollowTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(PinTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);

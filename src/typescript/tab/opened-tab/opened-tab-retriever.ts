@@ -13,6 +13,14 @@ export class OpenedTabRetriever {
     constructor(private privilegedUrlDetector: PrivilegedUrlDetector, private ignoreUrlsThatStartWith: string[]) {
     }
 
+    async init() {
+        const tabList = await this.getAll();
+
+        for (const tab of tabList) {
+            this.longLivedIdMap.set(tab.longLivedId, tab.id);
+        }
+    }
+
     async onTabOpen(event: TabOpened) {
         this.longLivedIdMap.set(event.tabOpenState.longLivedId, event.tabOpenState.id);
     }
@@ -22,6 +30,10 @@ export class OpenedTabRetriever {
     }
 
     async queryAll(query: GetTabOpenStates): Promise<TabOpenState[]> {
+        return this.getAll();
+    }
+
+    private async getAll(): Promise<TabOpenState[]> {
         const rawTabs = await browser.tabs.query({});
         const tabList: TabOpenState[] = [];
 

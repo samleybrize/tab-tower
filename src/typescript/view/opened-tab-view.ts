@@ -3,6 +3,7 @@ import * as moment from 'moment';
 import { CommandBus } from '../bus/command-bus';
 import { QueryBus } from '../bus/query-bus';
 import { CloseTab } from '../tab/command/close-tab';
+import { DuplicateTab } from '../tab/command/duplicate-tab';
 import { FocusTab } from '../tab/command/focus-tab';
 import { FollowTab } from '../tab/command/follow-tab';
 import { PinTab } from '../tab/command/pin-tab';
@@ -221,6 +222,7 @@ export class OpenedTabView {
         this.addFollowTabAction(dropdownElement, tabOpenState);
         this.addPinTabAction(dropdownElement, tabOpenState);
         this.addUnpinTabAction(dropdownElement, tabOpenState);
+        this.addDuplicateTabAction(dropdownElement, tabOpenState);
         this.addReloadTabAction(dropdownElement, tabOpenState);
         this.addActionSeparator(dropdownElement);
         this.addCloseTabAction(dropdownElement, tabOpenState);
@@ -294,6 +296,19 @@ export class OpenedTabView {
 
         unpinButton.addEventListener('click', async (event) => {
             this.commandBus.handle(new UnpinTab(tabOpenState.id));
+        });
+
+        dropdownElement.appendChild(containerElement);
+    }
+
+    private addDuplicateTabAction(dropdownElement: HTMLElement, tabOpenState: TabOpenState) {
+        const containerElement = document.createElement('li');
+        containerElement.classList.add('duplicateButton');
+        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">content_copy</i> Duplicate</a>`;
+        const unpinButton = containerElement.querySelector('a');
+
+        unpinButton.addEventListener('click', async (event) => {
+            this.commandBus.handle(new DuplicateTab(tabOpenState.id));
         });
 
         dropdownElement.appendChild(containerElement);

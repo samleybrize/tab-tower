@@ -5,6 +5,7 @@ import { QueryBus } from '../bus/query-bus';
 import { CloseTab } from '../tab/command/close-tab';
 import { FocusTab } from '../tab/command/focus-tab';
 import { PinTab } from '../tab/command/pin-tab';
+import { ReloadTab } from '../tab/command/reload-tab';
 import { RestoreFollowedTab } from '../tab/command/restore-followed-tab';
 import { UnfollowTab } from '../tab/command/unfollow-tab';
 import { UnpinTab } from '../tab/command/unpin-tab';
@@ -217,6 +218,7 @@ export class FollowedTabView {
 
         this.addPinTabAction(dropdownElement, tab);
         this.addUnpinTabAction(dropdownElement, tab);
+        this.addReloadTabAction(dropdownElement, tab);
         this.addActionSeparator(dropdownElement);
         this.addCloseTabAction(dropdownElement, tab);
         this.addUnfollowTabAction(dropdownElement, tab);
@@ -282,6 +284,19 @@ export class FollowedTabView {
         });
 
         cell.appendChild(containerElement);
+    }
+
+    private addReloadTabAction(dropdownElement: HTMLElement, tab: TabAssociation) {
+        const containerElement = document.createElement('li');
+        containerElement.classList.add('reloadButton');
+        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">autorenew</i> Reload</a>`;
+        const unpinButton = containerElement.querySelector('a');
+
+        unpinButton.addEventListener('click', async (event) => {
+            this.commandBus.handle(new ReloadTab(tab.openState.id));
+        });
+
+        dropdownElement.appendChild(containerElement);
     }
 
     private addCloseTabAction(cell: HTMLElement, tab: TabAssociation) {

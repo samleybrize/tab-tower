@@ -15,6 +15,7 @@ import { CloseTab } from './tab/command/close-tab';
 import { FocusTab } from './tab/command/focus-tab';
 import { FollowTab } from './tab/command/follow-tab';
 import { PinTab } from './tab/command/pin-tab';
+import { ReloadTab } from './tab/command/reload-tab';
 import { RestoreFollowedTab } from './tab/command/restore-followed-tab';
 import { tabCommands } from './tab/command/tab-commands';
 import { UnfollowTab } from './tab/command/unfollow-tab';
@@ -65,6 +66,7 @@ import { TabCloser } from './tab/tab-closer';
 import { TabFocuser } from './tab/tab-focuser';
 import { TabOpener } from './tab/tab-opener';
 import { TabPinner } from './tab/tab-pinner';
+import { TabReloader } from './tab/tab-reloader';
 import { TabUnpinner } from './tab/tab-unpinner';
 import { ObjectUnserializer } from './utils/object-unserializer';
 
@@ -95,6 +97,7 @@ async function main() {
     const tabCloser = new TabCloser();
     const tabFocuser = new TabFocuser();
     const tabPinner = new TabPinner();
+    const tabReloader = new TabReloader();
     const tabUnpinner = new TabUnpinner();
     const nativeEventHandler = new NativeTabEventHandler(eventBus, queryBus, tabCloser, tabOpener);
 
@@ -123,6 +126,7 @@ async function main() {
         commandBus.register(FocusTab, tabFocuser.focusTab, tabFocuser);
         commandBus.register(FollowTab, tabFollower.followTab, tabFollower);
         commandBus.register(PinTab, tabPinner.pinTab, tabPinner);
+        commandBus.register(ReloadTab, tabReloader.reloadTab, tabReloader);
         commandBus.register(RestoreFollowedTab, tabOpener.restoreFollowedTab, tabOpener);
         commandBus.register(UnfollowTab, tabUnfollower.unfollowTab, tabUnfollower);
         commandBus.register(UnpinTab, tabUnpinner.unpinTab, tabUnpinner);

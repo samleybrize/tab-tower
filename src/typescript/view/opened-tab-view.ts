@@ -6,6 +6,7 @@ import { CloseTab } from '../tab/command/close-tab';
 import { FocusTab } from '../tab/command/focus-tab';
 import { FollowTab } from '../tab/command/follow-tab';
 import { PinTab } from '../tab/command/pin-tab';
+import { ReloadTab } from '../tab/command/reload-tab';
 import { UnfollowTab } from '../tab/command/unfollow-tab';
 import { UnpinTab } from '../tab/command/unpin-tab';
 import { OpenedTabAssociatedToFollowedTab } from '../tab/event/opened-tab-associated-to-followed-tab';
@@ -220,6 +221,7 @@ export class OpenedTabView {
         this.addFollowTabAction(dropdownElement, tabOpenState);
         this.addPinTabAction(dropdownElement, tabOpenState);
         this.addUnpinTabAction(dropdownElement, tabOpenState);
+        this.addReloadTabAction(dropdownElement, tabOpenState);
         this.addActionSeparator(dropdownElement);
         this.addCloseTabAction(dropdownElement, tabOpenState);
         this.addUnfollowTabAction(dropdownElement, tabOpenState);
@@ -292,6 +294,19 @@ export class OpenedTabView {
 
         unpinButton.addEventListener('click', async (event) => {
             this.commandBus.handle(new UnpinTab(tabOpenState.id));
+        });
+
+        dropdownElement.appendChild(containerElement);
+    }
+
+    private addReloadTabAction(dropdownElement: HTMLElement, tabOpenState: TabOpenState) {
+        const containerElement = document.createElement('li');
+        containerElement.classList.add('reloadButton');
+        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">autorenew</i> Reload</a>`;
+        const unpinButton = containerElement.querySelector('a');
+
+        unpinButton.addEventListener('click', async (event) => {
+            this.commandBus.handle(new ReloadTab(tabOpenState.id));
         });
 
         dropdownElement.appendChild(containerElement);

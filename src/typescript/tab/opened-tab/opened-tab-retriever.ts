@@ -62,9 +62,10 @@ export class OpenedTabRetriever {
         tabOpenState.longLivedId = await this.getTabLongLivedId(rawTab.id, false);
         tabOpenState.index = rawTab.index;
         tabOpenState.title = rawTab.title;
-        tabOpenState.isIncognito = rawTab.incognito;
+        tabOpenState.isIncognito = !!rawTab.incognito;
         tabOpenState.isInReaderMode = isInReaderMode;
-        tabOpenState.isPinned = rawTab.pinned;
+        tabOpenState.isPinned = !!rawTab.pinned;
+        tabOpenState.isAudible = !!rawTab.audible;
         tabOpenState.url = url;
         tabOpenState.faviconUrl = rawTab.favIconUrl;
         tabOpenState.isPrivileged = this.privilegedUrlDetector.isPrivileged(url, isInReaderMode);

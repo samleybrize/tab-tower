@@ -1,5 +1,6 @@
 import { EventBus } from '../bus/event-bus';
 import { QueryBus } from '../bus/query-bus';
+import { OpenedTabAudibleStateUpdated } from './event/opened-tab-audible-state-updated';
 import { OpenedTabFaviconUrlUpdated } from './event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from './event/opened-tab-focused';
 import { OpenedTabIsLoading } from './event/opened-tab-is-loading';
@@ -131,6 +132,11 @@ export class NativeTabEventHandler {
         if (undefined !== updateInfo.pinned) {
             tabOpenState.isPinned = updateInfo.pinned;
             this.eventBus.publish(new OpenedTabPinStateUpdated(tabOpenState));
+        }
+
+        if (undefined !== updateInfo.audible) {
+            tabOpenState.isAudible = updateInfo.audible;
+            this.eventBus.publish(new OpenedTabAudibleStateUpdated(tabOpenState));
         }
     }
 }

@@ -21,6 +21,7 @@ import { tabCommands } from './tab/command/tab-commands';
 import { UnfollowTab } from './tab/command/unfollow-tab';
 import { UnpinTab } from './tab/command/unpin-tab';
 import { OpenedTabAssociatedToFollowedTab } from './tab/event/opened-tab-associated-to-followed-tab';
+import { OpenedTabAudibleStateUpdated } from './tab/event/opened-tab-audible-state-updated';
 import { OpenedTabFaviconUrlUpdated } from './tab/event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from './tab/event/opened-tab-focused';
 import { OpenedTabMoved } from './tab/event/opened-tab-moved';
@@ -101,6 +102,8 @@ async function main() {
     eventBus.subscribe(TabOpened, openedTabView.onTabOpen, openedTabView);
     eventBus.subscribe(TabFollowed, followedTabView.onTabFollow, followedTabView);
     eventBus.subscribe(TabFollowed, openedTabView.onTabFollow, openedTabView);
+    eventBus.subscribe(OpenedTabAudibleStateUpdated, openedTabView.onOpenTabAudibleStateUpdate, openedTabView);
+    eventBus.subscribe(OpenedTabAudibleStateUpdated, followedTabView.onOpenTabAudibleStateUpdate, followedTabView);
     eventBus.subscribe(OpenedTabFocused, openedTabView.onTabFocus, openedTabView);
     eventBus.subscribe(OpenedTabFocused, followedTabView.onTabFocus, followedTabView);
     eventBus.subscribe(OpenedTabAssociatedToFollowedTab, followedTabView.onAssociateOpenedTabToFollowedTab, followedTabView);

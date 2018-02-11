@@ -6,6 +6,7 @@ export class TabOpenState {
     isIncognito: boolean = false;
     isInReaderMode: boolean = false;
     isPinned: boolean = false;
+    isAudible: boolean = false;
     url: string = null;
     faviconUrl: string = null;
     isPrivileged: boolean = false;

@@ -11,6 +11,7 @@ import { ReloadTab } from '../tab/command/reload-tab';
 import { UnfollowTab } from '../tab/command/unfollow-tab';
 import { UnpinTab } from '../tab/command/unpin-tab';
 import { OpenedTabAssociatedToFollowedTab } from '../tab/event/opened-tab-associated-to-followed-tab';
+import { OpenedTabAudibleStateUpdated } from '../tab/event/opened-tab-audible-state-updated';
 import { OpenedTabFaviconUrlUpdated } from '../tab/event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from '../tab/event/opened-tab-focused';
 import { OpenedTabMoved } from '../tab/event/opened-tab-moved';
@@ -132,6 +133,7 @@ export class OpenedTabView {
         this.addOnOffIndicator(onOffIndicatorsCell, 'readerModeIndicator', 'reader view');
         this.addOnOffIndicator(onOffIndicatorsCell, 'pinIndicator', 'pinned');
         this.addOnOffIndicator(onOffIndicatorsCell, 'followedIndicator', 'followed');
+        this.addAudibleIndicator(onOffIndicatorsCell);
 
         row.setAttribute('data-tab-id', '' + tabOpenState.id);
         row.appendChild(titleCell);
@@ -143,6 +145,7 @@ export class OpenedTabView {
         this.updateTabIncognitoState(row, tabOpenState.isIncognito);
         this.updateTabIndex(row, tabOpenState.index);
         this.updateTabReaderModeState(row, tabOpenState.isInReaderMode);
+        this.updateTabAudibleIndicator(row, tabOpenState.isAudible);
         this.updateTabPinState(row, tabOpenState.isPinned);
         this.updateTabTitle(row, tabOpenState.title);
         this.updateTabUrl(row, tabOpenState.url, tabOpenState.isPrivileged, tabOpenState.isIgnored);
@@ -195,6 +198,14 @@ export class OpenedTabView {
         badgeElement.innerHTML = `<i class="material-icons"></i> <span>${label}</span>`;
 
         cell.appendChild(badgeElement);
+    }
+
+    private addAudibleIndicator(cell: HTMLElement) {
+        const iconElement = document.createElement('span');
+        iconElement.classList.add('audibleIndicator');
+        iconElement.innerHTML = `<i class="material-icons">volume_up</i>`;
+
+        cell.appendChild(iconElement);
     }
 
     private createActionsCell(tabOpenState: TabOpenState): HTMLElement {
@@ -417,6 +428,22 @@ export class OpenedTabView {
         }
     }
 
+    private updateTabAudibleIndicator(row: HTMLElement, isOn: boolean) {
+        const indicatorElement = row.querySelector(`.audibleIndicator`);
+
+        if (isOn) {
+            indicatorElement.classList.remove('off');
+            indicatorElement.classList.add('on');
+            indicatorElement.setAttribute('data-tooltip', 'Producing sound');
+        } else {
+            indicatorElement.classList.add('off');
+            indicatorElement.classList.remove('on');
+            indicatorElement.setAttribute('data-tooltip', 'Not producing any sound');
+        }
+
+        jQuery(indicatorElement).tooltip();
+    }
+
     private updateTabPinState(row: HTMLElement, isPinned: boolean) {
         this.updateOnOffIndicator(row, 'pinIndicator', isPinned);
         const pinButton = row.querySelector('.pinButton');
@@ -625,6 +652,24 @@ export class OpenedTabView {
 
         if (tabRow) {
             this.updateTabReaderModeState(tabRow, event.tabOpenState.isInReaderMode);
+            this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
+        }
+    }
+
+    async onOpenTabAudibleStateUpdate(event: OpenedTabAudibleStateUpdated) {
+        if (this.isEventHandlingNotReady()) {
+            this.pendingEvents.push(this.handleOpenTabAudibleStateUpdate.bind(this, event));
+            return;
+        }
+
+        await this.handleOpenTabAudibleStateUpdate(event);
+    }
+
+    private async handleOpenTabAudibleStateUpdate(event: OpenedTabAudibleStateUpdated) {
+        const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
+
+        if (tabRow) {
+            this.updateTabAudibleIndicator(tabRow, event.tabOpenState.isAudible);
             this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }

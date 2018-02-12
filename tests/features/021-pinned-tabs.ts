@@ -63,8 +63,10 @@ describe('Pinned tabs', () => {
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
             await openedTabsHelper.assertPinButtonIsVisible(openedTabRowList[0]);
+            await openedTabsHelper.assertPinButtonIsNotDisabled(openedTabRowList[0]);
             await openedTabsHelper.assertUnpinButtonIsNotVisible(openedTabRowList[0]);
             await openedTabsHelper.assertPinButtonIsVisible(openedTabRowList[1]);
+            await openedTabsHelper.assertPinButtonIsNotDisabled(openedTabRowList[1]);
             await openedTabsHelper.assertUnpinButtonIsNotVisible(openedTabRowList[1]);
         });
 
@@ -89,6 +91,7 @@ describe('Pinned tabs', () => {
             await openedTabsHelper.unpinTab(0, newOpenedTabRowList[0]);
 
             await openedTabsHelper.assertPinButtonIsVisible(newOpenedTabRowList[0]);
+            await openedTabsHelper.assertPinButtonIsNotDisabled(newOpenedTabRowList[0]);
             await openedTabsHelper.assertUnpinButtonIsNotVisible(newOpenedTabRowList[0]);
         });
 
@@ -186,12 +189,41 @@ describe('Pinned tabs', () => {
             await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[1]);
         });
 
-        xit('Tab unpin button should be visible in the followed tabs list when its associated opened tab is pinned', async () => {
-            // TODO
+        it('Tab unpin button should be visible in the followed tabs list when its associated opened tab is pinned', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertPinButtonIsNotVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertUnpinButtonIsVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertPinButtonIsVisible(followedTabRowList[1]);
+            await followedTabsHelper.assertPinButtonIsNotDisabled(followedTabRowList[1]);
+            await followedTabsHelper.assertUnpinButtonIsNotVisible(followedTabRowList[1]);
         });
 
-        xit('Tab pin button should be visible in the followed tabs list when its associated opened tab is unpinned', async () => {
-            // TODO
+        it('Tab pin button should be visible in the followed tabs list when its associated opened tab is unpinned', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnUnpinButton(openedTabRowList[1]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertPinButtonIsVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertPinButtonIsNotDisabled(followedTabRowList[0]);
+            await followedTabsHelper.assertUnpinButtonIsNotVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertPinButtonIsVisible(followedTabRowList[1]);
+            await followedTabsHelper.assertUnpinButtonIsNotVisible(followedTabRowList[1]);
         });
 
         it('A click on a followed tab pin button should pin the associated tab', async () => {
@@ -228,44 +260,228 @@ describe('Pinned tabs', () => {
             await followedTabsHelper.assertTabPinIndicatorIsOn(followedTabRowList[1]);
         });
 
-        xit('Pin indicator of a followed tab should be off when its associated tab is closed', async () => {
-            // TODO
+        it('Pin indicator of a followed tab should be off when its associated tab is closed', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[2]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabCloseButton(followedTabRowList[1]);
+            await followedTabsHelper.assertTabPinIndicatorIsOn(followedTabRowList[0]);
+            await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[1]);
         });
 
-        xit('Pin button of a followed tab should be disabled when its associated tab is closed', async () => {
-            // TODO
+        it('Pin button of a followed tab should be disabled when its associated tab is closed', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[2]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabCloseButton(followedTabRowList[1]);
+
+            await followedTabsHelper.assertPinButtonIsNotVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertUnpinButtonIsVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertUnpinButtonIsNotVisible(followedTabRowList[1]);
+            await followedTabsHelper.assertPinButtonIsVisible(followedTabRowList[1]);
+            await followedTabsHelper.assertPinButtonIsDisabled(followedTabRowList[1]);
         });
 
-        xit('Pin indicator of an opened tab should be on when restoring a pinned tab', async () => {
-            // TODO
+        it('Pin button of a followed tab should be enabled when it is restored', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[2]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabCloseButton(followedTabRowList[1]);
+            await followedTabsHelper.clickOnTabTitle(followedTabRowList[1]);
+
+            await followedTabsHelper.assertPinButtonIsNotVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertUnpinButtonIsVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertUnpinButtonIsNotVisible(followedTabRowList[1]);
+            await followedTabsHelper.assertPinButtonIsVisible(followedTabRowList[1]);
+            await followedTabsHelper.assertPinButtonIsNotDisabled(followedTabRowList[1]);
         });
 
-        xit('Pin indicator of an opened tab should be off when restoring an unpinned tab', async () => {
-            // TODO
+        it('Pin indicator of an opened tab should be off when restoring a pinned tab', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.clearRecentlyClosedTabs();
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
+
+            await testHelper.showOpenedTabsList();
+            const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabPinIndicatorIsOff(newOpenedTabRowList[0]);
+            await openedTabsHelper.assertTabPinIndicatorIsOff(newOpenedTabRowList[1]);
         });
 
-        xit('Pin indicator of a followed tab should be on when restoring a pinned tab', async () => {
-            // TODO
+        it('Pin indicator of an opened tab should be off when restoring an unpinned tab', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnUnpinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.clearRecentlyClosedTabs();
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
+
+            await testHelper.showOpenedTabsList();
+            const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabPinIndicatorIsOff(newOpenedTabRowList[0]);
+            await openedTabsHelper.assertTabPinIndicatorIsOff(newOpenedTabRowList[1]);
         });
 
-        xit('Pin indicator of a followed tab should be off when restoring an unpinned tab', async () => {
-            // TODO
+        it('Pin indicator of a followed tab should be off when restoring a pinned tab', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.clearRecentlyClosedTabs();
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
+
+            await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[0]);
         });
 
-        xit('Pin button of an opened tab should be visible when restoring a pinned tab', async () => {
-            // TODO
+        it('Pin indicator of a followed tab should be off when restoring an unpinned tab', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnUnpinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.clearRecentlyClosedTabs();
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
+
+            await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[0]);
         });
 
-        xit('Unpin button of an opened tab should be visible when restoring an unpinned tab', async () => {
-            // TODO
+        it('Pin button of an opened tab should be visible when restoring a pinned tab', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.clearRecentlyClosedTabs();
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
+
+            await testHelper.showOpenedTabsList();
+            const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertPinButtonIsVisible(newOpenedTabRowList[0]);
+            await openedTabsHelper.assertPinButtonIsNotDisabled(newOpenedTabRowList[0]);
+            await openedTabsHelper.assertUnpinButtonIsNotVisible(newOpenedTabRowList[0]);
+            await openedTabsHelper.assertPinButtonIsVisible(newOpenedTabRowList[1]);
+            await openedTabsHelper.assertPinButtonIsNotDisabled(newOpenedTabRowList[1]);
+            await openedTabsHelper.assertUnpinButtonIsNotVisible(newOpenedTabRowList[1]);
         });
 
-        xit('Pin button of a followed tab should be on when restoring a pinned tab', async () => {
-            // TODO
+        it('Pin button of an opened tab should be visible when restoring an unpinned tab', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnUnpinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.clearRecentlyClosedTabs();
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
+
+            await testHelper.showOpenedTabsList();
+            const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertPinButtonIsVisible(newOpenedTabRowList[0]);
+            await openedTabsHelper.assertPinButtonIsNotDisabled(newOpenedTabRowList[0]);
+            await openedTabsHelper.assertUnpinButtonIsNotVisible(newOpenedTabRowList[0]);
+            await openedTabsHelper.assertPinButtonIsVisible(newOpenedTabRowList[1]);
+            await openedTabsHelper.assertPinButtonIsNotDisabled(newOpenedTabRowList[1]);
+            await openedTabsHelper.assertUnpinButtonIsNotVisible(newOpenedTabRowList[1]);
         });
 
-        xit('Unpin button of a followed tab should be on when restoring an unpinned tab', async () => {
-            // TODO
+        it('Pin button of a followed tab should be visible when restoring a pinned tab', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.clearRecentlyClosedTabs();
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
+
+            await followedTabsHelper.assertPinButtonIsVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertPinButtonIsNotDisabled(followedTabRowList[0]);
+            await followedTabsHelper.assertUnpinButtonIsNotVisible(followedTabRowList[0]);
+        });
+
+        it('Pin button of a followed tab should be visible when restoring an unpinned tab', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnUnpinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.clearRecentlyClosedTabs();
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
+
+            await followedTabsHelper.assertPinButtonIsVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertPinButtonIsNotDisabled(followedTabRowList[0]);
+            await followedTabsHelper.assertUnpinButtonIsNotVisible(followedTabRowList[0]);
         });
 
         it('Should show followed tabs associated to pinned opened tabs with pin indicator enabled at startup', async () => {
@@ -289,36 +505,170 @@ describe('Pinned tabs', () => {
     });
 
     describe('Browser recently closed tabs', () => {
-        xit('Pin indicator of an opened tab should be on when restoring a pinned tab', async () => {
-            // TODO
+        it('A followed pinned tab should be restored as the last tab', async () => {
+            const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
+            await testHelper.openTab(testPage1Url);
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
+
+            await testHelper.showOpenedTabsList();
+            const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabUrl(newOpenedTabRowList[1], testPage1Url);
         });
 
-        xit('Pin indicator of an opened tab should be off when restoring an unpinned tab', async () => {
-            // TODO
+        it('Pin indicator of an opened tab should be off when restoring a pinned tab', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
+
+            await testHelper.showOpenedTabsList();
+            const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabPinIndicatorIsOff(newOpenedTabRowList[0]);
+            await openedTabsHelper.assertTabPinIndicatorIsOff(newOpenedTabRowList[1]);
         });
 
-        xit('Pin indicator of a followed tab should be on when restoring a pinned tab', async () => {
-            // TODO
+        it('Pin indicator of an opened tab should be off when restoring an unpinned tab', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnUnpinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
+
+            await testHelper.showOpenedTabsList();
+            const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabPinIndicatorIsOff(newOpenedTabRowList[0]);
+            await openedTabsHelper.assertTabPinIndicatorIsOff(newOpenedTabRowList[1]);
         });
 
-        xit('Pin indicator of a followed tab should be off when restoring an unpinned tab', async () => {
-            // TODO
+        it('Pin indicator of a followed tab should be off when restoring a pinned tab', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
+
+            await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[0]);
         });
 
-        xit('Pin button of an opened tab should be visible when restoring a pinned tab', async () => {
-            // TODO
+        it('Pin indicator of a followed tab should be off when restoring an unpinned tab', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnUnpinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
+
+            await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[0]);
         });
 
-        xit('Unpin button of an opened tab should be visible when restoring an unpinned tab', async () => {
-            // TODO
+        it('Pin button of an opened tab should be visible when restoring a pinned tab', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
+
+            await testHelper.showOpenedTabsList();
+            const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertPinButtonIsVisible(newOpenedTabRowList[0]);
+            await openedTabsHelper.assertPinButtonIsNotDisabled(newOpenedTabRowList[0]);
+            await openedTabsHelper.assertUnpinButtonIsNotVisible(newOpenedTabRowList[0]);
+            await openedTabsHelper.assertPinButtonIsVisible(newOpenedTabRowList[1]);
+            await openedTabsHelper.assertPinButtonIsNotDisabled(newOpenedTabRowList[1]);
+            await openedTabsHelper.assertUnpinButtonIsNotVisible(newOpenedTabRowList[1]);
         });
 
-        xit('Pin button of a followed tab should be on when restoring a pinned tab', async () => {
-            // TODO
+        it('Pin button of an opened tab should be visible when restoring an unpinned tab', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnUnpinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
+
+            await testHelper.showOpenedTabsList();
+            const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertPinButtonIsVisible(newOpenedTabRowList[0]);
+            await openedTabsHelper.assertPinButtonIsNotDisabled(newOpenedTabRowList[0]);
+            await openedTabsHelper.assertUnpinButtonIsNotVisible(newOpenedTabRowList[0]);
+            await openedTabsHelper.assertPinButtonIsVisible(newOpenedTabRowList[1]);
+            await openedTabsHelper.assertPinButtonIsNotDisabled(newOpenedTabRowList[1]);
+            await openedTabsHelper.assertUnpinButtonIsNotVisible(newOpenedTabRowList[1]);
         });
 
-        xit('Unpin button of a followed tab should be on when restoring an unpinned tab', async () => {
-            // TODO
+        it('Pin button of a followed tab should be visible when restoring a pinned tab', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
+
+            await followedTabsHelper.assertPinButtonIsVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertPinButtonIsNotDisabled(followedTabRowList[0]);
+            await followedTabsHelper.assertUnpinButtonIsNotVisible(followedTabRowList[0]);
+        });
+
+        it('Pin button of a followed tab should be visible when restoring an unpinned tab', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnUnpinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
+
+            await followedTabsHelper.assertPinButtonIsVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertPinButtonIsNotDisabled(followedTabRowList[0]);
+            await followedTabsHelper.assertUnpinButtonIsNotVisible(followedTabRowList[0]);
         });
     });
 });

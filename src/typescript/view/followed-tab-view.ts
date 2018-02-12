@@ -414,14 +414,23 @@ export class FollowedTabView {
         const titleCell = row.querySelector('.title');
 
         const closeButton = row.querySelector('.closeButton');
+        const duplicateButton = row.querySelector('.duplicateButton');
+        const reloadButton = row.querySelector('.reloadButton');
+        const pinButton = row.querySelector('.pinButton');
         this.updateOnOffIndicator(row, 'openIndicator', isOpened);
 
         if (isOpened) {
             closeButton.classList.remove('transparent');
+            duplicateButton.classList.remove('disabled');
+            reloadButton.classList.remove('disabled');
+            pinButton.classList.remove('disabled');
             titleCell.setAttribute('data-tooltip', 'Go to tab');
         } else {
-            titleCell.setAttribute('data-tooltip', 'Open tab');
+            duplicateButton.classList.add('disabled');
+            reloadButton.classList.add('disabled');
+            pinButton.classList.add('disabled');
             closeButton.classList.add('transparent');
+            titleCell.setAttribute('data-tooltip', 'Open tab');
         }
 
         jQuery(titleCell).tooltip();

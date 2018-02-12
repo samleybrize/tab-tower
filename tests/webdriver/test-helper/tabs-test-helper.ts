@@ -67,18 +67,10 @@ export class TabsTestHelper {
 
     async clickOnMoreButton(tabRow: WebElement) {
         await this.driver.findElement(By.tagName('body')).click();
+        await sleep(100);
         const moreButton = tabRow.findElement(By.css('.more'));
 
-        try {
-            await moreButton.click();
-        } catch (error) {
-            // TODO explain why
-            if (error instanceof WebDriverError.WebDriverError && error.message.indexOf('obscures it') > 0) {
-                return;
-            }
-
-            throw error;
-        }
+        await moreButton.click();
     }
 
     async clickOnPinButton(tabRow: WebElement) {
@@ -210,6 +202,20 @@ export class TabsTestHelper {
         await this.clickOnMoreButton(tabRow);
         const isPinButtonDisplayed = await this.getPinButton(tabRow).isDisplayed();
         assert.isFalse(isPinButtonDisplayed, 'Tab pin button is visible');
+    }
+
+    async assertPinButtonIsDisabled(tabRow: WebElement) {
+        const pinButton = await this.getPinButton(tabRow);
+        const pinButtonClasses = ('' + await pinButton.getAttribute('class')).split(' ');
+
+        assert.include(pinButtonClasses, 'disabled');
+    }
+
+    async assertPinButtonIsNotDisabled(tabRow: WebElement) {
+        const pinButton = await this.getPinButton(tabRow);
+        const pinButtonClasses = ('' + await pinButton.getAttribute('class')).split(' ');
+
+        assert.notInclude(pinButtonClasses, 'disabled');
     }
 
     async assertUnpinButtonIsVisible(tabRow: WebElement) {

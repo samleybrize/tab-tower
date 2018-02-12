@@ -238,6 +238,14 @@ export class OpenedTabsTestHelper {
         return this.tabsTestHelper.assertPinButtonIsNotVisible(tabRow);
     }
 
+    async assertPinButtonIsDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertPinButtonIsDisabled(tabRow);
+    }
+
+    async assertPinButtonIsNotDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertPinButtonIsNotDisabled(tabRow);
+    }
+
     async assertUnpinButtonIsVisible(tabRow: WebElement) {
         return this.tabsTestHelper.assertUnpinButtonIsVisible(tabRow);
     }

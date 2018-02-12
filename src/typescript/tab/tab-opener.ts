@@ -35,6 +35,10 @@ export class TabOpener {
             const activeTab = (await browser.tabs.query({active: true})).shift();
             const session = await browser.sessions.restore(sessionId);
 
+            if (session.tab.pinned) {
+                await browser.tabs.update(session.tab.id, {pinned: false});
+            }
+
             await browser.tabs.update(activeTab.id, {active: true});
             await browser.tabs.move(session.tab.id, {index: targetIndex});
 

@@ -269,6 +269,30 @@ export class FollowedTabsTestHelper {
         return this.tabsTestHelper.assertUnfollowButtonIsVisible(tabRow);
     }
 
+    async assertPinButtonIsVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertPinButtonIsVisible(tabRow);
+    }
+
+    async assertPinButtonIsNotVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertPinButtonIsNotVisible(tabRow);
+    }
+
+    async assertPinButtonIsDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertPinButtonIsDisabled(tabRow);
+    }
+
+    async assertPinButtonIsNotDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertPinButtonIsNotDisabled(tabRow);
+    }
+
+    async assertUnpinButtonIsVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertUnpinButtonIsVisible(tabRow);
+    }
+
+    async assertUnpinButtonIsNotVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertUnpinButtonIsNotVisible(tabRow);
+    }
+
     async assertCloseButtonIsVisible(tabRow: WebElement) {
         return this.tabsTestHelper.assertCloseButtonIsVisible(tabRow);
     }

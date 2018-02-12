@@ -155,7 +155,7 @@ describe('Pinned tabs', () => {
     });
 
     describe('Tab following', () => {
-        it('Pin status of a followed tab should be updated when its associated opened tab is pinned', async () => {
+        it('Pin indicator of a followed tab should be on when its associated opened tab is pinned', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
@@ -170,7 +170,7 @@ describe('Pinned tabs', () => {
             await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[1]);
         });
 
-        it('Pin status of a followed tab should be updated when its associated opened tab is unpinned', async () => {
+        it('Pin indicator of a followed tab should be off when its associated opened tab is unpinned', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
@@ -184,6 +184,14 @@ describe('Pinned tabs', () => {
             const followedTabRowList = await followedTabsHelper.getTabRowList();
             await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[0]);
             await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[1]);
+        });
+
+        xit('Tab unpin button should be visible in the followed tabs list when its associated opened tab is pinned', async () => {
+            // TODO
+        });
+
+        xit('Tab pin button should be visible in the followed tabs list when its associated opened tab is unpinned', async () => {
+            // TODO
         });
 
         it('A click on a followed tab pin button should pin the associated tab', async () => {
@@ -220,6 +228,46 @@ describe('Pinned tabs', () => {
             await followedTabsHelper.assertTabPinIndicatorIsOn(followedTabRowList[1]);
         });
 
+        xit('Pin indicator of a followed tab should be off when its associated tab is closed', async () => {
+            // TODO
+        });
+
+        xit('Pin button of a followed tab should be disabled when its associated tab is closed', async () => {
+            // TODO
+        });
+
+        xit('Pin indicator of an opened tab should be on when restoring a pinned tab', async () => {
+            // TODO
+        });
+
+        xit('Pin indicator of an opened tab should be off when restoring an unpinned tab', async () => {
+            // TODO
+        });
+
+        xit('Pin indicator of a followed tab should be on when restoring a pinned tab', async () => {
+            // TODO
+        });
+
+        xit('Pin indicator of a followed tab should be off when restoring an unpinned tab', async () => {
+            // TODO
+        });
+
+        xit('Pin button of an opened tab should be visible when restoring a pinned tab', async () => {
+            // TODO
+        });
+
+        xit('Unpin button of an opened tab should be visible when restoring an unpinned tab', async () => {
+            // TODO
+        });
+
+        xit('Pin button of a followed tab should be on when restoring a pinned tab', async () => {
+            // TODO
+        });
+
+        xit('Unpin button of a followed tab should be on when restoring an unpinned tab', async () => {
+            // TODO
+        });
+
         it('Should show followed tabs associated to pinned opened tabs with pin indicator enabled at startup', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
@@ -237,6 +285,40 @@ describe('Pinned tabs', () => {
             const followedTabRowList = await followedTabsHelper.getTabRowList();
             await followedTabsHelper.assertTabPinIndicatorIsOn(followedTabRowList[0]);
             await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[1]);
+        });
+    });
+
+    describe('Browser recently closed tabs', () => {
+        xit('Pin indicator of an opened tab should be on when restoring a pinned tab', async () => {
+            // TODO
+        });
+
+        xit('Pin indicator of an opened tab should be off when restoring an unpinned tab', async () => {
+            // TODO
+        });
+
+        xit('Pin indicator of a followed tab should be on when restoring a pinned tab', async () => {
+            // TODO
+        });
+
+        xit('Pin indicator of a followed tab should be off when restoring an unpinned tab', async () => {
+            // TODO
+        });
+
+        xit('Pin button of an opened tab should be visible when restoring a pinned tab', async () => {
+            // TODO
+        });
+
+        xit('Unpin button of an opened tab should be visible when restoring an unpinned tab', async () => {
+            // TODO
+        });
+
+        xit('Pin button of a followed tab should be on when restoring a pinned tab', async () => {
+            // TODO
+        });
+
+        xit('Unpin button of a followed tab should be on when restoring an unpinned tab', async () => {
+            // TODO
         });
     });
 });

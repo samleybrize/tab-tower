@@ -110,8 +110,10 @@ describe('Pinned tabs', () => {
         });
 
         it('A click on an opened tab pin button should pin the associated tab', async () => {
-            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
-            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+            const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
+            const testPage2Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2);
+            await testHelper.openTab(testPage1Url);
+            await testHelper.openTab(testPage2Url);
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
             await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
@@ -120,11 +122,21 @@ describe('Pinned tabs', () => {
             await openedTabsHelper.assertTabPinIndicatorIsOn(newOpenedTabRowList[0]);
             await openedTabsHelper.assertTabPinIndicatorIsOff(newOpenedTabRowList[1]);
             await openedTabsHelper.assertTabPinIndicatorIsOff(newOpenedTabRowList[2]);
+
+            const pinnedTab = await browserInstructionSender.getTab(0);
+            const unpinnedTab1 = await browserInstructionSender.getTab(1);
+            const unpinnedTab2 = await browserInstructionSender.getTab(2);
+            assert.isTrue(pinnedTab.pinned);
+            assert.equal(pinnedTab.url, testPage1Url);
+            assert.isFalse(unpinnedTab1.pinned);
+            assert.isFalse(unpinnedTab2.pinned);
         });
 
         it('A click on an opened tab unpin button should unpin the associated tab', async () => {
-            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
-            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+            const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
+            const testPage2Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2);
+            await testHelper.openTab(testPage1Url);
+            await testHelper.openTab(testPage2Url);
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
             await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
@@ -136,6 +148,14 @@ describe('Pinned tabs', () => {
             await openedTabsHelper.assertTabPinIndicatorIsOn(newOpenedTabRowList[0]);
             await openedTabsHelper.assertTabPinIndicatorIsOff(newOpenedTabRowList[1]);
             await openedTabsHelper.assertTabPinIndicatorIsOff(newOpenedTabRowList[2]);
+
+            const tab1 = await browserInstructionSender.getTab(0);
+            const tab2 = await browserInstructionSender.getTab(1);
+            const tab3 = await browserInstructionSender.getTab(2);
+            assert.isTrue(tab1.pinned);
+            assert.equal(tab1.url, testPage1Url);
+            assert.isFalse(tab2.pinned);
+            assert.isFalse(tab3.pinned);
         });
 
         it('Should show pinned opened tabs with pin indicator enabled at startup', async () => {
@@ -227,8 +247,10 @@ describe('Pinned tabs', () => {
         });
 
         it('A click on a followed tab pin button should pin the associated tab', async () => {
-            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
-            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+            const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
+            const testPage2Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2);
+            await testHelper.openTab(testPage1Url);
+            await testHelper.openTab(testPage2Url);
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
             await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
@@ -240,11 +262,21 @@ describe('Pinned tabs', () => {
 
             await followedTabsHelper.assertTabPinIndicatorIsOn(followedTabRowList[0]);
             await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[1]);
+
+            const pinnedTab = await browserInstructionSender.getTab(0);
+            const unpinnedTab1 = await browserInstructionSender.getTab(1);
+            const unpinnedTab2 = await browserInstructionSender.getTab(2);
+            assert.isTrue(pinnedTab.pinned);
+            assert.equal(pinnedTab.url, testPage1Url);
+            assert.isFalse(unpinnedTab1.pinned);
+            assert.isFalse(unpinnedTab2.pinned);
         });
 
         it('A click on a followed tab unpin button should unpin the associated tab', async () => {
-            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
-            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+            const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
+            const testPage2Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2);
+            await testHelper.openTab(testPage1Url);
+            await testHelper.openTab(testPage2Url);
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
             await openedTabsHelper.clickOnPinButton(openedTabRowList[1]);
@@ -258,6 +290,14 @@ describe('Pinned tabs', () => {
 
             await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[0]);
             await followedTabsHelper.assertTabPinIndicatorIsOn(followedTabRowList[1]);
+
+            const tab1 = await browserInstructionSender.getTab(0);
+            const tab2 = await browserInstructionSender.getTab(1);
+            const tab3 = await browserInstructionSender.getTab(2);
+            assert.isTrue(tab1.pinned);
+            assert.equal(tab1.url, testPage2Url);
+            assert.isFalse(tab2.pinned);
+            assert.isFalse(tab3.pinned);
         });
 
         it('Pin indicator of a followed tab should be off when its associated tab is closed', async () => {

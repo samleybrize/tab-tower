@@ -136,6 +136,10 @@ export class OpenedTabsTestHelper {
         return this.tabsTestHelper.getTabFaviconUrl(tabRow);
     }
 
+    getCloseButton(tabRow: WebElement) {
+        return this.tabsTestHelper.getCloseButton(tabRow);
+    }
+
     getFollowButton(tabRow: WebElement) {
         return tabRow.findElement(By.css('.followButton'));
     }
@@ -208,6 +212,14 @@ export class OpenedTabsTestHelper {
 
     async assertTabPinIndicatorIsOff(tabRow: WebElement) {
         await this.tabsTestHelper.assertTabPinIndicatorIsOff(tabRow);
+    }
+
+    async assertCloseButtonIsVisible(tabRow: WebElement) {
+        await this.tabsTestHelper.assertCloseButtonIsVisible(tabRow);
+    }
+
+    async assertCloseButtonIsDisabled(tabRow: WebElement) {
+        await this.tabsTestHelper.assertCloseButtonIsDisabled(tabRow);
     }
 
     async assertFollowButtonIsVisible(tabRow: WebElement) {

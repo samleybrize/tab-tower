@@ -242,6 +242,13 @@ export class TabsTestHelper {
         assert.isFalse(isCloseButtonDisplayed, 'Tab close button is visible');
     }
 
+    async assertCloseButtonIsDisabled(tabRow: WebElement) {
+        const closeButton = await this.getCloseButton(tabRow);
+        const closeButtonClasses = ('' + await closeButton.getAttribute('class')).split(' ');
+
+        assert.include(closeButtonClasses, 'disabled');
+    }
+
     async assertLastAccessDateIsRoughlyEqualToDate(tabRow: WebElement, date: Date) {
         const lastAccessText = await this.getTabLastAccessText(tabRow);
         const lastAccessDate = new Date(lastAccessText);

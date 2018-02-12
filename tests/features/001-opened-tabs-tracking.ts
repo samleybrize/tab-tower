@@ -132,6 +132,12 @@ describe('Opened tabs tracking', () => {
         await openedTabsHelper.assertTabFaviconUrl(newOpenedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_1));
     });
 
+    it('Opened tabs with an ignored url should not be closable', async () => {
+        const openedTabRowList = await openedTabsHelper.getTabRowList();
+        await openedTabsHelper.assertCloseButtonIsVisible(openedTabRowList[0]);
+        await openedTabsHelper.assertCloseButtonIsDisabled(openedTabRowList[0]);
+    });
+
     it('A click on an opened tab should focus the associated tab', async () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 

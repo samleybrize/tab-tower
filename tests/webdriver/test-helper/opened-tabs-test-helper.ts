@@ -73,6 +73,10 @@ export class OpenedTabsTestHelper {
         await this.tabsTestHelper.clickOnUnpinButton(tabRow);
     }
 
+    async clickOnReloadButton(tabIndex: number, tabRow: WebElement) {
+        await this.tabsTestHelper.clickOnReloadButton(tabIndex, tabRow);
+    }
+
     async pinTab(tabIndex: number, row: WebElement) {
         const pinIndicator = await this.tabsTestHelper.getPinIndicator(row);
         const isOn = await this.tabsTestHelper.hasClass(pinIndicator, 'on');
@@ -264,6 +268,18 @@ export class OpenedTabsTestHelper {
 
     async assertUnpinButtonIsNotVisible(tabRow: WebElement) {
         return this.tabsTestHelper.assertUnpinButtonIsNotVisible(tabRow);
+    }
+
+    async assertReloadButtonIsVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertReloadButtonIsVisible(tabRow);
+    }
+
+    async assertReloadButtonIsDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertReloadButtonIsDisabled(tabRow);
+    }
+
+    async assertReloadButtonIsNotDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertReloadButtonIsNotDisabled(tabRow);
     }
 
     async assertFollowButtonIsDisabled(tabRow: WebElement) {

@@ -57,6 +57,10 @@ export class TabsTestHelper {
         return tabRow.findElement(By.css('.unpinButton'));
     }
 
+    getReloadButton(tabRow: WebElement) {
+        return tabRow.findElement(By.css('.reloadButton'));
+    }
+
     getCloseButton(tabRow: WebElement) {
         return tabRow.findElement(By.css('.closeButton'));
     }
@@ -104,6 +108,18 @@ export class TabsTestHelper {
         await unpinButton.click();
         await this.driver.wait(async () => {
             return await this.hasClass(pinIndicator, 'off');
+        }, 3000);
+    }
+
+    async clickOnReloadButton(tabIndex: number, tabRow: WebElement) {
+        const reloadButton = this.getReloadButton(tabRow);
+
+        await this.clickOnMoreButton(tabRow);
+        await reloadButton.click();
+        await this.driver.wait(async () => {
+            const tab = await this.browserInstructionSender.getTab(tabIndex);
+
+            return 'complete' == tab.status;
         }, 3000);
     }
 
@@ -228,6 +244,26 @@ export class TabsTestHelper {
         await this.clickOnMoreButton(tabRow);
         const isUnpinButtonDisplayed = await this.getUnpinButton(tabRow).isDisplayed();
         assert.isFalse(isUnpinButtonDisplayed, 'Tab unpin button is visible');
+    }
+
+    async assertReloadButtonIsVisible(tabRow: WebElement) {
+        await this.clickOnMoreButton(tabRow);
+        const isReloadButtonDisplayed = await this.getReloadButton(tabRow).isDisplayed();
+        assert.isTrue(isReloadButtonDisplayed, 'Tab reload button is not visible');
+    }
+
+    async assertReloadButtonIsDisabled(tabRow: WebElement) {
+        const reloadButton = await this.getReloadButton(tabRow);
+        const reloadButtonClasses = ('' + await reloadButton.getAttribute('class')).split(' ');
+
+        assert.include(reloadButtonClasses, 'disabled');
+    }
+
+    async assertReloadButtonIsNotDisabled(tabRow: WebElement) {
+        const reloadButton = await this.getReloadButton(tabRow);
+        const reloadButtonClasses = ('' + await reloadButton.getAttribute('class')).split(' ');
+
+        assert.notInclude(reloadButtonClasses, 'disabled');
     }
 
     async assertCloseButtonIsVisible(tabRow: WebElement) {

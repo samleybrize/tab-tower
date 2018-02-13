@@ -194,6 +194,10 @@ export class FollowedTabsTestHelper {
         await this.tabsTestHelper.clickOnUnpinButton(tabRow);
     }
 
+    async clickOnReloadButton(tabIndex: number, tabRow: WebElement) {
+        await this.tabsTestHelper.clickOnReloadButton(tabIndex, tabRow);
+    }
+
     async assertNumberOfTabs(expectedNumberOfTabs: number) {
         const followedTabRowList = await this.getTabRowList();
         await this.tabsTestHelper.assertNumberOfTabs(followedTabRowList, expectedNumberOfTabs);
@@ -291,6 +295,18 @@ export class FollowedTabsTestHelper {
 
     async assertUnpinButtonIsNotVisible(tabRow: WebElement) {
         return this.tabsTestHelper.assertUnpinButtonIsNotVisible(tabRow);
+    }
+
+    async assertReloadButtonIsVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertReloadButtonIsVisible(tabRow);
+    }
+
+    async assertReloadButtonIsDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertReloadButtonIsDisabled(tabRow);
+    }
+
+    async assertReloadButtonIsNotDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertReloadButtonIsNotDisabled(tabRow);
     }
 
     async assertCloseButtonIsVisible(tabRow: WebElement) {

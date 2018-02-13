@@ -15,7 +15,7 @@ let testHelper: TestHelper;
 let followedTabsHelper: FollowedTabsTestHelper;
 let openedTabsHelper: OpenedTabsTestHelper;
 
-describe('Tab reloading', () => {
+describe('Tab muting', () => {
     before(async () => {
         testHelper = new TestHelper();
         followedTabsHelper = testHelper.getFollowedTabsHelper();

@@ -218,6 +218,14 @@ export class OpenedTabsTestHelper {
         await this.tabsTestHelper.assertTabPinIndicatorIsOff(tabRow);
     }
 
+    async assertTabAudibleIndicatorIsOn(tabRow: WebElement) {
+        await this.tabsTestHelper.assertTabAudibleIndicatorIsOn(tabRow);
+    }
+
+    async assertTabAudibleIndicatorIsOff(tabRow: WebElement) {
+        await this.tabsTestHelper.assertTabAudibleIndicatorIsOff(tabRow);
+    }
+
     async assertCloseButtonIsVisible(tabRow: WebElement) {
         await this.tabsTestHelper.assertCloseButtonIsVisible(tabRow);
     }

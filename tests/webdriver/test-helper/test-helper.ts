@@ -267,6 +267,34 @@ export class TestHelper {
         await this.screenshotTaker.takeViewport(screenshotIdentifier, this.driver);
     }
 
+    async pauseAudioElement(tabIndex: number, quotelessCssSelector: string) {
+        const currentActiveTab = await this.browserInstructionSender.getActiveTab();
+
+        await this.switchToWindowHandle(1);
+        await this.driver.executeScript(`document.querySelector('${quotelessCssSelector}').pause();`);
+        await this.driver.wait(async () => {
+            const tab = await this.browserInstructionSender.getTab(tabIndex);
+
+            return !tab.audible;
+        }, 10000);
+
+        await this.switchToWindowHandle(currentActiveTab.index);
+    }
+
+    async playAudioElement(tabIndex: number, quotelessCssSelector: string) {
+        const currentActiveTab = await this.browserInstructionSender.getActiveTab();
+
+        await this.switchToWindowHandle(1);
+        await this.driver.executeScript(`document.querySelector('${quotelessCssSelector}').play();`);
+        await this.driver.wait(async () => {
+            const tab = await this.browserInstructionSender.getTab(tabIndex);
+
+            return tab.audible;
+        }, 10000);
+
+        await this.switchToWindowHandle(currentActiveTab.index);
+    }
+
     async showOpenedTabsList() {
         const openedTabListElement = this.driver.findElement(By.css('#openedTabList'));
         await this.driver.findElement(By.css('#header .openedTabs')).click();

@@ -1,6 +1,7 @@
 import { assert } from 'chai';
 import { WebDriver } from 'selenium-webdriver';
 
+import { sleep } from '../../src/typescript/utils/sleep';
 import { BrowserInstructionSender } from '../utils/browser-instruction-sender';
 import { ExtensionUrl } from '../utils/extension-url';
 import { FirefoxConfig } from '../webdriver/firefox-config';
@@ -34,68 +35,188 @@ describe('Audible tabs', () => {
     });
 
     describe('Opened tabs tracking', () => {
-        xit('Opened tabs audible indicator should be on when its associated tab is playing a sound', async () => {
-            // TODO
+        it('Opened tabs audible indicator should be on when its associated tab is playing a sound', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITH_SOUND));
+
+            await testHelper.focusTab(1);
+            await testHelper.focusTab(0);
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabAudibleIndicatorIsOff(openedTabRowList[0]);
+            await openedTabsHelper.assertTabAudibleIndicatorIsOn(openedTabRowList[1]);
         });
 
-        xit('Opened tabs audible indicator should be off when its associated tab is not playing a sound anymore', async () => {
-            // TODO
+        it('Opened tabs audible indicator should be off when its associated tab is not playing a sound anymore', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITH_SOUND));
+
+            await testHelper.focusTab(1);
+            await testHelper.focusTab(0);
+
+            await testHelper.pauseAudioElement(1, '#audio');
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabAudibleIndicatorIsOff(openedTabRowList[0]);
+            await openedTabsHelper.assertTabAudibleIndicatorIsOff(openedTabRowList[1]);
         });
 
-        xit('Opened tabs audible indicator should be on when its associated tab is playing a sound again', async () => {
-            // TODO
+        it('Opened tabs audible indicator should be on when its associated tab is playing a sound again', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITH_SOUND));
+
+            await testHelper.focusTab(1);
+            await testHelper.focusTab(0);
+
+            await testHelper.pauseAudioElement(1, '#audio');
+            await testHelper.playAudioElement(1, '#audio');
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabAudibleIndicatorIsOff(openedTabRowList[0]);
+            await openedTabsHelper.assertTabAudibleIndicatorIsOn(openedTabRowList[1]);
         });
 
-        xit('Mute button should be visible on the opened tabs list when unmuted', async () => {
-            // TODO
-        });
+        it('Should show audible opened tabs with audible indicator enabled at startup', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITH_SOUND));
 
-        xit('Unmute button should be visible on the opened tabs list when muted', async () => {
-            // TODO
-        });
+            await testHelper.focusTab(1);
+            await testHelper.focusTab(0);
 
-        xit('Should show audible opened tabs with audible indicator enabled at startup', async () => {
-            // TODO
+            await testHelper.reloadExtension();
+            await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.UI), 0);
+            await testHelper.switchToWindowHandle(0);
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabAudibleIndicatorIsOff(openedTabRowList[0]);
+            await openedTabsHelper.assertTabAudibleIndicatorIsOn(openedTabRowList[1]);
         });
     });
 
     describe('Tab following', () => {
-        xit('Followed tabs audible indicator should be on when its associated tab is playing a sound', async () => {
-            // TODO
+        it('Followed tabs audible indicator should be on when its associated tab is playing a sound', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITH_SOUND));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
+
+            await testHelper.focusTab(1);
+            await testHelper.focusTab(0);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertTabAudibleIndicatorIsOn(followedTabRowList[0]);
+            await followedTabsHelper.assertTabAudibleIndicatorIsOff(followedTabRowList[1]);
         });
 
-        xit('Followed tabs audible indicator should be off when its associated tab is not playing a sound anymore', async () => {
-            // TODO
+        it('Followed tabs audible indicator should be off when its associated tab is not playing a sound anymore', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITH_SOUND));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
+
+            await testHelper.focusTab(1);
+            await testHelper.focusTab(0);
+
+            await testHelper.showFollowedTabsList();
+            await testHelper.pauseAudioElement(1, '#audio');
+
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertTabAudibleIndicatorIsOff(followedTabRowList[0]);
+            await followedTabsHelper.assertTabAudibleIndicatorIsOff(followedTabRowList[1]);
         });
 
-        xit('Followed tabs audible indicator should be on when its associated tab is playing a sound again', async () => {
-            // TODO
+        it('Followed tabs audible indicator should be on when its associated tab is playing a sound again', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITH_SOUND));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
+
+            await testHelper.focusTab(1);
+            await testHelper.focusTab(0);
+
+            await testHelper.showFollowedTabsList();
+            await testHelper.pauseAudioElement(1, '#audio');
+            await testHelper.playAudioElement(1, '#audio');
+
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertTabAudibleIndicatorIsOn(followedTabRowList[0]);
+            await followedTabsHelper.assertTabAudibleIndicatorIsOff(followedTabRowList[1]);
         });
 
-        xit('Followed tabs audible indicator should be off when its associated tab is closed', async () => {
-            // TODO
+        it('Followed tabs audible indicator should be off when its associated tab is closed', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITH_SOUND));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
+
+            await testHelper.focusTab(1);
+            await testHelper.focusTab(0);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabCloseButton(followedTabRowList[0]);
+
+            await followedTabsHelper.assertTabAudibleIndicatorIsOff(followedTabRowList[0]);
+            await followedTabsHelper.assertTabAudibleIndicatorIsOff(followedTabRowList[1]);
         });
 
-        xit('Mute button should be visible on the followed tabs list when its associated opened tab is unmuted', async () => {
-            // TODO
-        });
+        it('Should show followed tabs associated to audible opened tabs with audible indicator enabled at startup', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITH_SOUND));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
-        xit('Unmute button should be visible on the followed tabs list when its associated opened tab is muted', async () => {
-            // TODO
-        });
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
 
-        xit('Should show followed tabs associated to audible opened tabs with audible indicator enabled at startup', async () => {
-            // TODO
+            await testHelper.focusTab(1);
+            await testHelper.focusTab(0);
+
+            await testHelper.reloadExtension();
+            await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.UI), 0);
+            await testHelper.switchToWindowHandle(0);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertTabAudibleIndicatorIsOn(followedTabRowList[0]);
+            await followedTabsHelper.assertTabAudibleIndicatorIsOff(followedTabRowList[1]);
         });
     });
 
     describe('Browser recently closed tabs', () => {
-        xit('Should update associated opened tab audible indicator when a recently closed tab is restored from the browser', async () => {
-            // TODO
+        it('Should update associated opened tab audible indicator when a recently closed tab is restored from the browser', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITH_SOUND));
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.restoreRecentlyClosedTab(0);
+            await testHelper.focusTab(0);
+
+            const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabAudibleIndicatorIsOff(newOpenedTabRowList[0]);
+            await openedTabsHelper.assertTabAudibleIndicatorIsOn(newOpenedTabRowList[1]);
         });
 
-        xit('Should update associated followed tab audible indicator when a recently closed tab is restored from the browser', async () => {
-            // TODO
+        it('Should update associated followed tab audible indicator when a recently closed tab is restored from the browser', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITH_SOUND));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await testHelper.restoreRecentlyClosedTab(0);
+            await testHelper.focusTab(0);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertTabAudibleIndicatorIsOn(followedTabRowList[0]);
+            await followedTabsHelper.assertTabAudibleIndicatorIsOff(followedTabRowList[1]);
         });
     });
 });

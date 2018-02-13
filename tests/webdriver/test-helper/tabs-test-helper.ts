@@ -45,6 +45,10 @@ export class TabsTestHelper {
         return tabRow.findElement(By.css('.pinIndicator'));
     }
 
+    getAudibleIndicator(tabRow: WebElement) {
+        return tabRow.findElement(By.css('.audibleIndicator'));
+    }
+
     getUnfollowButton(tabRow: WebElement) {
         return tabRow.findElement(By.css('.unfollowButton'));
     }
@@ -194,6 +198,16 @@ export class TabsTestHelper {
     async assertTabPinIndicatorIsOff(tabRow: WebElement) {
         const pinIndicator = this.getPinIndicator(tabRow);
         await this.assertIndicatorIsOff(pinIndicator, 'Tab pin');
+    }
+
+    async assertTabAudibleIndicatorIsOn(tabRow: WebElement) {
+        const audibleIndicator = this.getAudibleIndicator(tabRow);
+        await this.assertIndicatorIsOn(audibleIndicator, 'Tab audible');
+    }
+
+    async assertTabAudibleIndicatorIsOff(tabRow: WebElement) {
+        const audibleIndicator = this.getAudibleIndicator(tabRow);
+        await this.assertIndicatorIsOff(audibleIndicator, 'Tab audible');
     }
 
     async assertUnfollowButtonIsVisible(tabRow: WebElement) {

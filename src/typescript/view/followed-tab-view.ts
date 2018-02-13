@@ -736,6 +736,7 @@ export class FollowedTabView {
             this.updateTabReaderModeState(followedTabRow, event.tabOpenState.isInReaderMode);
             this.updateTabTitle(followedTabRow, event.tabOpenState.title);
             this.updateTabUrl(followedTabRow, event.tabOpenState.url);
+            this.updateTabAudibleIndicator(followedTabRow, event.tabOpenState.isAudible);
             this.updateTabLastAccess(followedTabRow, event.tabOpenState.lastAccess);
             followedTabRow.removeAttribute('data-is-opening-tab');
         }

@@ -12,4 +12,5 @@ export class ExtensionUrl {
     static readonly TEST_PAGE_WITHOUT_FAVICON = '/tests/resources/test-page-without-favicon.html';
     static readonly TEST_PAGE_1 = '/tests/resources/test-page1.html';
     static readonly TEST_PAGE_2 = '/tests/resources/test-page2.html';
+    static readonly TEST_PAGE_WITH_SOUND = '/tests/resources/test-with-sound.html';
 }

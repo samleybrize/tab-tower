@@ -259,6 +259,14 @@ export class FollowedTabsTestHelper {
         await this.tabsTestHelper.assertTabPinIndicatorIsOff(tabRow);
     }
 
+    async assertTabAudibleIndicatorIsOn(tabRow: WebElement) {
+        await this.tabsTestHelper.assertTabAudibleIndicatorIsOn(tabRow);
+    }
+
+    async assertTabAudibleIndicatorIsOff(tabRow: WebElement) {
+        await this.tabsTestHelper.assertTabAudibleIndicatorIsOff(tabRow);
+    }
+
     async assertTabOpenIndicatorIsOn(tabRow: WebElement) {
         const openIndicator = this.getOpenIndicator(tabRow);
         await this.tabsTestHelper.assertIndicatorIsOn(openIndicator, 'Tab open');

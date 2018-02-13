@@ -38,6 +38,14 @@ describe('Tab muting', () => {
             // TODO
         });
 
+        xit('Unmute button should be visible on the opened tabs list when muted', async () => {
+            // TODO
+        });
+
+        xit('Mute button should be visible on the opened tabs list when unmuted', async () => {
+            // TODO
+        });
+
         xit('Opened tabs audio mute indicator should be on when its associated tab is muted from the browser', async () => {
             // TODO
         });
@@ -61,6 +69,14 @@ describe('Tab muting', () => {
 
     describe('Tab following', () => {
         xit('Followed tabs should be mutable', async () => {
+            // TODO
+        });
+
+        xit('Unmute button should be visible on the followed tabs list when its associated opened tab is muted', async () => {
+            // TODO
+        });
+
+        xit('Mute button should be visible on the followed tabs list when its associated opened tab is unmuted', async () => {
             // TODO
         });
 

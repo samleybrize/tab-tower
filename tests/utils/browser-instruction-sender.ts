@@ -124,6 +124,14 @@ export class BrowserInstructionSender {
         return this.send({action: 'unpin-tab', data: {tabIndex}});
     }
 
+    async muteTab(tabIndex: number) {
+        return this.send({action: 'mute-tab', data: {tabIndex}});
+    }
+
+    async unmuteTab(tabIndex: number) {
+        return this.send({action: 'unmute-tab', data: {tabIndex}});
+    }
+
     async setFollowedTabReaderModeStatusAsDisabled(followId: string) {
         return this.send({action: 'set-followed-tab-reader-mode-status-as-disabled', data: {followId}});
     }

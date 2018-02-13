@@ -11,5 +11,6 @@ export interface TabPersister {
     setTitle(followId: string, title: string): Promise<void>;
     setUrl(followId: string, url: string): Promise<void>;
     setReaderMode(followId: string, readerMode: boolean): Promise<void>;
+    setAudioMuteState(followId: string, mutedState: boolean): Promise<void>;
     remove(followId: string): Promise<void>;
 }

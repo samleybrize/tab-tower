@@ -2,6 +2,7 @@ import { CommandBus } from '../../bus/command-bus';
 import { QueryBus } from '../../bus/query-bus';
 import { AssociateOpenedTabToFollowedTab } from '../command/associate-opened-tab-to-followed-tab';
 import { OpenedTabAssociatedToFollowedTab } from '../event/opened-tab-associated-to-followed-tab';
+import { OpenedTabAudioMuteStateUpdated } from '../event/opened-tab-audio-mute-state-updated';
 import { OpenedTabFaviconUrlUpdated } from '../event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from '../event/opened-tab-focused';
 import { OpenedTabReaderModeStateUpdated } from '../event/opened-tab-reader-mode-state-updated';
@@ -79,6 +80,18 @@ export class FollowedTabUpdater {
 
         if (followId) {
             await this.tabPersister.setReaderMode(followId, event.tabOpenState.isInReaderMode);
+        }
+    }
+
+    async onOpenedTabAudioMuteStateUpdate(event: OpenedTabAudioMuteStateUpdated): Promise<void> {
+        if (event.tabOpenState.isPrivileged) {
+            return;
+        }
+
+        const followId = await this.queryBus.query(new GetFollowIdAssociatedToOpenId(event.tabOpenState.id));
+
+        if (followId) {
+            await this.tabPersister.setAudioMuteState(followId, event.tabOpenState.isAudioMuted);
         }
     }
 

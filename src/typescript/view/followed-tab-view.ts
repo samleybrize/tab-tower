@@ -145,7 +145,7 @@ export class FollowedTabView {
         this.updateTabOpenState(row, this.isTabOpened(tab), tabOpenId);
         this.updateTabReaderModeState(row, tab.followState.isInReaderMode);
         this.updateTabAudibleIndicator(row, tab.openState ? tab.openState.isAudible : false);
-        this.updateTabAudioMuteState(row, tab.openState ? tab.openState.isAudioMuted : false);
+        this.updateTabAudioMuteState(row, tab.followState.isAudioMuted);
         this.updateTabPinState(row, tab.openState ? tab.openState.isPinned : false);
         this.updateTabTitle(row, tab.followState.title);
         this.updateTabUrl(row, tab.followState.url);
@@ -417,6 +417,8 @@ export class FollowedTabView {
         const duplicateButton = row.querySelector('.duplicateButton');
         const reloadButton = row.querySelector('.reloadButton');
         const pinButton = row.querySelector('.pinButton');
+        const muteButton = row.querySelector('.muteButton');
+        const unmuteButton = row.querySelector('.unmuteButton');
         this.updateOnOffIndicator(row, 'openIndicator', isOpened);
 
         if (isOpened) {
@@ -424,12 +426,16 @@ export class FollowedTabView {
             duplicateButton.classList.remove('disabled');
             reloadButton.classList.remove('disabled');
             pinButton.classList.remove('disabled');
+            muteButton.classList.remove('disabled');
+            unmuteButton.classList.remove('disabled');
             titleCell.setAttribute('data-tooltip', 'Go to tab');
         } else {
+            closeButton.classList.add('transparent');
             duplicateButton.classList.add('disabled');
             reloadButton.classList.add('disabled');
             pinButton.classList.add('disabled');
-            closeButton.classList.add('transparent');
+            muteButton.classList.add('disabled');
+            unmuteButton.classList.add('disabled');
             titleCell.setAttribute('data-tooltip', 'Open tab');
         }
 

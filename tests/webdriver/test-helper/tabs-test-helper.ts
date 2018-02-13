@@ -45,6 +45,10 @@ export class TabsTestHelper {
         return tabRow.findElement(By.css('.pinIndicator'));
     }
 
+    getMuteIndicator(tabRow: WebElement) {
+        return tabRow.findElement(By.css('.muteIndicator'));
+    }
+
     getAudibleIndicator(tabRow: WebElement) {
         return tabRow.findElement(By.css('.audibleIndicator'));
     }
@@ -59,6 +63,14 @@ export class TabsTestHelper {
 
     getUnpinButton(tabRow: WebElement) {
         return tabRow.findElement(By.css('.unpinButton'));
+    }
+
+    getMuteButton(tabRow: WebElement) {
+        return tabRow.findElement(By.css('.muteButton'));
+    }
+
+    getUnmuteButton(tabRow: WebElement) {
+        return tabRow.findElement(By.css('.unmuteButton'));
     }
 
     getReloadButton(tabRow: WebElement) {
@@ -113,6 +125,38 @@ export class TabsTestHelper {
         await this.driver.wait(async () => {
             return await this.hasClass(pinIndicator, 'off');
         }, 3000);
+    }
+
+    async clickOnMuteButton(tabRow: WebElement, waitMuteIndicatorStateChange: boolean) {
+        const muteButton = this.getMuteButton(tabRow);
+        const muteIndicator = this.getMuteIndicator(tabRow);
+
+        await this.clickOnMoreButton(tabRow);
+        await muteButton.click();
+
+        if (waitMuteIndicatorStateChange) {
+            await this.driver.wait(async () => {
+                return await this.hasClass(muteIndicator, 'on');
+            }, 3000);
+        } else {
+            await sleep(500);
+        }
+    }
+
+    async clickOnUnmuteButton(tabRow: WebElement, waitMuteIndicatorStateChange: boolean) {
+        const unmuteButton = this.getUnmuteButton(tabRow);
+        const muteIndicator = this.getMuteIndicator(tabRow);
+
+        await this.clickOnMoreButton(tabRow);
+        await unmuteButton.click();
+
+        if (waitMuteIndicatorStateChange) {
+            await this.driver.wait(async () => {
+                return await this.hasClass(muteIndicator, 'off');
+            }, 3000);
+        } else {
+            await sleep(500);
+        }
     }
 
     async clickOnReloadButton(tabIndex: number, tabRow: WebElement) {
@@ -200,6 +244,16 @@ export class TabsTestHelper {
         await this.assertIndicatorIsOff(pinIndicator, 'Tab pin');
     }
 
+    async assertTabMuteIndicatorIsOn(tabRow: WebElement) {
+        const muteIndicator = this.getMuteIndicator(tabRow);
+        await this.assertIndicatorIsOn(muteIndicator, 'Tab mute');
+    }
+
+    async assertTabMuteIndicatorIsOff(tabRow: WebElement) {
+        const muteIndicator = this.getMuteIndicator(tabRow);
+        await this.assertIndicatorIsOff(muteIndicator, 'Tab mute');
+    }
+
     async assertTabAudibleIndicatorIsOn(tabRow: WebElement) {
         const audibleIndicator = this.getAudibleIndicator(tabRow);
         await this.assertIndicatorIsOn(audibleIndicator, 'Tab audible');
@@ -258,6 +312,58 @@ export class TabsTestHelper {
         await this.clickOnMoreButton(tabRow);
         const isUnpinButtonDisplayed = await this.getUnpinButton(tabRow).isDisplayed();
         assert.isFalse(isUnpinButtonDisplayed, 'Tab unpin button is visible');
+    }
+
+    async assertMuteButtonIsVisible(tabRow: WebElement) {
+        await this.clickOnMoreButton(tabRow);
+        const isMuteButtonDisplayed = await this.getMuteButton(tabRow).isDisplayed();
+        assert.isTrue(isMuteButtonDisplayed, 'Tab mute button is not visible');
+    }
+
+    async assertMuteButtonIsNotVisible(tabRow: WebElement) {
+        await this.clickOnMoreButton(tabRow);
+        const isMuteButtonDisplayed = await this.getMuteButton(tabRow).isDisplayed();
+        assert.isFalse(isMuteButtonDisplayed, 'Tab mute button is visible');
+    }
+
+    async assertMuteButtonIsDisabled(tabRow: WebElement) {
+        const muteButton = await this.getMuteButton(tabRow);
+        const muteButtonClasses = ('' + await muteButton.getAttribute('class')).split(' ');
+
+        assert.include(muteButtonClasses, 'disabled');
+    }
+
+    async assertMuteButtonIsNotDisabled(tabRow: WebElement) {
+        const muteButton = await this.getMuteButton(tabRow);
+        const muteButtonClasses = ('' + await muteButton.getAttribute('class')).split(' ');
+
+        assert.notInclude(muteButtonClasses, 'disabled');
+    }
+
+    async assertUnmuteButtonIsVisible(tabRow: WebElement) {
+        await this.clickOnMoreButton(tabRow);
+        const isUnmuteButtonDisplayed = await this.getUnmuteButton(tabRow).isDisplayed();
+        assert.isTrue(isUnmuteButtonDisplayed, 'Tab unmute button is not visible');
+    }
+
+    async assertUnmuteButtonIsNotVisible(tabRow: WebElement) {
+        await this.clickOnMoreButton(tabRow);
+        const isUnmuteButtonDisplayed = await this.getUnmuteButton(tabRow).isDisplayed();
+        assert.isFalse(isUnmuteButtonDisplayed, 'Tab unmute button is visible');
+    }
+
+    async assertUnmuteButtonIsDisabled(tabRow: WebElement) {
+        const unmuteButton = await this.getUnmuteButton(tabRow);
+        const unmuteButtonClasses = ('' + await unmuteButton.getAttribute('class')).split(' ');
+
+        assert.include(unmuteButtonClasses, 'disabled');
+    }
+
+    async assertUnmuteButtonIsNotDisabled(tabRow: WebElement) {
+        const unmuteButton = await this.getUnmuteButton(tabRow);
+        const unmuteButtonClasses = ('' + await unmuteButton.getAttribute('class')).split(' ');
+
+        assert.notInclude(unmuteButtonClasses, 'disabled');
     }
 
     async assertReloadButtonIsVisible(tabRow: WebElement) {

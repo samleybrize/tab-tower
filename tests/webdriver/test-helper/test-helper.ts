@@ -248,6 +248,26 @@ export class TestHelper {
         await sleep(300);
     }
 
+    async muteTab(tabIndex: number) {
+        await this.browserInstructionSender.muteTab(tabIndex);
+        await this.driver.wait(async () => {
+            const tab = await this.browserInstructionSender.getTab(tabIndex);
+
+            return tab.mutedInfo.muted;
+        }, 10000);
+        await sleep(300);
+    }
+
+    async unmuteTab(tabIndex: number) {
+        await this.browserInstructionSender.unmuteTab(tabIndex);
+        await this.driver.wait(async () => {
+            const tab = await this.browserInstructionSender.getTab(tabIndex);
+
+            return !tab.mutedInfo.muted;
+        }, 10000);
+        await sleep(300);
+    }
+
     async clearRecentlyClosedTabs() {
         await this.browserInstructionSender.clearRecentlyClosedTabs();
     }

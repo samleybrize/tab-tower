@@ -184,6 +184,22 @@ export class WebStorageTabPersister implements TabPersister {
         return promise;
     }
 
+    async setAudioMuteState(followId: string, mutedState: boolean) {
+        const promise = new Promise<void>((resolve, reject) => {
+            this.actionStack.push(async () => {
+                const followState = await this.getByFollowId(followId);
+                followState.isAudioMuted = mutedState;
+
+                await this.persistImmediately(followState);
+                resolve();
+            });
+        });
+
+        this.startActionStackPlaying();
+
+        return promise;
+    }
+
     async remove(followId: string): Promise<void> {
         const promise = new Promise<void>((resolve, reject) => {
             this.actionStack.push(async () => {

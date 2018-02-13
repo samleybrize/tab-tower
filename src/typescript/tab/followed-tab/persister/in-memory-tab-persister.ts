@@ -67,6 +67,7 @@ export class InMemoryTabPersister implements TabPersister {
         destination.id = source.id;
         destination.isIncognito = source.isIncognito;
         destination.isInReaderMode = source.isInReaderMode;
+        destination.isAudioMuted = source.isAudioMuted;
         destination.openLongLivedId = source.openLongLivedId;
         destination.title = source.title;
         destination.url = source.url;
@@ -210,6 +211,24 @@ export class InMemoryTabPersister implements TabPersister {
 
         if (this.decoratedTabPersister) {
             this.decoratedTabPersister.setReaderMode(followId, readerMode);
+        }
+    }
+
+    async setAudioMuteState(followId: string, mutedState: boolean) {
+        if (!this.isRetrievedFromDecorated) {
+            await this.retrieveFromDecorated();
+        }
+
+        const existingTabFollowState = this.followStateMap.get(followId);
+
+        if (null == existingTabFollowState) {
+            return;
+        }
+
+        existingTabFollowState.isAudioMuted = mutedState;
+
+        if (this.decoratedTabPersister) {
+            this.decoratedTabPersister.setAudioMuteState(followId, mutedState);
         }
     }
 

@@ -3,6 +3,7 @@ export class TabFollowState {
     title: string = null;
     isIncognito: boolean = false;
     isInReaderMode: boolean = false;
+    isAudioMuted: boolean = false;
     url: string = null;
     faviconUrl: string = null;
     openLongLivedId: string = null;
@@ -14,6 +15,7 @@ export class TabFollowState {
         followState.title = sourceObject.title;
         followState.isIncognito = sourceObject.isIncognito;
         followState.isInReaderMode = sourceObject.isInReaderMode;
+        followState.isAudioMuted = sourceObject.isAudioMuted;
         followState.url = sourceObject.url;
         followState.faviconUrl = sourceObject.faviconUrl;
         followState.openLongLivedId = sourceObject.openLongLivedId;

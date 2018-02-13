@@ -73,6 +73,22 @@ export class OpenedTabsTestHelper {
         await this.tabsTestHelper.clickOnUnpinButton(tabRow);
     }
 
+    async clickOnMuteButton(tabRow: WebElement, waitMuteIndicatorStateChange?: boolean) {
+        if (undefined === waitMuteIndicatorStateChange) {
+            waitMuteIndicatorStateChange = true;
+        }
+
+        await this.tabsTestHelper.clickOnMuteButton(tabRow, waitMuteIndicatorStateChange);
+    }
+
+    async clickOnUnmuteButton(tabRow: WebElement, waitMuteIndicatorStateChange?: boolean) {
+        if (undefined === waitMuteIndicatorStateChange) {
+            waitMuteIndicatorStateChange = true;
+        }
+
+        await this.tabsTestHelper.clickOnUnmuteButton(tabRow, waitMuteIndicatorStateChange);
+    }
+
     async clickOnReloadButton(tabIndex: number, tabRow: WebElement) {
         await this.tabsTestHelper.clickOnReloadButton(tabIndex, tabRow);
     }
@@ -218,6 +234,14 @@ export class OpenedTabsTestHelper {
         await this.tabsTestHelper.assertTabPinIndicatorIsOff(tabRow);
     }
 
+    async assertTabMuteIndicatorIsOn(tabRow: WebElement) {
+        await this.tabsTestHelper.assertTabMuteIndicatorIsOn(tabRow);
+    }
+
+    async assertTabMuteIndicatorIsOff(tabRow: WebElement) {
+        await this.tabsTestHelper.assertTabMuteIndicatorIsOff(tabRow);
+    }
+
     async assertTabAudibleIndicatorIsOn(tabRow: WebElement) {
         await this.tabsTestHelper.assertTabAudibleIndicatorIsOn(tabRow);
     }
@@ -276,6 +300,30 @@ export class OpenedTabsTestHelper {
 
     async assertUnpinButtonIsNotVisible(tabRow: WebElement) {
         return this.tabsTestHelper.assertUnpinButtonIsNotVisible(tabRow);
+    }
+
+    async assertMuteButtonIsVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertMuteButtonIsVisible(tabRow);
+    }
+
+    async assertMuteButtonIsNotVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertMuteButtonIsNotVisible(tabRow);
+    }
+
+    async assertMuteButtonIsDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertMuteButtonIsDisabled(tabRow);
+    }
+
+    async assertMuteButtonIsNotDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertMuteButtonIsNotDisabled(tabRow);
+    }
+
+    async assertUnmuteButtonIsVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertUnmuteButtonIsVisible(tabRow);
+    }
+
+    async assertUnmuteButtonIsNotVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertUnmuteButtonIsNotVisible(tabRow);
     }
 
     async assertReloadButtonIsVisible(tabRow: WebElement) {

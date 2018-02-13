@@ -58,7 +58,17 @@ export class TabOpener {
             createTabOptions.openInReaderMode = followState.isInReaderMode;
         }
 
-        return await browser.tabs.create(createTabOptions);
+        const tab = await browser.tabs.create(createTabOptions);
+
+        if (followState.isAudioMuted) {
+            await browser.tabs.update(tab.id, {muted: true});
+            tab.mutedInfo = {
+                muted: true,
+                reason: null,
+            };
+        }
+
+        return tab;
     }
 
     private async associateNewTabToFollowedTab(restoreTabCommand: RestoreFollowedTab, openedTab: browser.tabs.Tab) {

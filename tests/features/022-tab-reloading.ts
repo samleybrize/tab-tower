@@ -38,10 +38,10 @@ describe('Tab reloading', () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.assertReloadButtonIsVisible(openedTabRowList[0]);
-            await openedTabsHelper.assertReloadButtonIsNotDisabled(openedTabRowList[0]);
-            await openedTabsHelper.assertReloadButtonIsVisible(openedTabRowList[1]);
-            await openedTabsHelper.assertReloadButtonIsNotDisabled(openedTabRowList[1]);
+            await openedTabsHelper.assertTabReloadButtonIsVisible(openedTabRowList[0]);
+            await openedTabsHelper.assertTabReloadButtonIsNotDisabled(openedTabRowList[0]);
+            await openedTabsHelper.assertTabReloadButtonIsVisible(openedTabRowList[1]);
+            await openedTabsHelper.assertTabReloadButtonIsNotDisabled(openedTabRowList[1]);
         });
 
         it('Associated tab should be reloaded when clicked on the reload button', async () => {
@@ -52,7 +52,7 @@ describe('Tab reloading', () => {
             await testHelper.switchToWindowHandle(0);
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.clickOnReloadButton(1, openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabReloadButton(1, openedTabRowList[1]);
 
             await testHelper.switchToWindowHandle(1);
             const pageNewRandomNumber = await driver.findElement(By.css('#id')).getText();
@@ -65,12 +65,12 @@ describe('Tab reloading', () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
             await testHelper.showFollowedTabsList();
             const followedTabRowList = await followedTabsHelper.getTabRowList();
-            await followedTabsHelper.assertReloadButtonIsVisible(followedTabRowList[0]);
-            await followedTabsHelper.assertReloadButtonIsNotDisabled(followedTabRowList[0]);
+            await followedTabsHelper.assertTabReloadButtonIsVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertTabReloadButtonIsNotDisabled(followedTabRowList[0]);
         });
 
         it('Associated opened tab should be reloaded when clicked on the reload button', async () => {
@@ -81,11 +81,11 @@ describe('Tab reloading', () => {
             await testHelper.switchToWindowHandle(0);
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
             await testHelper.showFollowedTabsList();
             const followedTabRowList = await followedTabsHelper.getTabRowList();
-            await followedTabsHelper.clickOnReloadButton(1, followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabReloadButton(1, followedTabRowList[0]);
 
             await testHelper.switchToWindowHandle(1);
             const pageNewRandomNumber = await driver.findElement(By.css('#id')).getText();
@@ -96,13 +96,13 @@ describe('Tab reloading', () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
             await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
 
             await testHelper.showFollowedTabsList();
             const followedTabRowList = await followedTabsHelper.getTabRowList();
-            await followedTabsHelper.assertReloadButtonIsVisible(followedTabRowList[0]);
-            await followedTabsHelper.assertReloadButtonIsDisabled(followedTabRowList[0]);
+            await followedTabsHelper.assertTabReloadButtonIsVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertTabReloadButtonIsDisabled(followedTabRowList[0]);
         });
     });
 });

@@ -87,15 +87,15 @@
                 opacity: 0;
             }
         }
+
+        .incognitoIndicator {
+            display: none;
+        }
     }
 
     .lastAccess {
         width: 1%;
         white-space: nowrap;
-    }
-
-    .incognitoIndicator {
-        display: none;
     }
 
     .actions {

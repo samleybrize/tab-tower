@@ -73,21 +73,21 @@ describe('Reader mode', () => {
             await testHelper.openTab(firefoxConfig.getReaderModeTestPageUrl());
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
             await testHelper.showFollowedTabsList();
             const followedTabRowList = await followedTabsHelper.getTabRowList();
             await testHelper.enableTabReaderMode(1, followedTabRowList[0]);
 
             await followedTabsHelper.assertTabReaderModeIndicatorIsOn(followedTabRowList[0]);
-            await followedTabsHelper.assertReaderModeTestPageTitle(followedTabRowList[0]);
+            await followedTabsHelper.assertTabReaderModeTestPageTitle(followedTabRowList[0]);
         });
 
         it('Reader mode status of a followed tab should be updated when disabling reader mode on its associated opened tab', async () => {
             await testHelper.openTab(firefoxConfig.getReaderModeTestPageUrl());
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
             await testHelper.enableTabReaderMode(1, openedTabRowList[1]);
 
             await testHelper.showFollowedTabsList();
@@ -95,7 +95,7 @@ describe('Reader mode', () => {
             await testHelper.disableTabReaderMode(1, followedTabRowList[0]);
 
             await followedTabsHelper.assertTabReaderModeIndicatorIsOff(followedTabRowList[0]);
-            await followedTabsHelper.assertReaderModeTestPageTitle(followedTabRowList[0]);
+            await followedTabsHelper.assertTabReaderModeTestPageTitle(followedTabRowList[0]);
         });
 
         it('A click on a followed tab with reader mode enabled that is closed should open it in reader mode', async () => {
@@ -103,8 +103,8 @@ describe('Reader mode', () => {
             await testHelper.openTab(firefoxConfig.getReaderModeTestPageUrl());
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
-            await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
 
             await testHelper.enableTabReaderMode(2, openedTabRowList[2]);
             await testHelper.closeTab(2);
@@ -123,9 +123,9 @@ describe('Reader mode', () => {
             await testHelper.openTab(firefoxConfig.getReaderModeTestPageUrl());
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
-            await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
-            await openedTabsHelper.clickOnFollowButton(openedTabRowList[3]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[3]);
             await testHelper.enableTabReaderMode(3, openedTabRowList[3]);
 
             await testHelper.closeTab(1);
@@ -140,7 +140,7 @@ describe('Reader mode', () => {
             const followedTabRowList = await followedTabsHelper.getTabRowList();
             await followedTabsHelper.assertTabReaderModeIndicatorIsOff(followedTabRowList[0]);
             await followedTabsHelper.assertTabReaderModeIndicatorIsOff(followedTabRowList[1]);
-            await followedTabsHelper.assertReaderModeTestPageTitle(followedTabRowList[2]);
+            await followedTabsHelper.assertTabReaderModeTestPageTitle(followedTabRowList[2]);
             await followedTabsHelper.assertTabReaderModeIndicatorIsOn(followedTabRowList[2]);
         });
 
@@ -149,8 +149,8 @@ describe('Reader mode', () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
-            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
             await testHelper.changeTabUrl(2, firefoxConfig.getReaderModeTestPageUrl());
             await testHelper.enableTabReaderMode(2, openedTabRowList[2]);
@@ -162,7 +162,7 @@ describe('Reader mode', () => {
 
             await testHelper.showFollowedTabsList();
             const followedTabRowList = await followedTabsHelper.getTabRowList();
-            await followedTabsHelper.assertReaderModeTestPageTitle(followedTabRowList[0]);
+            await followedTabsHelper.assertTabReaderModeTestPageTitle(followedTabRowList[0]);
             await followedTabsHelper.assertTabOpenIndicatorIsOn(followedTabRowList[0]);
             await followedTabsHelper.assertTabReaderModeIndicatorIsOn(followedTabRowList[0]);
             await followedTabsHelper.assertTabOpenIndicatorIsOn(followedTabRowList[1]);
@@ -174,7 +174,7 @@ describe('Reader mode', () => {
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
             await testHelper.enableTabReaderMode(1, openedTabRowList[1]);
-            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
             await testHelper.showFollowedTabsList();
             const followedTabRowList = await followedTabsHelper.getTabRowList();
@@ -197,7 +197,7 @@ describe('Reader mode', () => {
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
             await testHelper.enableTabReaderMode(1, openedTabRowList[1]);
-            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
             await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
 
             await testHelper.showFollowedTabsList();
@@ -212,7 +212,7 @@ describe('Reader mode', () => {
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
             await testHelper.enableTabReaderMode(1, openedTabRowList[1]);
-            await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
             await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
 
             await testHelper.showFollowedTabsList();

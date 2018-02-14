@@ -468,7 +468,7 @@ export class OpenedTabView {
         if (isOn) {
             indicatorElement.classList.remove('off');
             indicatorElement.classList.add('on');
-            indicatorElement.setAttribute('data-tooltip', 'Producing sound');
+            indicatorElement.setAttribute('data-tooltip', 'Produces sound');
             jQuery(indicatorElement).tooltip();
         } else {
             indicatorElement.classList.add('off');

@@ -31,9 +31,9 @@ describe('Tab filter', () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[3]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[3]);
     });
     after(async () => {
         await testHelper.shutdown();

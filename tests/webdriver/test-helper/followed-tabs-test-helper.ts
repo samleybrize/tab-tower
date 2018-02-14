@@ -26,7 +26,7 @@ export class FollowedTabsTestHelper {
     async clickOnTabCloseButton(tabRow: WebElement) {
         const openIndicator = this.getOpenIndicator(tabRow);
 
-        await this.tabsTestHelper.clickOnMoreButton(tabRow);
+        await this.tabsTestHelper.clickOnTabMoreButton(tabRow);
         await tabRow.findElement(By.css('.closeButton')).click();
         await this.driver.wait(async () => {
             return await this.tabsTestHelper.hasClass(openIndicator, 'off');
@@ -106,10 +106,10 @@ export class FollowedTabsTestHelper {
         return attributeValue;
     }
 
-    async clickOnUnfollowButton(tabRow: WebElement) {
+    async clickOnTabUnfollowButton(tabRow: WebElement) {
         const unfollowButton = this.getUnfollowButton(tabRow);
 
-        await this.tabsTestHelper.clickOnMoreButton(tabRow);
+        await this.tabsTestHelper.clickOnTabMoreButton(tabRow);
         await unfollowButton.click();
         await this.driver.wait(async () => {
             try {
@@ -120,6 +120,38 @@ export class FollowedTabsTestHelper {
                 }
             }
         }, 3000);
+    }
+
+    async clickOnTabPinButton(tabRow: WebElement, waitPinIndicatorStateChange?: boolean) {
+        if (undefined === waitPinIndicatorStateChange) {
+            waitPinIndicatorStateChange = true;
+        }
+
+        await this.tabsTestHelper.clickOnTabPinButton(tabRow, waitPinIndicatorStateChange);
+    }
+
+    async clickOnTabUnpinButton(tabRow: WebElement) {
+        await this.tabsTestHelper.clickOnTabUnpinButton(tabRow);
+    }
+
+    async clickOnTabMuteButton(tabRow: WebElement, waitMuteIndicatorStateChange?: boolean) {
+        if (undefined === waitMuteIndicatorStateChange) {
+            waitMuteIndicatorStateChange = true;
+        }
+
+        await this.tabsTestHelper.clickOnTabMuteButton(tabRow, waitMuteIndicatorStateChange);
+    }
+
+    async clickOnTabUnmuteButton(tabRow: WebElement, waitMuteIndicatorStateChange?: boolean) {
+        if (undefined === waitMuteIndicatorStateChange) {
+            waitMuteIndicatorStateChange = true;
+        }
+
+        await this.tabsTestHelper.clickOnTabUnmuteButton(tabRow, waitMuteIndicatorStateChange);
+    }
+
+    async clickOnTabReloadButton(tabIndex: number, tabRow: WebElement) {
+        await this.tabsTestHelper.clickOnTabReloadButton(tabIndex, tabRow);
     }
 
     async showTitleTooltip(tabRow: WebElement) {
@@ -186,38 +218,6 @@ export class FollowedTabsTestHelper {
         await sleep(500);
     }
 
-    async clickOnPinButton(tabRow: WebElement, waitPinIndicatorStateChange?: boolean) {
-        if (undefined === waitPinIndicatorStateChange) {
-            waitPinIndicatorStateChange = true;
-        }
-
-        await this.tabsTestHelper.clickOnPinButton(tabRow, waitPinIndicatorStateChange);
-    }
-
-    async clickOnUnpinButton(tabRow: WebElement) {
-        await this.tabsTestHelper.clickOnUnpinButton(tabRow);
-    }
-
-    async clickOnMuteButton(tabRow: WebElement, waitMuteIndicatorStateChange?: boolean) {
-        if (undefined === waitMuteIndicatorStateChange) {
-            waitMuteIndicatorStateChange = true;
-        }
-
-        await this.tabsTestHelper.clickOnMuteButton(tabRow, waitMuteIndicatorStateChange);
-    }
-
-    async clickOnUnmuteButton(tabRow: WebElement, waitMuteIndicatorStateChange?: boolean) {
-        if (undefined === waitMuteIndicatorStateChange) {
-            waitMuteIndicatorStateChange = true;
-        }
-
-        await this.tabsTestHelper.clickOnUnmuteButton(tabRow, waitMuteIndicatorStateChange);
-    }
-
-    async clickOnReloadButton(tabIndex: number, tabRow: WebElement) {
-        await this.tabsTestHelper.clickOnReloadButton(tabIndex, tabRow);
-    }
-
     async assertNumberOfTabs(expectedNumberOfTabs: number) {
         const followedTabRowList = await this.getTabRowList();
         await this.tabsTestHelper.assertNumberOfTabs(followedTabRowList, expectedNumberOfTabs);
@@ -265,7 +265,7 @@ export class FollowedTabsTestHelper {
         await this.tabsTestHelper.assertTabReaderModeIndicatorIsOff(tabRow);
     }
 
-    async assertReaderModeTestPageTitle(tabRow: WebElement) {
+    async assertTabReaderModeTestPageTitle(tabRow: WebElement) {
         const title = await tabRow.findElement(By.css('.title a')).getText();
         assert.match(title, /mozilla/i);
         assert.notMatch(title, /http/i);
@@ -295,6 +295,10 @@ export class FollowedTabsTestHelper {
         await this.tabsTestHelper.assertTabAudibleIndicatorIsOff(tabRow);
     }
 
+    async assertTabAudibleIndicatorTooltip(tabRow: WebElement, expectedText: string) {
+        await this.tabsTestHelper.assertTabAudibleIndicatorTooltip(tabRow, expectedText);
+    }
+
     async assertTabOpenIndicatorIsOn(tabRow: WebElement) {
         const openIndicator = this.getOpenIndicator(tabRow);
         await this.tabsTestHelper.assertIndicatorIsOn(openIndicator, 'Tab open');
@@ -305,91 +309,91 @@ export class FollowedTabsTestHelper {
         await this.tabsTestHelper.assertIndicatorIsOff(openIndicator, 'Tab open');
     }
 
-    async assertUnfollowButtonIsVisible(tabRow: WebElement) {
-        return this.tabsTestHelper.assertUnfollowButtonIsVisible(tabRow);
+    async assertTabUnfollowButtonIsVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabUnfollowButtonIsVisible(tabRow);
     }
 
-    async assertPinButtonIsVisible(tabRow: WebElement) {
-        return this.tabsTestHelper.assertPinButtonIsVisible(tabRow);
+    async assertTabPinButtonIsVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabPinButtonIsVisible(tabRow);
     }
 
-    async assertPinButtonIsNotVisible(tabRow: WebElement) {
-        return this.tabsTestHelper.assertPinButtonIsNotVisible(tabRow);
+    async assertTabPinButtonIsNotVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabPinButtonIsNotVisible(tabRow);
     }
 
-    async assertPinButtonIsDisabled(tabRow: WebElement) {
-        return this.tabsTestHelper.assertPinButtonIsDisabled(tabRow);
+    async assertTabPinButtonIsDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabPinButtonIsDisabled(tabRow);
     }
 
-    async assertPinButtonIsNotDisabled(tabRow: WebElement) {
-        return this.tabsTestHelper.assertPinButtonIsNotDisabled(tabRow);
+    async assertTabPinButtonIsNotDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabPinButtonIsNotDisabled(tabRow);
     }
 
-    async assertUnpinButtonIsVisible(tabRow: WebElement) {
-        return this.tabsTestHelper.assertUnpinButtonIsVisible(tabRow);
+    async assertTabUnpinButtonIsVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabUnpinButtonIsVisible(tabRow);
     }
 
-    async assertUnpinButtonIsNotVisible(tabRow: WebElement) {
-        return this.tabsTestHelper.assertUnpinButtonIsNotVisible(tabRow);
+    async assertTabUnpinButtonIsNotVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabUnpinButtonIsNotVisible(tabRow);
     }
 
-    async assertMuteButtonIsVisible(tabRow: WebElement) {
-        return this.tabsTestHelper.assertMuteButtonIsVisible(tabRow);
+    async assertTabMuteButtonIsVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabMuteButtonIsVisible(tabRow);
     }
 
-    async assertMuteButtonIsNotVisible(tabRow: WebElement) {
-        return this.tabsTestHelper.assertMuteButtonIsNotVisible(tabRow);
+    async assertTabMuteButtonIsNotVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabMuteButtonIsNotVisible(tabRow);
     }
 
-    async assertMuteButtonIsDisabled(tabRow: WebElement) {
-        return this.tabsTestHelper.assertMuteButtonIsDisabled(tabRow);
+    async assertTabMuteButtonIsDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabMuteButtonIsDisabled(tabRow);
     }
 
-    async assertMuteButtonIsNotDisabled(tabRow: WebElement) {
-        return this.tabsTestHelper.assertMuteButtonIsNotDisabled(tabRow);
+    async assertTabMuteButtonIsNotDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabMuteButtonIsNotDisabled(tabRow);
     }
 
-    async assertUnmuteButtonIsVisible(tabRow: WebElement) {
-        return this.tabsTestHelper.assertUnmuteButtonIsVisible(tabRow);
+    async assertTabUnmuteButtonIsVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabUnmuteButtonIsVisible(tabRow);
     }
 
-    async assertUnmuteButtonIsNotVisible(tabRow: WebElement) {
-        return this.tabsTestHelper.assertUnmuteButtonIsNotVisible(tabRow);
+    async assertTabUnmuteButtonIsNotVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabUnmuteButtonIsNotVisible(tabRow);
     }
 
-    async assertUnmuteButtonIsDisabled(tabRow: WebElement) {
-        return this.tabsTestHelper.assertUnmuteButtonIsDisabled(tabRow);
+    async assertTabUnmuteButtonIsDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabUnmuteButtonIsDisabled(tabRow);
     }
 
-    async assertUnmuteButtonIsNotDisabled(tabRow: WebElement) {
-        return this.tabsTestHelper.assertUnmuteButtonIsNotDisabled(tabRow);
+    async assertTabUnmuteButtonIsNotDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabUnmuteButtonIsNotDisabled(tabRow);
     }
 
-    async assertReloadButtonIsVisible(tabRow: WebElement) {
-        return this.tabsTestHelper.assertReloadButtonIsVisible(tabRow);
+    async assertTabReloadButtonIsVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabReloadButtonIsVisible(tabRow);
     }
 
-    async assertReloadButtonIsDisabled(tabRow: WebElement) {
-        return this.tabsTestHelper.assertReloadButtonIsDisabled(tabRow);
+    async assertTabReloadButtonIsDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabReloadButtonIsDisabled(tabRow);
     }
 
-    async assertReloadButtonIsNotDisabled(tabRow: WebElement) {
-        return this.tabsTestHelper.assertReloadButtonIsNotDisabled(tabRow);
+    async assertTabReloadButtonIsNotDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabReloadButtonIsNotDisabled(tabRow);
     }
 
-    async assertCloseButtonIsVisible(tabRow: WebElement) {
-        return this.tabsTestHelper.assertCloseButtonIsVisible(tabRow);
+    async assertTabCloseButtonIsVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabCloseButtonIsVisible(tabRow);
     }
 
-    async assertCloseButtonIsNotVisible(tabRow: WebElement) {
-        return this.tabsTestHelper.assertCloseButtonIsNotVisible(tabRow);
+    async assertTabCloseButtonIsNotVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabCloseButtonIsNotVisible(tabRow);
     }
 
-    async assertLastAccessDateIsRoughlyEqualToDate(tabRow: WebElement, date: Date) {
-        return this.tabsTestHelper.assertLastAccessDateIsRoughlyEqualToDate(tabRow, date);
+    async assertTabLastAccessDateIsRoughlyEqualToDate(tabRow: WebElement, date: Date) {
+        return this.tabsTestHelper.assertTabLastAccessDateIsRoughlyEqualToDate(tabRow, date);
     }
 
-    async assertLastAccessDateIsEqualToString(tabRow: WebElement, text: string) {
-        return this.tabsTestHelper.assertLastAccessDateIsEqualToString(tabRow, text);
+    async assertTabLastAccessDateIsEqualToString(tabRow: WebElement, text: string) {
+        return this.tabsTestHelper.assertTabLastAccessDateIsEqualToString(tabRow, text);
     }
 }

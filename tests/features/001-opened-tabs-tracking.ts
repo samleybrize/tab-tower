@@ -71,8 +71,8 @@ describe('Opened tabs tracking', () => {
         await testHelper.focusTab(1);
         await testHelper.focusTab(0);
 
-        await openedTabsHelper.assertLastAccessDateIsRoughlyEqualToDate(openedTabRowList[1], new Date());
-        await openedTabsHelper.assertLastAccessDateIsEqualToString(openedTabRowList[2], 'text 2');
+        await openedTabsHelper.assertTabLastAccessDateIsRoughlyEqualToDate(openedTabRowList[1], new Date());
+        await openedTabsHelper.assertTabLastAccessDateIsEqualToString(openedTabRowList[2], 'text 2');
     });
 
     it('Default favicon should be shown when an opened tab have not', async () => {
@@ -140,8 +140,8 @@ describe('Opened tabs tracking', () => {
 
     it('Opened tabs with an ignored url should not be closable', async () => {
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.assertCloseButtonIsVisible(openedTabRowList[0]);
-        await openedTabsHelper.assertCloseButtonIsDisabled(openedTabRowList[0]);
+        await openedTabsHelper.assertTabCloseButtonIsVisible(openedTabRowList[0]);
+        await openedTabsHelper.assertTabCloseButtonIsDisabled(openedTabRowList[0]);
     });
 
     it('A click on an opened tab should focus the associated tab', async () => {

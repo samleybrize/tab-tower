@@ -69,6 +69,7 @@ export class InMemoryTabPersister implements TabPersister {
         destination.isInReaderMode = source.isInReaderMode;
         destination.isAudioMuted = source.isAudioMuted;
         destination.openLongLivedId = source.openLongLivedId;
+        destination.openLastAccess = source.openLastAccess;
         destination.title = source.title;
         destination.url = source.url;
     }

@@ -41,8 +41,8 @@ describe('Browser recently closed tabs', () => {
         await testHelper.openTab(testPage2Url);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[2]);
@@ -72,8 +72,8 @@ describe('Browser recently closed tabs', () => {
         await testHelper.openTab(testPage2Url);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[2]);
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
@@ -100,7 +100,7 @@ describe('Browser recently closed tabs', () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
 
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[2]);
@@ -118,8 +118,8 @@ describe('Browser recently closed tabs', () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
 
         await testHelper.switchToWindowHandle(2);
         await driver.get('about:config');
@@ -144,7 +144,7 @@ describe('Browser recently closed tabs', () => {
         await testHelper.openTab(testPage2Url);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
 
         await testHelper.showFollowedTabsList();
@@ -159,7 +159,7 @@ describe('Browser recently closed tabs', () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
 
         await testHelper.showFollowedTabsList();
@@ -174,7 +174,7 @@ describe('Browser recently closed tabs', () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
 
         await testHelper.showFollowedTabsList();
@@ -193,8 +193,8 @@ describe('Browser recently closed tabs', () => {
         await testHelper.openTab(testPage2Url);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[2]);
@@ -228,8 +228,8 @@ describe('Browser recently closed tabs', () => {
         await testHelper.openTab(testPage2Url);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[2]);
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);

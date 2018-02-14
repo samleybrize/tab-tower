@@ -79,8 +79,8 @@ describe('Navigation', () => {
         await testHelper.openTab(testPage1Url);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
 
         await navigationHelper.assertFollowedTabsCounter(2);
     });
@@ -91,9 +91,9 @@ describe('Navigation', () => {
         await testHelper.openTab(testPage1Url);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[2]);
-        await openedTabsHelper.clickOnUnfollowButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+        await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[1]);
 
         await navigationHelper.assertFollowedTabsCounter(1);
     });
@@ -123,7 +123,7 @@ describe('Navigation', () => {
         await testHelper.openTab(testPage1Url);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
         await testHelper.reloadExtension();
         await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.UI), 0);

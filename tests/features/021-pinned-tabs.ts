@@ -39,7 +39,7 @@ describe('Pinned tabs', () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.pinTab(1, openedTabRowList[1]);
+            await testHelper.pinTab(1, openedTabRowList[1]);
 
             await openedTabsHelper.assertTabPinIndicatorIsOn(openedTabRowList[1]);
         });
@@ -49,11 +49,11 @@ describe('Pinned tabs', () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.pinTab(1, openedTabRowList[1]);
-            await openedTabsHelper.pinTab(2, openedTabRowList[2]);
+            await testHelper.pinTab(1, openedTabRowList[1]);
+            await testHelper.pinTab(2, openedTabRowList[2]);
 
             const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.unpinTab(1, newOpenedTabRowList[1]);
+            await testHelper.unpinTab(1, newOpenedTabRowList[1]);
 
             await openedTabsHelper.assertTabPinIndicatorIsOff(newOpenedTabRowList[1]);
         });
@@ -74,7 +74,7 @@ describe('Pinned tabs', () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.pinTab(1, openedTabRowList[1]);
+            await testHelper.pinTab(1, openedTabRowList[1]);
 
             const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
             await openedTabsHelper.assertPinButtonIsNotVisible(newOpenedTabRowList[0]);
@@ -85,10 +85,10 @@ describe('Pinned tabs', () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.pinTab(1, openedTabRowList[1]);
+            await testHelper.pinTab(1, openedTabRowList[1]);
 
             const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.unpinTab(0, newOpenedTabRowList[0]);
+            await testHelper.unpinTab(0, newOpenedTabRowList[0]);
 
             await openedTabsHelper.assertPinButtonIsVisible(newOpenedTabRowList[0]);
             await openedTabsHelper.assertPinButtonIsNotDisabled(newOpenedTabRowList[0]);
@@ -100,7 +100,7 @@ describe('Pinned tabs', () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.pinTab(2, openedTabRowList[2]);
+            await testHelper.pinTab(2, openedTabRowList[2]);
 
             const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
             await openedTabsHelper.clickOnTabTitle(newOpenedTabRowList[2]);
@@ -163,8 +163,8 @@ describe('Pinned tabs', () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.pinTab(1, openedTabRowList[1]);
-            await openedTabsHelper.pinTab(2, openedTabRowList[2]);
+            await testHelper.pinTab(1, openedTabRowList[1]);
+            await testHelper.pinTab(2, openedTabRowList[2]);
 
             await testHelper.reloadExtension();
             await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.UI), 2);
@@ -336,6 +336,9 @@ describe('Pinned tabs', () => {
             await followedTabsHelper.assertUnpinButtonIsNotVisible(followedTabRowList[1]);
             await followedTabsHelper.assertPinButtonIsVisible(followedTabRowList[1]);
             await followedTabsHelper.assertPinButtonIsDisabled(followedTabRowList[1]);
+
+            await followedTabsHelper.clickOnPinButton(followedTabRowList[1], false);
+            await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[1]);
         });
 
         it('Pin button of a followed tab should be enabled when it is restored', async () => {

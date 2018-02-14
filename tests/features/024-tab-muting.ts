@@ -68,7 +68,7 @@ describe('Tab muting', () => {
             await openedTabsHelper.assertUnmuteButtonIsNotVisible(openedTabRowList[0]);
         });
 
-        it('Opened tabs audio mute indicator should be on when its associated tab is muted from the browser', async () => {
+        it('Mute indicator of an opened tab should be on when its associated tab is muted from the browser', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             await testHelper.muteTab(1);
@@ -83,7 +83,7 @@ describe('Tab muting', () => {
             assert.isTrue(tab2.mutedInfo.muted);
         });
 
-        it('Opened tabs audio mute indicator should be on when its associated tab is muted from the mute button', async () => {
+        it('Mute indicator of an opened tab should be on when its associated tab is muted from the mute button', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
@@ -98,7 +98,7 @@ describe('Tab muting', () => {
             assert.isTrue(tab2.mutedInfo.muted);
         });
 
-        it('Opened tabs audio mute indicator should be off when its associated tab is unmuted from the browser', async () => {
+        it('Mute indicator of an opened tab should be off when its associated tab is unmuted from the browser', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             await testHelper.muteTab(1);
@@ -114,7 +114,7 @@ describe('Tab muting', () => {
             assert.isFalse(tab2.mutedInfo.muted);
         });
 
-        it('Opened tabs audio mute indicator should be off when its associated tab is unmuted from the unmute button', async () => {
+        it('Mute indicator of an opened tab should be off when its associated tab is unmuted from the unmute button', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
@@ -200,7 +200,7 @@ describe('Tab muting', () => {
             await followedTabsHelper.assertUnmuteButtonIsNotVisible(followedTabRowList[1]);
         });
 
-        it('Followed tabs audio mute indicator should be on when its associated tab is muted from the browser', async () => {
+        it('Mute indicator of a followed tab should be on when its associated tab is muted from the browser', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
@@ -221,7 +221,7 @@ describe('Tab muting', () => {
             assert.isFalse(tab2.mutedInfo.muted);
         });
 
-        it('Followed tabs audio mute indicator should be on when its associated tab is muted from the mute button', async () => {
+        it('Mute indicator of a followed tab should be on when its associated tab is muted from the mute button', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
@@ -242,7 +242,7 @@ describe('Tab muting', () => {
             assert.isFalse(tab2.mutedInfo.muted);
         });
 
-        it('Followed tabs audio mute indicator should be off when its associated tab is unmuted from the browser', async () => {
+        it('Mute indicator of a followed tab should be off when its associated tab is unmuted from the browser', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
@@ -264,7 +264,7 @@ describe('Tab muting', () => {
             assert.isFalse(tab2.mutedInfo.muted);
         });
 
-        it('Followed tabs audio mute indicator should be off when its associated tab is unmuted from the mute button', async () => {
+        it('Mute indicator of a followed tab should be off when its associated tab is unmuted from the mute button', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
@@ -286,7 +286,7 @@ describe('Tab muting', () => {
             assert.isFalse(tab2.mutedInfo.muted);
         });
 
-        it('Followed tabs audio mute indicator should not change when its associated opened tab is closed', async () => {
+        it('Mute indicator of a followed tab should not change when its associated opened tab is closed', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 

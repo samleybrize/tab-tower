@@ -233,6 +233,34 @@ export class TestHelper {
         await sleep(300);
     }
 
+    async pinTab(tabIndex: number, row: WebElement) {
+        const pinIndicator = await this.tabsTestHelper.getPinIndicator(row);
+        const isOn = await this.tabsTestHelper.hasClass(pinIndicator, 'on');
+
+        if (null == row || isOn) {
+            return;
+        }
+
+        await this.browserInstructionSender.pinTab(tabIndex);
+        await this.driver.wait(async () => {
+            return this.tabsTestHelper.hasClass(pinIndicator, 'on');
+        }, 10000);
+    }
+
+    async unpinTab(tabIndex: number, row: WebElement) {
+        const pinIndicator = await this.tabsTestHelper.getPinIndicator(row);
+        const isOff = await this.tabsTestHelper.hasClass(pinIndicator, 'off');
+
+        if (null == row || isOff) {
+            return;
+        }
+
+        await this.browserInstructionSender.unpinTab(tabIndex);
+        await this.driver.wait(async () => {
+            return this.tabsTestHelper.hasClass(pinIndicator, 'off');
+        }, 10000);
+    }
+
     async disableTabReaderMode(tabIndex: number, row?: WebElement) {
         const readerModeIndicator = await this.tabsTestHelper.getReaderModeIndicator(row);
         const isOff = await this.tabsTestHelper.hasClass(readerModeIndicator, 'off');

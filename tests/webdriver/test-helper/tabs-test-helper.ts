@@ -93,15 +93,20 @@ export class TabsTestHelper {
         await moreButton.click();
     }
 
-    async clickOnPinButton(tabRow: WebElement) {
+    async clickOnPinButton(tabRow: WebElement, waitPinIndicatorStateChange: boolean) {
         const pinButton = this.getPinButton(tabRow);
         const pinIndicator = this.getPinIndicator(tabRow);
 
         await this.clickOnMoreButton(tabRow);
         await pinButton.click();
-        await this.driver.wait(async () => {
-            return await this.hasClass(pinIndicator, 'on');
-        }, 3000);
+
+        if (waitPinIndicatorStateChange) {
+            await this.driver.wait(async () => {
+                return await this.hasClass(pinIndicator, 'on');
+            }, 3000);
+        } else {
+            await sleep(500);
+        }
     }
 
     async hasClass(element: WebElement, className: string) {

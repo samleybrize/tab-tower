@@ -1,6 +1,7 @@
 import { assert } from 'chai';
 import { By, error as WebDriverError, WebDriver, WebElement } from 'selenium-webdriver';
 
+import { sleep } from '../../../src/typescript/utils/sleep';
 import { BrowserInstructionSender } from '../../utils/browser-instruction-sender';
 import { TabsTestHelper } from './tabs-test-helper';
 
@@ -45,14 +46,19 @@ export class OpenedTabsTestHelper {
         }, 10000);
     }
 
-    async clickOnFollowButton(tabRow: WebElement) {
+    async clickOnFollowButton(tabRow: WebElement, w?: boolean) {
         const followButton = this.getFollowButton(tabRow);
 
         await this.tabsTestHelper.clickOnMoreButton(tabRow);
         await followButton.click();
-        await this.driver.wait(async () => {
-            return !await followButton.isDisplayed();
-        }, 3000);
+
+        if (false !== w) {
+            await this.driver.wait(async () => {
+                return !await followButton.isDisplayed();
+            }, 3000);
+        } else {
+            await sleep(500);
+        }
     }
 
     async clickOnUnfollowButton(tabRow: WebElement) {
@@ -66,7 +72,7 @@ export class OpenedTabsTestHelper {
     }
 
     async clickOnPinButton(tabRow: WebElement) {
-        await this.tabsTestHelper.clickOnPinButton(tabRow);
+        await this.tabsTestHelper.clickOnPinButton(tabRow, true);
     }
 
     async clickOnUnpinButton(tabRow: WebElement) {
@@ -91,42 +97,6 @@ export class OpenedTabsTestHelper {
 
     async clickOnReloadButton(tabIndex: number, tabRow: WebElement) {
         await this.tabsTestHelper.clickOnReloadButton(tabIndex, tabRow);
-    }
-
-    async pinTab(tabIndex: number, row: WebElement) {
-        const pinIndicator = await this.tabsTestHelper.getPinIndicator(row);
-        const isOn = await this.tabsTestHelper.hasClass(pinIndicator, 'on');
-
-        if (null == row || isOn) {
-            return;
-        }
-
-        const tabId = await row.getAttribute('data-tab-id');
-        await this.browserInstructionSender.pinTab(tabIndex);
-        await this.driver.wait(async () => {
-            const tabRow = this.driver.findElement(By.css(`#openedTabList tbody tr[data-tab-id="${tabId}"]`));
-            const tabPinIndicator = await this.tabsTestHelper.getPinIndicator(row);
-
-            return this.tabsTestHelper.hasClass(tabPinIndicator, 'on');
-        }, 10000);
-    }
-
-    async unpinTab(tabIndex: number, row: WebElement) {
-        const pinIndicator = await this.tabsTestHelper.getPinIndicator(row);
-        const isOff = await this.tabsTestHelper.hasClass(pinIndicator, 'off');
-
-        if (null == row || isOff) {
-            return;
-        }
-
-        const tabId = await row.getAttribute('data-tab-id');
-        await this.browserInstructionSender.unpinTab(tabIndex);
-        await this.driver.wait(async () => {
-            const tabRow = this.driver.findElement(By.css(`#openedTabList tbody tr[data-tab-id="${tabId}"]`));
-            const tabPinIndicator = await this.tabsTestHelper.getPinIndicator(row);
-
-            return this.tabsTestHelper.hasClass(tabPinIndicator, 'off');
-        }, 10000);
     }
 
     async showTitleTooltip(tabRow: WebElement) {

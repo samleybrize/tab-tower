@@ -117,8 +117,9 @@ describe('Opened tabs tracking', () => {
     });
 
     it('Associated tab should be closed when clicking on a close button in the opened tab list', async () => {
+        const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
-        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+        await testHelper.openTab(testPage1Url);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
@@ -130,6 +131,11 @@ describe('Opened tabs tracking', () => {
         await openedTabsHelper.assertTabTitle(newOpenedTabRowList[1], 'Test page 1');
         await openedTabsHelper.assertTabUrl(newOpenedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
         await openedTabsHelper.assertTabFaviconUrl(newOpenedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_1));
+
+        const tabList = await browserInstructionSender.getAllTabs();
+        assert.equal(tabList.length, 2);
+        assert.equal(tabList[0].url, uiUrl);
+        assert.equal(tabList[1].url, testPage1Url);
     });
 
     it('Opened tabs with an ignored url should not be closable', async () => {

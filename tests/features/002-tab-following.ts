@@ -79,6 +79,9 @@ describe('Tab following', () => {
         await openedTabsHelper.assertFollowButtonIsVisible(openedTabRowList[1]);
         await openedTabsHelper.assertFollowButtonIsDisabled(openedTabRowList[1]);
         await openedTabsHelper.assertUnfollowButtonIsNotVisible(openedTabRowList[0]);
+
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[1], false);
+        await followedTabsHelper.assertNumberOfTabs(0);
     });
 
     it('Opened tabs with an ignored url should not be followable', async () => {
@@ -86,6 +89,9 @@ describe('Tab following', () => {
         await openedTabsHelper.assertFollowButtonIsVisible(openedTabRowList[0]);
         await openedTabsHelper.assertFollowButtonIsDisabled(openedTabRowList[0]);
         await openedTabsHelper.assertUnfollowButtonIsNotVisible(openedTabRowList[0]);
+
+        await openedTabsHelper.clickOnFollowButton(openedTabRowList[0], false);
+        await followedTabsHelper.assertNumberOfTabs(0);
     });
 
     it("Title, url and favicon should be updated when associated opened tab's url change", async () => {
@@ -206,7 +212,8 @@ describe('Tab following', () => {
     });
 
     it('Associated opened tab should be closed when clicking on the close button in the followed tab list', async () => {
-        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+        const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
+        await testHelper.openTab(testPage1Url);
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
@@ -218,6 +225,11 @@ describe('Tab following', () => {
         await followedTabsHelper.clickOnTabCloseButton(followedTabRowList[1]);
 
         await followedTabsHelper.assertTabOpenIndicatorIsOff(followedTabRowList[1]);
+
+        const tabList = await browserInstructionSender.getAllTabs();
+        assert.equal(tabList.length, 2);
+        assert.equal(tabList[0].url, firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
+        assert.equal(tabList[1].url, testPage1Url);
     });
 
     it('The no tab row should appear when there is no followed tab anymore', async () => {

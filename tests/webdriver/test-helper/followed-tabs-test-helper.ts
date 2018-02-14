@@ -186,8 +186,12 @@ export class FollowedTabsTestHelper {
         await sleep(500);
     }
 
-    async clickOnPinButton(tabRow: WebElement) {
-        await this.tabsTestHelper.clickOnPinButton(tabRow);
+    async clickOnPinButton(tabRow: WebElement, waitPinIndicatorStateChange?: boolean) {
+        if (undefined === waitPinIndicatorStateChange) {
+            waitPinIndicatorStateChange = true;
+        }
+
+        await this.tabsTestHelper.clickOnPinButton(tabRow, waitPinIndicatorStateChange);
     }
 
     async clickOnUnpinButton(tabRow: WebElement) {

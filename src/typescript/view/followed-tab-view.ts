@@ -31,14 +31,6 @@ import { TabAssociation } from '../tab/tab-association/tab-association';
 import { StringMatcher } from '../utils/string-matcher';
 import { TabCounter } from './tab-counter';
 
-// TODO
-declare global {
-    interface JQuery {
-        dropdown(...args: any[]): any;
-        tooltip(method: 'open' | 'close' | 'remove'): JQuery;
-    }
-}
-
 export class FollowedTabView {
     private tbodyElement: HTMLElement;
     private noTabRow: HTMLElement;

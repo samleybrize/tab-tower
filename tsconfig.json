@@ -13,6 +13,7 @@
         "baseUrl": ".",
         "typeRoots": [
             "node_modules/@types",
+            "src/typescript/definitions/materialize.d.ts",
             "src/typescript/definitions/webextension.d.ts"
         ]
     },

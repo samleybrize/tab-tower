@@ -39,6 +39,9 @@ describe('Tab reloading', () => {
             await openedTabsHelper.assertTabReloadButtonIsNotDisabled(openedTabRowList[0]);
             await openedTabsHelper.assertTabReloadButtonIsVisible(openedTabRowList[1]);
             await openedTabsHelper.assertTabReloadButtonIsNotDisabled(openedTabRowList[1]);
+
+            await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[0]);
+            await testHelper.takeViewportScreenshot('reload-button-visible-open-list');
         });
 
         it('Associated tab should be reloaded when clicked on the reload button', async () => {
@@ -68,6 +71,9 @@ describe('Tab reloading', () => {
             const followedTabRowList = await followedTabsHelper.getTabRowList();
             await followedTabsHelper.assertTabReloadButtonIsVisible(followedTabRowList[0]);
             await followedTabsHelper.assertTabReloadButtonIsNotDisabled(followedTabRowList[0]);
+
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+            await testHelper.takeViewportScreenshot('reload-button-visible-follow-list');
         });
 
         it('Associated opened tab should be reloaded when clicked on the reload button', async () => {
@@ -100,6 +106,9 @@ describe('Tab reloading', () => {
             const followedTabRowList = await followedTabsHelper.getTabRowList();
             await followedTabsHelper.assertTabReloadButtonIsVisible(followedTabRowList[0]);
             await followedTabsHelper.assertTabReloadButtonIsDisabled(followedTabRowList[0]);
+
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+            await testHelper.takeViewportScreenshot('reload-button-disabled-follow-list');
         });
     });
 });

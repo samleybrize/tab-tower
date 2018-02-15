@@ -51,6 +51,9 @@ describe('Tab following', () => {
         await openedTabsHelper.assertTabFollowButtonIsVisible(openedTabRowList[1]);
         await openedTabsHelper.assertTabFollowButtonIsNotDisabled(openedTabRowList[1]);
         await openedTabsHelper.assertTabUnfollowButtonIsNotVisible(openedTabRowList[1]);
+
+        await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1]);
+        await testHelper.takeViewportScreenshot('follow-button-visible-open-list');
     });
 
     it('Followed tabs should be shown in the followed tabs list', async () => {
@@ -70,6 +73,13 @@ describe('Tab following', () => {
         await followedTabsHelper.assertTabOpenIndicatorIsOn(followedTabRowList[0]);
         await followedTabsHelper.assertTabLastAccessDateIsRoughlyEqualToDate(followedTabRowList[0], new Date());
         await followedTabsHelper.assertTabTitleTooltip(followedTabRowList[0], 'Go to tab');
+
+        await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+        await testHelper.takeViewportScreenshot('close-button-visible-follow-list');
+
+        await testHelper.takeViewportScreenshot('followed-tabs-list');
+        await testHelper.showOpenedTabsList();
+        await testHelper.takeViewportScreenshot('follow-indicator-on-open-list');
     });
 
     it('Opened tabs with a privileged url should not be followable', async () => {
@@ -82,6 +92,9 @@ describe('Tab following', () => {
 
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1], false);
         await followedTabsHelper.assertNumberOfTabs(0);
+
+        await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1]);
+        await testHelper.takeViewportScreenshot('follow-button-disabled-open-list');
     });
 
     it('Opened tabs with an ignored url should not be followable', async () => {
@@ -141,6 +154,9 @@ describe('Tab following', () => {
 
         await openedTabsHelper.assertTabFollowButtonIsNotVisible(openedTabRowList[1]);
         await openedTabsHelper.assertTabUnfollowButtonIsVisible(openedTabRowList[1]);
+
+        await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1]);
+        await testHelper.takeViewportScreenshot('unfollow-button-visible-open-list');
     });
 
     it('A tab should be unfollowable in the followed tabs list', async () => {
@@ -152,6 +168,9 @@ describe('Tab following', () => {
         await testHelper.showFollowedTabsList();
         const followedTabRowList = await followedTabsHelper.getTabRowList();
         await followedTabsHelper.assertTabUnfollowButtonIsVisible(followedTabRowList[0]);
+
+        await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+        await testHelper.takeViewportScreenshot('unfollow-button-visible-follow-list');
     });
 
     it('Tab unfollowed from the opened tabs list should be removed from the followed tabs list', async () => {
@@ -209,6 +228,9 @@ describe('Tab following', () => {
         await testHelper.showFollowedTabsList();
         const followedTabRowList = await followedTabsHelper.getTabRowList();
         await followedTabsHelper.assertTabCloseButtonIsNotVisible(followedTabRowList[0]);
+
+        await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+        await testHelper.takeViewportScreenshot('close-button-not-visible-follow-list');
     });
 
     it('Associated opened tab should be closed when clicking on the close button in the followed tab list', async () => {

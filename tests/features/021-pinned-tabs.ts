@@ -42,6 +42,8 @@ describe('Pinned tabs', () => {
             await testHelper.pinTab(1, openedTabRowList[1]);
 
             await openedTabsHelper.assertTabPinIndicatorIsOn(openedTabRowList[1]);
+
+            await testHelper.takeViewportScreenshot('pin-indicator-on-open-list');
         });
 
         it('Tab pin indicator should be off in the opened tabs list when unpinned', async () => {
@@ -79,6 +81,9 @@ describe('Pinned tabs', () => {
             const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
             await openedTabsHelper.assertTabPinButtonIsNotVisible(newOpenedTabRowList[0]);
             await openedTabsHelper.assertTabUnpinButtonIsVisible(newOpenedTabRowList[0]);
+
+            await openedTabsHelper.clickOnTabMoreButton(newOpenedTabRowList[0]);
+            await testHelper.takeViewportScreenshot('unpin-button-visible-open-list');
         });
 
         it('Tab pin button should be visible in the opened tabs list when unpinned', async () => {
@@ -93,6 +98,9 @@ describe('Pinned tabs', () => {
             await openedTabsHelper.assertTabPinButtonIsVisible(newOpenedTabRowList[0]);
             await openedTabsHelper.assertTabPinButtonIsNotDisabled(newOpenedTabRowList[0]);
             await openedTabsHelper.assertTabUnpinButtonIsNotVisible(newOpenedTabRowList[0]);
+
+            await openedTabsHelper.clickOnTabMoreButton(newOpenedTabRowList[0]);
+            await testHelper.takeViewportScreenshot('pin-button-visible-open-list');
         });
 
         it('A click on an opened tab should focus the associated tab when another tab was pinned', async () => {
@@ -191,6 +199,8 @@ describe('Pinned tabs', () => {
             const followedTabRowList = await followedTabsHelper.getTabRowList();
             await followedTabsHelper.assertTabPinIndicatorIsOn(followedTabRowList[0]);
             await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[1]);
+
+            await testHelper.takeViewportScreenshot('pin-indicator-on-follow-list');
         });
 
         it('Pin indicator of a followed tab should be off when its associated opened tab is unpinned', async () => {
@@ -225,6 +235,9 @@ describe('Pinned tabs', () => {
             await followedTabsHelper.assertTabPinButtonIsVisible(followedTabRowList[1]);
             await followedTabsHelper.assertTabPinButtonIsNotDisabled(followedTabRowList[1]);
             await followedTabsHelper.assertTabUnpinButtonIsNotVisible(followedTabRowList[1]);
+
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+            await testHelper.takeViewportScreenshot('unpin-button-visible-follow-list');
         });
 
         it('Tab pin button should be visible in the followed tabs list when its associated opened tab is unpinned', async () => {
@@ -244,6 +257,9 @@ describe('Pinned tabs', () => {
             await followedTabsHelper.assertTabUnpinButtonIsNotVisible(followedTabRowList[0]);
             await followedTabsHelper.assertTabPinButtonIsVisible(followedTabRowList[1]);
             await followedTabsHelper.assertTabUnpinButtonIsNotVisible(followedTabRowList[1]);
+
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+            await testHelper.takeViewportScreenshot('pin-button-visible-follow-list');
         });
 
         it('A click on a followed tab pin button should pin the associated tab', async () => {
@@ -339,6 +355,9 @@ describe('Pinned tabs', () => {
 
             await followedTabsHelper.clickOnTabPinButton(followedTabRowList[1], false);
             await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[1]);
+
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+            await testHelper.takeViewportScreenshot('pin-button-disabled-follow-list');
         });
 
         it('Pin button of a followed tab should be enabled when it is restored', async () => {

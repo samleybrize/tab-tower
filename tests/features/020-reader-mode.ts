@@ -37,6 +37,8 @@ describe('Reader mode', () => {
             await testHelper.enableTabReaderMode(1, openedTabRowList[1]);
 
             await openedTabsHelper.assertTabReaderModeIndicatorIsOn(openedTabRowList[1]);
+
+            await testHelper.takeViewportScreenshot('reader-mode-indicator-on-open-list');
         });
 
         it('Reader mode indicator should be off in the opened tabs list when disabled', async () => {
@@ -81,6 +83,8 @@ describe('Reader mode', () => {
 
             await followedTabsHelper.assertTabReaderModeIndicatorIsOn(followedTabRowList[0]);
             await followedTabsHelper.assertTabReaderModeTestPageTitle(followedTabRowList[0]);
+
+            await testHelper.takeViewportScreenshot('reader-mode-indicator-on-follow-list');
         });
 
         it('Reader mode status of a followed tab should be updated when disabling reader mode on its associated opened tab', async () => {

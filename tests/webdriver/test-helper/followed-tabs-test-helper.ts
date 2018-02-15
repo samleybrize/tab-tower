@@ -23,6 +23,10 @@ export class FollowedTabsTestHelper {
         return this.driver.findElement(By.css('#followedTabList tbody .noTabRow'));
     }
 
+    async clickOnTabMoreButton(tabRow: WebElement) {
+        await this.tabsTestHelper.clickOnTabMoreButton(tabRow);
+    }
+
     async clickOnTabCloseButton(tabRow: WebElement) {
         const openIndicator = this.getOpenIndicator(tabRow);
 

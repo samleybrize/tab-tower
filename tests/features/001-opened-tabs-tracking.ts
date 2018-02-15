@@ -45,6 +45,10 @@ describe('Opened tabs tracking', () => {
         await openedTabsHelper.assertTabUrl(openedTabRowList[1], testPage1Url);
         await openedTabsHelper.assertTabFaviconUrl(openedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_1));
         await openedTabsHelper.assertTabTitleTooltip(openedTabRowList[1], 'Go to tab');
+
+        await testHelper.takeViewportScreenshot('opened-tabs-list');
+        await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1]);
+        await testHelper.takeViewportScreenshot('close-button-visible-open-list');
     });
 
     it("Title, url and favicon should be updated when an opened tab's url change", async () => {

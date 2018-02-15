@@ -36,7 +36,7 @@ export class TestHelper {
 
         this.browserInstructionSender.init();
 
-        this.tabsTestHelper = new TabsTestHelper(this.driver, this.browserInstructionSender);
+        this.tabsTestHelper = new TabsTestHelper(this.driver, this.browserInstructionSender, this.screenshotTaker);
         this.openedTabsTestHelper = new OpenedTabsTestHelper(this.tabsTestHelper, this.driver, this.browserInstructionSender);
         this.followedTabsTestHelper = new FollowedTabsTestHelper(this.tabsTestHelper, this.driver, this.browserInstructionSender);
         this.navigationTestHelper = new NavigationTestHelper(this.driver, this.screenshotTaker);
@@ -143,11 +143,10 @@ export class TestHelper {
         await this.driver.wait(async () => {
             const tab = await this.browserInstructionSender.getTab(newTabId.index);
 
-            if (tab && 'complete' == tab.status) {
-                return true;
-            }
+            return tab && 'complete' == tab.status;
         }, 10000);
         await this.focusTab(activeTab.index);
+        await sleep(300);
     }
 
     async closeTab(tabIndex: number) {

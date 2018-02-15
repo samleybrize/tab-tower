@@ -23,6 +23,10 @@ export class OpenedTabsTestHelper {
         return this.driver.findElement(By.css('#openedTabList tbody .noTabRow'));
     }
 
+    async clickOnTabMoreButton(tabRow: WebElement) {
+        await this.tabsTestHelper.clickOnTabMoreButton(tabRow);
+    }
+
     async clickOnTabCloseButton(tabRow: WebElement) {
         await this.tabsTestHelper.clickOnTabMoreButton(tabRow);
         await tabRow.findElement(By.css('.closeButton')).click();

@@ -54,6 +54,9 @@ describe('Tab muting', () => {
             const openedTabRowList = await openedTabsHelper.getTabRowList();
             await openedTabsHelper.assertTabMuteButtonIsNotVisible(openedTabRowList[1]);
             await openedTabsHelper.assertTabUnmuteButtonIsVisible(openedTabRowList[1]);
+
+            await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1]);
+            await testHelper.takeViewportScreenshot('unmute-button-visible-open-list');
         });
 
         it('Mute button should be visible on the opened tabs list when unmuted', async () => {
@@ -66,6 +69,9 @@ describe('Tab muting', () => {
             await openedTabsHelper.assertTabMuteButtonIsVisible(openedTabRowList[0]);
             await openedTabsHelper.assertTabMuteButtonIsNotDisabled(openedTabRowList[0]);
             await openedTabsHelper.assertTabUnmuteButtonIsNotVisible(openedTabRowList[0]);
+
+            await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1]);
+            await testHelper.takeViewportScreenshot('mute-button-visible-open-list');
         });
 
         it('Mute indicator of an opened tab should be on when its associated tab is muted from the browser', async () => {
@@ -81,6 +87,8 @@ describe('Tab muting', () => {
             const tab2 = await browserInstructionSender.getTab(1);
             assert.isFalse(tab1.mutedInfo.muted);
             assert.isTrue(tab2.mutedInfo.muted);
+
+            await testHelper.takeViewportScreenshot('mute-indicator-on-open-list');
         });
 
         it('Mute indicator of an opened tab should be on when its associated tab is muted from the mute button', async () => {
@@ -177,6 +185,9 @@ describe('Tab muting', () => {
             await followedTabsHelper.assertTabMuteButtonIsVisible(followedTabRowList[1]);
             await followedTabsHelper.assertTabMuteButtonIsNotDisabled(followedTabRowList[1]);
             await followedTabsHelper.assertTabUnmuteButtonIsNotVisible(followedTabRowList[1]);
+
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[1]);
+            await testHelper.takeViewportScreenshot('unmute-button-visible-follow-list');
         });
 
         it('Mute button should be visible on the followed tabs list when its associated opened tab is unmuted', async () => {
@@ -198,6 +209,9 @@ describe('Tab muting', () => {
             await followedTabsHelper.assertTabMuteButtonIsVisible(followedTabRowList[1]);
             await followedTabsHelper.assertTabMuteButtonIsNotDisabled(followedTabRowList[1]);
             await followedTabsHelper.assertTabUnmuteButtonIsNotVisible(followedTabRowList[1]);
+
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[1]);
+            await testHelper.takeViewportScreenshot('mute-button-visible-follow-list');
         });
 
         it('Mute indicator of a followed tab should be on when its associated tab is muted from the browser', async () => {
@@ -219,6 +233,8 @@ describe('Tab muting', () => {
             const tab2 = await browserInstructionSender.getTab(2);
             assert.isTrue(tab1.mutedInfo.muted);
             assert.isFalse(tab2.mutedInfo.muted);
+
+            await testHelper.takeViewportScreenshot('mute-indicator-on-follow-list');
         });
 
         it('Mute indicator of a followed tab should be on when its associated tab is muted from the mute button', async () => {
@@ -303,7 +319,7 @@ describe('Tab muting', () => {
             await followedTabsHelper.assertTabMuteIndicatorIsOff(followedTabRowList[1]);
         });
 
-        it('Followed tabs audio unmute button should not be hidden when its associated opened tab is closed', async () => {
+        it('Followed tabs audio mute and unmute button should not be hidden when its associated opened tab is closed', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
@@ -317,9 +333,16 @@ describe('Tab muting', () => {
             await testHelper.showFollowedTabsList();
             const followedTabRowList = await followedTabsHelper.getTabRowList();
             await followedTabsHelper.assertTabUnmuteButtonIsVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertTabUnmuteButtonIsDisabled(followedTabRowList[0]);
             await followedTabsHelper.assertTabMuteButtonIsNotVisible(followedTabRowList[0]);
             await followedTabsHelper.assertTabMuteButtonIsVisible(followedTabRowList[1]);
+            await followedTabsHelper.assertTabMuteButtonIsDisabled(followedTabRowList[1]);
             await followedTabsHelper.assertTabUnmuteButtonIsNotVisible(followedTabRowList[1]);
+
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+            await testHelper.takeViewportScreenshot('unmute-button-disabled-follow-list');
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[1]);
+            await testHelper.takeViewportScreenshot('mute-button-disabled-follow-list');
         });
 
         it('A followed tab should not be mutable when its associated opened tab is closed', async () => {

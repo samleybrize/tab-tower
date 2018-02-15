@@ -3,6 +3,7 @@ import { By, WebDriver, WebElement } from 'selenium-webdriver';
 
 import { sleep } from '../../../src/typescript/utils/sleep';
 import { BrowserInstructionSender } from '../../utils/browser-instruction-sender';
+import { ScreenshotTaker } from '../screenshot-taker';
 
 export interface TabIndicator {
     on: WebElement;
@@ -10,7 +11,11 @@ export interface TabIndicator {
 }
 
 export class TabsTestHelper {
-    constructor(private driver: WebDriver, private browserInstructionSender: BrowserInstructionSender) {
+    constructor(
+        private driver: WebDriver,
+        private browserInstructionSender: BrowserInstructionSender,
+        private screenshotTaker: ScreenshotTaker,
+    ) {
     }
 
     async getNumberOfTabsWithUrl(titleElementList: WebElement[], url: string) {

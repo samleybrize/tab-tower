@@ -42,6 +42,8 @@ describe('Audible tabs', () => {
 
             await openedTabsHelper.assertTabAudibleIndicatorTooltip(openedTabRowList[0], null);
             await openedTabsHelper.assertTabAudibleIndicatorTooltip(openedTabRowList[1], 'Produces sound');
+
+            await testHelper.takeViewportScreenshot('audible-indicator-on-open-list');
         });
 
         it('Audible indicator of an opened tab should be off when its associated tab is not playing a sound anymore', async () => {
@@ -106,6 +108,8 @@ describe('Audible tabs', () => {
 
             await followedTabsHelper.assertTabAudibleIndicatorTooltip(followedTabRowList[0], 'Produces sound');
             await followedTabsHelper.assertTabAudibleIndicatorTooltip(followedTabRowList[1], null);
+
+            await testHelper.takeViewportScreenshot('audible-indicator-on-follow-list');
         });
 
         it('Audible indicator of a followed tab should be off when its associated tab is not playing a sound anymore', async () => {

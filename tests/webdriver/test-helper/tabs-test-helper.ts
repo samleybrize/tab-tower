@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { By, error as WebDriverError, WebDriver, WebElement } from 'selenium-webdriver';
+import { By, WebDriver, WebElement } from 'selenium-webdriver';
 
 import { sleep } from '../../../src/typescript/utils/sleep';
 import { BrowserInstructionSender } from '../../utils/browser-instruction-sender';

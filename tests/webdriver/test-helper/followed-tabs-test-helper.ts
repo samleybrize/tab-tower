@@ -158,6 +158,10 @@ export class FollowedTabsTestHelper {
         await this.tabsTestHelper.clickOnTabReloadButton(tabIndex, tabRow);
     }
 
+    async clickOnTabDuplicateButton(tabRow: WebElement) {
+        await this.tabsTestHelper.clickOnTabDuplicateButton(tabRow);
+    }
+
     async showTitleTooltip(tabRow: WebElement) {
         const followId = await tabRow.getAttribute('data-follow-id');
         await this.tabsTestHelper.showElementTooltip(`#followedTabList tbody tr[data-follow-id="${followId}"] .title a`);
@@ -383,6 +387,18 @@ export class FollowedTabsTestHelper {
 
     async assertTabReloadButtonIsNotDisabled(tabRow: WebElement) {
         return this.tabsTestHelper.assertTabReloadButtonIsNotDisabled(tabRow);
+    }
+
+    async assertTabDuplicateButtonIsVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabDuplicateButtonIsVisible(tabRow);
+    }
+
+    async assertTabDuplicateButtonIsDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabDuplicateButtonIsDisabled(tabRow);
+    }
+
+    async assertTabDuplicateButtonIsNotDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabDuplicateButtonIsNotDisabled(tabRow);
     }
 
     async assertTabCloseButtonIsVisible(tabRow: WebElement) {

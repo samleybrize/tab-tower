@@ -82,6 +82,10 @@ export class TabsTestHelper {
         return tabRow.findElement(By.css('.reloadButton'));
     }
 
+    getDuplicateButton(tabRow: WebElement) {
+        return tabRow.findElement(By.css('.duplicateButton'));
+    }
+
     getCloseButton(tabRow: WebElement) {
         return tabRow.findElement(By.css('.closeButton'));
     }
@@ -179,6 +183,27 @@ export class TabsTestHelper {
 
             return 'complete' == tab.status;
         }, 3000);
+    }
+
+    async clickOnTabDuplicateButton(tabRow: WebElement) {
+        const duplicateButton = this.getDuplicateButton(tabRow);
+        const numberOfTabs = (await this.browserInstructionSender.getAllTabs()).length;
+
+        await this.clickOnTabMoreButton(tabRow);
+        await duplicateButton.click();
+        await this.driver.wait(async () => {
+            const tabList = await this.browserInstructionSender.getAllTabs();
+            const newNumberOfTabs = tabList.length;
+
+            if (newNumberOfTabs == numberOfTabs) {
+                return false;
+            } else if ('complete' != tabList[newNumberOfTabs - 1].status) {
+                return false;
+            }
+
+            return true;
+        }, 3000);
+        await sleep(1000);
     }
 
     async showElementTooltip(quotelessCssSelector: string) {
@@ -400,6 +425,26 @@ export class TabsTestHelper {
         const reloadButtonClasses = ('' + await reloadButton.getAttribute('class')).split(' ');
 
         assert.notInclude(reloadButtonClasses, 'disabled');
+    }
+
+    async assertTabDuplicateButtonIsVisible(tabRow: WebElement) {
+        await this.clickOnTabMoreButton(tabRow);
+        const isDuplicateButtonDisplayed = await this.getDuplicateButton(tabRow).isDisplayed();
+        assert.isTrue(isDuplicateButtonDisplayed, 'Tab reload button is not visible');
+    }
+
+    async assertTabDuplicateButtonIsDisabled(tabRow: WebElement) {
+        const duplicateButton = await this.getDuplicateButton(tabRow);
+        const duplicateButtonClasses = ('' + await duplicateButton.getAttribute('class')).split(' ');
+
+        assert.include(duplicateButtonClasses, 'disabled');
+    }
+
+    async assertTabDuplicateButtonIsNotDisabled(tabRow: WebElement) {
+        const duplicateButton = await this.getDuplicateButton(tabRow);
+        const duplicateButtonClasses = ('' + await duplicateButton.getAttribute('class')).split(' ');
+
+        assert.notInclude(duplicateButtonClasses, 'disabled');
     }
 
     async assertTabCloseButtonIsVisible(tabRow: WebElement) {

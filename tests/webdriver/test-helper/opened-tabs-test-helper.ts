@@ -103,6 +103,10 @@ export class OpenedTabsTestHelper {
         await this.tabsTestHelper.clickOnTabReloadButton(tabIndex, tabRow);
     }
 
+    async clickOnTabDuplicateButton(tabRow: WebElement) {
+        await this.tabsTestHelper.clickOnTabDuplicateButton(tabRow);
+    }
+
     async showTitleTooltip(tabRow: WebElement) {
         const tabId = await tabRow.getAttribute('data-tab-id');
         await this.tabsTestHelper.showElementTooltip(`#openedTabList tbody tr[data-tab-id="${tabId}"] .title a`);
@@ -314,6 +318,18 @@ export class OpenedTabsTestHelper {
 
     async assertTabReloadButtonIsNotDisabled(tabRow: WebElement) {
         return this.tabsTestHelper.assertTabReloadButtonIsNotDisabled(tabRow);
+    }
+
+    async assertTabDuplicateButtonIsVisible(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabDuplicateButtonIsVisible(tabRow);
+    }
+
+    async assertTabDuplicateButtonIsDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabDuplicateButtonIsDisabled(tabRow);
+    }
+
+    async assertTabDuplicateButtonIsNotDisabled(tabRow: WebElement) {
+        return this.tabsTestHelper.assertTabDuplicateButtonIsNotDisabled(tabRow);
     }
 
     async assertTabFollowButtonIsDisabled(tabRow: WebElement) {

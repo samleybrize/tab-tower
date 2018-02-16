@@ -50,6 +50,7 @@ import { HeaderView } from './view/header-view';
 import { OpenedTabView } from './view/opened-tab-view';
 import { TabCounter } from './view/tab-counter';
 import { TabFilterView } from './view/tab-filter-view';
+import { TabView } from './view/tab-view';
 
 const defaultFaviconUrl = '/ui/images/default-favicon.svg';
 
@@ -60,8 +61,8 @@ async function main() {
 
     const stringMatcher = new StringMatcher();
     const tabCounter = new TabCounter();
-    const followedTabView = new FollowedTabView(commandBus, queryBus, stringMatcher, tabCounter, document.querySelector('#followedTabList'), defaultFaviconUrl);
-    const openedTabView = new OpenedTabView(commandBus, queryBus, stringMatcher, tabCounter, document.querySelector('#openedTabList'), defaultFaviconUrl);
+    const followedTabView = new FollowedTabView(commandBus, queryBus, tabCounter, new TabView(stringMatcher, document.querySelector('#followedTabList'), defaultFaviconUrl));
+    const openedTabView = new OpenedTabView(commandBus, queryBus, tabCounter, new TabView(stringMatcher, document.querySelector('#openedTabList'), defaultFaviconUrl));
     const tabSearchView = new TabFilterView(eventBus, document.querySelector('#headerTabFilter'));
     const headerView = new HeaderView(followedTabView, openedTabView, document.querySelector('#header'));
 

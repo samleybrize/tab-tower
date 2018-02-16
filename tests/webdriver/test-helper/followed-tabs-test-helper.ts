@@ -51,6 +51,7 @@ export class FollowedTabsTestHelper {
                 return await this.tabsTestHelper.hasClass(openIndicator, 'on');
             }
         }, 10000);
+        await sleep(200);
     }
 
     async clickTwoTimesOnTabTitle(tabRow: WebElement) {

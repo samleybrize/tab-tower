@@ -30,54 +30,19 @@ import { GetTabAssociationsWithFollowState } from '../tab/query/get-tab-associat
 import { TabAssociation } from '../tab/tab-association/tab-association';
 import { StringMatcher } from '../utils/string-matcher';
 import { TabCounter } from './tab-counter';
+import { TabView } from './tab-view';
 
 export class FollowedTabView {
-    private tbodyElement: HTMLElement;
-    private noTabRow: HTMLElement;
-    private isInitDone = false;
-    private pendingEvents: Array<() => void> = [];
-    private filterTerms: string[] = null;
-
     constructor(
         private commandBus: CommandBus,
         private queryBus: QueryBus,
-        private stringMatcher: StringMatcher,
         private tabCounter: TabCounter,
-        private containerElement: HTMLElement,
-        private defaultFaviconUrl: string,
+        private tabView: TabView,
     ) {
-        if (null == containerElement) {
-            throw new Error('null container element received');
-        }
-
-        const tableElement = this.createTable(containerElement);
-        containerElement.appendChild(tableElement);
-        this.tbodyElement = tableElement.querySelector('tbody');
-    }
-
-    private createTable(containerElement: HTMLElement): HTMLTableElement {
-        const table = document.createElement('table');
-        table.classList.add('bordered');
-        table.classList.add('highlight');
-        table.innerHTML = `
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th class="indicators"></th>
-                    <th class="lastAccess">Last access</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        `;
-
-        return table;
     }
 
     async init() {
         const tabList = await this.queryBus.query(new GetTabAssociationsWithFollowState());
-        this.noTabRow = this.createNoTabRow();
-        this.tbodyElement.appendChild(this.noTabRow);
         let numberOfFollowedTabs = 0;
 
         for (const tab of tabList) {
@@ -86,188 +51,84 @@ export class FollowedTabView {
             }
 
             const row = this.createTabRow(tab);
-            this.tbodyElement.appendChild(row);
-            this.initActionsDropdown(row);
+            this.tabView.tbodyElement.appendChild(row);
+            this.tabView.initActionsDropdown(row);
             numberOfFollowedTabs++;
         }
 
-        this.isInitDone = true;
+        this.tabView.isInitialized = true;
         this.tabCounter.setNumberOfFollowedTabs(numberOfFollowedTabs);
-        await this.playPendingEvents();
-        this.applyTabFilter();
-        this.showNoTabRowIfTableIsEmpty();
-    }
-
-    private createNoTabRow() {
-        const cell = document.createElement('td');
-        cell.setAttribute('colspan', '5');
-        cell.textContent = 'No tab found';
-
-        const row = document.createElement('tr');
-        row.classList.add('transparent');
-        row.classList.add('noTabRow');
-        row.appendChild(cell);
-
-        return row;
+        await this.tabView.playPendingTasks();
+        this.tabView.applyTabFilter();
+        this.tabView.showNoTabRowIfTableIsEmpty();
     }
 
     private createTabRow(tab: TabAssociation): HTMLElement {
-        const row = document.createElement('tr');
+        const moreButtonId = `followed-tab-action-${tab.followState.id}`;
+        const tabRow = this.tabView.createTabRow(
+            moreButtonId,
+            tab.followState.title,
+            tab.followState.url,
+            tab.followState.faviconUrl,
+            tab.openState ? tab.openState.isAudible : false,
+            tab.followState.openLastAccess,
+            (row) => {
+                const openTabId = +row.getAttribute('data-opened-tab-id');
+                const isOpeningTab = !!row.getAttribute('data-is-opening-tab');
 
-        const titleCell = this.createTitleCell(tab, row);
-        const onOffIndicatorsCell = this.createCell('indicators');
-        const lastAccessCell = this.createCell('lastAccess');
-        const actionsCell = this.createActionsCell(tab);
-        this.addAudibleIndicator(onOffIndicatorsCell);
-        this.addOnOffIndicator(onOffIndicatorsCell, 'muteIndicator', 'muted');
-        this.addOnOffIndicator(onOffIndicatorsCell, 'openIndicator', 'opened');
-        this.addOnOffIndicator(onOffIndicatorsCell, 'pinIndicator', 'pinned');
-        this.addOnOffIndicator(onOffIndicatorsCell, 'readerModeIndicator', 'reader view');
-        this.addOnOffIndicator(onOffIndicatorsCell, 'incognitoIndicator', 'incognito');
+                if (openTabId) {
+                    this.commandBus.handle(new FocusTab(openTabId));
+                } else if (!isOpeningTab) {
+                    row.setAttribute('data-is-opening-tab', '1');
+                    this.commandBus.handle(new RestoreFollowedTab(tab.followState.id));
+                }
+            },
+        );
 
-        row.setAttribute('data-follow-id', '' + tab.followState.id);
-        row.appendChild(titleCell);
-        row.appendChild(onOffIndicatorsCell);
-        row.appendChild(lastAccessCell);
-        row.appendChild(actionsCell);
+        tabRow.row.setAttribute('data-follow-id', '' + tab.followState.id);
+
+        this.tabView.addMuteIndicator(tabRow.onOffIndicatorsCell);
+        this.tabView.addOnOffIndicator(tabRow.onOffIndicatorsCell, 'openIndicator', 'opened');
+        this.tabView.addPinIndicator(tabRow.onOffIndicatorsCell);
+        this.tabView.addReaderModeIndicator(tabRow.onOffIndicatorsCell);
+        this.tabView.addIncognitoIndicator(tabRow.onOffIndicatorsCell);
+        this.createActions(tabRow.actionsCell, tab);
 
         const tabOpenId = tab.openState ? tab.openState.id : null;
-        this.updateTabFavicon(row, tab.followState.faviconUrl);
-        this.updateTabIncognitoState(row, tab.followState.isIncognito);
-        this.updateTabOpenState(row, this.isTabOpened(tab), tabOpenId);
-        this.updateTabReaderModeState(row, tab.followState.isInReaderMode);
-        this.updateTabAudibleIndicator(row, tab.openState ? tab.openState.isAudible : false);
-        this.updateTabAudioMuteState(row, tab.followState.isAudioMuted);
-        this.updateTabPinState(row, tab.openState ? tab.openState.isPinned : false);
-        this.updateTabTitle(row, tab.followState.title);
-        this.updateTabUrl(row, tab.followState.url);
-        this.updateTabLastAccess(row, tab.followState.openLastAccess);
+        this.updateTabOpenState(tabRow.row, this.isTabOpened(tab), tabOpenId);
+        this.tabView.updateTabIncognitoState(tabRow.row, tab.followState.isIncognito);
+        this.tabView.updateTabReaderModeState(tabRow.row, tab.followState.isInReaderMode);
+        this.tabView.updateTabAudioMuteState(tabRow.row, tab.followState.isAudioMuted);
+        this.tabView.updateTabPinState(tabRow.row, tab.openState ? tab.openState.isPinned : false);
 
-        return row;
+        return tabRow.row;
     }
 
     private isTabOpened(tab: TabAssociation) {
         return !!tab.openState;
     }
 
-    private createCell(className?: string): HTMLElement {
-        const cell = document.createElement('td');
-
-        if (className) {
-            cell.classList.add(className);
-        }
-
-        return cell;
-    }
-
-    private createTitleCell(tab: TabAssociation, row: HTMLElement): HTMLElement {
-        const linkElement = document.createElement('a');
-        linkElement.innerHTML = `
-            <img />
-            <span></span>
-        `;
-        linkElement.addEventListener('click', (event) => {
-            const openTabId = +row.getAttribute('data-opened-tab-id');
-            const isOpeningTab = !!row.getAttribute('data-is-opening-tab');
-
-            if (openTabId) {
-                this.commandBus.handle(new FocusTab(openTabId));
-            } else if (!isOpeningTab) {
-                row.setAttribute('data-is-opening-tab', '1');
-                this.commandBus.handle(new RestoreFollowedTab(tab.followState.id));
-            }
-        });
-        linkElement.querySelector('img').addEventListener('error', (event) => {
-            (event.target as HTMLImageElement).src = this.defaultFaviconUrl;
-        });
-
-        const cell = this.createCell('title');
-        cell.appendChild(linkElement);
-
-        return cell;
-    }
-
-    private addOnOffIndicator(cell: HTMLElement, className: string, label: string) {
-        const badgeElement = document.createElement('span');
-        badgeElement.classList.add(className);
-        badgeElement.classList.add('badge');
-        badgeElement.innerHTML = `<i class="material-icons"></i> <span>${label}</span>`;
-
-        cell.appendChild(badgeElement);
-    }
-
-    private addAudibleIndicator(cell: HTMLElement) {
-        const iconElement = document.createElement('span');
-        iconElement.classList.add('audibleIndicator');
-        iconElement.innerHTML = `<i class="material-icons">volume_up</i>`;
-
-        cell.appendChild(iconElement);
-    }
-
-    private createActionsCell(tab: TabAssociation): HTMLElement {
-        const dropdownId = `followed-tab-action-${tab.followState.id}`;
-        const moreButton = document.createElement('a');
-        moreButton.classList.add('more');
-        moreButton.classList.add('waves-effect');
-        moreButton.classList.add('waves-teal');
-        moreButton.classList.add('btn-flat');
-        moreButton.classList.add('dropdown-button');
-        moreButton.setAttribute('data-activates', dropdownId);
-        moreButton.setAttribute('href', '#');
-        moreButton.setAttribute('data-tooltip', 'Actions');
-        moreButton.innerHTML = '<i class="material-icons">more_vert</i>';
-        jQuery(moreButton).tooltip();
-
-        const cell = this.createCell('actions');
-        cell.appendChild(moreButton);
-
-        const dropdownContainer = document.createElement('div');
-        dropdownContainer.innerHTML = `<ul id='${dropdownId}' class='dropdown-content tabRowDropdown'></ul>`;
-        const dropdownElement = dropdownContainer.querySelector('.tabRowDropdown') as HTMLElement;
-        cell.appendChild(dropdownElement);
-
-        this.addPinTabAction(dropdownElement, tab);
-        this.addUnpinTabAction(dropdownElement, tab);
-        this.addMuteTabAction(dropdownElement, tab);
-        this.addUnmuteTabAction(dropdownElement, tab);
-        this.addDuplicateTabAction(dropdownElement, tab);
-        this.addReloadTabAction(dropdownElement, tab);
-        this.addActionSeparator(dropdownElement);
-        this.addCloseTabAction(dropdownElement, tab);
-        this.addUnfollowTabAction(dropdownElement, tab);
-
-        return cell;
-    }
-
-    private addActionSeparator(dropdownElement: HTMLElement) {
-        const separatorElement = document.createElement('li');
-        separatorElement.classList.add('divider');
-
-        dropdownElement.appendChild(separatorElement);
+    private createActions(cell: HTMLElement, tab: TabAssociation) {
+        this.addPinTabAction(cell, tab);
+        this.addUnpinTabAction(cell, tab);
+        this.addMuteTabAction(cell, tab);
+        this.addUnmuteTabAction(cell, tab);
+        this.addDuplicateTabAction(cell, tab);
+        this.addReloadTabAction(cell, tab);
+        this.tabView.addActionSeparator(cell);
+        this.addCloseTabAction(cell, tab);
+        this.addUnfollowTabAction(cell, tab);
     }
 
     private addUnfollowTabAction(cell: HTMLElement, tab: TabAssociation) {
-        const containerElement = document.createElement('li');
-        containerElement.classList.add('unfollowButton');
-        containerElement.classList.add('warning');
-        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">not_interested</i> Unfollow</a>`;
-        const unfollowButton = containerElement.querySelector('a');
-
-        unfollowButton.addEventListener('click', async (event) => {
+        this.tabView.addUnfollowTabAction(cell, async (event) => {
             const upToDateTab = await this.queryBus.query(new GetTabAssociationByFollowId(tab.followState.id));
             this.commandBus.handle(new UnfollowTab(upToDateTab));
         });
-
-        cell.appendChild(containerElement);
     }
 
     private addPinTabAction(cell: HTMLElement, tab: TabAssociation) {
-        const containerElement = document.createElement('li');
-        containerElement.classList.add('pinButton');
-        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">stars</i> Pin</a>`;
-        const pinButton = containerElement.querySelector('a');
-
-        pinButton.addEventListener('click', async (event) => {
+        this.tabView.addPinTabAction(cell, async (event) => {
             const upToDateTab = await this.queryBus.query(new GetTabAssociationByFollowId(tab.followState.id));
 
             if (null == upToDateTab.openState) {
@@ -276,17 +137,10 @@ export class FollowedTabView {
 
             this.commandBus.handle(new PinTab(upToDateTab.openState.id));
         });
-
-        cell.appendChild(containerElement);
     }
 
     private addUnpinTabAction(cell: HTMLElement, tab: TabAssociation) {
-        const containerElement = document.createElement('li');
-        containerElement.classList.add('unpinButton');
-        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">stars</i> Unpin</a>`;
-        const unpinButton = containerElement.querySelector('a');
-
-        unpinButton.addEventListener('click', async (event) => {
+        this.tabView.addUnpinTabAction(cell, async (event) => {
             const upToDateTab = await this.queryBus.query(new GetTabAssociationByFollowId(tab.followState.id));
 
             if (null == upToDateTab.openState) {
@@ -295,70 +149,34 @@ export class FollowedTabView {
 
             this.commandBus.handle(new UnpinTab(upToDateTab.openState.id));
         });
-
-        cell.appendChild(containerElement);
     }
 
-    private addMuteTabAction(dropdownElement: HTMLElement, tab: TabAssociation) {
-        const containerElement = document.createElement('li');
-        containerElement.classList.add('muteButton');
-        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">volume_off</i> Mute</a>`;
-        const muteButton = containerElement.querySelector('a');
-
-        muteButton.addEventListener('click', async (event) => {
+    private addMuteTabAction(cell: HTMLElement, tab: TabAssociation) {
+        this.tabView.addMuteTabAction(cell, async (event) => {
             this.commandBus.handle(new MuteTab(tab.openState.id));
         });
-
-        dropdownElement.appendChild(containerElement);
     }
 
-    private addUnmuteTabAction(dropdownElement: HTMLElement, tab: TabAssociation) {
-        const containerElement = document.createElement('li');
-        containerElement.classList.add('unmuteButton');
-        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">volume_up</i> Unmute</a>`;
-        const unmuteButton = containerElement.querySelector('a');
-
-        unmuteButton.addEventListener('click', async (event) => {
+    private addUnmuteTabAction(cell: HTMLElement, tab: TabAssociation) {
+        this.tabView.addUnmuteTabAction(cell, async (event) => {
             this.commandBus.handle(new UnmuteTab(tab.openState.id));
         });
-
-        dropdownElement.appendChild(containerElement);
     }
 
-    private addDuplicateTabAction(dropdownElement: HTMLElement, tab: TabAssociation) {
-        const containerElement = document.createElement('li');
-        containerElement.classList.add('duplicateButton');
-        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">content_copy</i> Duplicate</a>`;
-        const unpinButton = containerElement.querySelector('a');
-
-        unpinButton.addEventListener('click', async (event) => {
+    private addDuplicateTabAction(cell: HTMLElement, tab: TabAssociation) {
+        this.tabView.addDuplicateTabAction(cell, async (event) => {
             this.commandBus.handle(new DuplicateTab(tab.openState.id));
         });
-
-        dropdownElement.appendChild(containerElement);
     }
 
-    private addReloadTabAction(dropdownElement: HTMLElement, tab: TabAssociation) {
-        const containerElement = document.createElement('li');
-        containerElement.classList.add('reloadButton');
-        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">autorenew</i> Reload</a>`;
-        const unpinButton = containerElement.querySelector('a');
-
-        unpinButton.addEventListener('click', async (event) => {
+    private addReloadTabAction(cell: HTMLElement, tab: TabAssociation) {
+        this.tabView.addReloadTabAction(cell, async (event) => {
             this.commandBus.handle(new ReloadTab(tab.openState.id));
         });
-
-        dropdownElement.appendChild(containerElement);
     }
 
     private addCloseTabAction(cell: HTMLElement, tab: TabAssociation) {
-        const containerElement = document.createElement('li');
-        containerElement.classList.add('closeButton');
-        containerElement.classList.add('warning');
-        containerElement.innerHTML = `<a class="waves-effect"><i class="material-icons">close</i> Close</a>`;
-        const closeButton = containerElement.querySelector('a');
-
-        closeButton.addEventListener('click', async (event) => {
+        this.tabView.addCloseTabAction(cell, async (event) => {
             const upToDateTab = await this.queryBus.query(new GetTabAssociationByFollowId(tab.followState.id));
 
             if (null == upToDateTab.openState) {
@@ -367,155 +185,41 @@ export class FollowedTabView {
 
             this.commandBus.handle(new CloseTab(upToDateTab.openState.id));
         });
-
-        cell.appendChild(containerElement);
-    }
-
-    private initActionsDropdown(row: HTMLElement) {
-        const dropdownId = row.querySelector('.dropdown-button').getAttribute('data-activates');
-        jQuery(`.dropdown-button[data-activates='${dropdownId}']`).dropdown({constrainWidth: false});
-    }
-
-    private updateTabTitle(row: HTMLElement, title: string) {
-        row.querySelector('.title a span').textContent = title;
-    }
-
-    private updateTabFavicon(row: HTMLElement, faviconUrl: string) {
-        const faviconElement = row.querySelector('.title a img') as HTMLImageElement;
-
-        if (null == faviconUrl) {
-            faviconElement.src = this.defaultFaviconUrl;
-        } else {
-            faviconElement.src = faviconUrl;
-        }
-    }
-
-    private updateTabUrl(row: HTMLElement, url: string) {
-        row.setAttribute('data-url', '' + url);
-        row.querySelector('.title a').setAttribute('data-url', '' + url);
-    }
-
-    private updateTabLastAccess(row: HTMLElement, lastAccess: Date) {
-        if (lastAccess) {
-            row.querySelector('.lastAccess').innerHTML = moment(lastAccess).format('LLL');
-        }
     }
 
     private updateTabOpenState(row: HTMLElement, isOpened: boolean, tabId: number) {
         row.setAttribute('data-opened-tab-id', '' + tabId);
-        const titleCell = row.querySelector('.title');
-
-        const closeButton = row.querySelector('.closeButton');
-        const duplicateButton = row.querySelector('.duplicateButton');
-        const reloadButton = row.querySelector('.reloadButton');
-        const pinButton = row.querySelector('.pinButton');
-        const muteButton = row.querySelector('.muteButton');
-        const unmuteButton = row.querySelector('.unmuteButton');
-        this.updateOnOffIndicator(row, 'openIndicator', isOpened);
+        this.tabView.updateOnOffIndicator(row, 'openIndicator', isOpened);
 
         if (isOpened) {
-            closeButton.classList.remove('transparent');
-            duplicateButton.classList.remove('disabled');
-            reloadButton.classList.remove('disabled');
-            pinButton.classList.remove('disabled');
-            muteButton.classList.remove('disabled');
-            unmuteButton.classList.remove('disabled');
-            titleCell.setAttribute('data-tooltip', 'Go to tab');
+            this.tabView.showCloseButton(row);
+            this.tabView.enableDuplicateButton(row);
+            this.tabView.enableMuteButton(row);
+            this.tabView.enablePinButton(row);
+            this.tabView.enableReloadButton(row);
+            this.tabView.enableUnmuteButton(row);
+            this.tabView.updateTabTitleTooltip(row, 'Go to tab');
         } else {
-            closeButton.classList.add('transparent');
-            duplicateButton.classList.add('disabled');
-            reloadButton.classList.add('disabled');
-            pinButton.classList.add('disabled');
-            muteButton.classList.add('disabled');
-            unmuteButton.classList.add('disabled');
-            titleCell.setAttribute('data-tooltip', 'Open tab');
+            this.tabView.hideCloseButton(row);
+            this.tabView.disableDuplicateButton(row);
+            this.tabView.disableMuteButton(row);
+            this.tabView.disablePinButton(row);
+            this.tabView.disableReloadButton(row);
+            this.tabView.disableUnmuteButton(row);
+            this.tabView.updateTabTitleTooltip(row, 'Open tab');
         }
-
-        jQuery(titleCell).tooltip();
-    }
-
-    private updateOnOffIndicator(row: HTMLElement, className: string, isOn: boolean) {
-        const indicatorElement = row.querySelector(`.${className}`);
-
-        if (isOn) {
-            indicatorElement.classList.remove('off');
-            indicatorElement.classList.add('on');
-            indicatorElement.querySelector('.material-icons').textContent = 'check_circle';
-        } else {
-            indicatorElement.classList.add('off');
-            indicatorElement.classList.remove('on');
-            indicatorElement.querySelector('.material-icons').textContent = 'cancel';
-        }
-    }
-
-    private updateTabAudibleIndicator(row: HTMLElement, isOn: boolean) {
-        const indicatorElement = row.querySelector(`.audibleIndicator`);
-
-        if (isOn) {
-            indicatorElement.classList.remove('off');
-            indicatorElement.classList.add('on');
-            indicatorElement.setAttribute('data-tooltip', 'Produces sound');
-            jQuery(indicatorElement).tooltip();
-        } else {
-            indicatorElement.classList.add('off');
-            indicatorElement.classList.remove('on');
-            jQuery(indicatorElement).tooltip('remove');
-        }
-    }
-
-    private updateTabAudioMuteState(row: HTMLElement, isAudioMuted: boolean) {
-        this.updateOnOffIndicator(row, 'muteIndicator', isAudioMuted);
-        const muteButton = row.querySelector('.muteButton');
-        const unmuteButton = row.querySelector('.unmuteButton');
-
-        if (isAudioMuted) {
-            muteButton.classList.add('transparent');
-            unmuteButton.classList.remove('transparent');
-        } else {
-            muteButton.classList.remove('transparent');
-            unmuteButton.classList.add('transparent');
-        }
-    }
-
-    private updateTabReaderModeState(row: HTMLElement, isInReaderMode: boolean) {
-        row.setAttribute('data-reader-mode', isInReaderMode ? '1' : '');
-
-        this.updateOnOffIndicator(row, 'readerModeIndicator', isInReaderMode);
-    }
-
-    private updateTabPinState(row: HTMLElement, isPinned: boolean) {
-        this.updateOnOffIndicator(row, 'pinIndicator', isPinned);
-        const pinButton = row.querySelector('.pinButton');
-        const unpinButton = row.querySelector('.unpinButton');
-
-        if (isPinned) {
-            pinButton.classList.add('transparent');
-            unpinButton.classList.remove('transparent');
-        } else {
-            pinButton.classList.remove('transparent');
-            unpinButton.classList.add('transparent');
-        }
-    }
-
-    private updateTabIncognitoState(row: HTMLElement, isIncognito: boolean) {
-        this.updateOnOffIndicator(row, 'incognitoIndicator', isIncognito);
     }
 
     show() {
-        this.containerElement.classList.add('show');
+        this.tabView.show();
     }
 
     hide() {
-        this.containerElement.classList.remove('show');
+        this.tabView.hide();
     }
 
     async onTabClose(event: TabClosed) {
-        if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.handleTabClose.bind(this, event));
-            return;
-        }
-
-        await this.handleTabClose(event);
+        this.tabView.addPendingTask(this.handleTabClose.bind(this, event));
     }
 
     private async handleTabClose(event: TabClosed) {
@@ -525,279 +229,173 @@ export class FollowedTabView {
             tabRow.removeAttribute('data-opened-tab-id');
             const followId = tabRow.getAttribute('data-follow-id');
             const upToDateTab = await this.queryBus.query(new GetTabAssociationByFollowId(followId));
-            this.updateTabAudibleIndicator(tabRow, false);
-            this.updateTabPinState(tabRow, false);
-            this.updateTabTitle(tabRow, upToDateTab.followState.title);
-            this.updateTabUrl(tabRow, upToDateTab.followState.url);
-            this.updateTabFavicon(tabRow, upToDateTab.followState.faviconUrl);
+
+            this.tabView.updateTabAudibleIndicator(tabRow, false);
+            this.tabView.updateTabPinState(tabRow, false);
+            this.tabView.updateTabTitle(tabRow, upToDateTab.followState.title);
+            this.tabView.updateTabUrl(tabRow, upToDateTab.followState.url);
+            this.tabView.updateTabFavicon(tabRow, upToDateTab.followState.faviconUrl);
             this.updateTabOpenState(tabRow, false, null);
         }
     }
 
-    private isEventHandlingNotReady() {
-        return !this.isInitDone || this.pendingEvents.length;
-    }
-
     private getTabRowByOpenTabId(openTabId: number): HTMLTableRowElement {
-        return this.tbodyElement.querySelector(`tr[data-opened-tab-id="${openTabId}"]`);
+        return this.tabView.tbodyElement.querySelector(`tr[data-opened-tab-id="${openTabId}"]`);
     }
 
     async onOpenTabFaviconUrlUpdate(event: OpenedTabFaviconUrlUpdated) {
-        if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.handleTabFaviconUrlUpdate.bind(this, event));
-            return;
-        }
-
-        await this.handleTabFaviconUrlUpdate(event);
+        this.tabView.addPendingTask(this.handleTabFaviconUrlUpdate.bind(this, event));
     }
 
     private async handleTabFaviconUrlUpdate(event: OpenedTabFaviconUrlUpdated) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
-            this.updateTabFavicon(tabRow, event.tabOpenState.faviconUrl);
-            this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
+            this.tabView.updateTabFavicon(tabRow, event.tabOpenState.faviconUrl);
+            this.tabView.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }
 
     async onOpenTabTitleUpdate(event: OpenedTabTitleUpdated) {
-        if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.handleTabTitleUpdate.bind(this, event));
-            return;
-        }
-
-        await this.handleTabTitleUpdate(event);
+        this.tabView.addPendingTask(this.handleTabTitleUpdate.bind(this, event));
     }
 
     private async handleTabTitleUpdate(event: OpenedTabTitleUpdated) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
-            this.updateTabTitle(tabRow, event.tabOpenState.title);
-            this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
+            this.tabView.updateTabTitle(tabRow, event.tabOpenState.title);
+            this.tabView.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }
 
     async onOpenTabUrlUpdate(event: OpenedTabUrlUpdated) {
-        if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.handleTabUrlUpdate.bind(this, event));
-            return;
-        }
-
-        await this.handleTabUrlUpdate(event);
+        this.tabView.addPendingTask(this.handleTabUrlUpdate.bind(this, event));
     }
 
     private async handleTabUrlUpdate(event: OpenedTabUrlUpdated) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
-            this.updateTabUrl(tabRow, event.tabOpenState.url);
-            this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
+            this.tabView.updateTabUrl(tabRow, event.tabOpenState.url);
+            this.tabView.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }
 
     async onOpenTabReaderModeStateUpdate(event: OpenedTabReaderModeStateUpdated) {
-        if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.handleTabReaderModeStateUpdate.bind(this, event));
-            return;
-        }
-
-        await this.handleTabReaderModeStateUpdate(event);
+        this.tabView.addPendingTask(this.handleTabReaderModeStateUpdate.bind(this, event));
     }
 
     private async handleTabReaderModeStateUpdate(event: OpenedTabReaderModeStateUpdated) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
-            this.updateTabReaderModeState(tabRow, event.tabOpenState.isInReaderMode);
-            this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
+            this.tabView.updateTabReaderModeState(tabRow, event.tabOpenState.isInReaderMode);
+            this.tabView.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }
 
     async onOpenTabAudibleStateUpdate(event: OpenedTabAudibleStateUpdated) {
-        if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.handleOpenTabAudibleStateUpdate.bind(this, event));
-            return;
-        }
-
-        await this.handleOpenTabAudibleStateUpdate(event);
+        this.tabView.addPendingTask(this.handleOpenTabAudibleStateUpdate.bind(this, event));
     }
 
     private async handleOpenTabAudibleStateUpdate(event: OpenedTabAudibleStateUpdated) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
-            this.updateTabAudibleIndicator(tabRow, event.tabOpenState.isAudible);
-            this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
+            this.tabView.updateTabAudibleIndicator(tabRow, event.tabOpenState.isAudible);
+            this.tabView.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }
 
     async onOpenTabAudioMuteStateUpdate(event: OpenedTabAudioMuteStateUpdated) {
-        if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.handleOpenTabAudibleStateUpdate.bind(this, event));
-            return;
-        }
-
-        await this.handleOpenTabAudioMuteStateUpdate(event);
+        this.tabView.addPendingTask(this.handleOpenTabAudioMuteStateUpdate.bind(this, event));
     }
 
     private async handleOpenTabAudioMuteStateUpdate(event: OpenedTabAudioMuteStateUpdated) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
-            this.updateTabAudioMuteState(tabRow, event.tabOpenState.isAudioMuted);
-            this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
+            this.tabView.updateTabAudioMuteState(tabRow, event.tabOpenState.isAudioMuted);
+            this.tabView.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }
 
     async onOpenTabPinStateUpdate(event: OpenedTabPinStateUpdated) {
-        if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.handleTabPinStateUpdate.bind(this, event));
-            return;
-        }
-
-        await this.handleTabPinStateUpdate(event);
+        this.tabView.addPendingTask(this.handleTabPinStateUpdate.bind(this, event));
     }
 
     private async handleTabPinStateUpdate(event: OpenedTabPinStateUpdated) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
-            this.updateTabPinState(tabRow, event.tabOpenState.isPinned);
-            this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
+            this.tabView.updateTabPinState(tabRow, event.tabOpenState.isPinned);
+            this.tabView.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }
 
     async onTabFollow(event: TabFollowed) {
-        if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.handleTabFollow.bind(this, event));
-            return;
-        }
-
-        await this.handleTabFollow(event);
+        this.tabView.addPendingTask(this.handleTabFollow.bind(this, event));
     }
 
     private async handleTabFollow(event: TabFollowed) {
         const row = this.createTabRow(event.tab);
-        this.tbodyElement.appendChild(row);
+        this.tabView.tbodyElement.appendChild(row);
 
-        this.noTabRow.classList.add('transparent');
-        this.initActionsDropdown(row);
-        this.applyTabFilter();
+        this.tabView.hideNoTabRow();
+        this.tabView.initActionsDropdown(row);
+        this.tabView.applyTabFilter();
         this.tabCounter.incrementNumberOfFollowedTabs();
     }
 
     async onTabUnfollow(event: TabUnfollowed) {
-        if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.handleTabUnfollow.bind(this, event));
-            return;
-        }
-
-        await this.handleTabUnfollow(event);
+        this.tabView.addPendingTask(this.handleTabUnfollow.bind(this, event));
     }
 
     private async handleTabUnfollow(event: TabUnfollowed) {
-        const followedTabRow = this.tbodyElement.querySelector(`tr[data-follow-id="${event.oldFollowState.id}"]`);
+        const followedTabRow = this.tabView.tbodyElement.querySelector(`tr[data-follow-id="${event.oldFollowState.id}"]`);
 
         if (followedTabRow) {
             jQuery(followedTabRow).find('[data-tooltip]').tooltip('close');
             followedTabRow.remove();
-            this.showNoTabRowIfTableIsEmpty();
+            this.tabView.showNoTabRowIfTableIsEmpty();
             this.tabCounter.decrementNumberOfFollowedTabs();
         }
     }
 
-    private showNoTabRowIfTableIsEmpty() {
-        if (this.tbodyElement.querySelectorAll('tr:not(.filtered):not(.noTabRow)').length <= 0) {
-            this.noTabRow.classList.remove('transparent');
-        } else {
-            this.noTabRow.classList.add('transparent');
-        }
-    }
-
     async onAssociateOpenedTabToFollowedTab(event: OpenedTabAssociatedToFollowedTab) {
-        if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.handleAssociateOpenedTabToFollowedTab.bind(this, event));
-            return;
-        }
-
-        await this.handleAssociateOpenedTabToFollowedTab(event);
+        this.tabView.addPendingTask(this.handleAssociateOpenedTabToFollowedTab.bind(this, event));
     }
 
     private async handleAssociateOpenedTabToFollowedTab(event: OpenedTabAssociatedToFollowedTab) {
-        const followedTabRow: HTMLElement = this.tbodyElement.querySelector(`tr[data-follow-id="${event.tabFollowState.id}"]`);
+        const followedTabRow: HTMLElement = this.tabView.tbodyElement.querySelector(`tr[data-follow-id="${event.tabFollowState.id}"]`);
 
         if (followedTabRow) {
-            this.updateTabFavicon(followedTabRow, event.tabOpenState.faviconUrl);
-            this.updateTabIncognitoState(followedTabRow, event.tabOpenState.isIncognito);
+            this.tabView.updateTabFavicon(followedTabRow, event.tabOpenState.faviconUrl);
             this.updateTabOpenState(followedTabRow, true, event.tabOpenState.id);
-            this.updateTabReaderModeState(followedTabRow, event.tabOpenState.isInReaderMode);
-            this.updateTabTitle(followedTabRow, event.tabOpenState.title);
-            this.updateTabUrl(followedTabRow, event.tabOpenState.url);
-            this.updateTabAudibleIndicator(followedTabRow, event.tabOpenState.isAudible);
-            this.updateTabLastAccess(followedTabRow, event.tabOpenState.lastAccess);
+            this.tabView.updateTabIncognitoState(followedTabRow, event.tabOpenState.isIncognito);
+            this.tabView.updateTabReaderModeState(followedTabRow, event.tabOpenState.isInReaderMode);
+            this.tabView.updateTabTitle(followedTabRow, event.tabOpenState.title);
+            this.tabView.updateTabUrl(followedTabRow, event.tabOpenState.url);
+            this.tabView.updateTabAudibleIndicator(followedTabRow, event.tabOpenState.isAudible);
+            this.tabView.updateTabLastAccess(followedTabRow, event.tabOpenState.lastAccess);
             followedTabRow.removeAttribute('data-is-opening-tab');
         }
     }
 
     async onTabFocus(event: OpenedTabFocused) {
-        if (this.isEventHandlingNotReady()) {
-            this.pendingEvents.push(this.handleTabFocus.bind(this, event));
-            return;
-        }
-
-        await this.handleTabFocus(event);
+        this.tabView.addPendingTask(this.handleTabFocus.bind(this, event));
     }
 
     async handleTabFocus(event: OpenedTabFocused) {
         const tabRow = this.getTabRowByOpenTabId(event.tabOpenState.id);
 
         if (tabRow) {
-            this.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
+            this.tabView.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }
 
     async onTabFilterRequest(event: TabFilterRequested) {
-        this.filterTerms = event.filterTerms;
-        this.applyTabFilter();
-    }
-
-    private applyTabFilter() {
-        if (!this.isInitDone || !this.hasFilterTerms()) {
-            return;
-        }
-
-        const rowList = Array.from(this.tbodyElement.querySelectorAll('tr'));
-
-        for (const row of rowList) {
-            if (row.classList.contains('noTabRow')) {
-                continue;
-            }
-
-            const titleCell = row.querySelector('.title a');
-            const title = titleCell.textContent.toLowerCase().trim();
-            const url = titleCell.getAttribute('data-url').toLowerCase().trim();
-
-            if (this.stringMatcher.isCaseSensitiveMatch(this.filterTerms, [title, url])) {
-                row.classList.remove('filtered');
-            } else {
-                row.classList.add('filtered');
-            }
-        }
-
-        this.showNoTabRowIfTableIsEmpty();
-    }
-
-    private hasFilterTerms() {
-        return null !== this.filterTerms && this.filterTerms.length > 0;
-    }
-
-    private async playPendingEvents() {
-        while (this.pendingEvents.length) {
-            const callback = this.pendingEvents.pop();
-            await callback();
-        }
-
-        this.pendingEvents = [];
+        this.tabView.filterTabs(event.filterTerms);
     }
 }

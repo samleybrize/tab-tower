@@ -12,7 +12,7 @@ let driver: WebDriver;
 let firefoxConfig: FirefoxConfig;
 let testHelper: TestHelper;
 let openedTabsHelper: OpenedTabsTestHelper;
-let uiUrl: string;
+let controlCenterDesktopUrl: string;
 
 describe('Opened tabs tracking', () => {
     before(async () => {
@@ -21,9 +21,9 @@ describe('Opened tabs tracking', () => {
         browserInstructionSender = testHelper.getBrowserInstructionSender();
         driver = testHelper.getDriver();
         firefoxConfig = testHelper.getFirefoxConfig();
-        uiUrl = firefoxConfig.getExtensionUrl(ExtensionUrl.UI);
+        controlCenterDesktopUrl = firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP);
 
-        await driver.get(uiUrl);
+        await driver.get(controlCenterDesktopUrl);
     });
     after(async () => {
         await testHelper.shutdown();
@@ -39,7 +39,7 @@ describe('Opened tabs tracking', () => {
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.assertNoTabRowIsNotVisible();
         await openedTabsHelper.assertNumberOfTabs(2);
-        await openedTabsHelper.assertTabUrl(openedTabRowList[0], uiUrl);
+        await openedTabsHelper.assertTabUrl(openedTabRowList[0], controlCenterDesktopUrl);
         await openedTabsHelper.assertTabFaviconUrl(openedTabRowList[0], firefoxConfig.getExtensionUrl(ExtensionUrl.EXTENSION_FAVICON));
         await openedTabsHelper.assertTabTitle(openedTabRowList[1], 'Test page 1');
         await openedTabsHelper.assertTabUrl(openedTabRowList[1], testPage1Url);
@@ -110,7 +110,7 @@ describe('Opened tabs tracking', () => {
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.assertNoTabRowIsNotVisible();
         await openedTabsHelper.assertNumberOfTabs(3);
-        await openedTabsHelper.assertTabUrl(openedTabRowList[0], uiUrl);
+        await openedTabsHelper.assertTabUrl(openedTabRowList[0], controlCenterDesktopUrl);
         await openedTabsHelper.assertTabFaviconUrl(openedTabRowList[0], firefoxConfig.getExtensionUrl(ExtensionUrl.EXTENSION_FAVICON));
         await openedTabsHelper.assertTabTitle(openedTabRowList[1], 'Test page 2');
         await openedTabsHelper.assertTabUrl(openedTabRowList[1], testPage2Url);
@@ -130,7 +130,7 @@ describe('Opened tabs tracking', () => {
 
         const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.assertNumberOfTabs(2);
-        await openedTabsHelper.assertTabUrl(newOpenedTabRowList[0], uiUrl);
+        await openedTabsHelper.assertTabUrl(newOpenedTabRowList[0], controlCenterDesktopUrl);
         await openedTabsHelper.assertTabFaviconUrl(newOpenedTabRowList[0], firefoxConfig.getExtensionUrl(ExtensionUrl.EXTENSION_FAVICON));
         await openedTabsHelper.assertTabTitle(newOpenedTabRowList[1], 'Test page 1');
         await openedTabsHelper.assertTabUrl(newOpenedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
@@ -138,7 +138,7 @@ describe('Opened tabs tracking', () => {
 
         const tabList = await browserInstructionSender.getAllTabs();
         assert.equal(tabList.length, 2);
-        assert.equal(tabList[0].url, uiUrl);
+        assert.equal(tabList[0].url, controlCenterDesktopUrl);
         assert.equal(tabList[1].url, testPage1Url);
     });
 
@@ -160,7 +160,7 @@ describe('Opened tabs tracking', () => {
 
     it('A click on an opened tab should focus the associated tab when an ignored tab was moved', async () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
-        await testHelper.openIgnoredTab(uiUrl, 2);
+        await testHelper.openIgnoredTab(controlCenterDesktopUrl, 2);
         await testHelper.moveTab(2, 1);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
@@ -191,7 +191,7 @@ describe('Opened tabs tracking', () => {
         await testHelper.reloadExtension();
 
         await testHelper.switchToWindowHandle(2);
-        await testHelper.changeTabUrl(2, uiUrl);
+        await testHelper.changeTabUrl(2, controlCenterDesktopUrl);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.assertNoTabRowIsNotVisible();
@@ -202,7 +202,7 @@ describe('Opened tabs tracking', () => {
         await openedTabsHelper.assertTabTitle(openedTabRowList[1], 'Test page 2');
         await openedTabsHelper.assertTabUrl(openedTabRowList[1], testPage2Url);
         await openedTabsHelper.assertTabFaviconUrl(openedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_2));
-        await openedTabsHelper.assertTabUrl(openedTabRowList[2], uiUrl);
+        await openedTabsHelper.assertTabUrl(openedTabRowList[2], controlCenterDesktopUrl);
         await openedTabsHelper.assertTabFaviconUrl(openedTabRowList[2], firefoxConfig.getExtensionUrl(ExtensionUrl.EXTENSION_FAVICON));
     });
 

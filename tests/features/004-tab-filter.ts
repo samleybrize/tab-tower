@@ -23,7 +23,7 @@ describe('Tab filter', () => {
         driver = testHelper.getDriver();
         firefoxConfig = testHelper.getFirefoxConfig();
 
-        await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
+        await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP));
 
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_FILTER_1));
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_FILTER_WITH_SOME_TEXT));

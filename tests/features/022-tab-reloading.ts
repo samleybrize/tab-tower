@@ -21,7 +21,7 @@ describe('Tab reloading', () => {
         driver = testHelper.getDriver();
         firefoxConfig = testHelper.getFirefoxConfig();
 
-        await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
+        await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP));
     });
     after(async () => {
         await testHelper.shutdown();

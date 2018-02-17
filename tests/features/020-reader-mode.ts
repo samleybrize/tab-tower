@@ -20,7 +20,7 @@ describe('Reader mode', () => {
         driver = testHelper.getDriver();
         firefoxConfig = testHelper.getFirefoxConfig();
 
-        await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
+        await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP));
     });
     after(async () => {
         await testHelper.shutdown();
@@ -60,8 +60,8 @@ describe('Reader mode', () => {
 
             await testHelper.reloadExtension();
 
-            const uiUrl = firefoxConfig.getExtensionUrl(ExtensionUrl.UI);
-            await testHelper.openIgnoredTab(uiUrl, 2);
+            const controlCenterDesktopUrl = firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP);
+            await testHelper.openIgnoredTab(controlCenterDesktopUrl, 2);
             await testHelper.focusTab(2);
             await testHelper.switchToWindowHandle(2);
 
@@ -138,7 +138,7 @@ describe('Reader mode', () => {
             await testHelper.reloadExtension();
 
             await testHelper.switchToWindowHandle(0);
-            await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
+            await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP));
 
             await testHelper.showFollowedTabsList();
             const followedTabRowList = await followedTabsHelper.getTabRowList();

@@ -25,7 +25,7 @@ describe('Tab following', () => {
         driver = testHelper.getDriver();
         firefoxConfig = testHelper.getFirefoxConfig();
 
-        await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
+        await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP));
     });
     after(async () => {
         await testHelper.shutdown();
@@ -250,7 +250,7 @@ describe('Tab following', () => {
 
         const tabList = await browserInstructionSender.getAllTabs();
         assert.equal(tabList.length, 2);
-        assert.equal(tabList[0].url, firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
+        assert.equal(tabList[0].url, firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP));
         assert.equal(tabList[1].url, testPage1Url);
     });
 
@@ -356,7 +356,7 @@ describe('Tab following', () => {
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[0]);
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[3]);
 
-        await testHelper.changeTabUrl(1, firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
+        await testHelper.changeTabUrl(1, firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP));
         await testHelper.moveTab(1, 0);
 
         await testHelper.showFollowedTabsList();
@@ -377,7 +377,7 @@ describe('Tab following', () => {
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[0]);
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[3]);
 
-        await testHelper.changeTabUrl(1, firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
+        await testHelper.changeTabUrl(1, firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP));
         await testHelper.moveTab(1, 0);
 
         await testHelper.closeTab(0);
@@ -481,7 +481,7 @@ describe('Tab following', () => {
 
         await testHelper.reloadTab(0);
 
-        await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.UI), 0);
+        await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP), 0);
         await testHelper.switchToWindowHandle(0);
         await testHelper.showFollowedTabsList();
 
@@ -518,7 +518,7 @@ describe('Tab following', () => {
 
         await testHelper.reloadExtension();
 
-        await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.UI), 0);
+        await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP), 0);
         await testHelper.switchToWindowHandle(0);
         await testHelper.showFollowedTabsList();
 
@@ -543,9 +543,9 @@ describe('Tab following', () => {
         await openedTabsHelper.clickOnTabFollowButton(openedTabsRowList[1]);
 
         await testHelper.reloadExtension();
-        await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.UI), 0);
+        await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP), 0);
         await testHelper.switchToWindowHandle(0);
-        await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
+        await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP));
 
         await testHelper.showFollowedTabsList();
         const newFollowedTabRowList = await followedTabsHelper.getTabRowList();

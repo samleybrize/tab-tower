@@ -24,7 +24,7 @@ describe('Tab muting', () => {
         driver = testHelper.getDriver();
         firefoxConfig = testHelper.getFirefoxConfig();
 
-        await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
+        await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP));
     });
     after(async () => {
         await testHelper.shutdown();
@@ -145,7 +145,7 @@ describe('Tab muting', () => {
             await openedTabsHelper.clickOnTabMuteButton(openedTabRowList[1]);
 
             await testHelper.reloadExtension();
-            await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.UI), 0);
+            await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP), 0);
             await testHelper.switchToWindowHandle(0);
 
             const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
@@ -477,7 +477,7 @@ describe('Tab muting', () => {
             await openedTabsHelper.clickOnTabMuteButton(openedTabRowList[1]);
 
             await testHelper.reloadExtension();
-            await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.UI), 0);
+            await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP), 0);
             await testHelper.switchToWindowHandle(0);
 
             await testHelper.showFollowedTabsList();

@@ -82,7 +82,7 @@ export class TestHelper {
     async resetBrowserState() {
         await this.browserInstructionSender.resetBrowserState();
         await this.reloadExtension();
-        await this.changeTabUrl(0, this.firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
+        await this.changeTabUrl(0, this.firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP));
         await this.switchToWindowHandle(0);
     }
 

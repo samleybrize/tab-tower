@@ -90,9 +90,9 @@ async function main() {
     const followedTabUpdater = new FollowedTabUpdater(inMemoryTabPersister, commandBus, queryBus);
     const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
 
-    const uiUrlStartWith = `moz-extension://${location.host}/ui/control-center-desktop.html`;
+    const controlCenterDesktopUrlStartWith = `moz-extension://${location.host}/ui/control-center-desktop.html`;
     const privilegedUrlDetector = new PrivilegedUrlDetector();
-    const openedTabRetriever = new OpenedTabRetriever(privilegedUrlDetector, [uiUrlStartWith]);
+    const openedTabRetriever = new OpenedTabRetriever(privilegedUrlDetector, [controlCenterDesktopUrlStartWith]);
     const closedTabRetriever = new ClosedTabRetriever(queryBus);
     const tabOpener = new TabOpener(commandBus, queryBus);
 
@@ -210,9 +210,9 @@ async function main() {
     }
 
     async function initBrowserAction() {
-        const uiUrl = `moz-extension://${location.host}/ui/control-center-desktop.html`;
+        const controlCenterDesktopUrl = `moz-extension://${location.host}/ui/control-center-desktop.html`;
         browser.browserAction.onClicked.addListener(async () => {
-            const uiTabs = await browser.tabs.query({url: uiUrl});
+            const uiTabs = await browser.tabs.query({url: controlCenterDesktopUrl});
 
             if (uiTabs.length > 0) {
                 browser.tabs.update(uiTabs[0].id, {active: true});
@@ -223,7 +223,7 @@ async function main() {
             browser.tabs.create({
                 active: true,
                 index: 0,
-                url: uiUrl,
+                url: controlCenterDesktopUrl,
             });
         });
     }

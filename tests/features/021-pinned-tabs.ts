@@ -24,7 +24,7 @@ describe('Pinned tabs', () => {
         driver = testHelper.getDriver();
         firefoxConfig = testHelper.getFirefoxConfig();
 
-        await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
+        await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP));
     });
     after(async () => {
         await testHelper.shutdown();
@@ -175,7 +175,7 @@ describe('Pinned tabs', () => {
             await testHelper.pinTab(2, openedTabRowList[2]);
 
             await testHelper.reloadExtension();
-            await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.UI), 2);
+            await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP), 2);
             await testHelper.switchToWindowHandle(2);
 
             const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
@@ -556,7 +556,7 @@ describe('Pinned tabs', () => {
             await openedTabsHelper.clickOnTabPinButton(openedTabRowList[1]);
 
             await testHelper.reloadExtension();
-            await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.UI), 2);
+            await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP), 2);
             await testHelper.switchToWindowHandle(2);
 
             await testHelper.showFollowedTabsList();

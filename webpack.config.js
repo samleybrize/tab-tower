@@ -9,15 +9,15 @@ function getMaterializePath() {
 }
 
 const backgroundEntries = ['./src/typescript/background.ts'];
-const uiEntries = [
+const controlCenterDesktopEntries = [
     getJqueryPath(),
     getMaterializePath(),
-    './src/typescript/ui.ts',
+    './src/typescript/control-center-desktop.ts',
 ];
 
 if ('test' == process.env.NODE_ENV) {
     backgroundEntries.push('./tests/utils/browser-instruction-receiver.ts');
-    uiEntries.push('./tests/utils/test-tab-opener.ts');
+    controlCenterDesktopEntries.push('./tests/utils/test-tab-opener.ts');
 }
 
 module.exports = [
@@ -44,9 +44,9 @@ module.exports = [
         },
     },
     {
-        entry: uiEntries,
+        entry: controlCenterDesktopEntries,
         output: {
-            filename: 'ui.js',
+            filename: 'control-center-desktop.js',
             path: path.resolve(__dirname, 'dist/js'),
         },
         resolve: {

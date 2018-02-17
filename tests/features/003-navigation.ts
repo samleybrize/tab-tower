@@ -20,7 +20,7 @@ describe('Navigation', () => {
         driver = testHelper.getDriver();
         firefoxConfig = testHelper.getFirefoxConfig();
 
-        await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.UI));
+        await driver.get(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP));
     });
     after(async () => {
         await testHelper.shutdown();
@@ -111,7 +111,7 @@ describe('Navigation', () => {
         await testHelper.openTab(testPage1Url);
 
         await testHelper.reloadExtension();
-        await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.UI), 0);
+        await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP), 0);
         await testHelper.switchToWindowHandle(0);
 
         await navigationHelper.assertOpenedTabsCounter(3);
@@ -126,7 +126,7 @@ describe('Navigation', () => {
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
         await testHelper.reloadExtension();
-        await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.UI), 0);
+        await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP), 0);
         await testHelper.switchToWindowHandle(0);
 
         await navigationHelper.assertFollowedTabsCounter(1);

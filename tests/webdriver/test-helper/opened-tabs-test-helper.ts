@@ -104,7 +104,7 @@ export class OpenedTabsTestHelper {
     }
 
     async clickOnTabDuplicateButton(tabRow: WebElement) {
-        await this.tabsTestHelper.clickOnTabDuplicateButton(tabRow);
+        await this.tabsTestHelper.clickOnTabDuplicateButton(tabRow, true);
     }
 
     async showTitleTooltip(tabRow: WebElement) {

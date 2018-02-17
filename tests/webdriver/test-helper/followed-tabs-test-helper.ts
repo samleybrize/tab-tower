@@ -158,8 +158,12 @@ export class FollowedTabsTestHelper {
         await this.tabsTestHelper.clickOnTabReloadButton(tabIndex, tabRow);
     }
 
-    async clickOnTabDuplicateButton(tabRow: WebElement) {
-        await this.tabsTestHelper.clickOnTabDuplicateButton(tabRow);
+    async clickOnTabDuplicateButton(tabRow: WebElement, waitForNewTab?: boolean) {
+        if (undefined === waitForNewTab) {
+            waitForNewTab = true;
+        }
+
+        await this.tabsTestHelper.clickOnTabDuplicateButton(tabRow, waitForNewTab);
     }
 
     async showTitleTooltip(tabRow: WebElement) {

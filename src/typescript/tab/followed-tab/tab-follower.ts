@@ -38,6 +38,7 @@ export class TabFollower {
         followState.title = openState.title;
         followState.isIncognito = openState.isIncognito;
         followState.isInReaderMode = openState.isInReaderMode;
+        followState.isAudioMuted = openState.isAudioMuted;
         followState.url = openState.url;
         followState.faviconUrl = openState.faviconUrl;
         followState.openLongLivedId = openState.longLivedId;

@@ -131,9 +131,9 @@ describe('Pinned tabs', () => {
             await openedTabsHelper.assertTabPinIndicatorIsOff(newOpenedTabRowList[1]);
             await openedTabsHelper.assertTabPinIndicatorIsOff(newOpenedTabRowList[2]);
 
-            const pinnedTab = await browserInstructionSender.getTab(0);
-            const unpinnedTab1 = await browserInstructionSender.getTab(1);
-            const unpinnedTab2 = await browserInstructionSender.getTab(2);
+            const pinnedTab = await browserInstructionSender.getTabByIndex(0);
+            const unpinnedTab1 = await browserInstructionSender.getTabByIndex(1);
+            const unpinnedTab2 = await browserInstructionSender.getTabByIndex(2);
             assert.isTrue(pinnedTab.pinned);
             assert.equal(pinnedTab.url, testPage1Url);
             assert.isFalse(unpinnedTab1.pinned);
@@ -157,9 +157,9 @@ describe('Pinned tabs', () => {
             await openedTabsHelper.assertTabPinIndicatorIsOff(newOpenedTabRowList[1]);
             await openedTabsHelper.assertTabPinIndicatorIsOff(newOpenedTabRowList[2]);
 
-            const tab1 = await browserInstructionSender.getTab(0);
-            const tab2 = await browserInstructionSender.getTab(1);
-            const tab3 = await browserInstructionSender.getTab(2);
+            const tab1 = await browserInstructionSender.getTabByIndex(0);
+            const tab2 = await browserInstructionSender.getTabByIndex(1);
+            const tab3 = await browserInstructionSender.getTabByIndex(2);
             assert.isTrue(tab1.pinned);
             assert.equal(tab1.url, testPage1Url);
             assert.isFalse(tab2.pinned);
@@ -279,9 +279,9 @@ describe('Pinned tabs', () => {
             await followedTabsHelper.assertTabPinIndicatorIsOn(followedTabRowList[0]);
             await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[1]);
 
-            const pinnedTab = await browserInstructionSender.getTab(0);
-            const unpinnedTab1 = await browserInstructionSender.getTab(1);
-            const unpinnedTab2 = await browserInstructionSender.getTab(2);
+            const pinnedTab = await browserInstructionSender.getTabByIndex(0);
+            const unpinnedTab1 = await browserInstructionSender.getTabByIndex(1);
+            const unpinnedTab2 = await browserInstructionSender.getTabByIndex(2);
             assert.isTrue(pinnedTab.pinned);
             assert.equal(pinnedTab.url, testPage1Url);
             assert.isFalse(unpinnedTab1.pinned);
@@ -307,9 +307,9 @@ describe('Pinned tabs', () => {
             await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[0]);
             await followedTabsHelper.assertTabPinIndicatorIsOn(followedTabRowList[1]);
 
-            const tab1 = await browserInstructionSender.getTab(0);
-            const tab2 = await browserInstructionSender.getTab(1);
-            const tab3 = await browserInstructionSender.getTab(2);
+            const tab1 = await browserInstructionSender.getTabByIndex(0);
+            const tab2 = await browserInstructionSender.getTabByIndex(1);
+            const tab3 = await browserInstructionSender.getTabByIndex(2);
             assert.isTrue(tab1.pinned);
             assert.equal(tab1.url, testPage2Url);
             assert.isFalse(tab2.pinned);

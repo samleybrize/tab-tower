@@ -151,7 +151,7 @@ describe('Browser recently closed tabs', () => {
         const followedTabRowList = await followedTabsHelper.getTabRowList();
         await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
 
-        const openedTab = await browserInstructionSender.getTab(2);
+        const openedTab = await browserInstructionSender.getTabByIndex(2);
         assert.equal(openedTab.url, testPage1Url);
     });
 

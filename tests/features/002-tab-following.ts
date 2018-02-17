@@ -285,7 +285,7 @@ describe('Tab following', () => {
         await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
 
         const activeTab = await browserInstructionSender.getActiveTab();
-        const openedTab = await browserInstructionSender.getTab(2);
+        const openedTab = await browserInstructionSender.getTabByIndex(2);
 
         assert.equal(activeTab.index, 0);
         assert.isNotNull(openedTab);

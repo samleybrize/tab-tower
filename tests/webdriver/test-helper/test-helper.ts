@@ -100,7 +100,7 @@ export class TestHelper {
         await this.browserInstructionSender.reloadTab(tabIndex);
         await sleep(100);
         await this.driver.wait(async () => {
-            const tab = await this.browserInstructionSender.getTab(tabIndex);
+            const tab = await this.browserInstructionSender.getTabByIndex(tabIndex);
 
             if (tab && 'complete' == tab.status) {
                 return true;
@@ -129,7 +129,7 @@ export class TestHelper {
     async openIgnoredTab(url: string, index: number) {
         await this.browserInstructionSender.openTab(url, index);
         await this.driver.wait(async () => {
-            const tab = await this.browserInstructionSender.getTab(index);
+            const tab = await this.browserInstructionSender.getTabByIndex(index);
 
             if (tab && 'complete' == tab.status) {
                 return true;
@@ -138,13 +138,15 @@ export class TestHelper {
     }
 
     async duplicateTab(index: number) {
-        const activeTab = await this.browserInstructionSender.getActiveTab();
+        let activeTab = await this.browserInstructionSender.getActiveTab();
         const newTabId = await this.browserInstructionSender.duplicateTab(index);
         await this.driver.wait(async () => {
-            const tab = await this.browserInstructionSender.getTab(newTabId.index);
+            const tab = await this.browserInstructionSender.getTabById(newTabId.id);
 
             return tab && 'complete' == tab.status;
         }, 10000);
+
+        activeTab = await this.browserInstructionSender.getTabById(activeTab.id);
         await this.focusTab(activeTab.index);
         await sleep(300);
     }
@@ -198,7 +200,7 @@ export class TestHelper {
         await this.browserInstructionSender.changeTabUrl(tabIndex, newUrl);
 
         await this.driver.wait(async () => {
-            const tab = await this.browserInstructionSender.getTab(tabIndex);
+            const tab = await this.browserInstructionSender.getTabByIndex(tabIndex);
 
             return 'complete' == tab.status && tab.url == newUrl;
         }, 10000);
@@ -210,7 +212,7 @@ export class TestHelper {
         await sleep(100);
 
         await this.driver.wait(async () => {
-            const tab = await this.browserInstructionSender.getTab(tabIndex);
+            const tab = await this.browserInstructionSender.getTabByIndex(tabIndex);
 
             return 'complete' == tab.status;
         }, 10000);
@@ -278,7 +280,7 @@ export class TestHelper {
     async muteTab(tabIndex: number) {
         await this.browserInstructionSender.muteTab(tabIndex);
         await this.driver.wait(async () => {
-            const tab = await this.browserInstructionSender.getTab(tabIndex);
+            const tab = await this.browserInstructionSender.getTabByIndex(tabIndex);
 
             return tab.mutedInfo.muted;
         }, 10000);
@@ -288,7 +290,7 @@ export class TestHelper {
     async unmuteTab(tabIndex: number) {
         await this.browserInstructionSender.unmuteTab(tabIndex);
         await this.driver.wait(async () => {
-            const tab = await this.browserInstructionSender.getTab(tabIndex);
+            const tab = await this.browserInstructionSender.getTabByIndex(tabIndex);
 
             return !tab.mutedInfo.muted;
         }, 10000);
@@ -303,7 +305,7 @@ export class TestHelper {
         const restoredTabIndex = await this.browserInstructionSender.restoreRecentlyClosedTab(index);
 
         await this.driver.wait(async () => {
-            const tab = await this.browserInstructionSender.getTab(restoredTabIndex);
+            const tab = await this.browserInstructionSender.getTabByIndex(restoredTabIndex);
 
             return 'complete' == tab.status;
         }, 10000);
@@ -320,7 +322,7 @@ export class TestHelper {
         await this.switchToWindowHandle(1);
         await this.driver.executeScript(`document.querySelector('${quotelessCssSelector}').pause();`);
         await this.driver.wait(async () => {
-            const tab = await this.browserInstructionSender.getTab(tabIndex);
+            const tab = await this.browserInstructionSender.getTabByIndex(tabIndex);
 
             return !tab.audible;
         }, 10000);
@@ -334,7 +336,7 @@ export class TestHelper {
         await this.switchToWindowHandle(1);
         await this.driver.executeScript(`document.querySelector('${quotelessCssSelector}').play();`);
         await this.driver.wait(async () => {
-            const tab = await this.browserInstructionSender.getTab(tabIndex);
+            const tab = await this.browserInstructionSender.getTabByIndex(tabIndex);
 
             return tab.audible;
         }, 10000);

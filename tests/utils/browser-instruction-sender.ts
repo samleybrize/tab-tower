@@ -227,13 +227,23 @@ export class BrowserInstructionSender {
         });
     }
 
-    async getTab(tabIndex: number): Promise<browser.tabs.Tab> {
+    async getTabById(tabId: number): Promise<browser.tabs.Tab> {
         return new Promise<browser.tabs.Tab>((resolve, reject) => {
             const messageId = Math.random();
             this.receiveCallbackMap.set(messageId, (message) => {
                 resolve(message ? message.tab : null);
             });
-            this.send({action: 'get-tab', data: {messageId, tabIndex}});
+            this.send({action: 'get-tab-by-id', data: {messageId, tabId}});
+        });
+    }
+
+    async getTabByIndex(tabIndex: number): Promise<browser.tabs.Tab> {
+        return new Promise<browser.tabs.Tab>((resolve, reject) => {
+            const messageId = Math.random();
+            this.receiveCallbackMap.set(messageId, (message) => {
+                resolve(message ? message.tab : null);
+            });
+            this.send({action: 'get-tab-by-index', data: {messageId, tabIndex}});
         });
     }
 

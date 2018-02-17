@@ -83,8 +83,8 @@ describe('Tab muting', () => {
             await openedTabsHelper.assertTabMuteIndicatorIsOff(openedTabRowList[0]);
             await openedTabsHelper.assertTabMuteIndicatorIsOn(openedTabRowList[1]);
 
-            const tab1 = await browserInstructionSender.getTab(0);
-            const tab2 = await browserInstructionSender.getTab(1);
+            const tab1 = await browserInstructionSender.getTabByIndex(0);
+            const tab2 = await browserInstructionSender.getTabByIndex(1);
             assert.isFalse(tab1.mutedInfo.muted);
             assert.isTrue(tab2.mutedInfo.muted);
 
@@ -100,8 +100,8 @@ describe('Tab muting', () => {
             await openedTabsHelper.assertTabMuteIndicatorIsOff(openedTabRowList[0]);
             await openedTabsHelper.assertTabMuteIndicatorIsOn(openedTabRowList[1]);
 
-            const tab1 = await browserInstructionSender.getTab(0);
-            const tab2 = await browserInstructionSender.getTab(1);
+            const tab1 = await browserInstructionSender.getTabByIndex(0);
+            const tab2 = await browserInstructionSender.getTabByIndex(1);
             assert.isFalse(tab1.mutedInfo.muted);
             assert.isTrue(tab2.mutedInfo.muted);
         });
@@ -116,8 +116,8 @@ describe('Tab muting', () => {
             await openedTabsHelper.assertTabMuteIndicatorIsOff(openedTabRowList[0]);
             await openedTabsHelper.assertTabMuteIndicatorIsOff(openedTabRowList[1]);
 
-            const tab1 = await browserInstructionSender.getTab(0);
-            const tab2 = await browserInstructionSender.getTab(1);
+            const tab1 = await browserInstructionSender.getTabByIndex(0);
+            const tab2 = await browserInstructionSender.getTabByIndex(1);
             assert.isFalse(tab1.mutedInfo.muted);
             assert.isFalse(tab2.mutedInfo.muted);
         });
@@ -132,8 +132,8 @@ describe('Tab muting', () => {
             await openedTabsHelper.assertTabMuteIndicatorIsOff(openedTabRowList[0]);
             await openedTabsHelper.assertTabMuteIndicatorIsOff(openedTabRowList[1]);
 
-            const tab1 = await browserInstructionSender.getTab(0);
-            const tab2 = await browserInstructionSender.getTab(1);
+            const tab1 = await browserInstructionSender.getTabByIndex(0);
+            const tab2 = await browserInstructionSender.getTabByIndex(1);
             assert.isFalse(tab1.mutedInfo.muted);
             assert.isFalse(tab2.mutedInfo.muted);
         });
@@ -229,8 +229,8 @@ describe('Tab muting', () => {
             await followedTabsHelper.assertTabMuteIndicatorIsOn(followedTabRowList[0]);
             await followedTabsHelper.assertTabMuteIndicatorIsOff(followedTabRowList[1]);
 
-            const tab1 = await browserInstructionSender.getTab(1);
-            const tab2 = await browserInstructionSender.getTab(2);
+            const tab1 = await browserInstructionSender.getTabByIndex(1);
+            const tab2 = await browserInstructionSender.getTabByIndex(2);
             assert.isTrue(tab1.mutedInfo.muted);
             assert.isFalse(tab2.mutedInfo.muted);
 
@@ -252,8 +252,8 @@ describe('Tab muting', () => {
             await followedTabsHelper.assertTabMuteIndicatorIsOn(followedTabRowList[0]);
             await followedTabsHelper.assertTabMuteIndicatorIsOff(followedTabRowList[1]);
 
-            const tab1 = await browserInstructionSender.getTab(1);
-            const tab2 = await browserInstructionSender.getTab(2);
+            const tab1 = await browserInstructionSender.getTabByIndex(1);
+            const tab2 = await browserInstructionSender.getTabByIndex(2);
             assert.isTrue(tab1.mutedInfo.muted);
             assert.isFalse(tab2.mutedInfo.muted);
         });
@@ -274,8 +274,8 @@ describe('Tab muting', () => {
             await followedTabsHelper.assertTabMuteIndicatorIsOff(followedTabRowList[0]);
             await followedTabsHelper.assertTabMuteIndicatorIsOff(followedTabRowList[1]);
 
-            const tab1 = await browserInstructionSender.getTab(1);
-            const tab2 = await browserInstructionSender.getTab(2);
+            const tab1 = await browserInstructionSender.getTabByIndex(1);
+            const tab2 = await browserInstructionSender.getTabByIndex(2);
             assert.isFalse(tab1.mutedInfo.muted);
             assert.isFalse(tab2.mutedInfo.muted);
         });
@@ -296,8 +296,8 @@ describe('Tab muting', () => {
             await followedTabsHelper.assertTabMuteIndicatorIsOff(followedTabRowList[0]);
             await followedTabsHelper.assertTabMuteIndicatorIsOff(followedTabRowList[1]);
 
-            const tab1 = await browserInstructionSender.getTab(1);
-            const tab2 = await browserInstructionSender.getTab(2);
+            const tab1 = await browserInstructionSender.getTabByIndex(1);
+            const tab2 = await browserInstructionSender.getTabByIndex(2);
             assert.isFalse(tab1.mutedInfo.muted);
             assert.isFalse(tab2.mutedInfo.muted);
         });
@@ -394,7 +394,7 @@ describe('Tab muting', () => {
             const followedTabRowList = await followedTabsHelper.getTabRowList();
             await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
 
-            const tab = await browserInstructionSender.getTab(1);
+            const tab = await browserInstructionSender.getTabByIndex(1);
             assert.isTrue(tab.mutedInfo.muted);
         });
 
@@ -500,7 +500,7 @@ describe('Tab muting', () => {
             const followedTabRowList = await followedTabsHelper.getTabRowList();
             await followedTabsHelper.clickOnTabTitle(followedTabRowList[0]);
 
-            const tab = await browserInstructionSender.getTab(1);
+            const tab = await browserInstructionSender.getTabByIndex(1);
             assert.isTrue(tab.mutedInfo.muted);
         });
 

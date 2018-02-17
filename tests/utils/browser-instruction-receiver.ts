@@ -6,7 +6,9 @@ const client = new WebSocket('ws://localhost:' + testsConfig.browserInstructionP
 
 client.onmessage = async (event) => {
     const message = JSON.parse(event.data);
+    let tabId: number;
     let targetTabId;
+    let tab: browser.tabs.Tab;
     let tabList: browser.tabs.Tab[];
     let recentlyClosedTabList: browser.sessions.Session[];
 
@@ -146,9 +148,19 @@ client.onmessage = async (event) => {
             }));
             break;
 
-        case 'get-tab':
-            const tabId = await getTabIdByIndex(message.data.tabIndex);
-            const tab = await browser.tabs.get(tabId);
+        case 'get-tab-by-id':
+            tabId = message.data.tabId;
+            tab = await browser.tabs.get(tabId);
+
+            client.send(JSON.stringify({
+                messageId: message.data.messageId,
+                tab,
+            }));
+            break;
+
+        case 'get-tab-by-index':
+            tabId = await getTabIdByIndex(message.data.tabIndex);
+            tab = await browser.tabs.get(tabId);
 
             client.send(JSON.stringify({
                 messageId: message.data.messageId,

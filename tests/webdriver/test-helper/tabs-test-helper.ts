@@ -179,31 +179,35 @@ export class TabsTestHelper {
         await this.clickOnTabMoreButton(tabRow);
         await reloadButton.click();
         await this.driver.wait(async () => {
-            const tab = await this.browserInstructionSender.getTab(tabIndex);
+            const tab = await this.browserInstructionSender.getTabByIndex(tabIndex);
 
             return 'complete' == tab.status;
         }, 3000);
     }
 
-    async clickOnTabDuplicateButton(tabRow: WebElement) {
+    async clickOnTabDuplicateButton(tabRow: WebElement, waitForNewTab: boolean) {
         const duplicateButton = this.getDuplicateButton(tabRow);
         const numberOfTabs = (await this.browserInstructionSender.getAllTabs()).length;
 
         await this.clickOnTabMoreButton(tabRow);
         await duplicateButton.click();
-        await this.driver.wait(async () => {
-            const tabList = await this.browserInstructionSender.getAllTabs();
-            const newNumberOfTabs = tabList.length;
 
-            if (newNumberOfTabs == numberOfTabs) {
-                return false;
-            } else if ('complete' != tabList[newNumberOfTabs - 1].status) {
-                return false;
-            }
+        if (waitForNewTab) {
+            await this.driver.wait(async () => {
+                const tabList = await this.browserInstructionSender.getAllTabs();
+                const newNumberOfTabs = tabList.length;
 
-            return true;
-        }, 3000);
-        await sleep(1000);
+                if (newNumberOfTabs == numberOfTabs) {
+                    return false;
+                } else if ('complete' != tabList[newNumberOfTabs - 1].status) {
+                    return false;
+                }
+
+                return true;
+            }, 3000);
+        }
+
+        await sleep(500);
     }
 
     async showElementTooltip(quotelessCssSelector: string) {

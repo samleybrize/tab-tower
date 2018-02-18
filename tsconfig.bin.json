@@ -10,7 +10,10 @@
             "dom",
             "es2015"
         ],
-        "baseUrl": "."
+        "baseUrl": ".",
+        "paths": {
+            "child-process-promise": ["./src/typescript/definitions/child-process-promise"]
+        }
     },
     "include": [
         "src/typescript/bin"

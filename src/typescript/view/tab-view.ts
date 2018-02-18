@@ -1,7 +1,6 @@
 import * as moment from 'moment';
 
 import { StringMatcher } from '../utils/string-matcher';
-import { TabCounter } from './tab-counter';
 
 type HtmlClickListener = (this: HTMLAnchorElement, ev: HTMLElementEventMap['click']) => any;
 type TabTitleClickCallback = (row: HTMLElement) => void;

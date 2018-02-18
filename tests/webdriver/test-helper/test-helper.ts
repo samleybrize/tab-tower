@@ -36,7 +36,7 @@ export class TestHelper {
 
         this.browserInstructionSender.init();
 
-        this.tabsTestHelper = new TabsTestHelper(this.driver, this.browserInstructionSender, this.screenshotTaker);
+        this.tabsTestHelper = new TabsTestHelper(this.driver, this.browserInstructionSender);
         this.openedTabsTestHelper = new OpenedTabsTestHelper(this.tabsTestHelper, this.driver, this.browserInstructionSender);
         this.followedTabsTestHelper = new FollowedTabsTestHelper(this.tabsTestHelper, this.driver, this.browserInstructionSender);
         this.navigationTestHelper = new NavigationTestHelper(this.driver, this.screenshotTaker);

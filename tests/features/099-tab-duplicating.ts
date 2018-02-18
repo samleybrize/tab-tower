@@ -278,7 +278,6 @@ describe('Tab duplicating', () => {
         it('Duplicating a tab with reader mode disabled from the browser should open a new tab with reader mode disabled', async () => {
             await testHelper.openTab(firefoxConfig.getReaderModeTestPageUrl());
 
-            const openedTabRowList = await openedTabsHelper.getTabRowList();
             await testHelper.duplicateTab(1);
 
             const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
@@ -389,7 +388,6 @@ describe('Tab duplicating', () => {
         it('Duplicating an unpinned tab from the browser should open a new unpinned tab', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
-            const openedTabRowList = await openedTabsHelper.getTabRowList();
             await testHelper.duplicateTab(1);
 
             const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
@@ -444,7 +442,6 @@ describe('Tab duplicating', () => {
         it('Duplicating an audible tab from the browser should open a new audible tab', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITH_SOUND));
 
-            const openedTabRowList = await openedTabsHelper.getTabRowList();
             await testHelper.duplicateTab(1);
 
             const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
@@ -497,7 +494,6 @@ describe('Tab duplicating', () => {
         it('Duplicating an inaudible tab from the browser should open a new inaudible tab', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
-            const openedTabRowList = await openedTabsHelper.getTabRowList();
             await testHelper.duplicateTab(1);
 
             const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
@@ -608,7 +604,6 @@ describe('Tab duplicating', () => {
         it('Duplicating an unmuted tab from the browser should open a new unmuted tab', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
-            const openedTabRowList = await openedTabsHelper.getTabRowList();
             await testHelper.duplicateTab(1);
 
             const newOpenedTabRowList = await openedTabsHelper.getTabRowList();

@@ -1,5 +1,3 @@
-import * as moment from 'moment';
-
 import { CommandBus } from '../bus/command-bus';
 import { QueryBus } from '../bus/query-bus';
 import { CloseTab } from '../tab/command/close-tab';
@@ -28,7 +26,6 @@ import { TabUnfollowed } from '../tab/event/tab-unfollowed';
 import { GetTabAssociationByFollowId } from '../tab/query/get-tab-association-by-follow-id';
 import { GetTabAssociationsWithFollowState } from '../tab/query/get-tab-associations-with-follow-state';
 import { TabAssociation } from '../tab/tab-association/tab-association';
-import { StringMatcher } from '../utils/string-matcher';
 import { TabCounter } from './tab-counter';
 import { TabView } from './tab-view';
 

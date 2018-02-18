@@ -92,6 +92,43 @@ export class TabsTestHelper {
         return tabRow.findElement(By.css('.lastAccess')).getText();
     }
 
+    async waitThatOnOffIndicatorIsFullyOn(indicatorElement: WebElement) {
+        await this.driver.wait(async () => {
+            return '1' == await indicatorElement.getCssValue('opacity');
+        }, 3000);
+        await sleep(3000);
+    }
+
+    async waitThatReaderModeIndicatorIsFullyOn(tabRow: WebElement) {
+        const indicator = this.getReaderModeIndicator(tabRow);
+        await this.waitThatOnOffIndicatorIsFullyOn(indicator);
+    }
+
+    async waitThatPinIndicatorIsFullyOn(tabRow: WebElement) {
+        const indicator = this.getPinIndicator(tabRow);
+        await this.waitThatOnOffIndicatorIsFullyOn(indicator);
+    }
+
+    async waitThatMuteIndicatorIsFullyOn(tabRow: WebElement) {
+        const indicator = this.getMuteIndicator(tabRow);
+        await this.waitThatOnOffIndicatorIsFullyOn(indicator);
+    }
+
+    async waitThatAudibleIndicatorIsFullyOn(tabRow: WebElement) {
+        const indicator = this.getAudibleIndicator(tabRow);
+        await this.waitThatOnOffIndicatorIsFullyOn(indicator);
+    }
+
+    async hideMoreDropdown(tabRow: WebElement) {
+        await this.driver.findElement(By.tagName('body')).click();
+        const dropdownElement = tabRow.findElement(By.css('.tabRowDropdown'));
+
+        await this.driver.wait(async () => {
+            return 'none' == await dropdownElement.getCssValue('display');
+        }, 3000);
+        await sleep(500);
+    }
+
     async clickOnTabMoreButton(tabRow: WebElement, waitFullyVisible?: boolean) {
         await this.driver.findElement(By.tagName('body')).click();
         await sleep(100);

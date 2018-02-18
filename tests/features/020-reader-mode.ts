@@ -38,6 +38,7 @@ describe('Reader mode', () => {
 
             await openedTabsHelper.assertTabReaderModeIndicatorIsOn(openedTabRowList[1]);
 
+            await openedTabsHelper.waitThatReaderModeIndicatorIsFullyOn(openedTabRowList[1]);
             await testHelper.takeViewportScreenshot('reader-mode-indicator-on-open-list');
         });
 
@@ -84,6 +85,7 @@ describe('Reader mode', () => {
             await followedTabsHelper.assertTabReaderModeIndicatorIsOn(followedTabRowList[0]);
             await followedTabsHelper.assertTabReaderModeTestPageTitle(followedTabRowList[0]);
 
+            await followedTabsHelper.waitThatReaderModeIndicatorIsFullyOn(followedTabRowList[0]);
             await testHelper.takeViewportScreenshot('reader-mode-indicator-on-follow-list');
         });
 

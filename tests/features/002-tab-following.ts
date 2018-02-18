@@ -62,6 +62,7 @@ describe('Tab following', () => {
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+        await openedTabsHelper.assertTabFollowIndicatorIsOn(openedTabRowList[1]);
 
         await testHelper.showFollowedTabsList();
         const followedTabRowList = await followedTabsHelper.getTabRowList();
@@ -77,8 +78,11 @@ describe('Tab following', () => {
         await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0], true);
         await testHelper.takeViewportScreenshot('close-button-visible-follow-list');
 
+        await followedTabsHelper.hideMoreDropdown(followedTabRowList[0]);
+        await followedTabsHelper.waitThatOpenIndicatorIsFullyOn(followedTabRowList[0]);
         await testHelper.takeViewportScreenshot('followed-tabs-list');
         await testHelper.showOpenedTabsList();
+        await openedTabsHelper.waitThatFollowIndicatorIsFullyOn(openedTabRowList[1]);
         await testHelper.takeViewportScreenshot('follow-indicator-on-open-list');
     });
 
@@ -91,6 +95,7 @@ describe('Tab following', () => {
         await openedTabsHelper.assertTabUnfollowButtonIsNotVisible(openedTabRowList[0]);
 
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1], false);
+        await openedTabsHelper.assertTabFollowIndicatorIsOff(openedTabRowList[1]);
         await followedTabsHelper.assertNumberOfTabs(0);
 
         await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1], true);
@@ -104,6 +109,7 @@ describe('Tab following', () => {
         await openedTabsHelper.assertTabUnfollowButtonIsNotVisible(openedTabRowList[0]);
 
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[0], false);
+        await openedTabsHelper.assertTabFollowIndicatorIsOff(openedTabRowList[0]);
         await followedTabsHelper.assertNumberOfTabs(0);
     });
 
@@ -179,6 +185,7 @@ describe('Tab following', () => {
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[1]);
+        await openedTabsHelper.assertTabFollowIndicatorIsOff(openedTabRowList[1]);
 
         await testHelper.showFollowedTabsList();
         await followedTabsHelper.assertNumberOfTabs(0);
@@ -193,6 +200,9 @@ describe('Tab following', () => {
         await testHelper.showFollowedTabsList();
         const followedTabRowList = await followedTabsHelper.getTabRowList();
         await followedTabsHelper.clickOnTabUnfollowButton(followedTabRowList[0]);
+
+        await testHelper.showOpenedTabsList();
+        await openedTabsHelper.assertTabFollowIndicatorIsOff(openedTabRowList[1]);
 
         await testHelper.showFollowedTabsList();
         await followedTabsHelper.assertNumberOfTabs(0);

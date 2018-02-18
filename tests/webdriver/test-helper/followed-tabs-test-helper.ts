@@ -23,6 +23,10 @@ export class FollowedTabsTestHelper {
         return this.driver.findElement(By.css('#followedTabList tbody .noTabRow'));
     }
 
+    async hideMoreDropdown(tabRow: WebElement) {
+        await this.tabsTestHelper.hideMoreDropdown(tabRow);
+    }
+
     async clickOnTabMoreButton(tabRow: WebElement, waitFullyVisible?: boolean) {
         await this.tabsTestHelper.clickOnTabMoreButton(tabRow, !!waitFullyVisible);
     }
@@ -196,6 +200,27 @@ export class FollowedTabsTestHelper {
 
     getUnfollowButton(tabRow: WebElement) {
         return this.tabsTestHelper.getUnfollowButton(tabRow);
+    }
+
+    async waitThatReaderModeIndicatorIsFullyOn(tabRow: WebElement) {
+        await this.tabsTestHelper.waitThatReaderModeIndicatorIsFullyOn(tabRow);
+    }
+
+    async waitThatPinIndicatorIsFullyOn(tabRow: WebElement) {
+        await this.tabsTestHelper.waitThatPinIndicatorIsFullyOn(tabRow);
+    }
+
+    async waitThatMuteIndicatorIsFullyOn(tabRow: WebElement) {
+        await this.tabsTestHelper.waitThatMuteIndicatorIsFullyOn(tabRow);
+    }
+
+    async waitThatAudibleIndicatorIsFullyOn(tabRow: WebElement) {
+        await this.tabsTestHelper.waitThatAudibleIndicatorIsFullyOn(tabRow);
+    }
+
+    async waitThatOpenIndicatorIsFullyOn(tabRow: WebElement) {
+        const indicator = this.getOpenIndicator(tabRow);
+        await this.tabsTestHelper.waitThatOnOffIndicatorIsFullyOn(indicator);
     }
 
     async changeTabLastAccessText(tabRow: WebElement, newText: string) {

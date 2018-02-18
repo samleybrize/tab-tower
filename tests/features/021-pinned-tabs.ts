@@ -43,6 +43,7 @@ describe('Pinned tabs', () => {
 
             await openedTabsHelper.assertTabPinIndicatorIsOn(openedTabRowList[1]);
 
+            await openedTabsHelper.waitThatPinIndicatorIsFullyOn(openedTabRowList[1]);
             await testHelper.takeViewportScreenshot('pin-indicator-on-open-list');
         });
 
@@ -200,6 +201,7 @@ describe('Pinned tabs', () => {
             await followedTabsHelper.assertTabPinIndicatorIsOn(followedTabRowList[0]);
             await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[1]);
 
+            await followedTabsHelper.waitThatReaderModeIndicatorIsFullyOn(followedTabRowList[0]);
             await testHelper.takeViewportScreenshot('pin-indicator-on-follow-list');
         });
 
@@ -356,7 +358,7 @@ describe('Pinned tabs', () => {
             await followedTabsHelper.clickOnTabPinButton(followedTabRowList[1], false);
             await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[1]);
 
-            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0], true);
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[1], true);
             await testHelper.takeViewportScreenshot('pin-button-disabled-follow-list');
         });
 

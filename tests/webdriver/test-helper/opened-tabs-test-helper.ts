@@ -134,6 +134,10 @@ export class OpenedTabsTestHelper {
         return this.tabsTestHelper.getTabFaviconUrl(tabRow);
     }
 
+    getFollowIndicator(tabRow: WebElement) {
+        return tabRow.findElement(By.css('.followedIndicator'));
+    }
+
     getCloseButton(tabRow: WebElement) {
         return this.tabsTestHelper.getCloseButton(tabRow);
     }
@@ -144,6 +148,27 @@ export class OpenedTabsTestHelper {
 
     getUnfollowButton(tabRow: WebElement) {
         return this.tabsTestHelper.getUnfollowButton(tabRow);
+    }
+
+    async waitThatReaderModeIndicatorIsFullyOn(tabRow: WebElement) {
+        await this.tabsTestHelper.waitThatReaderModeIndicatorIsFullyOn(tabRow);
+    }
+
+    async waitThatPinIndicatorIsFullyOn(tabRow: WebElement) {
+        await this.tabsTestHelper.waitThatPinIndicatorIsFullyOn(tabRow);
+    }
+
+    async waitThatMuteIndicatorIsFullyOn(tabRow: WebElement) {
+        await this.tabsTestHelper.waitThatMuteIndicatorIsFullyOn(tabRow);
+    }
+
+    async waitThatAudibleIndicatorIsFullyOn(tabRow: WebElement) {
+        await this.tabsTestHelper.waitThatAudibleIndicatorIsFullyOn(tabRow);
+    }
+
+    async waitThatFollowIndicatorIsFullyOn(tabRow: WebElement) {
+        const indicator = this.getFollowIndicator(tabRow);
+        await this.tabsTestHelper.waitThatOnOffIndicatorIsFullyOn(indicator);
     }
 
     async changeTabLastAccessText(tabRow: WebElement, newText: string) {
@@ -226,6 +251,16 @@ export class OpenedTabsTestHelper {
 
     async assertTabAudibleIndicatorIsOff(tabRow: WebElement) {
         await this.tabsTestHelper.assertTabAudibleIndicatorIsOff(tabRow);
+    }
+
+    async assertTabFollowIndicatorIsOn(tabRow: WebElement) {
+        const followIndicator = this.getFollowIndicator(tabRow);
+        await this.tabsTestHelper.assertIndicatorIsOn(followIndicator, 'Tab follow');
+    }
+
+    async assertTabFollowIndicatorIsOff(tabRow: WebElement) {
+        const followIndicator = this.getFollowIndicator(tabRow);
+        await this.tabsTestHelper.assertIndicatorIsOff(followIndicator, 'Tab follow');
     }
 
     async assertTabAudibleIndicatorTooltip(tabRow: WebElement, expectedText: string) {

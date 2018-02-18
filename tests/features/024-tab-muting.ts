@@ -88,6 +88,7 @@ describe('Tab muting', () => {
             assert.isFalse(tab1.mutedInfo.muted);
             assert.isTrue(tab2.mutedInfo.muted);
 
+            await openedTabsHelper.waitThatReaderModeIndicatorIsFullyOn(openedTabRowList[1]);
             await testHelper.takeViewportScreenshot('mute-indicator-on-open-list');
         });
 
@@ -186,7 +187,7 @@ describe('Tab muting', () => {
             await followedTabsHelper.assertTabMuteButtonIsNotDisabled(followedTabRowList[1]);
             await followedTabsHelper.assertTabUnmuteButtonIsNotVisible(followedTabRowList[1]);
 
-            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[1], true);
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0], true);
             await testHelper.takeViewportScreenshot('unmute-button-visible-follow-list');
         });
 
@@ -234,6 +235,7 @@ describe('Tab muting', () => {
             assert.isTrue(tab1.mutedInfo.muted);
             assert.isFalse(tab2.mutedInfo.muted);
 
+            await followedTabsHelper.waitThatReaderModeIndicatorIsFullyOn(followedTabRowList[0]);
             await testHelper.takeViewportScreenshot('mute-indicator-on-follow-list');
         });
 

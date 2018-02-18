@@ -201,7 +201,7 @@ describe('Pinned tabs', () => {
             await followedTabsHelper.assertTabPinIndicatorIsOn(followedTabRowList[0]);
             await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[1]);
 
-            await followedTabsHelper.waitThatReaderModeIndicatorIsFullyOn(followedTabRowList[0]);
+            await followedTabsHelper.waitThatPinIndicatorIsFullyOn(followedTabRowList[0]);
             await testHelper.takeViewportScreenshot('pin-indicator-on-follow-list');
         });
 

@@ -110,7 +110,7 @@ describe('Audible tabs', () => {
             await followedTabsHelper.assertTabAudibleIndicatorTooltip(followedTabRowList[0], 'Produces sound');
             await followedTabsHelper.assertTabAudibleIndicatorTooltip(followedTabRowList[1], null);
 
-            await followedTabsHelper.waitThatReaderModeIndicatorIsFullyOn(followedTabRowList[0]);
+            await followedTabsHelper.waitThatAudibleIndicatorIsFullyOn(followedTabRowList[0]);
             await testHelper.takeViewportScreenshot('audible-indicator-on-follow-list');
         });
 

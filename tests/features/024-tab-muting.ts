@@ -55,7 +55,7 @@ describe('Tab muting', () => {
             await openedTabsHelper.assertTabMuteButtonIsNotVisible(openedTabRowList[1]);
             await openedTabsHelper.assertTabUnmuteButtonIsVisible(openedTabRowList[1]);
 
-            await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1], true);
             await testHelper.takeViewportScreenshot('unmute-button-visible-open-list');
         });
 
@@ -70,7 +70,7 @@ describe('Tab muting', () => {
             await openedTabsHelper.assertTabMuteButtonIsNotDisabled(openedTabRowList[0]);
             await openedTabsHelper.assertTabUnmuteButtonIsNotVisible(openedTabRowList[0]);
 
-            await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1], true);
             await testHelper.takeViewportScreenshot('mute-button-visible-open-list');
         });
 
@@ -186,7 +186,7 @@ describe('Tab muting', () => {
             await followedTabsHelper.assertTabMuteButtonIsNotDisabled(followedTabRowList[1]);
             await followedTabsHelper.assertTabUnmuteButtonIsNotVisible(followedTabRowList[1]);
 
-            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[1]);
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[1], true);
             await testHelper.takeViewportScreenshot('unmute-button-visible-follow-list');
         });
 
@@ -210,7 +210,7 @@ describe('Tab muting', () => {
             await followedTabsHelper.assertTabMuteButtonIsNotDisabled(followedTabRowList[1]);
             await followedTabsHelper.assertTabUnmuteButtonIsNotVisible(followedTabRowList[1]);
 
-            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[1]);
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[1], true);
             await testHelper.takeViewportScreenshot('mute-button-visible-follow-list');
         });
 
@@ -339,9 +339,9 @@ describe('Tab muting', () => {
             await followedTabsHelper.assertTabMuteButtonIsDisabled(followedTabRowList[1]);
             await followedTabsHelper.assertTabUnmuteButtonIsNotVisible(followedTabRowList[1]);
 
-            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0], true);
             await testHelper.takeViewportScreenshot('unmute-button-disabled-follow-list');
-            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[1]);
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[1], true);
             await testHelper.takeViewportScreenshot('mute-button-disabled-follow-list');
         });
 

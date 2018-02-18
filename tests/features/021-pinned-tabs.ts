@@ -82,7 +82,7 @@ describe('Pinned tabs', () => {
             await openedTabsHelper.assertTabPinButtonIsNotVisible(newOpenedTabRowList[0]);
             await openedTabsHelper.assertTabUnpinButtonIsVisible(newOpenedTabRowList[0]);
 
-            await openedTabsHelper.clickOnTabMoreButton(newOpenedTabRowList[0]);
+            await openedTabsHelper.clickOnTabMoreButton(newOpenedTabRowList[0], true);
             await testHelper.takeViewportScreenshot('unpin-button-visible-open-list');
         });
 
@@ -99,7 +99,7 @@ describe('Pinned tabs', () => {
             await openedTabsHelper.assertTabPinButtonIsNotDisabled(newOpenedTabRowList[0]);
             await openedTabsHelper.assertTabUnpinButtonIsNotVisible(newOpenedTabRowList[0]);
 
-            await openedTabsHelper.clickOnTabMoreButton(newOpenedTabRowList[0]);
+            await openedTabsHelper.clickOnTabMoreButton(newOpenedTabRowList[0], true);
             await testHelper.takeViewportScreenshot('pin-button-visible-open-list');
         });
 
@@ -236,7 +236,7 @@ describe('Pinned tabs', () => {
             await followedTabsHelper.assertTabPinButtonIsNotDisabled(followedTabRowList[1]);
             await followedTabsHelper.assertTabUnpinButtonIsNotVisible(followedTabRowList[1]);
 
-            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0], true);
             await testHelper.takeViewportScreenshot('unpin-button-visible-follow-list');
         });
 
@@ -258,7 +258,7 @@ describe('Pinned tabs', () => {
             await followedTabsHelper.assertTabPinButtonIsVisible(followedTabRowList[1]);
             await followedTabsHelper.assertTabUnpinButtonIsNotVisible(followedTabRowList[1]);
 
-            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0], true);
             await testHelper.takeViewportScreenshot('pin-button-visible-follow-list');
         });
 
@@ -356,7 +356,7 @@ describe('Pinned tabs', () => {
             await followedTabsHelper.clickOnTabPinButton(followedTabRowList[1], false);
             await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[1]);
 
-            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0], true);
             await testHelper.takeViewportScreenshot('pin-button-disabled-follow-list');
         });
 

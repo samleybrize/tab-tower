@@ -23,8 +23,8 @@ export class OpenedTabsTestHelper {
         return this.driver.findElement(By.css('#openedTabList tbody .noTabRow'));
     }
 
-    async clickOnTabMoreButton(tabRow: WebElement) {
-        await this.tabsTestHelper.clickOnTabMoreButton(tabRow);
+    async clickOnTabMoreButton(tabRow: WebElement, waitFullyVisible?: boolean) {
+        await this.tabsTestHelper.clickOnTabMoreButton(tabRow, !!waitFullyVisible);
     }
 
     async clickOnTabCloseButton(tabRow: WebElement) {
@@ -50,13 +50,13 @@ export class OpenedTabsTestHelper {
         }, 10000);
     }
 
-    async clickOnTabFollowButton(tabRow: WebElement, w?: boolean) {
+    async clickOnTabFollowButton(tabRow: WebElement, waitButtonVisibilityChange?: boolean) {
         const followButton = this.getFollowButton(tabRow);
 
         await this.tabsTestHelper.clickOnTabMoreButton(tabRow);
         await followButton.click();
 
-        if (false !== w) {
+        if (false !== waitButtonVisibilityChange) {
             await this.driver.wait(async () => {
                 return !await followButton.isDisplayed();
             }, 3000);

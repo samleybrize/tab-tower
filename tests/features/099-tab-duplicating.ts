@@ -67,7 +67,7 @@ describe('Tab duplicating', () => {
             assert.equal(tab.url, testPage1Url);
             assert.equal(tab.favIconUrl, firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_1));
 
-            await openedTabsHelper.clickOnTabMoreButton(newOpenedTabRowList[1]);
+            await openedTabsHelper.clickOnTabMoreButton(newOpenedTabRowList[1], true);
             await testHelper.takeViewportScreenshot('duplicate-button-visible-open-list');
         });
 
@@ -128,7 +128,7 @@ describe('Tab duplicating', () => {
             assert.equal(tab.favIconUrl, firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_1));
 
             await testHelper.showFollowedTabsList();
-            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0], true);
             await testHelper.takeViewportScreenshot('duplicate-button-visible-follow-list');
         });
 
@@ -196,7 +196,7 @@ describe('Tab duplicating', () => {
             await openedTabsHelper.assertNumberOfTabs(1);
 
             await testHelper.showFollowedTabsList();
-            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0], true);
             await testHelper.takeViewportScreenshot('duplicate-button-disabled-follow-list');
         });
 

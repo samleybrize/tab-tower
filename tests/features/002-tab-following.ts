@@ -52,7 +52,7 @@ describe('Tab following', () => {
         await openedTabsHelper.assertTabFollowButtonIsNotDisabled(openedTabRowList[1]);
         await openedTabsHelper.assertTabUnfollowButtonIsNotVisible(openedTabRowList[1]);
 
-        await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1], true);
         await testHelper.takeViewportScreenshot('follow-button-visible-open-list');
     });
 
@@ -74,7 +74,7 @@ describe('Tab following', () => {
         await followedTabsHelper.assertTabLastAccessDateIsRoughlyEqualToDate(followedTabRowList[0], new Date());
         await followedTabsHelper.assertTabTitleTooltip(followedTabRowList[0], 'Go to tab');
 
-        await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+        await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0], true);
         await testHelper.takeViewportScreenshot('close-button-visible-follow-list');
 
         await testHelper.takeViewportScreenshot('followed-tabs-list');
@@ -93,7 +93,7 @@ describe('Tab following', () => {
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1], false);
         await followedTabsHelper.assertNumberOfTabs(0);
 
-        await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1], true);
         await testHelper.takeViewportScreenshot('follow-button-disabled-open-list');
     });
 
@@ -155,7 +155,7 @@ describe('Tab following', () => {
         await openedTabsHelper.assertTabFollowButtonIsNotVisible(openedTabRowList[1]);
         await openedTabsHelper.assertTabUnfollowButtonIsVisible(openedTabRowList[1]);
 
-        await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1], true);
         await testHelper.takeViewportScreenshot('unfollow-button-visible-open-list');
     });
 
@@ -169,7 +169,7 @@ describe('Tab following', () => {
         const followedTabRowList = await followedTabsHelper.getTabRowList();
         await followedTabsHelper.assertTabUnfollowButtonIsVisible(followedTabRowList[0]);
 
-        await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+        await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0], true);
         await testHelper.takeViewportScreenshot('unfollow-button-visible-follow-list');
     });
 
@@ -229,7 +229,7 @@ describe('Tab following', () => {
         const followedTabRowList = await followedTabsHelper.getTabRowList();
         await followedTabsHelper.assertTabCloseButtonIsNotVisible(followedTabRowList[0]);
 
-        await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+        await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0], true);
         await testHelper.takeViewportScreenshot('close-button-not-visible-follow-list');
     });
 

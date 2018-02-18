@@ -94,12 +94,19 @@ export class TabsTestHelper {
         return tabRow.findElement(By.css('.lastAccess')).getText();
     }
 
-    async clickOnTabMoreButton(tabRow: WebElement) {
+    async clickOnTabMoreButton(tabRow: WebElement, waitFullyVisible?: boolean) {
         await this.driver.findElement(By.tagName('body')).click();
         await sleep(100);
         const moreButton = tabRow.findElement(By.css('.more'));
+        const dropdownElement = tabRow.findElement(By.css('.tabRowDropdown'));
 
         await moreButton.click();
+
+        if (waitFullyVisible) {
+            await this.driver.wait(async () => {
+                return '1' == await dropdownElement.getCssValue('opacity');
+            }, 3000);
+        }
     }
 
     async clickOnTabPinButton(tabRow: WebElement, waitPinIndicatorStateChange: boolean) {

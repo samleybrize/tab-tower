@@ -23,8 +23,8 @@ export class FollowedTabsTestHelper {
         return this.driver.findElement(By.css('#followedTabList tbody .noTabRow'));
     }
 
-    async clickOnTabMoreButton(tabRow: WebElement) {
-        await this.tabsTestHelper.clickOnTabMoreButton(tabRow);
+    async clickOnTabMoreButton(tabRow: WebElement, waitFullyVisible?: boolean) {
+        await this.tabsTestHelper.clickOnTabMoreButton(tabRow, !!waitFullyVisible);
     }
 
     async clickOnTabCloseButton(tabRow: WebElement) {

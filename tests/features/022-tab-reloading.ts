@@ -40,7 +40,7 @@ describe('Tab reloading', () => {
             await openedTabsHelper.assertTabReloadButtonIsVisible(openedTabRowList[1]);
             await openedTabsHelper.assertTabReloadButtonIsNotDisabled(openedTabRowList[1]);
 
-            await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[0]);
+            await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[0], true);
             await testHelper.takeViewportScreenshot('reload-button-visible-open-list');
         });
 
@@ -72,7 +72,7 @@ describe('Tab reloading', () => {
             await followedTabsHelper.assertTabReloadButtonIsVisible(followedTabRowList[0]);
             await followedTabsHelper.assertTabReloadButtonIsNotDisabled(followedTabRowList[0]);
 
-            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0], true);
             await testHelper.takeViewportScreenshot('reload-button-visible-follow-list');
         });
 
@@ -107,7 +107,7 @@ describe('Tab reloading', () => {
             await followedTabsHelper.assertTabReloadButtonIsVisible(followedTabRowList[0]);
             await followedTabsHelper.assertTabReloadButtonIsDisabled(followedTabRowList[0]);
 
-            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0], true);
             await testHelper.takeViewportScreenshot('reload-button-disabled-follow-list');
         });
     });

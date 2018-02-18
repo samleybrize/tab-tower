@@ -47,7 +47,7 @@ describe('Opened tabs tracking', () => {
         await openedTabsHelper.assertTabTitleTooltip(openedTabRowList[1], 'Go to tab');
 
         await testHelper.takeViewportScreenshot('opened-tabs-list');
-        await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1], true);
         await testHelper.takeViewportScreenshot('close-button-visible-open-list');
     });
 

@@ -353,7 +353,7 @@ export class FollowedTabView {
         const followedTabRow = this.tabView.tbodyElement.querySelector(`tr[data-follow-id="${event.oldFollowState.id}"]`);
 
         if (followedTabRow) {
-            jQuery(followedTabRow).find('[data-tooltip]').tooltip('close');
+            jQuery(followedTabRow).find('[data-tooltip]').tooltip('remove');
             followedTabRow.remove();
             this.tabView.showNoTabRowIfTableIsEmpty();
             this.tabCounter.decrementNumberOfFollowedTabs();

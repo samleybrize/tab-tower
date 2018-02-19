@@ -100,6 +100,17 @@ describe('Opened tabs tracking', () => {
         await openedTabsHelper.assertNumberOfTabs(1);
     });
 
+    it('No tooltip related to an opened tab should be visible when this opened tab is closed', async () => {
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+        const openedTabRowList = await openedTabsHelper.getTabRowList();
+        await openedTabsHelper.showTitleTooltip(openedTabRowList[1]);
+
+        await testHelper.closeTab(1);
+
+        await openedTabsHelper.assertNoTooltipVisible();
+    });
+
     it('Rows in the opened tab list should be moved when an opened tab is moved', async () => {
         const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
         const testPage2Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2);

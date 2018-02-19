@@ -286,6 +286,7 @@ export class OpenedTabView {
         const openedTabRow = this.getTabRowByTabId(event.closedTab.id);
 
         if (openedTabRow) {
+            jQuery(openedTabRow).find('[data-tooltip]').tooltip('remove');
             openedTabRow.remove();
             this.tabView.showNoTabRowIfTableIsEmpty();
             this.tabCounter.decrementNumberOfOpenedTabs();

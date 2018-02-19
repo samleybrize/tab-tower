@@ -264,6 +264,20 @@ describe('Tab following', () => {
         assert.equal(tabList[1].url, testPage1Url);
     });
 
+    it('No tooltip related to a followed tab should be visible when the opened tab associated to this followed tab is closed', async () => {
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+        const openedTabRowList = await openedTabsHelper.getTabRowList();
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+
+        await testHelper.showFollowedTabsList();
+        const followedTabRowList = await followedTabsHelper.getTabRowList();
+        await followedTabsHelper.showTitleTooltip(followedTabRowList[0]);
+        await followedTabsHelper.clickOnTabUnfollowButton(followedTabRowList[0]);
+
+        await followedTabsHelper.assertNoTooltipVisible();
+    });
+
     it('The no tab row should appear when there is no followed tab anymore', async () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 

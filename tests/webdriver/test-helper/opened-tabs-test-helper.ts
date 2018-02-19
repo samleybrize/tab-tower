@@ -388,4 +388,9 @@ export class OpenedTabsTestHelper {
     async assertTabLastAccessDateIsEqualToString(tabRow: WebElement, text: string) {
         return this.tabsTestHelper.assertTabLastAccessDateIsEqualToString(tabRow, text);
     }
+
+    async assertNoTooltipVisible() {
+        const containerElement = await this.driver.findElement(By.css('#openedTabList'));
+        await this.tabsTestHelper.assertNoTooltipVisible(containerElement);
+    }
 }

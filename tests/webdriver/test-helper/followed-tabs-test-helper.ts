@@ -446,4 +446,9 @@ export class FollowedTabsTestHelper {
     async assertTabLastAccessDateIsEqualToString(tabRow: WebElement, text: string) {
         return this.tabsTestHelper.assertTabLastAccessDateIsEqualToString(tabRow, text);
     }
+
+    async assertNoTooltipVisible() {
+        const containerElement = await this.driver.findElement(By.css('#followedTabList'));
+        await this.tabsTestHelper.assertNoTooltipVisible(containerElement);
+    }
 }

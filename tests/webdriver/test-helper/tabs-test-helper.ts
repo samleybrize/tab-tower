@@ -530,4 +530,16 @@ export class TabsTestHelper {
 
         assert.equal(text, lastAccessText);
     }
+
+    async assertNoTooltipVisible(containerElement: WebElement) {
+        const tooltipElementList = await containerElement.findElements(By.css('.material-tooltip'));
+
+        for (const tooltipElement of tooltipElementList) {
+            if (await tooltipElement.isDisplayed()) {
+                assert.fail(true, false, 'At least one tooltip is visible');
+
+                break;
+            }
+        }
+    }
 }

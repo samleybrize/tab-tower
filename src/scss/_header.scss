@@ -61,6 +61,10 @@
         vertical-align: middle;
         background-color: rgba(255, 255, 255, 0.85);
         border-radius: 20px;
+
+        &.tooLong {
+            font-size: 0.7em;
+        }
     }
 }
 

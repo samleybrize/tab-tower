@@ -55,10 +55,26 @@ export class HeaderView {
     }
 
     notifyNumberOfOpenedTabsChanged(counter: number) {
-        this.openedTabButton.querySelector('.counter').textContent = '' + counter;
+        const counterElement = this.openedTabButton.querySelector('.counter');
+
+        if (counter > 999) {
+            counterElement.textContent = '+999';
+            counterElement.classList.add('tooLong');
+        } else {
+            counterElement.textContent = '' + counter;
+            counterElement.classList.remove('tooLong');
+        }
     }
 
     notifyNumberOfFollowedTabsChanged(counter: number) {
-        this.followedTabButton.querySelector('.counter').textContent = '' + counter;
+        const counterElement = this.followedTabButton.querySelector('.counter');
+
+        if (counter > 999) {
+            counterElement.textContent = '+999';
+            counterElement.classList.add('tooLong');
+        } else {
+            counterElement.textContent = '' + counter;
+            counterElement.classList.remove('tooLong');
+        }
     }
 }

@@ -2,6 +2,10 @@
 #followedTabList {
     display: none;
 
+    thead {
+        position: sticky;
+    }
+
     &.show {
         display: block;
         animation-duration: 0.6s;

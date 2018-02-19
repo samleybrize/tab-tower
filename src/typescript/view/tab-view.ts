@@ -421,8 +421,26 @@ export class TabView {
         if (null == faviconUrl) {
             faviconElement.src = this.defaultFaviconUrl;
         } else {
-            faviconElement.src = faviconUrl;
+            this.setFaviconUrlDependingOnHttpStatusCode(faviconElement, faviconUrl);
         }
+    }
+
+    private setFaviconUrlDependingOnHttpStatusCode(faviconElement: HTMLImageElement, faviconUrl: string) {
+        const httpRequest = new XMLHttpRequest();
+        httpRequest.onerror = () => {
+            faviconElement.src = this.defaultFaviconUrl;
+        };
+        httpRequest.onreadystatechange = () => {
+            if (4 != httpRequest.readyState) {
+                return;
+            } else if (httpRequest.status < 400) {
+                faviconElement.src = faviconUrl;
+            } else {
+                faviconElement.src = this.defaultFaviconUrl;
+            }
+        };
+        httpRequest.open('HEAD', faviconUrl, true);
+        httpRequest.send();
     }
 
     updateTabUrl(row: HTMLElement, url: string) {

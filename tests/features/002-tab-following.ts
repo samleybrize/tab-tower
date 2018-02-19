@@ -558,6 +558,21 @@ describe('Tab following', () => {
         await followedTabsHelper.assertTabLastAccessDateIsRoughlyEqualToDate(newFollowedTabRowList[1], tabOpenDate);
     });
 
+    it('Default favicon should be shown at startup when the favicon url returns a 401 status code', async () => {
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITH_FAVICON_401));
+
+        const openedTabRowList = await openedTabsHelper.getTabRowList();
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+
+        await testHelper.reloadExtension();
+        await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP), 0);
+        await testHelper.switchToWindowHandle(0);
+
+        await testHelper.showFollowedTabsList();
+        const followedTabRowList = await followedTabsHelper.getTabRowList();
+        await followedTabsHelper.assertTabFaviconUrl(followedTabRowList[0], firefoxConfig.getExtensionUrl(ExtensionUrl.DEFAULT_FAVICON));
+    });
+
     it('Should show followed tabs associated to opened tabs at startup', async () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));

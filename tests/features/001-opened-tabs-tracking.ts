@@ -93,6 +93,13 @@ describe('Opened tabs tracking', () => {
         await openedTabsHelper.assertTabFaviconUrl(openedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.DEFAULT_FAVICON));
     });
 
+    it('Default favicon should be shown when the favicon url returns a 401 status code', async () => {
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITH_FAVICON_401));
+
+        const openedTabRowList = await openedTabsHelper.getTabRowList();
+        await openedTabsHelper.assertTabFaviconUrl(openedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.DEFAULT_FAVICON));
+    });
+
     it('Opened tab should be removed from opened tabs list when closed', async () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
         await testHelper.closeTab(1);

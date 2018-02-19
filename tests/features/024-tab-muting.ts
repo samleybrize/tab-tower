@@ -88,7 +88,7 @@ describe('Tab muting', () => {
             assert.isFalse(tab1.mutedInfo.muted);
             assert.isTrue(tab2.mutedInfo.muted);
 
-            await openedTabsHelper.waitThatReaderModeIndicatorIsFullyOn(openedTabRowList[1]);
+            await openedTabsHelper.waitThatMuteIndicatorIsFullyOn(openedTabRowList[1]);
             await testHelper.takeViewportScreenshot('mute-indicator-on-open-list');
         });
 
@@ -235,7 +235,7 @@ describe('Tab muting', () => {
             assert.isTrue(tab1.mutedInfo.muted);
             assert.isFalse(tab2.mutedInfo.muted);
 
-            await followedTabsHelper.waitThatReaderModeIndicatorIsFullyOn(followedTabRowList[0]);
+            await followedTabsHelper.waitThatMuteIndicatorIsFullyOn(followedTabRowList[0]);
             await testHelper.takeViewportScreenshot('mute-indicator-on-follow-list');
         });
 

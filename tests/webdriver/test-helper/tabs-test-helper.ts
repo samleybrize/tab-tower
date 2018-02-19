@@ -32,8 +32,12 @@ export class TabsTestHelper {
         return tabRow.findElement(By.css('.title a span')).getText();
     }
 
-    getTabUrl(tabRow: WebElement) {
+    getTabUrlAttribute(tabRow: WebElement) {
         return tabRow.findElement(By.css('.title a')).getAttribute('data-url');
+    }
+
+    getTabShownUrl(tabRow: WebElement) {
+        return tabRow.findElement(By.css('.title a em')).getText();
     }
 
     getTabFaviconUrl(tabRow: WebElement) {
@@ -262,7 +266,10 @@ export class TabsTestHelper {
     }
 
     async assertTabUrl(tabRow: WebElement, expectedUrl: string) {
-        const tabShownUrl = await this.getTabUrl(tabRow);
+        const tabUrlAttribute = await this.getTabUrlAttribute(tabRow);
+        const tabShownUrl = await this.getTabShownUrl(tabRow);
+
+        assert.equal(tabUrlAttribute, expectedUrl);
         assert.equal(tabShownUrl, expectedUrl);
     }
 

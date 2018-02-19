@@ -126,8 +126,8 @@ export class OpenedTabsTestHelper {
         return this.tabsTestHelper.getTabTitle(tabRow);
     }
 
-    getTabUrl(tabRow: WebElement) {
-        return this.tabsTestHelper.getTabUrl(tabRow);
+    getTabUrlAttribute(tabRow: WebElement) {
+        return this.tabsTestHelper.getTabUrlAttribute(tabRow);
     }
 
     getTabFaviconUrl(tabRow: WebElement) {

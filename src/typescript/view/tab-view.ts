@@ -141,6 +141,7 @@ export class TabView {
         linkElement.innerHTML = `
             <img />
             <span></span>
+            <em></em>
         `;
         linkElement.addEventListener('click', clickListener);
         linkElement.querySelector('img').addEventListener('error', (event) => {
@@ -446,6 +447,7 @@ export class TabView {
     updateTabUrl(row: HTMLElement, url: string) {
         row.setAttribute('data-url', '' + url);
         row.querySelector('.title a').setAttribute('data-url', '' + url);
+        row.querySelector('.title em').textContent = url;
     }
 
     updateTabLastAccess(row: HTMLElement, lastAccess: Date) {

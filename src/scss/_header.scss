@@ -1,3 +1,5 @@
+$filter-font-color: #444;
+
 #header {
     .title {
         margin-left: 15px;
@@ -21,26 +23,37 @@
             transform: none;
 
             i {
-                color: white;
+                color: $filter-font-color;
             }
         }
 
         input {
             width: 13rem;
+            color: $filter-font-color;
+            background: #b3e5fc; // light-blue ligthen-4
 
-            &:focus + label i {
-                color: black;
+            &:focus {
+                background: white;
             }
+        }
+
+        .resetButton {
+            color: $filter-font-color;
         }
 
         &.collapsed {
             label {
                 pointer-events: all;
                 cursor: pointer;
+
+                i {
+                    color: white;
+                }
             }
 
             input {
                 width: 0;
+                background: none;
             }
 
             .resetButton {

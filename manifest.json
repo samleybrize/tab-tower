@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Tab Tower",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "Description",
     "applications": {
         "gecko": {

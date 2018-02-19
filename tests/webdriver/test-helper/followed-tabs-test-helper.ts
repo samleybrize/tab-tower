@@ -304,7 +304,7 @@ export class FollowedTabsTestHelper {
     }
 
     async assertTabReaderModeTestPageTitle(tabRow: WebElement) {
-        const title = await tabRow.findElement(By.css('.title a')).getText();
+        const title = await tabRow.findElement(By.css('.title a span')).getText();
         assert.match(title, /mozilla/i);
         assert.notMatch(title, /http/i);
     }

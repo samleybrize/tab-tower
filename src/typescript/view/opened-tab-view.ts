@@ -58,6 +58,7 @@ export class OpenedTabView {
 
         this.tabView.isInitialized = true;
         this.tabCounter.setNumberOfOpenedTabs(numberOfOpenedTabs);
+        this.createTitleActions(this.tabView.titleActionsCell);
         await this.tabView.playPendingTasks();
         this.tabView.applyTabFilter();
         this.tabView.showNoTabRowIfTableIsEmpty();
@@ -68,9 +69,8 @@ export class OpenedTabView {
     }
 
     private createTabRow(tabOpenState: TabOpenState, isFollowed: boolean): HTMLElement {
-        const moreButtonId = `opened-tab-action-${tabOpenState.id}`;
         const tabRow = this.tabView.createTabRow(
-            moreButtonId,
+            `opened-tab-${tabOpenState.id}`,
             tabOpenState.title,
             tabOpenState.url,
             tabOpenState.faviconUrl,
@@ -92,7 +92,7 @@ export class OpenedTabView {
         this.tabView.addPinIndicator(tabRow.onOffIndicatorsCell);
         this.tabView.addReaderModeIndicator(tabRow.onOffIndicatorsCell);
         this.tabView.addIncognitoIndicator(tabRow.onOffIndicatorsCell);
-        this.createActions(tabRow.actionsCell, tabOpenState);
+        this.createTabActions(tabRow.actionsCell, tabOpenState);
 
         this.updateFollowState(tabRow.row, isFollowed);
         this.updateTabIndex(tabRow.row, tabOpenState.index);
@@ -110,7 +110,20 @@ export class OpenedTabView {
         return tabRow.row;
     }
 
-    private createActions(cell: HTMLElement, tabOpenState: TabOpenState) {
+    private createTitleActions(cell: HTMLElement) {
+        this.tabView.addFollowSelectedTabsAction(cell);
+        this.tabView.addPinSelectedTabsAction(cell);
+        this.tabView.addUnpinSelectedTabsAction(cell);
+        this.tabView.addMuteSelectedTabsAction(cell);
+        this.tabView.addUnmuteSelectedTabsAction(cell);
+        this.tabView.addDuplicateSelectedTabsAction(cell);
+        this.tabView.addReloadSelectedTabsAction(cell);
+        this.tabView.addActionSeparator(cell);
+        this.tabView.addCloseSelectedTabsAction(cell);
+        this.tabView.addUnfollowSelectedTabsAction(cell);
+    }
+
+    private createTabActions(cell: HTMLElement, tabOpenState: TabOpenState) {
         this.addFollowTabAction(cell, tabOpenState);
         this.addPinTabAction(cell, tabOpenState);
         this.addUnpinTabAction(cell, tabOpenState);

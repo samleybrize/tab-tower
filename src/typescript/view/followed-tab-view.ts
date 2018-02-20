@@ -55,15 +55,15 @@ export class FollowedTabView {
 
         this.tabView.isInitialized = true;
         this.tabCounter.setNumberOfFollowedTabs(numberOfFollowedTabs);
+        this.createTitleActions(this.tabView.titleActionsCell);
         await this.tabView.playPendingTasks();
         this.tabView.applyTabFilter();
         this.tabView.showNoTabRowIfTableIsEmpty();
     }
 
     private createTabRow(tab: TabAssociation): HTMLElement {
-        const moreButtonId = `followed-tab-action-${tab.followState.id}`;
         const tabRow = this.tabView.createTabRow(
-            moreButtonId,
+            `followed-tab-${tab.followState.id}`,
             tab.followState.title,
             tab.followState.url,
             tab.followState.faviconUrl,
@@ -89,7 +89,7 @@ export class FollowedTabView {
         this.tabView.addPinIndicator(tabRow.onOffIndicatorsCell);
         this.tabView.addReaderModeIndicator(tabRow.onOffIndicatorsCell);
         this.tabView.addIncognitoIndicator(tabRow.onOffIndicatorsCell);
-        this.createActions(tabRow.actionsCell, tab);
+        this.createTabActions(tabRow.actionsCell, tab);
 
         const tabOpenId = tab.openState ? tab.openState.id : null;
         this.updateTabOpenState(tabRow.row, this.isTabOpened(tab), tabOpenId);
@@ -105,7 +105,19 @@ export class FollowedTabView {
         return !!tab.openState;
     }
 
-    private createActions(cell: HTMLElement, tab: TabAssociation) {
+    private createTitleActions(cell: HTMLElement) {
+        this.tabView.addPinSelectedTabsAction(cell);
+        this.tabView.addUnpinSelectedTabsAction(cell);
+        this.tabView.addMuteSelectedTabsAction(cell);
+        this.tabView.addUnmuteSelectedTabsAction(cell);
+        this.tabView.addDuplicateSelectedTabsAction(cell);
+        this.tabView.addReloadSelectedTabsAction(cell);
+        this.tabView.addActionSeparator(cell);
+        this.tabView.addCloseSelectedTabsAction(cell);
+        this.tabView.addUnfollowSelectedTabsAction(cell);
+    }
+
+    private createTabActions(cell: HTMLElement, tab: TabAssociation) {
         this.addPinTabAction(cell, tab);
         this.addUnpinTabAction(cell, tab);
         this.addMuteTabAction(cell, tab);

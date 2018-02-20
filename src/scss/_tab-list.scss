@@ -1,15 +1,58 @@
+$selected-row-left-border-width: 8px;
+
 #openedTabList,
 #followedTabList {
     display: none;
 
     thead {
         position: sticky;
+        z-index: 2;
+    }
+
+    tbody {
+        td {
+            &:nth-child(1) {
+                border-left: $selected-row-left-border-width solid transparent;
+                transition: border-left-color 0.3s ease;
+            }
+        }
+
+        .selected {
+            background-color: $table-striped-color;
+
+            td {
+                &:nth-child(1) {
+                    border-left-color: #2196f3; // blue
+                }
+            }
+        }
     }
 
     &.show {
         display: block;
         animation-duration: 0.6s;
         animation-name: viewShow;
+    }
+
+    .titleTabSelector {
+        text-align: center;
+
+        label {
+            height: 21px;
+            padding-left: 21px;
+            vertical-align: middle;
+            transform: scale(0.9);
+        }
+    }
+
+    .tabSelector {
+        text-align: center;
+
+        label {
+            height: 21px;
+            padding-left: 21px;
+            transform: scale(0.9);
+        }
     }
 
     .title {
@@ -114,6 +157,7 @@
 
     .actions {
         width: 1%;
+        font-weight: normal;
 
         .more {
             padding-right: 8px;
@@ -131,6 +175,10 @@
                 vertical-align: middle;
             }
             // sass-lint:enable class-name-format
+
+            li a {
+                white-space: nowrap;
+            }
 
             .warning {
                 a {
@@ -156,6 +204,17 @@
             .transparent {
                 display: none;
             }
+        }
+    }
+
+    thead .more {
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+
+        &.show {
+            pointer-events: all;
+            opacity: 1;
         }
     }
 

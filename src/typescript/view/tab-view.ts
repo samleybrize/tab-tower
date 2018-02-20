@@ -1,5 +1,6 @@
 import * as moment from 'moment';
 
+import { sleep } from '../utils/sleep';
 import { StringMatcher } from '../utils/string-matcher';
 
 type HtmlClickListener = (this: HTMLAnchorElement, ev: HTMLElementEventMap['click']) => any;
@@ -15,6 +16,8 @@ interface TabRow {
 
 export class TabView {
     readonly tbodyElement: HTMLElement;
+    readonly theadElement: HTMLElement;
+    readonly titleActionsCell: HTMLElement;
     readonly noTabRow: HTMLElement;
     private filterTerms: string[] = null;
     private pendingTasks: Array<() => void> = [];
@@ -32,26 +35,38 @@ export class TabView {
         const tableElement = this.createTable(containerElement);
         containerElement.appendChild(tableElement);
         this.tbodyElement = tableElement.querySelector('tbody');
+        this.theadElement = tableElement.querySelector('thead');
+        this.titleActionsCell = this.theadElement.querySelector('.actions');
+        this.initActionsDropdown(this.theadElement.querySelector('tr:nth-child(1)'));
 
         this.noTabRow = this.createNoTabRow();
         this.tbodyElement.appendChild(this.noTabRow);
     }
 
     private createTable(containerElement: HTMLElement): HTMLTableElement {
+        const idsPrefix = 'all-rows-selector-' + ('' + Math.random()).substr(2);
+        const actionsCell = this.createActionsCell(idsPrefix, 'Actions on selected tabs');
+
         const table = document.createElement('table');
         table.classList.add('bordered');
         table.classList.add('highlight');
         table.innerHTML = `
             <thead>
                 <tr>
+                    <th></th>
                     <th>Title</th>
                     <th class="indicators"></th>
                     <th class="lastAccess">Last access</th>
-                    <th></th>
+                    <th class="actions">${actionsCell.innerHTML}</th>
                 </tr>
             </thead>
             <tbody></tbody>
         `;
+
+        const titleCheckboxCell = this.createTitleCheckboxCell(idsPrefix);
+        const titleCheckboxRow = table.querySelector('thead tr:nth-child(1)');
+        const titleCheckboxOldCell = titleCheckboxRow.querySelector('th:nth-child(1)');
+        titleCheckboxRow.replaceChild(titleCheckboxCell, titleCheckboxOldCell);
 
         return table;
     }
@@ -90,7 +105,7 @@ export class TabView {
     }
 
     createTabRow(
-        moreButtonId: string,
+        idsPrefix: string,
         title: string,
         url: string,
         faviconUrl: string,
@@ -100,12 +115,14 @@ export class TabView {
     ): TabRow {
         const row = document.createElement('tr');
 
-        const titleCell = this.createTitleCell(row, (event) => clickListener(row));
+        const selectCell = this.createCheckboxCell(row, idsPrefix);
+        const titleCell = this.createTitleCell((event) => clickListener(row));
         const onOffIndicatorsCell = this.createCell('indicators');
         const lastAccessCell = this.createCell('lastAccess');
-        const actionsCell = this.createActionsCell(moreButtonId);
+        const actionsCell = this.createActionsCell(idsPrefix);
         this.addAudibleIndicator(onOffIndicatorsCell);
 
+        row.appendChild(selectCell);
         row.appendChild(titleCell);
         row.appendChild(onOffIndicatorsCell);
         row.appendChild(lastAccessCell);
@@ -136,7 +153,114 @@ export class TabView {
         return cell;
     }
 
-    createTitleCell(row: HTMLElement, clickListener: HtmlClickListener): HTMLElement {
+    createCheckboxCell(row: HTMLElement, idsPrefix: string): HTMLElement {
+        const checkboxId = `${idsPrefix}-selector`;
+        const cell = this.createCell('tabSelector');
+        cell.innerHTML = `
+            <input type="checkbox" class="filled-in" id="${checkboxId}" />
+            <label for="${checkboxId}" />
+        `;
+
+        const checkboxElement = cell.querySelector('input');
+        checkboxElement.addEventListener('change', async () => {
+            if (checkboxElement.checked) {
+                row.classList.add('selected');
+            } else {
+                row.classList.remove('selected');
+            }
+        });
+
+        const checkboxLabelElement = cell.querySelector('label');
+        checkboxLabelElement.addEventListener('click', async () => {
+            await sleep(200);
+
+            if (checkboxElement.checked) {
+                this.showTitleActions();
+            } else if (!this.isThereACheckedTabSelector()) {
+                this.hideTitleActions();
+                this.uncheckTitleTabSelector();
+            }
+        });
+
+        return cell;
+    }
+
+    private isThereACheckedTabSelector() {
+        return null != this.tbodyElement.querySelector('.tabSelector input:checked');
+    }
+
+    createTitleCheckboxCell(idsPrefix: string): HTMLElement {
+        const cell = document.createElement('th');
+        cell.classList.add('titleTabSelector');
+        cell.innerHTML = `
+            <input type="checkbox" class="filled-in" id="${idsPrefix}" />
+            <label for="${idsPrefix}" />
+        `;
+
+        const checkboxElement = cell.querySelector('input');
+        checkboxElement.addEventListener('change', () => {
+            if (checkboxElement.checked) {
+                this.checkAllTabSelectors();
+            } else {
+                this.uncheckAllTabSelectors();
+            }
+        });
+
+        const checkboxLabelElement = cell.querySelector('label');
+        checkboxLabelElement.addEventListener('click', async () => {
+            await sleep(200);
+
+            if (checkboxElement.checked) {
+                this.showTitleActions();
+            } else {
+                this.hideTitleActions();
+            }
+        });
+
+        return cell;
+    }
+
+    private uncheckTitleTabSelector() {
+        const titleTabSelector: HTMLInputElement = this.theadElement.querySelector('.titleTabSelector input');
+        titleTabSelector.checked = false;
+    }
+
+    private checkAllTabSelectors() {
+        const tabSelectorList: HTMLInputElement[] = Array.from(this.tbodyElement.querySelectorAll('.tabSelector input'));
+
+        for (const tabSelector of tabSelectorList) {
+            // setting tabSelector.checked to true does not fire the "change" event
+            if (!tabSelector.checked) {
+                tabSelector.click();
+            }
+        }
+    }
+
+    private uncheckAllTabSelectors() {
+        const tabSelectorList: HTMLInputElement[] = Array.from(this.tbodyElement.querySelectorAll('.tabSelector input'));
+
+        for (const tabSelector of tabSelectorList) {
+            // setting tabSelector.checked to false does not fire the "change" event
+            if (tabSelector.checked) {
+                tabSelector.click();
+            }
+        }
+    }
+
+    private showTitleActions() {
+        const moreButton = this.theadElement.querySelector('.more');
+
+        if (!moreButton.classList.contains('show')) {
+            moreButton.classList.add('show');
+            jQuery(moreButton).tooltip();
+        }
+    }
+
+    private hideTitleActions() {
+        this.theadElement.querySelector('.more').classList.remove('show');
+    }
+
+    createTitleCell(clickListener: HtmlClickListener): HTMLElement {
         const linkElement = document.createElement('a');
         linkElement.innerHTML = `
             <img crossorigin="anonymous" />
@@ -187,16 +311,16 @@ export class TabView {
         cell.appendChild(iconElement);
     }
 
-    createActionsCell(dropdownId: string): HTMLElement {
+    createActionsCell(idsPrefix: string, tooltipText?: string): HTMLElement {
+        const dropdownId = `${idsPrefix}-action`;
         const moreButton = document.createElement('a');
         moreButton.classList.add('more');
         moreButton.classList.add('waves-effect');
         moreButton.classList.add('waves-teal');
         moreButton.classList.add('btn-flat');
-        moreButton.classList.add('dropdown-button');
         moreButton.setAttribute('data-activates', dropdownId);
         moreButton.setAttribute('href', '#');
-        moreButton.setAttribute('data-tooltip', 'Actions');
+        moreButton.setAttribute('data-tooltip', tooltipText ? tooltipText : 'Actions');
         moreButton.innerHTML = '<i class="material-icons">more_vert</i>';
         jQuery(moreButton).tooltip();
 
@@ -234,44 +358,89 @@ export class TabView {
     }
 
     initActionsDropdown(row: HTMLElement) {
-        const dropdownId = row.querySelector('.dropdown-button').getAttribute('data-activates');
-        jQuery(`.dropdown-button[data-activates='${dropdownId}']`).dropdown({constrainWidth: false});
+        const moreButton = row.querySelector('.more');
+        jQuery(moreButton).dropdown({constrainWidth: false});
     }
 
     addFollowTabAction(cell: HTMLElement, clickListener: HtmlClickListener) {
         this.addAction(cell, 'Follow', 'followButton', 'settings_backup_restore', false, clickListener);
     }
 
+    private clickButtonOnSelectedRows(buttonCssClass: string) {
+        const checkedList = Array.from(this.tbodyElement.querySelectorAll('.tabSelector input:checked'));
+
+        for (const checkboxElement of checkedList) {
+            const button: HTMLElement = checkboxElement.closest('tr').querySelector(`.${buttonCssClass} a`);
+            button.click();
+        }
+    }
+
+    addFollowSelectedTabsAction(cell: HTMLElement) {
+        this.addFollowTabAction(cell, this.clickButtonOnSelectedRows.bind(this, 'followButton'));
+    }
+
     addUnfollowTabAction(cell: HTMLElement, clickListener: HtmlClickListener) {
         this.addAction(cell, 'Unfollow', 'unfollowButton', 'not_interested', true, clickListener);
+    }
+
+    addUnfollowSelectedTabsAction(cell: HTMLElement) {
+        this.addUnfollowTabAction(cell, this.clickButtonOnSelectedRows.bind(this, 'unfollowButton'));
     }
 
     addPinTabAction(cell: HTMLElement, clickListener: HtmlClickListener) {
         this.addAction(cell, 'Pin', 'pinButton', 'stars', false, clickListener);
     }
 
+    addPinSelectedTabsAction(cell: HTMLElement) {
+        this.addPinTabAction(cell, this.clickButtonOnSelectedRows.bind(this, 'pinButton'));
+    }
+
     addUnpinTabAction(cell: HTMLElement, clickListener: HtmlClickListener) {
         this.addAction(cell, 'Unpin', 'unpinButton', 'stars', false, clickListener);
+    }
+
+    addUnpinSelectedTabsAction(cell: HTMLElement) {
+        this.addUnpinTabAction(cell, this.clickButtonOnSelectedRows.bind(this, 'unpinButton'));
     }
 
     addMuteTabAction(cell: HTMLElement, clickListener: HtmlClickListener) {
         this.addAction(cell, 'Mute', 'muteButton', 'volume_off', false, clickListener);
     }
 
+    addMuteSelectedTabsAction(cell: HTMLElement) {
+        this.addMuteTabAction(cell, this.clickButtonOnSelectedRows.bind(this, 'muteButton'));
+    }
+
     addUnmuteTabAction(cell: HTMLElement, clickListener: HtmlClickListener) {
         this.addAction(cell, 'Unmute', 'unmuteButton', 'volume_up', false, clickListener);
+    }
+
+    addUnmuteSelectedTabsAction(cell: HTMLElement) {
+        this.addUnmuteTabAction(cell, this.clickButtonOnSelectedRows.bind(this, 'unmuteButton'));
     }
 
     addDuplicateTabAction(cell: HTMLElement, clickListener: HtmlClickListener) {
         this.addAction(cell, 'Duplicate', 'duplicateButton', 'content_copy', false, clickListener);
     }
 
+    addDuplicateSelectedTabsAction(cell: HTMLElement) {
+        this.addDuplicateTabAction(cell, this.clickButtonOnSelectedRows.bind(this, 'duplicateButton'));
+    }
+
     addReloadTabAction(cell: HTMLElement, clickListener: HtmlClickListener) {
         this.addAction(cell, 'Reload', 'reloadButton', 'autorenew', false, clickListener);
     }
 
+    addReloadSelectedTabsAction(cell: HTMLElement) {
+        this.addReloadTabAction(cell, this.clickButtonOnSelectedRows.bind(this, 'reloadButton'));
+    }
+
     addCloseTabAction(cell: HTMLElement, clickListener: HtmlClickListener) {
         this.addAction(cell, 'Close', 'closeButton', 'close', true, clickListener);
+    }
+
+    addCloseSelectedTabsAction(cell: HTMLElement) {
+        this.addCloseTabAction(cell, this.clickButtonOnSelectedRows.bind(this, 'closeButton'));
     }
 
     showFollowButton(row: HTMLElement) {

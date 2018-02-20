@@ -25,16 +25,20 @@ function log(message: string) {
     console.info(`[${dateStart}] ${message}`);
 }
 
-async function checkManifestVersion() {
+async function checkVersion() {
     if (isTestEnv) {
         return;
     }
 
     const versionFromGitTag = await getVersionFromGitTagOnCurrentCommit();
     const versionFromManifest = getVersionFromManifest();
+    const versionFromPackageJson = getVersionFromPackageJson();
 
     if (versionFromGitTag != versionFromManifest) {
         console.error('The version retrieved from git tags is not equal to the version retrieved from the manifest');
+        process.exit(1);
+    } else if (versionFromGitTag != versionFromPackageJson) {
+        console.error('The version retrieved from git tags is not equal to the version retrieved from the package.json');
         process.exit(1);
     }
 }
@@ -83,6 +87,20 @@ function getVersionFromManifest(): string {
     }
 
     return manifestVersion;
+}
+
+function getVersionFromPackageJson(): string {
+    const packagePath = path.join(rootPath, 'package.json');
+    const packageContent = '' + fs.readFileSync(packagePath);
+    const packageJson = JSON.parse(packageContent);
+    const packageVersion: string = semver.valid(packageJson.version);
+
+    if ('string' != typeof packageVersion || 0 == packageVersion.length) {
+        console.error('No valid version found in the package.json');
+        process.exit(1);
+    }
+
+    return packageVersion;
 }
 
 function exportProjectFiles() {
@@ -139,7 +157,7 @@ async function buildFirefoxExtension() {
     log(`Successfully builded firefox extension at "${outputFile}"`);
 }
 
-checkManifestVersion().then(() => {
+checkVersion().then(() => {
     exportProjectFiles();
     buildFirefoxExtension().then(() => {
         fs.removeSync(exportPath);

@@ -735,4 +735,69 @@ describe('Pinned tabs', () => {
             await followedTabsHelper.assertTabUnpinButtonIsNotVisible(followedTabRowList[0]);
         });
     });
+
+    describe('Tab selecting', () => {
+        xit('A click on the selection pin button should pin selected opened tabs', async () => {
+            // TODO open two tabs
+
+            // TODO select them
+            // TODO click on pin button
+
+            // TODO assert pinned
+        });
+
+        xit('A click on the selection unpin button should unpin selected opened tabs', async () => {
+            // TODO open two tabs
+
+            // TODO pin them
+            // TODO select them
+            // TODO click on unpin button
+
+            // TODO assert unpinned
+        });
+
+        xit('A click on the selection pin button should pin selected followed tabs', async () => {
+            // TODO open two tabs
+
+            // TODO follow them
+            // TODO select them
+            // TODO click on pin button
+
+            // TODO assert pinned
+        });
+
+        xit('A click on the selection pin button should not pin selected followed tabs for which the pin button is disabled', async () => {
+            // TODO open two tabs
+
+            // TODO follow them
+            // TODO close one
+            // TODO select them
+            // TODO click on pin button
+
+            // TODO assert pinned
+        });
+
+        xit('A click on the selection unpin button should unpin selected followed tabs', async () => {
+            // TODO open two tabs
+
+            // TODO follow them
+            // TODO pin them
+            // TODO select them
+            // TODO click on unpin button
+
+            // TODO assert unpinned
+        });
+
+        xit('A click on the selection unpin button should not unpin selected followed tabs for which the unpin button is disabled', async () => {
+            // TODO open two tabs
+
+            // TODO follow them
+            // TODO pin them
+            // TODO close one
+            // TODO select them
+            // TODO click on unpin button
+
+            // TODO assert pinned
+        });
+    });
 });

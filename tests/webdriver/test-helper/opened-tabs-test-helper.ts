@@ -13,6 +13,10 @@ export class OpenedTabsTestHelper {
         return this.driver.findElement(By.css('#openedTabList'));
     }
 
+    getHeaderRow() {
+        return this.getContainerElement().findElement(By.css('thead tr'));
+    }
+
     async getTabRowList() {
         return this.driver.findElements(By.css('#openedTabList tbody tr[data-tab-id]'));
     }
@@ -31,6 +35,11 @@ export class OpenedTabsTestHelper {
         await this.tabsTestHelper.clickOnTabMoreButton(tabRow, !!waitFullyVisible);
     }
 
+    async clickOnSelectionTabMoreButton(waitFullyVisible?: boolean) {
+        const headerRow = this.getHeaderRow();
+        await this.tabsTestHelper.clickOnTabMoreButton(headerRow, !!waitFullyVisible);
+    }
+
     async clickOnTabCloseButton(tabRow: WebElement) {
         await this.tabsTestHelper.clickOnTabMoreButton(tabRow);
         await tabRow.findElement(By.css('.closeButton')).click();
@@ -43,6 +52,11 @@ export class OpenedTabsTestHelper {
                 }
             }
         }, 3000);
+    }
+
+    async clickOnSelectionTabCloseButton() {
+        const headerRow = this.getHeaderRow();
+        await this.tabsTestHelper.clickOnSelectionTabCloseButton(headerRow);
     }
 
     async clickOnTabTitle(tabRow: WebElement) {
@@ -69,6 +83,16 @@ export class OpenedTabsTestHelper {
         }
     }
 
+    async clickOnSelectionTabFollowButton() {
+        const headerRow = this.getHeaderRow();
+        const followButton = this.getFollowButton(headerRow);
+
+        await this.tabsTestHelper.clickOnTabMoreButton(headerRow);
+        await followButton.click();
+
+        await sleep(500);
+    }
+
     async clickOnTabUnfollowButton(tabRow: WebElement) {
         const unfollowButton = this.getUnfollowButton(tabRow);
 
@@ -79,12 +103,27 @@ export class OpenedTabsTestHelper {
         }, 3000);
     }
 
+    async clickOnSelectionTabUnfollowButton() {
+        const headerRow = this.getHeaderRow();
+        await this.tabsTestHelper.clickOnSelectionTabUnfollowButton(headerRow);
+    }
+
     async clickOnTabPinButton(tabRow: WebElement) {
         await this.tabsTestHelper.clickOnTabPinButton(tabRow, true);
     }
 
+    async clickOnSelectionTabPinButton(tabRow: WebElement) {
+        const headerRow = this.getHeaderRow();
+        await this.tabsTestHelper.clickOnSelectionTabPinButton(headerRow);
+    }
+
     async clickOnTabUnpinButton(tabRow: WebElement) {
         await this.tabsTestHelper.clickOnTabUnpinButton(tabRow);
+    }
+
+    async clickOnSelectionTabUnpinButton(tabRow: WebElement) {
+        const headerRow = this.getHeaderRow();
+        await this.tabsTestHelper.clickOnSelectionTabUnpinButton(headerRow);
     }
 
     async clickOnTabMuteButton(tabRow: WebElement, waitMuteIndicatorStateChange?: boolean) {
@@ -95,6 +134,11 @@ export class OpenedTabsTestHelper {
         await this.tabsTestHelper.clickOnTabMuteButton(tabRow, waitMuteIndicatorStateChange);
     }
 
+    async clickOnSelectionTabMuteButton(tabRow: WebElement) {
+        const headerRow = this.getHeaderRow();
+        await this.tabsTestHelper.clickOnSelectionTabMuteButton(headerRow);
+    }
+
     async clickOnTabUnmuteButton(tabRow: WebElement, waitMuteIndicatorStateChange?: boolean) {
         if (undefined === waitMuteIndicatorStateChange) {
             waitMuteIndicatorStateChange = true;
@@ -103,20 +147,35 @@ export class OpenedTabsTestHelper {
         await this.tabsTestHelper.clickOnTabUnmuteButton(tabRow, waitMuteIndicatorStateChange);
     }
 
+    async clickOnSelectionTabUnmuteButton(tabRow: WebElement) {
+        const headerRow = this.getHeaderRow();
+        await this.tabsTestHelper.clickOnSelectionTabUnmuteButton(headerRow);
+    }
+
     async clickOnTabReloadButton(tabIndex: number, tabRow: WebElement) {
         await this.tabsTestHelper.clickOnTabReloadButton(tabIndex, tabRow);
+    }
+
+    async clickOnSelectionTabReloadButton(tabRow: WebElement) {
+        const headerRow = this.getHeaderRow();
+        await this.tabsTestHelper.clickOnSelectionTabReloadButton(headerRow);
     }
 
     async clickOnTabDuplicateButton(tabRow: WebElement) {
         await this.tabsTestHelper.clickOnTabDuplicateButton(tabRow, true);
     }
 
+    async clickOnSelectionTabDuplicateButton(tabRow: WebElement) {
+        const headerRow = this.getHeaderRow();
+        await this.tabsTestHelper.clickOnSelectionTabDuplicateButton(headerRow);
+    }
+
     async clickOnTabSelector(tabRow: WebElement) {
         await this.tabsTestHelper.clickOnTabSelector(tabRow);
     }
 
-    async clickOnTitleTabSelector() {
-        await this.tabsTestHelper.clickOnTitleTabSelector(this.getContainerElement());
+    async clickOnGeneralTabSelector() {
+        await this.tabsTestHelper.clickOnGeneralTabSelector(this.getContainerElement());
     }
 
     async showTitleTooltip(tabRow: WebElement) {
@@ -414,19 +473,19 @@ export class OpenedTabsTestHelper {
         await this.tabsTestHelper.assertTabSelectorIsNotChecked(tabRow);
     }
 
-    async assertTitleTabSelectorIsChecked() {
-        await this.tabsTestHelper.assertTitleTabSelectorIsChecked(this.getContainerElement());
+    async assertGeneralTabSelectorIsChecked() {
+        await this.tabsTestHelper.assertGeneralTabSelectorIsChecked(this.getContainerElement());
     }
 
-    async assertTitleTabSelectorIsNotChecked() {
-        await this.tabsTestHelper.assertTitleTabSelectorIsNotChecked(this.getContainerElement());
+    async assertGeneralTabSelectorIsNotChecked() {
+        await this.tabsTestHelper.assertGeneralTabSelectorIsNotChecked(this.getContainerElement());
     }
 
-    async assertTitleMoreButtonIsVisible() {
-        await this.tabsTestHelper.assertTitleMoreButtonIsVisible(this.getContainerElement());
+    async assertSelectionTabMoreButtonIsVisible() {
+        await this.tabsTestHelper.assertSelectionTabMoreButtonIsVisible(this.getContainerElement());
     }
 
-    async assertTitleMoreButtonIsNotVisible() {
-        await this.tabsTestHelper.assertTitleMoreButtonIsNotVisible(this.getContainerElement());
+    async assertSelectionTabMoreButtonIsNotVisible() {
+        await this.tabsTestHelper.assertSelectionTabMoreButtonIsNotVisible(this.getContainerElement());
     }
 }

@@ -344,15 +344,23 @@ export class TestHelper {
         await this.switchToWindowHandle(currentActiveTab.index);
     }
 
-    async showOpenedTabsList() {
+    async showOpenedTabsList(waitFullyVisible?: boolean) {
         const openedTabListElement = this.driver.findElement(By.css('#openedTabList'));
         await this.driver.findElement(By.css('#header .openedTabs')).click();
         await this.driver.wait(until.elementIsVisible(openedTabListElement), 3000);
+
+        if (waitFullyVisible) {
+            await sleep(500);
+        }
     }
 
-    async showFollowedTabsList() {
+    async showFollowedTabsList(waitFullyVisible?: boolean) {
         const followedTabListElement = this.driver.findElement(By.css('#followedTabList'));
         await this.driver.findElement(By.css('#header .followedTabs')).click();
         await this.driver.wait(until.elementIsVisible(followedTabListElement), 3000);
+
+        if (waitFullyVisible) {
+            await sleep(500);
+        }
     }
 }

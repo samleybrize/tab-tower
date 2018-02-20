@@ -63,10 +63,10 @@ export class TabView {
             <tbody></tbody>
         `;
 
-        const titleCheckboxCell = this.createTitleCheckboxCell(idsPrefix);
-        const titleCheckboxRow = table.querySelector('thead tr:nth-child(1)');
-        const titleCheckboxOldCell = titleCheckboxRow.querySelector('th:nth-child(1)');
-        titleCheckboxRow.replaceChild(titleCheckboxCell, titleCheckboxOldCell);
+        const generalSelectorCell = this.createGeneralSelectorCell(idsPrefix);
+        const generalSelectorRow = table.querySelector('thead tr:nth-child(1)');
+        const generalSelectorOldCell = generalSelectorRow.querySelector('th:nth-child(1)');
+        generalSelectorRow.replaceChild(generalSelectorCell, generalSelectorOldCell);
 
         return table;
     }
@@ -115,7 +115,7 @@ export class TabView {
     ): TabRow {
         const row = document.createElement('tr');
 
-        const selectCell = this.createCheckboxCell(row, idsPrefix);
+        const selectCell = this.createSelectorCell(row, idsPrefix);
         const titleCell = this.createTitleCell((event) => clickListener(row));
         const onOffIndicatorsCell = this.createCell('indicators');
         const lastAccessCell = this.createCell('lastAccess');
@@ -153,7 +153,7 @@ export class TabView {
         return cell;
     }
 
-    createCheckboxCell(row: HTMLElement, idsPrefix: string): HTMLElement {
+    createSelectorCell(row: HTMLElement, idsPrefix: string): HTMLElement {
         const checkboxId = `${idsPrefix}-selector`;
         const cell = this.createCell('tabSelector');
         cell.innerHTML = `
@@ -189,9 +189,9 @@ export class TabView {
         return null != this.tbodyElement.querySelector('.tabSelector input:checked');
     }
 
-    createTitleCheckboxCell(idsPrefix: string): HTMLElement {
+    createGeneralSelectorCell(idsPrefix: string): HTMLElement {
         const cell = document.createElement('th');
-        cell.classList.add('titleTabSelector');
+        cell.classList.add('generalTabSelector');
         cell.innerHTML = `
             <input type="checkbox" class="filled-in" id="${idsPrefix}" />
             <label for="${idsPrefix}" />
@@ -221,8 +221,8 @@ export class TabView {
     }
 
     private uncheckTitleTabSelector() {
-        const titleTabSelector: HTMLInputElement = this.theadElement.querySelector('.titleTabSelector input');
-        titleTabSelector.checked = false;
+        const generalTabSelector: HTMLInputElement = this.theadElement.querySelector('.generalTabSelector input');
+        generalTabSelector.checked = false;
     }
 
     private checkAllTabSelectors() {

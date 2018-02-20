@@ -653,4 +653,36 @@ describe('Tab duplicating', () => {
             await openedTabsHelper.assertTabMuteIndicatorIsOff(newFollowedTabRowList[1]);
         });
     });
+
+    describe('Tab selecting', () => {
+        xit('A click on the selection duplicate button should duplicate selected opened tabs', async () => {
+            // TODO open two tabs
+
+            // TODO select them
+            // TODO click duplicate button
+
+            // TODO assert that they are duplicated
+        });
+
+        xit('A click on the selection duplicate button should duplicate selected followed tabs', async () => {
+            // TODO open two tabs
+
+            // TODO follow them
+            // TODO select them
+            // TODO click duplicate button
+
+            // TODO assert that they are duplicated
+        });
+
+        xit('A click on the selection duplicate button should not duplicate selected followed tabs for which the duplicate button is disabled', async () => {
+            // TODO open two tabs
+
+            // TODO follow them
+            // TODO close one
+            // TODO select them
+            // TODO click duplicate button
+
+            // TODO assert that one is duplicated but not the other
+        });
+    });
 });

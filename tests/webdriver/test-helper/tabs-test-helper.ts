@@ -104,15 +104,15 @@ export class TabsTestHelper {
         return tabRow.findElement(By.css('.tabSelector input'));
     }
 
-    getTitleTabSelectorLabel(container: WebElement) {
-        return container.findElement(By.css('thead .titleTabSelector label'));
+    getGeneralTabSelectorLabel(container: WebElement) {
+        return container.findElement(By.css('thead .generalTabSelector label'));
     }
 
-    getTitleTabSelectorInput(container: WebElement) {
-        return container.findElement(By.css('thead .titleTabSelector input'));
+    getGeneralTabSelectorInput(container: WebElement) {
+        return container.findElement(By.css('thead .generalTabSelector input'));
     }
 
-    getTitleTabMoreButton(container: WebElement) {
+    getSelectionTabMoreButton(container: WebElement) {
         return container.findElement(By.css('thead .more'));
     }
 
@@ -168,6 +168,20 @@ export class TabsTestHelper {
         }
     }
 
+    async clickOnSelectionTabCloseButton(titleRow: WebElement) {
+        await this.clickOnTabMoreButton(titleRow);
+        await titleRow.findElement(By.css('.closeButton')).click();
+
+        await sleep(500);
+    }
+
+    async clickOnSelectionTabUnfollowButton(titleRow: WebElement) {
+        await this.clickOnTabMoreButton(titleRow);
+        await titleRow.findElement(By.css('.unfollowButton')).click();
+
+        await sleep(500);
+    }
+
     async clickOnTabPinButton(tabRow: WebElement, waitPinIndicatorStateChange: boolean) {
         const pinButton = this.getPinButton(tabRow);
         const pinIndicator = this.getPinIndicator(tabRow);
@@ -182,6 +196,13 @@ export class TabsTestHelper {
         } else {
             await sleep(500);
         }
+    }
+
+    async clickOnSelectionTabPinButton(titleRow: WebElement) {
+        await this.clickOnTabMoreButton(titleRow);
+        await titleRow.findElement(By.css('.pinButton')).click();
+
+        await sleep(500);
     }
 
     async hasClass(element: WebElement, className: string) {
@@ -207,6 +228,13 @@ export class TabsTestHelper {
         }, 3000);
     }
 
+    async clickOnSelectionTabUnpinButton(titleRow: WebElement) {
+        await this.clickOnTabMoreButton(titleRow);
+        await titleRow.findElement(By.css('.unpinButton')).click();
+
+        await sleep(500);
+    }
+
     async clickOnTabMuteButton(tabRow: WebElement, waitMuteIndicatorStateChange: boolean) {
         const muteButton = this.getMuteButton(tabRow);
         const muteIndicator = this.getMuteIndicator(tabRow);
@@ -221,6 +249,13 @@ export class TabsTestHelper {
         } else {
             await sleep(500);
         }
+    }
+
+    async clickOnSelectionTabMuteButton(titleRow: WebElement) {
+        await this.clickOnTabMoreButton(titleRow);
+        await titleRow.findElement(By.css('.muteButton')).click();
+
+        await sleep(500);
     }
 
     async clickOnTabUnmuteButton(tabRow: WebElement, waitMuteIndicatorStateChange: boolean) {
@@ -239,6 +274,13 @@ export class TabsTestHelper {
         }
     }
 
+    async clickOnSelectionTabUnmuteButton(titleRow: WebElement) {
+        await this.clickOnTabMoreButton(titleRow);
+        await titleRow.findElement(By.css('.unmuteButton')).click();
+
+        await sleep(500);
+    }
+
     async clickOnTabReloadButton(tabIndex: number, tabRow: WebElement) {
         const reloadButton = this.getReloadButton(tabRow);
 
@@ -249,6 +291,13 @@ export class TabsTestHelper {
 
             return 'complete' == tab.status;
         }, 3000);
+    }
+
+    async clickOnSelectionTabReloadButton(titleRow: WebElement) {
+        await this.clickOnTabMoreButton(titleRow);
+        await titleRow.findElement(By.css('.reloadButton')).click();
+
+        await sleep(500);
     }
 
     async clickOnTabDuplicateButton(tabRow: WebElement, waitForNewTab: boolean) {
@@ -276,14 +325,21 @@ export class TabsTestHelper {
         await sleep(500);
     }
 
+    async clickOnSelectionTabDuplicateButton(titleRow: WebElement) {
+        await this.clickOnTabMoreButton(titleRow);
+        await titleRow.findElement(By.css('.duplicateButton')).click();
+
+        await sleep(500);
+    }
+
     async clickOnTabSelector(tabRow: WebElement) {
         const tabSelector = this.getTabSelectorLabel(tabRow);
         await tabSelector.click();
         await sleep(300);
     }
 
-    async clickOnTitleTabSelector(container: WebElement) {
-        const tabSelector = this.getTitleTabSelectorLabel(container);
+    async clickOnGeneralTabSelector(container: WebElement) {
+        const tabSelector = this.getGeneralTabSelectorLabel(container);
         await tabSelector.click();
         await sleep(300);
     }
@@ -594,26 +650,26 @@ export class TabsTestHelper {
         assert.isFalse(isChecked, 'Tab selector is checked');
     }
 
-    async assertTitleTabSelectorIsChecked(container: WebElement) {
-        const isChecked = await this.getTitleTabSelectorInput(container).isSelected();
+    async assertGeneralTabSelectorIsChecked(container: WebElement) {
+        const isChecked = await this.getGeneralTabSelectorInput(container).isSelected();
 
         assert.isTrue(isChecked, 'Title tab selector is not checked');
     }
 
-    async assertTitleTabSelectorIsNotChecked(container: WebElement) {
-        const isChecked = await this.getTitleTabSelectorInput(container).isSelected();
+    async assertGeneralTabSelectorIsNotChecked(container: WebElement) {
+        const isChecked = await this.getGeneralTabSelectorInput(container).isSelected();
 
         assert.isFalse(isChecked, 'Title tab selector is checked');
     }
 
-    async assertTitleMoreButtonIsVisible(container: WebElement) {
-        const isDisplayed = await this.getTitleTabMoreButton(container).isDisplayed();
+    async assertSelectionTabMoreButtonIsVisible(container: WebElement) {
+        const isDisplayed = await this.getSelectionTabMoreButton(container).isDisplayed();
 
         assert.isTrue(isDisplayed, 'Title tab more button is not visible');
     }
 
-    async assertTitleMoreButtonIsNotVisible(container: WebElement) {
-        const isDisplayed = await this.getTitleTabMoreButton(container).isDisplayed();
+    async assertSelectionTabMoreButtonIsNotVisible(container: WebElement) {
+        const isDisplayed = await this.getSelectionTabMoreButton(container).isDisplayed();
 
         assert.isFalse(isDisplayed, 'Title tab more button is visible');
     }

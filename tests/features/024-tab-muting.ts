@@ -567,4 +567,69 @@ describe('Tab muting', () => {
             await followedTabsHelper.assertTabUnmuteButtonIsNotVisible(followedTabRowList[0]);
         });
     });
+
+    describe('Tab selecting', () => {
+        xit('A click on the selection mute button should mute selected opened tabs', async () => {
+            // TODO open two tabs
+
+            // TODO select them
+            // TODO click on mute button
+
+            // TODO assert muted
+        });
+
+        xit('A click on the selection unmute button should unmute selected opened tabs', async () => {
+            // TODO open two tabs
+
+            // TODO mute them
+            // TODO select them
+            // TODO click on unmute button
+
+            // TODO assert unmuted
+        });
+
+        xit('A click on the selection mute button should mute selected followed tabs', async () => {
+            // TODO open two tabs
+
+            // TODO follow them
+            // TODO select them
+            // TODO click on mute button
+
+            // TODO assert muted
+        });
+
+        xit('A click on the selection mute button should not mute selected followed tabs for which the mute button is disabled', async () => {
+            // TODO open two tabs
+
+            // TODO follow them
+            // TODO close one
+            // TODO select them
+            // TODO click on mute button
+
+            // TODO assert muted
+        });
+
+        xit('A click on the selection unmute button should unmute selected followed tabs', async () => {
+            // TODO open two tabs
+
+            // TODO follow them
+            // TODO mute them
+            // TODO select them
+            // TODO click on unmute button
+
+            // TODO assert unmuted
+        });
+
+        xit('A click on the selection unmute button should not unmute selected followed tabs for which the unmute button is disabled', async () => {
+            // TODO open two tabs
+
+            // TODO follow them
+            // TODO mute them
+            // TODO close one
+            // TODO select them
+            // TODO click on unmute button
+
+            // TODO assert muted
+        });
+    });
 });

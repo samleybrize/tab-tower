@@ -111,4 +111,36 @@ describe('Tab reloading', () => {
             await testHelper.takeViewportScreenshot('reload-button-disabled-follow-list');
         });
     });
+
+    describe('Tab selecting', () => {
+        xit('A click on the selection reload button should reload selected opened tabs', async () => {
+            // TODO open two tabs
+
+            // TODO select them
+            // TODO reload them
+
+            // TODO assert that they are reloaded
+        });
+
+        xit('A click on the selection reload button should reload selected followed tabs', async () => {
+            // TODO open two tabs
+
+            // TODO follow them
+            // TODO select them
+            // TODO reload them
+
+            // TODO assert that they are reloaded
+        });
+
+        xit('A click on the selection reload button should not reload selected followed tabs for which the reload button is disabled', async () => {
+            // TODO open two tabs
+
+            // TODO follow them
+            // TODO close one
+            // TODO select them
+            // TODO reload them
+
+            // TODO assert that one is reloaded but not the other
+        });
+    });
 });

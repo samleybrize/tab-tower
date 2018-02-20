@@ -139,7 +139,7 @@ export class TabView {
     createTitleCell(row: HTMLElement, clickListener: HtmlClickListener): HTMLElement {
         const linkElement = document.createElement('a');
         linkElement.innerHTML = `
-            <img />
+            <img crossorigin="anonymous" />
             <span></span>
             <em></em>
         `;
@@ -422,26 +422,8 @@ export class TabView {
         if (null == faviconUrl) {
             faviconElement.src = this.defaultFaviconUrl;
         } else {
-            this.setFaviconUrlDependingOnHttpStatusCode(faviconElement, faviconUrl);
+            faviconElement.src = faviconUrl;
         }
-    }
-
-    private setFaviconUrlDependingOnHttpStatusCode(faviconElement: HTMLImageElement, faviconUrl: string) {
-        const httpRequest = new XMLHttpRequest();
-        httpRequest.onerror = () => {
-            faviconElement.src = this.defaultFaviconUrl;
-        };
-        httpRequest.onreadystatechange = () => {
-            if (4 != httpRequest.readyState) {
-                return;
-            } else if (httpRequest.status < 400) {
-                faviconElement.src = faviconUrl;
-            } else {
-                faviconElement.src = this.defaultFaviconUrl;
-            }
-        };
-        httpRequest.open('HEAD', faviconUrl, true);
-        httpRequest.send();
     }
 
     updateTabUrl(row: HTMLElement, url: string) {

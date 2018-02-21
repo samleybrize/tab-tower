@@ -9,6 +9,10 @@ export class FollowedTabsTestHelper {
     constructor(private tabsTestHelper: TabsTestHelper, private driver: WebDriver, private browserInstructionSender: BrowserInstructionSender) {
     }
 
+    getContainerElement() {
+        return this.driver.findElement(By.css('#followedTabList'));
+    }
+
     async getTabRowList() {
         return this.driver.findElements(By.css('#followedTabList tbody tr[data-follow-id]'));
     }
@@ -169,6 +173,14 @@ export class FollowedTabsTestHelper {
         }
 
         await this.tabsTestHelper.clickOnTabDuplicateButton(tabRow, waitForNewTab);
+    }
+
+    async clickOnTabSelector(tabRow: WebElement) {
+        await this.tabsTestHelper.clickOnTabSelector(tabRow);
+    }
+
+    async clickOnTitleTabSelector() {
+        await this.tabsTestHelper.clickOnTitleTabSelector(this.getContainerElement());
     }
 
     async showTitleTooltip(tabRow: WebElement) {
@@ -450,5 +462,29 @@ export class FollowedTabsTestHelper {
     async assertNoTooltipVisible() {
         const containerElement = await this.driver.findElement(By.css('#followedTabList'));
         await this.tabsTestHelper.assertNoTooltipVisible(containerElement);
+    }
+
+    async assertTabSelectorIsChecked(tabRow: WebElement) {
+        await this.tabsTestHelper.assertTabSelectorIsChecked(tabRow);
+    }
+
+    async assertTabSelectorIsNotChecked(tabRow: WebElement) {
+        await this.tabsTestHelper.assertTabSelectorIsNotChecked(tabRow);
+    }
+
+    async assertTitleTabSelectorIsChecked() {
+        await this.tabsTestHelper.assertTitleTabSelectorIsChecked(this.getContainerElement());
+    }
+
+    async assertTitleTabSelectorIsNotChecked() {
+        await this.tabsTestHelper.assertTitleTabSelectorIsNotChecked(this.getContainerElement());
+    }
+
+    async assertTitleMoreButtonIsVisible() {
+        await this.tabsTestHelper.assertTitleMoreButtonIsVisible(this.getContainerElement());
+    }
+
+    async assertTitleMoreButtonIsNotVisible() {
+        await this.tabsTestHelper.assertTitleMoreButtonIsNotVisible(this.getContainerElement());
     }
 }

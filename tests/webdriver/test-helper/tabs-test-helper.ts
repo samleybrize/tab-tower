@@ -96,6 +96,26 @@ export class TabsTestHelper {
         return tabRow.findElement(By.css('.lastAccess')).getText();
     }
 
+    getTabSelectorLabel(tabRow: WebElement) {
+        return tabRow.findElement(By.css('.tabSelector label'));
+    }
+
+    getTabSelectorInput(tabRow: WebElement) {
+        return tabRow.findElement(By.css('.tabSelector input'));
+    }
+
+    getTitleTabSelectorLabel(container: WebElement) {
+        return container.findElement(By.css('thead .titleTabSelector label'));
+    }
+
+    getTitleTabSelectorInput(container: WebElement) {
+        return container.findElement(By.css('thead .titleTabSelector input'));
+    }
+
+    getTitleTabMoreButton(container: WebElement) {
+        return container.findElement(By.css('thead .more'));
+    }
+
     async waitThatOnOffIndicatorIsFullyOn(indicatorElement: WebElement) {
         await this.driver.wait(async () => {
             return '1' == await indicatorElement.getCssValue('opacity');
@@ -254,6 +274,18 @@ export class TabsTestHelper {
         }
 
         await sleep(500);
+    }
+
+    async clickOnTabSelector(tabRow: WebElement) {
+        const tabSelector = this.getTabSelectorLabel(tabRow);
+        await tabSelector.click();
+        await sleep(300);
+    }
+
+    async clickOnTitleTabSelector(container: WebElement) {
+        const tabSelector = this.getTitleTabSelectorLabel(container);
+        await tabSelector.click();
+        await sleep(300);
     }
 
     async showElementTooltip(quotelessCssSelector: string) {
@@ -548,5 +580,41 @@ export class TabsTestHelper {
                 break;
             }
         }
+    }
+
+    async assertTabSelectorIsChecked(tabRow: WebElement) {
+        const isChecked = await this.getTabSelectorInput(tabRow).isSelected();
+
+        assert.isTrue(isChecked, 'Tab selector is not checked');
+    }
+
+    async assertTabSelectorIsNotChecked(tabRow: WebElement) {
+        const isChecked = await this.getTabSelectorInput(tabRow).isSelected();
+
+        assert.isFalse(isChecked, 'Tab selector is checked');
+    }
+
+    async assertTitleTabSelectorIsChecked(container: WebElement) {
+        const isChecked = await this.getTitleTabSelectorInput(container).isSelected();
+
+        assert.isTrue(isChecked, 'Title tab selector is not checked');
+    }
+
+    async assertTitleTabSelectorIsNotChecked(container: WebElement) {
+        const isChecked = await this.getTitleTabSelectorInput(container).isSelected();
+
+        assert.isFalse(isChecked, 'Title tab selector is checked');
+    }
+
+    async assertTitleMoreButtonIsVisible(container: WebElement) {
+        const isDisplayed = await this.getTitleTabMoreButton(container).isDisplayed();
+
+        assert.isTrue(isDisplayed, 'Title tab more button is not visible');
+    }
+
+    async assertTitleMoreButtonIsNotVisible(container: WebElement) {
+        const isDisplayed = await this.getTitleTabMoreButton(container).isDisplayed();
+
+        assert.isFalse(isDisplayed, 'Title tab more button is visible');
     }
 }

@@ -9,6 +9,10 @@ export class OpenedTabsTestHelper {
     constructor(private tabsTestHelper: TabsTestHelper, private driver: WebDriver, private browserInstructionSender: BrowserInstructionSender) {
     }
 
+    getContainerElement() {
+        return this.driver.findElement(By.css('#openedTabList'));
+    }
+
     async getTabRowList() {
         return this.driver.findElements(By.css('#openedTabList tbody tr[data-tab-id]'));
     }
@@ -105,6 +109,14 @@ export class OpenedTabsTestHelper {
 
     async clickOnTabDuplicateButton(tabRow: WebElement) {
         await this.tabsTestHelper.clickOnTabDuplicateButton(tabRow, true);
+    }
+
+    async clickOnTabSelector(tabRow: WebElement) {
+        await this.tabsTestHelper.clickOnTabSelector(tabRow);
+    }
+
+    async clickOnTitleTabSelector() {
+        await this.tabsTestHelper.clickOnTitleTabSelector(this.getContainerElement());
     }
 
     async showTitleTooltip(tabRow: WebElement) {
@@ -392,5 +404,29 @@ export class OpenedTabsTestHelper {
     async assertNoTooltipVisible() {
         const containerElement = await this.driver.findElement(By.css('#openedTabList'));
         await this.tabsTestHelper.assertNoTooltipVisible(containerElement);
+    }
+
+    async assertTabSelectorIsChecked(tabRow: WebElement) {
+        await this.tabsTestHelper.assertTabSelectorIsChecked(tabRow);
+    }
+
+    async assertTabSelectorIsNotChecked(tabRow: WebElement) {
+        await this.tabsTestHelper.assertTabSelectorIsNotChecked(tabRow);
+    }
+
+    async assertTitleTabSelectorIsChecked() {
+        await this.tabsTestHelper.assertTitleTabSelectorIsChecked(this.getContainerElement());
+    }
+
+    async assertTitleTabSelectorIsNotChecked() {
+        await this.tabsTestHelper.assertTitleTabSelectorIsNotChecked(this.getContainerElement());
+    }
+
+    async assertTitleMoreButtonIsVisible() {
+        await this.tabsTestHelper.assertTitleMoreButtonIsVisible(this.getContainerElement());
+    }
+
+    async assertTitleMoreButtonIsNotVisible() {
+        await this.tabsTestHelper.assertTitleMoreButtonIsNotVisible(this.getContainerElement());
     }
 }

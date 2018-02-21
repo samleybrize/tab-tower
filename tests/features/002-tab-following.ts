@@ -629,4 +629,15 @@ describe('Tab following', () => {
 
         await testHelper.takeViewportScreenshot('followed-tab-list-tooltip-inside-window');
     });
+
+    it('Followed tab list with a very long url', async () => {
+        const testPage1VeryLongUrl = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1) + '?@46.8046179,0.182957,7z/data=!3m1!4b1!4m18!1m72!3m6!3m3!1s0xd5527e8f751ca813:0x796386037b397a8!2s5!3b1.8m2258!3d44.83789!2m8!2n4!3v1x2v5g8h9y8t7r2g5h:3v1x2v5g8h9y8t7r2!6k6!2k1.698523!3n25.589632!2n4?hl=fr';
+        await testHelper.openTab(testPage1VeryLongUrl);
+
+        const openedTabRowList = await openedTabsHelper.getTabRowList();
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+
+        await testHelper.showFollowedTabsList();
+        await testHelper.takeViewportScreenshot('followed-tabs-list-with-very-long-url');
+    });
 });

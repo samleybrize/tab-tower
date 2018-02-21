@@ -26,6 +26,7 @@
             }
 
             span {
+                word-break: break-all;
                 vertical-align: middle;
             }
 
@@ -35,6 +36,7 @@
                 display: block;
                 font-size: 11px;
                 color: #a2a2a2;
+                word-break: break-all;
             }
         }
     }

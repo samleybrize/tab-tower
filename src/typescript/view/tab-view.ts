@@ -19,6 +19,7 @@ export class TabView {
     readonly theadElement: HTMLElement;
     readonly titleActionsCell: HTMLElement;
     readonly noTabRow: HTMLElement;
+    private lastClickedTabSelector: HTMLInputElement;
     private filterTerms: string[] = null;
     private pendingTasks: Array<() => void> = [];
     isInitialized = false;
@@ -171,8 +172,13 @@ export class TabView {
         });
 
         const checkboxLabelElement = cell.querySelector('label');
-        checkboxLabelElement.addEventListener('click', async () => {
+        checkboxLabelElement.addEventListener('click', async (event) => {
             await sleep(200);
+
+            if (event.shiftKey && this.lastClickedTabSelector) {
+                const action = checkboxElement.checked ? 'uncheck' : 'check';
+                this.checkOrUncheckTabSelectorsFromOneToAnother(action, this.lastClickedTabSelector, checkboxElement);
+            }
 
             if (checkboxElement.checked) {
                 this.showTitleActions();
@@ -180,6 +186,8 @@ export class TabView {
                 this.hideTitleActions();
                 this.uncheckTitleTabSelector();
             }
+
+            this.lastClickedTabSelector = checkboxElement;
         });
 
         return cell;
@@ -187,6 +195,34 @@ export class TabView {
 
     private isThereACheckedTabSelector() {
         return null != this.tbodyElement.querySelector('.tabSelector input:checked');
+    }
+
+    private checkOrUncheckTabSelectorsFromOneToAnother(action: 'check'|'uncheck', fromSelector: HTMLInputElement, toSelector: HTMLInputElement) {
+        const checkboxList = Array.from<HTMLInputElement>(this.tbodyElement.querySelectorAll('.tabSelector input'));
+        let fromSelectorIndex = checkboxList.indexOf(fromSelector);
+        let toSelectorIndex = checkboxList.indexOf(toSelector);
+
+        if (fromSelectorIndex < 0 || toSelectorIndex < 0) {
+            console.error('Unable to find tab selectors to act on');
+
+            return;
+        } else if (fromSelectorIndex == toSelectorIndex) {
+            return;
+        } else if (fromSelectorIndex > toSelectorIndex) {
+            const tsi = toSelectorIndex;
+            toSelectorIndex = fromSelectorIndex;
+            fromSelectorIndex = tsi;
+        }
+
+        for (let i = fromSelectorIndex; i <= toSelectorIndex; i++) {
+            const checkboxElement = checkboxList[i];
+
+            if (checkboxElement.checked && 'uncheck' == action) {
+                checkboxElement.click();
+            } else if (!checkboxElement.checked && 'check' == action) {
+                checkboxElement.click();
+            }
+        }
     }
 
     createGeneralSelectorCell(idsPrefix: string): HTMLElement {

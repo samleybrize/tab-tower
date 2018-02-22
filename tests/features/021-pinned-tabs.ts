@@ -737,67 +737,116 @@ describe('Pinned tabs', () => {
     });
 
     describe('Tab selecting', () => {
-        xit('A click on the selection pin button should pin selected opened tabs', async () => {
-            // TODO open two tabs
+        it('A click on the selection pin button should pin selected opened tabs', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1), 0);
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2), 1);
 
-            // TODO select them
-            // TODO click on pin button
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[0]);
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[1]);
 
-            // TODO assert pinned
+            await openedTabsHelper.clickOnSelectionTabPinButton();
+
+            await openedTabsHelper.assertTabPinIndicatorIsOn(openedTabRowList[0]);
+            await openedTabsHelper.assertTabPinIndicatorIsOn(openedTabRowList[1]);
         });
 
-        xit('A click on the selection unpin button should unpin selected opened tabs', async () => {
-            // TODO open two tabs
+        it('A click on the selection unpin button should unpin selected opened tabs', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1), 0);
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2), 1);
 
-            // TODO pin them
-            // TODO select them
-            // TODO click on unpin button
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabPinButton(openedTabRowList[0]);
+            await openedTabsHelper.clickOnTabPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[0]);
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[1]);
 
-            // TODO assert unpinned
+            await openedTabsHelper.clickOnSelectionTabUnpinButton();
+
+            await openedTabsHelper.assertTabPinIndicatorIsOff(openedTabRowList[0]);
+            await openedTabsHelper.assertTabPinIndicatorIsOff(openedTabRowList[1]);
         });
 
-        xit('A click on the selection pin button should pin selected followed tabs', async () => {
-            // TODO open two tabs
+        it('A click on the selection pin button should pin selected followed tabs', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1), 0);
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2), 1);
 
-            // TODO follow them
-            // TODO select them
-            // TODO click on pin button
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[0]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
-            // TODO assert pinned
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[1]);
+
+            await followedTabsHelper.clickOnSelectionTabPinButton();
+
+            await followedTabsHelper.assertTabPinIndicatorIsOn(followedTabRowList[0]);
+            await followedTabsHelper.assertTabPinIndicatorIsOn(followedTabRowList[1]);
         });
 
-        xit('A click on the selection pin button should not pin selected followed tabs for which the pin button is disabled', async () => {
-            // TODO open two tabs
+        it('A click on the selection pin button should not pin selected followed tabs for which the pin button is disabled', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1), 0);
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2), 1);
 
-            // TODO follow them
-            // TODO close one
-            // TODO select them
-            // TODO click on pin button
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[0]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
 
-            // TODO assert pinned
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[1]);
+
+            await followedTabsHelper.clickOnSelectionTabPinButton();
+
+            await followedTabsHelper.assertTabPinIndicatorIsOn(followedTabRowList[0]);
+            await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[1]);
         });
 
-        xit('A click on the selection unpin button should unpin selected followed tabs', async () => {
-            // TODO open two tabs
+        it('A click on the selection unpin button should unpin selected followed tabs', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1), 0);
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2), 1);
 
-            // TODO follow them
-            // TODO pin them
-            // TODO select them
-            // TODO click on unpin button
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[0]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabPinButton(openedTabRowList[0]);
+            await openedTabsHelper.clickOnTabPinButton(openedTabRowList[1]);
 
-            // TODO assert unpinned
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[1]);
+
+            await followedTabsHelper.clickOnSelectionTabUnpinButton();
+
+            await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[0]);
+            await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[1]);
         });
 
-        xit('A click on the selection unpin button should not unpin selected followed tabs for which the unpin button is disabled', async () => {
-            // TODO open two tabs
+        it('A click on the selection unpin button should not unpin selected followed tabs for which the unpin button is disabled', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1), 0);
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2), 1);
 
-            // TODO follow them
-            // TODO pin them
-            // TODO close one
-            // TODO select them
-            // TODO click on unpin button
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[0]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabPinButton(openedTabRowList[0]);
+            await openedTabsHelper.clickOnTabPinButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
 
-            // TODO assert pinned
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[1]);
+
+            await followedTabsHelper.clickOnSelectionTabUnpinButton();
+
+            await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[0]);
+            await followedTabsHelper.assertTabPinIndicatorIsOff(followedTabRowList[1]);
         });
     });
 });

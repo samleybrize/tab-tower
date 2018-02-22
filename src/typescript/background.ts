@@ -1,3 +1,4 @@
+import { BrowserActionBadge } from './browser/browser-action-badge';
 import { CommandBus } from './bus/command-bus';
 import { EventBus } from './bus/event-bus';
 import { QueryBus } from './bus/query-bus';
@@ -99,6 +100,8 @@ async function main() {
     const nativeRecentlyClosedTabAssociationPersister = new WebStorageNativeRecentlyClosedTabAssociationPersister();
     const nativeRecentlyClosedTabAssociationMaintainer = new NativeRecentlyClosedTabAssociationMaintainer(nativeRecentlyClosedTabAssociationPersister);
 
+    const browserActionBadge = new BrowserActionBadge();
+
     const tabAssociationMaintainer = new TabAssociationMaintainer(eventBus, queryBus);
     const tabAssociationRetriever = new TabAssociationRetriever(queryBus);
 
@@ -173,6 +176,7 @@ async function main() {
         eventBus.subscribe(TabOpened, openedTabRetriever.onTabOpen, openedTabRetriever);
         eventBus.subscribe(TabOpened, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(TabFollowed, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(OpenedTabAssociatedToFollowedTab, browserActionBadge.onAssociateOpenedTabToFollowedTab, browserActionBadge);
         eventBus.subscribe(OpenedTabAssociatedToFollowedTab, followedTabUpdater.onAssociateOpenedTabToFollowedTab, followedTabUpdater);
         eventBus.subscribe(OpenedTabAssociatedToFollowedTab, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(OpenedTabAudibleStateUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
@@ -197,6 +201,7 @@ async function main() {
         eventBus.subscribe(OpenedTabUrlUpdated, followedTabUpdater.onOpenedTabUrlUpdate, followedTabUpdater);
         eventBus.subscribe(OpenedTabUrlUpdated, closedTabRetriever.onTabUrlUpdate, closedTabRetriever);
         eventBus.subscribe(OpenedTabUrlUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(TabUnfollowed, browserActionBadge.onTabUnfollow, browserActionBadge);
         eventBus.subscribe(TabUnfollowed, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(TabUnfollowed, tabAssociationMaintainer.onTabUnfollow, tabAssociationMaintainer);
     }

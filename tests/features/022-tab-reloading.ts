@@ -13,6 +13,14 @@ let testHelper: TestHelper;
 let followedTabsHelper: FollowedTabsTestHelper;
 let openedTabsHelper: OpenedTabsTestHelper;
 
+async function getPageRandomNumber(tabIndex: number) {
+    await testHelper.switchToWindowHandle(tabIndex);
+    const pageRandomNumber = await driver.findElement(By.css('#id')).getText();
+    await testHelper.switchToWindowHandle(0);
+
+    return pageRandomNumber;
+}
+
 describe('Tab reloading', () => {
     before(async () => {
         testHelper = new TestHelper();
@@ -47,15 +55,12 @@ describe('Tab reloading', () => {
         it('Associated tab should be reloaded when clicked on the reload button', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
-            await testHelper.switchToWindowHandle(1);
-            const pageRandomNumber = await driver.findElement(By.css('#id')).getText();
-            await testHelper.switchToWindowHandle(0);
+            const pageRandomNumber = await getPageRandomNumber(1);
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
             await openedTabsHelper.clickOnTabReloadButton(1, openedTabRowList[1]);
 
-            await testHelper.switchToWindowHandle(1);
-            const pageNewRandomNumber = await driver.findElement(By.css('#id')).getText();
+            const pageNewRandomNumber = await getPageRandomNumber(1);
             assert.notEqual(pageNewRandomNumber, pageRandomNumber, 'Tab has not been reloaded');
         });
     });
@@ -79,9 +84,7 @@ describe('Tab reloading', () => {
         it('Associated opened tab should be reloaded when clicked on the reload button', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
-            await testHelper.switchToWindowHandle(1);
-            const pageRandomNumber = await driver.findElement(By.css('#id')).getText();
-            await testHelper.switchToWindowHandle(0);
+            const pageRandomNumber = await getPageRandomNumber(1);
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
             await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
@@ -90,8 +93,7 @@ describe('Tab reloading', () => {
             const followedTabRowList = await followedTabsHelper.getTabRowList();
             await followedTabsHelper.clickOnTabReloadButton(1, followedTabRowList[0]);
 
-            await testHelper.switchToWindowHandle(1);
-            const pageNewRandomNumber = await driver.findElement(By.css('#id')).getText();
+            const pageNewRandomNumber = await getPageRandomNumber(1);
             assert.notEqual(pageNewRandomNumber, pageRandomNumber, 'Tab has not been reloaded');
         });
 
@@ -113,34 +115,72 @@ describe('Tab reloading', () => {
     });
 
     describe('Tab selecting', () => {
-        xit('A click on the selection reload button should reload selected opened tabs', async () => {
-            // TODO open two tabs
+        it('A click on the selection reload button should reload selected opened tabs', async () => {
+            const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
+            await testHelper.openTab(testPage1Url);
+            await testHelper.openTab(testPage1Url);
 
-            // TODO select them
-            // TODO reload them
+            const pageRandomNumber1 = await getPageRandomNumber(1);
+            const pageRandomNumber2 = await getPageRandomNumber(2);
 
-            // TODO assert that they are reloaded
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[2]);
+
+            await openedTabsHelper.clickOnSelectionTabReloadButton();
+
+            const pageNewRandomNumber1 = await getPageRandomNumber(1);
+            const pageNewRandomNumber2 = await getPageRandomNumber(2);
+            assert.notEqual(pageNewRandomNumber1, pageRandomNumber1, 'Tab 1 has not been reloaded');
+            assert.notEqual(pageNewRandomNumber2, pageRandomNumber2, 'Tab 2 has not been reloaded');
         });
 
-        xit('A click on the selection reload button should reload selected followed tabs', async () => {
-            // TODO open two tabs
+        it('A click on the selection reload button should reload selected followed tabs', async () => {
+            const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
+            await testHelper.openTab(testPage1Url);
+            await testHelper.openTab(testPage1Url);
 
-            // TODO follow them
-            // TODO select them
-            // TODO reload them
+            const pageRandomNumber1 = await getPageRandomNumber(1);
+            const pageRandomNumber2 = await getPageRandomNumber(2);
 
-            // TODO assert that they are reloaded
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[1]);
+
+            await followedTabsHelper.clickOnSelectionTabReloadButton();
+
+            const pageNewRandomNumber1 = await getPageRandomNumber(1);
+            const pageNewRandomNumber2 = await getPageRandomNumber(2);
+            assert.notEqual(pageNewRandomNumber1, pageRandomNumber1, 'Tab 1 has not been reloaded');
+            assert.notEqual(pageNewRandomNumber2, pageRandomNumber2, 'Tab 2 has not been reloaded');
         });
 
-        xit('A click on the selection reload button should not reload selected followed tabs for which the reload button is disabled', async () => {
-            // TODO open two tabs
+        it('A click on the selection reload button should not reload selected followed tabs for which the reload button is disabled', async () => {
+            const testPage1Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1);
+            await testHelper.openTab(testPage1Url);
+            await testHelper.openTab(testPage1Url);
 
-            // TODO follow them
-            // TODO close one
-            // TODO select them
-            // TODO reload them
+            const pageRandomNumber1 = await getPageRandomNumber(1);
 
-            // TODO assert that one is reloaded but not the other
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[2]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[1]);
+
+            await followedTabsHelper.clickOnSelectionTabReloadButton();
+
+            const pageNewRandomNumber1 = await getPageRandomNumber(1);
+            assert.notEqual(pageNewRandomNumber1, pageRandomNumber1, 'Tab 1 has not been reloaded');
         });
     });
 });

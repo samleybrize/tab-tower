@@ -329,7 +329,7 @@ export class TabsTestHelper {
         await this.clickOnTabMoreButton(titleRow);
         await titleRow.findElement(By.css('.duplicateButton')).click();
 
-        await sleep(500);
+        await sleep(1000);
     }
 
     async clickOnTabSelector(tabRow: WebElement) {

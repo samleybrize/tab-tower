@@ -112,7 +112,7 @@ export class OpenedTabsTestHelper {
         await this.tabsTestHelper.clickOnTabPinButton(tabRow, true);
     }
 
-    async clickOnSelectionTabPinButton(tabRow: WebElement) {
+    async clickOnSelectionTabPinButton() {
         const headerRow = this.getHeaderRow();
         await this.tabsTestHelper.clickOnSelectionTabPinButton(headerRow);
     }
@@ -121,7 +121,7 @@ export class OpenedTabsTestHelper {
         await this.tabsTestHelper.clickOnTabUnpinButton(tabRow);
     }
 
-    async clickOnSelectionTabUnpinButton(tabRow: WebElement) {
+    async clickOnSelectionTabUnpinButton() {
         const headerRow = this.getHeaderRow();
         await this.tabsTestHelper.clickOnSelectionTabUnpinButton(headerRow);
     }
@@ -134,7 +134,7 @@ export class OpenedTabsTestHelper {
         await this.tabsTestHelper.clickOnTabMuteButton(tabRow, waitMuteIndicatorStateChange);
     }
 
-    async clickOnSelectionTabMuteButton(tabRow: WebElement) {
+    async clickOnSelectionTabMuteButton() {
         const headerRow = this.getHeaderRow();
         await this.tabsTestHelper.clickOnSelectionTabMuteButton(headerRow);
     }
@@ -147,7 +147,7 @@ export class OpenedTabsTestHelper {
         await this.tabsTestHelper.clickOnTabUnmuteButton(tabRow, waitMuteIndicatorStateChange);
     }
 
-    async clickOnSelectionTabUnmuteButton(tabRow: WebElement) {
+    async clickOnSelectionTabUnmuteButton() {
         const headerRow = this.getHeaderRow();
         await this.tabsTestHelper.clickOnSelectionTabUnmuteButton(headerRow);
     }
@@ -156,7 +156,7 @@ export class OpenedTabsTestHelper {
         await this.tabsTestHelper.clickOnTabReloadButton(tabIndex, tabRow);
     }
 
-    async clickOnSelectionTabReloadButton(tabRow: WebElement) {
+    async clickOnSelectionTabReloadButton() {
         const headerRow = this.getHeaderRow();
         await this.tabsTestHelper.clickOnSelectionTabReloadButton(headerRow);
     }
@@ -165,7 +165,7 @@ export class OpenedTabsTestHelper {
         await this.tabsTestHelper.clickOnTabDuplicateButton(tabRow, true);
     }
 
-    async clickOnSelectionTabDuplicateButton(tabRow: WebElement) {
+    async clickOnSelectionTabDuplicateButton() {
         const headerRow = this.getHeaderRow();
         await this.tabsTestHelper.clickOnSelectionTabDuplicateButton(headerRow);
     }

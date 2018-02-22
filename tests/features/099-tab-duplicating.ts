@@ -655,34 +655,69 @@ describe('Tab duplicating', () => {
     });
 
     describe('Tab selecting', () => {
-        xit('A click on the selection duplicate button should duplicate selected opened tabs', async () => {
-            // TODO open two tabs
+        it('A click on the selection duplicate button should duplicate selected opened tabs', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
-            // TODO select them
-            // TODO click duplicate button
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[2]);
 
-            // TODO assert that they are duplicated
+            await openedTabsHelper.clickOnSelectionTabDuplicateButton();
+
+            const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertNumberOfTabs(5);
+            await openedTabsHelper.assertTabTitle(newOpenedTabRowList[1], 'Test page 1');
+            await openedTabsHelper.assertTabTitle(newOpenedTabRowList[2], 'Test page 1');
+            await openedTabsHelper.assertTabTitle(newOpenedTabRowList[3], 'Test page 2');
+            await openedTabsHelper.assertTabTitle(newOpenedTabRowList[4], 'Test page 2');
         });
 
-        xit('A click on the selection duplicate button should duplicate selected followed tabs', async () => {
-            // TODO open two tabs
+        it('A click on the selection duplicate button should duplicate selected followed tabs', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
-            // TODO follow them
-            // TODO select them
-            // TODO click duplicate button
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
 
-            // TODO assert that they are duplicated
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[1]);
+
+            await followedTabsHelper.clickOnSelectionTabDuplicateButton();
+
+            await testHelper.showOpenedTabsList();
+            const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertNumberOfTabs(5);
+            await openedTabsHelper.assertTabTitle(newOpenedTabRowList[1], 'Test page 1');
+            await openedTabsHelper.assertTabTitle(newOpenedTabRowList[2], 'Test page 1');
+            await openedTabsHelper.assertTabTitle(newOpenedTabRowList[3], 'Test page 2');
+            await openedTabsHelper.assertTabTitle(newOpenedTabRowList[4], 'Test page 2');
         });
 
-        xit('A click on the selection duplicate button should not duplicate selected followed tabs for which the duplicate button is disabled', async () => {
-            // TODO open two tabs
+        it('A click on the selection duplicate button should not duplicate selected followed tabs for which the duplicate button is disabled', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
-            // TODO follow them
-            // TODO close one
-            // TODO select them
-            // TODO click duplicate button
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[2]);
 
-            // TODO assert that one is duplicated but not the other
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[1]);
+
+            await followedTabsHelper.clickOnSelectionTabDuplicateButton();
+
+            await testHelper.showOpenedTabsList();
+            const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertNumberOfTabs(3);
+            await openedTabsHelper.assertTabTitle(newOpenedTabRowList[1], 'Test page 1');
+            await openedTabsHelper.assertTabTitle(newOpenedTabRowList[2], 'Test page 1');
         });
     });
 });

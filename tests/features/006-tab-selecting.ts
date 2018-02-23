@@ -146,12 +146,38 @@ describe('Tab selecting', () => {
             await openedTabsHelper.assertSelectionTabMoreButtonIsNotVisible();
         });
 
-        xit('Clicking on an off opened tab selector with shift pressed should check selectors from it to the last clicked', async () => {
-            // TODO
+        it('Clicking on an off opened tab selector with shift pressed should check selectors from it to the last clicked', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[1]);
+            await openedTabsHelper.shiftClickOnTabSelector(openedTabRowList[3]);
+
+            await openedTabsHelper.assertTabSelectorIsNotChecked(openedTabRowList[0]);
+            await openedTabsHelper.assertTabSelectorIsChecked(openedTabRowList[1]);
+            await openedTabsHelper.assertTabSelectorIsChecked(openedTabRowList[2]);
+            await openedTabsHelper.assertTabSelectorIsChecked(openedTabRowList[3]);
         });
 
-        xit('Clicking on an on opened tab selector with shift pressed should uncheck selectors from it to the last clicked', async () => {
-            // TODO
+        it('Clicking on an on opened tab selector with shift pressed should uncheck selectors from it to the last clicked', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[0]);
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[3]);
+
+            await openedTabsHelper.shiftClickOnTabSelector(openedTabRowList[1]);
+
+            await openedTabsHelper.assertTabSelectorIsChecked(openedTabRowList[0]);
+            await openedTabsHelper.assertTabSelectorIsNotChecked(openedTabRowList[1]);
+            await openedTabsHelper.assertTabSelectorIsNotChecked(openedTabRowList[2]);
+            await openedTabsHelper.assertTabSelectorIsNotChecked(openedTabRowList[3]);
         });
 
         it('No opened tab selector should be checked at startup', async () => {
@@ -402,22 +428,54 @@ describe('Tab selecting', () => {
             await followedTabsHelper.assertSelectionTabMoreButtonIsNotVisible();
         });
 
-        xit('Clicking on an off opened tab selector with shift pressed should check selectors from it to the last clicked', async () => {
-            // TODO
+        it('Clicking on an off followed tab selector with shift pressed should check selectors from it to the last clicked', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.clickOnTabSelector(openedTabRowList[0]);
-            // TODO to TestHelper
-            await driver.executeScript(`
-                var clickEvent = new MouseEvent('click', {shiftKey: true});
-                document.querySelector('#openedTabList tbody tr:nth-child(4) .tabSelector label').dispatchEvent(clickEvent);
-            `);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[3]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[4]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[1]);
+            await followedTabsHelper.shiftClickOnTabSelector(followedTabRowList[3]);
+
+            await followedTabsHelper.assertTabSelectorIsNotChecked(followedTabRowList[0]);
+            await followedTabsHelper.assertTabSelectorIsChecked(followedTabRowList[1]);
+            await followedTabsHelper.assertTabSelectorIsChecked(followedTabRowList[2]);
+            await followedTabsHelper.assertTabSelectorIsChecked(followedTabRowList[3]);
         });
 
-        xit('Clicking on an on opened tab selector with shift pressed should uncheck selectors from it to the last clicked', async () => {
-            // TODO
+        it('Clicking on an on followed tab selector with shift pressed should uncheck selectors from it to the last clicked', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[3]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[4]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[1]);
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[2]);
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[3]);
+
+            await followedTabsHelper.shiftClickOnTabSelector(followedTabRowList[1]);
+
+            await followedTabsHelper.assertTabSelectorIsChecked(followedTabRowList[0]);
+            await followedTabsHelper.assertTabSelectorIsNotChecked(followedTabRowList[1]);
+            await followedTabsHelper.assertTabSelectorIsNotChecked(followedTabRowList[2]);
+            await followedTabsHelper.assertTabSelectorIsNotChecked(followedTabRowList[3]);
         });
 
         it('No followed tab selector should be checked at startup', async () => {

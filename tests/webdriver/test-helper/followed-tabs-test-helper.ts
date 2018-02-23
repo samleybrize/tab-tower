@@ -228,6 +228,12 @@ export class FollowedTabsTestHelper {
         await this.tabsTestHelper.clickOnTabSelector(tabRow);
     }
 
+    async shiftClickOnTabSelector(tabRow: WebElement) {
+        const id = await tabRow.getAttribute('data-follow-id');
+        this.browserInstructionSender.triggerShiftClick(this.driver, `#followedTabList tbody tr[data-follow-id="${id}"] .tabSelector label`);
+        await sleep(300);
+    }
+
     async clickOnGeneralTabSelector() {
         await this.tabsTestHelper.clickOnGeneralTabSelector(this.getContainerElement());
     }

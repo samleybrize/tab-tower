@@ -174,6 +174,12 @@ export class OpenedTabsTestHelper {
         await this.tabsTestHelper.clickOnTabSelector(tabRow);
     }
 
+    async shiftClickOnTabSelector(tabRow: WebElement) {
+        const id = await tabRow.getAttribute('data-tab-id');
+        this.browserInstructionSender.triggerShiftClick(this.driver, `#openedTabList tbody tr[data-tab-id="${id}"] .tabSelector label`);
+        await sleep(300);
+    }
+
     async clickOnGeneralTabSelector() {
         await this.tabsTestHelper.clickOnGeneralTabSelector(this.getContainerElement());
     }

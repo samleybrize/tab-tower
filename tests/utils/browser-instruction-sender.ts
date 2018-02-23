@@ -175,6 +175,17 @@ export class BrowserInstructionSender {
         `);
     }
 
+    async triggerShiftClick(webdriver: WebDriver, quotelessCssSelector: string) {
+        return webdriver.executeScript(`
+            var clickEvent = new MouseEvent('click', {shiftKey: true});
+            var elements = Array.from(document.querySelectorAll('${quotelessCssSelector}'));
+
+            for (var element of elements) {
+                element.dispatchEvent(clickEvent);
+            }
+        `);
+    }
+
     async showElementTooltip(webdriver: WebDriver, quotelessCssSelector: string) {
         return webdriver.executeScript(`
             jQuery('${quotelessCssSelector}').mouseenter();

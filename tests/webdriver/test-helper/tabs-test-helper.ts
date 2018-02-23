@@ -154,8 +154,8 @@ export class TabsTestHelper {
     }
 
     async clickOnTabMoreButton(tabRow: WebElement, waitFullyVisible?: boolean) {
-        await this.driver.findElement(By.tagName('body')).click();
-        await sleep(100);
+        await this.browserInstructionSender.clickElement(this.driver, 'body');
+        await sleep(300);
         const moreButton = tabRow.findElement(By.css('.more'));
         const dropdownElement = tabRow.findElement(By.css('.tabRowDropdown'));
 

@@ -163,6 +163,12 @@ export class BrowserInstructionSender {
         });
     }
 
+    async clickElement(webdriver: WebDriver, quotelessCssSelector: string) {
+        return webdriver.executeScript(`
+            document.querySelector('${quotelessCssSelector}').click();
+        `);
+    }
+
     async triggerDoubleClick(webdriver: WebDriver, quotelessCssSelector: string) {
         return webdriver.executeScript(`
             var doubleClickEvent = document.createEvent('MouseEvents');

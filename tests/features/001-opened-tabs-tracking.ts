@@ -1,6 +1,7 @@
 import { assert } from 'chai';
 import { WebDriver } from 'selenium-webdriver';
 
+import { sleep } from '../../src/typescript/utils/sleep';
 import { BrowserInstructionSender } from '../utils/browser-instruction-sender';
 import { ExtensionUrl } from '../utils/extension-url';
 import { FirefoxConfig } from '../webdriver/firefox-config';
@@ -95,6 +96,7 @@ describe('Opened tabs tracking', () => {
 
     it('Default favicon should be shown when the favicon url returns a 401 status code', async () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITH_FAVICON_401));
+        await sleep(500);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
         await openedTabsHelper.assertTabFaviconUrl(openedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.DEFAULT_FAVICON));

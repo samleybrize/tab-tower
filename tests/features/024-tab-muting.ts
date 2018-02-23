@@ -569,67 +569,118 @@ describe('Tab muting', () => {
     });
 
     describe('Tab selecting', () => {
-        xit('A click on the selection mute button should mute selected opened tabs', async () => {
-            // TODO open two tabs
+        it('A click on the selection mute button should mute selected opened tabs', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
-            // TODO select them
-            // TODO click on mute button
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[2]);
 
-            // TODO assert muted
+            await openedTabsHelper.clickOnSelectionTabMuteButton();
+
+            await openedTabsHelper.assertTabMuteIndicatorIsOff(openedTabRowList[0]);
+            await openedTabsHelper.assertTabMuteIndicatorIsOn(openedTabRowList[1]);
+            await openedTabsHelper.assertTabMuteIndicatorIsOn(openedTabRowList[2]);
         });
 
-        xit('A click on the selection unmute button should unmute selected opened tabs', async () => {
-            // TODO open two tabs
+        it('A click on the selection unmute button should unmute selected opened tabs', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
-            // TODO mute them
-            // TODO select them
-            // TODO click on unmute button
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabMuteButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabMuteButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[2]);
 
-            // TODO assert unmuted
+            await openedTabsHelper.clickOnSelectionTabUnmuteButton();
+
+            await openedTabsHelper.assertTabMuteIndicatorIsOff(openedTabRowList[0]);
+            await openedTabsHelper.assertTabMuteIndicatorIsOff(openedTabRowList[1]);
+            await openedTabsHelper.assertTabMuteIndicatorIsOff(openedTabRowList[2]);
         });
 
-        xit('A click on the selection mute button should mute selected followed tabs', async () => {
-            // TODO open two tabs
+        it('A click on the selection mute button should mute selected followed tabs', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
-            // TODO follow them
-            // TODO select them
-            // TODO click on mute button
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
 
-            // TODO assert muted
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[1]);
+
+            await followedTabsHelper.clickOnSelectionTabMuteButton();
+
+            await followedTabsHelper.assertTabMuteIndicatorIsOn(followedTabRowList[0]);
+            await followedTabsHelper.assertTabMuteIndicatorIsOn(followedTabRowList[1]);
         });
 
-        xit('A click on the selection mute button should not mute selected followed tabs for which the mute button is disabled', async () => {
-            // TODO open two tabs
+        it('A click on the selection mute button should not mute selected followed tabs for which the mute button is disabled', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
-            // TODO follow them
-            // TODO close one
-            // TODO select them
-            // TODO click on mute button
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[2]);
 
-            // TODO assert muted
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[1]);
+
+            await followedTabsHelper.clickOnSelectionTabMuteButton();
+
+            await followedTabsHelper.assertTabMuteIndicatorIsOn(followedTabRowList[0]);
+            await followedTabsHelper.assertTabMuteIndicatorIsOff(followedTabRowList[1]);
         });
 
-        xit('A click on the selection unmute button should unmute selected followed tabs', async () => {
-            // TODO open two tabs
+        it('A click on the selection unmute button should unmute selected followed tabs', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
-            // TODO follow them
-            // TODO mute them
-            // TODO select them
-            // TODO click on unmute button
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabMuteButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabMuteButton(openedTabRowList[2]);
 
-            // TODO assert unmuted
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[1]);
+
+            await followedTabsHelper.clickOnSelectionTabUnmuteButton();
+
+            await followedTabsHelper.assertTabMuteIndicatorIsOff(followedTabRowList[0]);
+            await followedTabsHelper.assertTabMuteIndicatorIsOff(followedTabRowList[1]);
         });
 
-        xit('A click on the selection unmute button should not unmute selected followed tabs for which the unmute button is disabled', async () => {
-            // TODO open two tabs
+        it('A click on the selection unmute button should not unmute selected followed tabs for which the unmute button is disabled', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
-            // TODO follow them
-            // TODO mute them
-            // TODO close one
-            // TODO select them
-            // TODO click on unmute button
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabMuteButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabMuteButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[2]);
 
-            // TODO assert muted
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[1]);
+
+            await followedTabsHelper.clickOnSelectionTabUnmuteButton();
+
+            await followedTabsHelper.assertTabMuteIndicatorIsOff(followedTabRowList[0]);
+            await followedTabsHelper.assertTabMuteIndicatorIsOn(followedTabRowList[1]);
         });
     });
 });

@@ -85,7 +85,7 @@ describe('Tab selecting', () => {
             await openedTabsHelper.assertTabSelectorIsNotChecked(openedTabRowList[1]);
         });
 
-        it('Unchecking all opened tab selectors when the title opened tab selector is on should uncheck the title opened tab selector', async () => {
+        it('Unchecking all opened tab selectors when the general opened tab selector is on should uncheck the general opened tab selector', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             await openedTabsHelper.clickOnGeneralTabSelector();
@@ -97,7 +97,7 @@ describe('Tab selecting', () => {
             await openedTabsHelper.assertGeneralTabSelectorIsNotChecked();
         });
 
-        it('Checking an opened tab selector should reveal the title more button', async () => {
+        it('Checking an opened tab selector should reveal the selection more button', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
@@ -106,7 +106,7 @@ describe('Tab selecting', () => {
             await openedTabsHelper.assertSelectionTabMoreButtonIsVisible();
         });
 
-        it('Unchecking all opened tab selectors should unreveal the title more button', async () => {
+        it('Unchecking all opened tab selectors should unreveal the selection more button', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
@@ -118,7 +118,7 @@ describe('Tab selecting', () => {
             await openedTabsHelper.assertSelectionTabMoreButtonIsNotVisible();
         });
 
-        it('Unchecking an opened tab selector and leaving one on should not unreveal the title more button', async () => {
+        it('Unchecking an opened tab selector and leaving one on should not unreveal the selection more button', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
@@ -129,7 +129,7 @@ describe('Tab selecting', () => {
             await openedTabsHelper.assertSelectionTabMoreButtonIsVisible();
         });
 
-        it('Checking the title opened tab selector should reveal the title more button', async () => {
+        it('Checking the general opened tab selector should reveal the selection more button', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             await openedTabsHelper.clickOnGeneralTabSelector();
@@ -137,13 +137,21 @@ describe('Tab selecting', () => {
             await openedTabsHelper.assertSelectionTabMoreButtonIsVisible();
         });
 
-        it('Unchecking the title opened tab selector should unreveal the title more button', async () => {
+        it('Unchecking the general opened tab selector should unreveal the selection more button', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             await openedTabsHelper.clickOnGeneralTabSelector();
             await openedTabsHelper.clickOnGeneralTabSelector();
 
             await openedTabsHelper.assertSelectionTabMoreButtonIsNotVisible();
+        });
+
+        xit('Clicking on an off opened tab selector with shift pressed should check selectors from it to the last clicked', async () => {
+            // TODO
+        });
+
+        xit('Clicking on an on opened tab selector with shift pressed should uncheck selectors from it to the last clicked', async () => {
+            // TODO
         });
 
         it('No opened tab selector should be checked at startup', async () => {
@@ -297,7 +305,7 @@ describe('Tab selecting', () => {
             await followedTabsHelper.assertTabSelectorIsNotChecked(followedTabRowList[1]);
         });
 
-        it('Unchecking all followed tab selectors when the title followed tab selector is on should uncheck the title followed tab selector', async () => {
+        it('Unchecking all followed tab selectors when the general followed tab selector is on should uncheck the general followed tab selector', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
@@ -315,7 +323,7 @@ describe('Tab selecting', () => {
             await followedTabsHelper.assertGeneralTabSelectorIsNotChecked();
         });
 
-        it('Checking a followed tab selector should reveal the title more button', async () => {
+        it('Checking a followed tab selector should reveal the selection more button', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
@@ -330,7 +338,7 @@ describe('Tab selecting', () => {
             await followedTabsHelper.assertSelectionTabMoreButtonIsVisible();
         });
 
-        it('Unchecking all followed tab selectors should unreveal the title more button', async () => {
+        it('Unchecking all followed tab selectors should unreveal the selection more button', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
@@ -348,7 +356,7 @@ describe('Tab selecting', () => {
             await followedTabsHelper.assertSelectionTabMoreButtonIsNotVisible();
         });
 
-        it('Unchecking a followed tab selector and leaving one on should not unreveal the title more button', async () => {
+        it('Unchecking a followed tab selector and leaving one on should not unreveal the selection more button', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
@@ -365,7 +373,7 @@ describe('Tab selecting', () => {
             await followedTabsHelper.assertSelectionTabMoreButtonIsVisible();
         });
 
-        it('Checking the title followed tab selector should reveal the title more button', async () => {
+        it('Checking the general followed tab selector should reveal the selection more button', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
@@ -379,7 +387,7 @@ describe('Tab selecting', () => {
             await followedTabsHelper.assertSelectionTabMoreButtonIsVisible();
         });
 
-        it('Unchecking the title followed tab selector should unreveal the title more button', async () => {
+        it('Unchecking the general followed tab selector should unreveal the selection more button', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
@@ -392,6 +400,24 @@ describe('Tab selecting', () => {
             await followedTabsHelper.clickOnGeneralTabSelector();
 
             await followedTabsHelper.assertSelectionTabMoreButtonIsNotVisible();
+        });
+
+        xit('Clicking on an off opened tab selector with shift pressed should check selectors from it to the last clicked', async () => {
+            // TODO
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[0]);
+            // TODO to TestHelper
+            await driver.executeScript(`
+                var clickEvent = new MouseEvent('click', {shiftKey: true});
+                document.querySelector('#openedTabList tbody tr:nth-child(4) .tabSelector label').dispatchEvent(clickEvent);
+            `);
+        });
+
+        xit('Clicking on an on opened tab selector with shift pressed should uncheck selectors from it to the last clicked', async () => {
+            // TODO
         });
 
         it('No followed tab selector should be checked at startup', async () => {

@@ -721,7 +721,7 @@ export class TabView {
 
     async playPendingTasks() {
         while (this.pendingTasks.length) {
-            const callback = this.pendingTasks.pop();
+            const callback = this.pendingTasks.shift();
             await callback();
         }
 

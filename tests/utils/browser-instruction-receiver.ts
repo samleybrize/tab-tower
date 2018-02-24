@@ -185,6 +185,16 @@ client.onmessage = async (event) => {
                 recentlyClosedTabList,
             }));
             break;
+
+        case 'get-browser-action-badge':
+            tabId = await getTabIdByIndex(message.data.tabIndex);
+
+            client.send(JSON.stringify({
+                messageId: message.data.messageId,
+                text: await browser.browserAction.getBadgeText({tabId}),
+                backgroundColor: await browser.browserAction.getBadgeBackgroundColor({tabId}),
+            }));
+            break;
     }
 };
 

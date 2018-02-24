@@ -1,3 +1,4 @@
+import { assert } from 'chai';
 import { By, error as WebDriverError, until, WebDriver, WebElement } from 'selenium-webdriver';
 
 import { sleep } from '../../../src/typescript/utils/sleep';
@@ -362,5 +363,16 @@ export class TestHelper {
         if (waitFullyVisible) {
             await sleep(500);
         }
+    }
+
+    async assertBrowserActionBadgeIndicateThatTabIsFollowed(tabIndex: number) {
+        const browserActionBadge = await this.browserInstructionSender.getBrowserActionBadge(tabIndex);
+        assert.equal(browserActionBadge.text, 'F');
+        assert.deepEqual(browserActionBadge.backgroundColor, [0, 128, 0, 255]);
+    }
+
+    async assertBrowserActionBadgeIsNotShown(tabIndex: number) {
+        const browserActionBadge = await this.browserInstructionSender.getBrowserActionBadge(tabIndex);
+        assert.equal(browserActionBadge.text, '');
     }
 }

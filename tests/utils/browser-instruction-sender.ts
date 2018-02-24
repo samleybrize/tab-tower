@@ -283,4 +283,14 @@ export class BrowserInstructionSender {
             this.send({action: 'get-all-recently-closed-tabs', data: {messageId}});
         });
     }
+
+    async getBrowserActionBadge(tabIndex: number) {
+        return new Promise<{text: string, backgroundColor: browser.browserAction.ColorArray}>((resolve, reject) => {
+            const messageId = Math.random();
+            this.receiveCallbackMap.set(messageId, (message) => {
+                resolve(message ? {text: message.text, backgroundColor: message.backgroundColor } : null);
+            });
+            this.send({action: 'get-browser-action-badge', data: {messageId, tabIndex}});
+        });
+    }
 }

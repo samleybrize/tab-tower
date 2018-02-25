@@ -9,6 +9,7 @@
   "devDependencies": {
     "@types/archiver": "^2.1.0",
     "@types/chai": "^4.0.10",
+    "@types/detect-browser": "^2.0.0",
     "@types/fs-extra": "^5.0.0",
     "@types/materialize-css": "^1.0.0",
     "@types/mocha": "^2.2.45",
@@ -53,6 +54,7 @@
     "test": "mocha --require source-map-support/register dist/tests --recursive --timeout 20000 --slow 5000 -b"
   },
   "dependencies": {
+    "detect-browser": "^2.1.0",
     "material-design-icons": "^3.0.1",
     "materialize-css": "^0.100.2",
     "moment": "^2.20.1",

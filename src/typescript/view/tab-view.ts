@@ -1,5 +1,6 @@
 import * as moment from 'moment';
 
+import { DetectedBrowser } from '../browser/detected-browser';
 import { sleep } from '../utils/sleep';
 import { StringMatcher } from '../utils/string-matcher';
 
@@ -26,6 +27,7 @@ export class TabView {
 
     constructor(
         private stringMatcher: StringMatcher,
+        private detectedBrowser: DetectedBrowser,
         private containerElement: HTMLElement,
         private defaultFaviconUrl: string,
     ) {
@@ -299,14 +301,20 @@ export class TabView {
     createTitleCell(clickListener: HtmlClickListener): HTMLElement {
         const linkElement = document.createElement('a');
         linkElement.innerHTML = `
-            <img crossorigin="anonymous" />
+            <img />
             <span></span>
             <em></em>
         `;
+        const imgElement = linkElement.querySelector('img');
         linkElement.addEventListener('click', clickListener);
-        linkElement.querySelector('img').addEventListener('error', (event) => {
+        imgElement.addEventListener('error', (event) => {
             (event.target as HTMLImageElement).src = this.defaultFaviconUrl;
         });
+
+        if ('firefox' == this.detectedBrowser.name && this.detectedBrowser.majorVersion < 59) {
+            // prior to firefox 59, images on a host that requires authentication causes the http auth popup to open
+            imgElement.setAttribute('crossorigin', 'anonymous');
+        }
 
         const cell = this.createCell('title');
         cell.appendChild(linkElement);

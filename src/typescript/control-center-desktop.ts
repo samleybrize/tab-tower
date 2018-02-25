@@ -1,3 +1,4 @@
+import { DetectedBrowser } from './browser/detected-browser';
 import { CommandBus } from './bus/command-bus';
 import { EventBus } from './bus/event-bus';
 import { QueryBus } from './bus/query-bus';
@@ -59,10 +60,11 @@ async function main() {
     const eventBus = new EventBus();
     const queryBus = new QueryBus();
 
+    const detectedBrowser = new DetectedBrowser();
     const stringMatcher = new StringMatcher();
     const tabCounter = new TabCounter();
-    const followedTabView = new FollowedTabView(commandBus, queryBus, tabCounter, new TabView(stringMatcher, document.querySelector('#followedTabList'), defaultFaviconUrl));
-    const openedTabView = new OpenedTabView(commandBus, queryBus, tabCounter, new TabView(stringMatcher, document.querySelector('#openedTabList'), defaultFaviconUrl));
+    const followedTabView = new FollowedTabView(commandBus, queryBus, tabCounter, new TabView(stringMatcher, detectedBrowser, document.querySelector('#followedTabList'), defaultFaviconUrl));
+    const openedTabView = new OpenedTabView(commandBus, queryBus, tabCounter, new TabView(stringMatcher, detectedBrowser, document.querySelector('#openedTabList'), defaultFaviconUrl));
     const tabSearchView = new TabFilterView(eventBus, document.querySelector('#headerTabFilter'));
     const headerView = new HeaderView(followedTabView, openedTabView, document.querySelector('#header'));
 

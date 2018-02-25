@@ -2,6 +2,7 @@ import { CloseTab } from './close-tab';
 import { DuplicateTab } from './duplicate-tab';
 import { FocusTab } from './focus-tab';
 import { FollowTab } from './follow-tab';
+import { MoveOpenedTabs } from './move-opened-tabs';
 import { MuteTab } from './mute-tab';
 import { PinTab } from './pin-tab';
 import { ReloadTab } from './reload-tab';
@@ -15,6 +16,7 @@ export const tabCommands = [
     DuplicateTab,
     FocusTab,
     FollowTab,
+    MoveOpenedTabs,
     MuteTab,
     PinTab,
     ReloadTab,

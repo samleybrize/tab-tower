@@ -4,6 +4,7 @@ import { CloseTab } from '../tab/command/close-tab';
 import { DuplicateTab } from '../tab/command/duplicate-tab';
 import { FocusTab } from '../tab/command/focus-tab';
 import { FollowTab } from '../tab/command/follow-tab';
+import { MoveOpenedTabs } from '../tab/command/move-opened-tabs';
 import { MuteTab } from '../tab/command/mute-tab';
 import { PinTab } from '../tab/command/pin-tab';
 import { ReloadTab } from '../tab/command/reload-tab';
@@ -42,6 +43,13 @@ export class OpenedTabView {
     }
 
     async init() {
+        this.tabView.init(() => {
+            const tabIdList = this.getTabIdListToMove();
+
+            this.commandBus.handle(new MoveOpenedTabs(tabIdList, 0));
+
+            this.tabView.disableMoveMode();
+        });
         const tabList = await this.queryBus.query(new GetTabAssociationsWithOpenState());
         let numberOfOpenedTabs = 0;
 
@@ -58,7 +66,7 @@ export class OpenedTabView {
 
         this.tabView.isInitialized = true;
         this.tabCounter.setNumberOfOpenedTabs(numberOfOpenedTabs);
-        this.createTitleActions(this.tabView.titleActionsCell);
+        this.createSelectedTabsActions(this.tabView.titleActionsCell);
         await this.tabView.playPendingTasks();
         this.tabView.applyTabFilter();
         this.tabView.showNoTabRowIfTableIsEmpty();
@@ -82,6 +90,14 @@ export class OpenedTabView {
                 if (tabId) {
                     this.commandBus.handle(new FocusTab(tabId));
                 }
+            },
+            (targetRow) => {
+                const targetIndex = +targetRow.getAttribute('data-index') + 1;
+                const tabIdList = this.getTabIdListToMove();
+
+                this.commandBus.handle(new MoveOpenedTabs(tabIdList, targetIndex));
+
+                this.tabView.disableMoveMode();
             },
         );
 
@@ -110,12 +126,29 @@ export class OpenedTabView {
         return tabRow.row;
     }
 
-    private createTitleActions(cell: HTMLElement) {
+    private getTabIdListToMove() {
+        const tabRowsToMove = this.tabView.getTabRowsToMove();
+
+        if (null == tabRowsToMove) {
+            return [];
+        }
+
+        const tabIdList: number[] = [];
+
+        for (const tabRowToMove of tabRowsToMove) {
+            tabIdList.push(+tabRowToMove.getAttribute('data-tab-id'));
+        }
+
+        return tabIdList;
+    }
+
+    private createSelectedTabsActions(cell: HTMLElement) {
         this.tabView.addFollowSelectedTabsAction(cell);
         this.tabView.addPinSelectedTabsAction(cell);
         this.tabView.addUnpinSelectedTabsAction(cell);
         this.tabView.addMuteSelectedTabsAction(cell);
         this.tabView.addUnmuteSelectedTabsAction(cell);
+        this.addMoveSelectedTabsAction(cell);
         this.tabView.addDuplicateSelectedTabsAction(cell);
         this.tabView.addReloadSelectedTabsAction(cell);
         this.tabView.addActionSeparator(cell);
@@ -129,6 +162,7 @@ export class OpenedTabView {
         this.addUnpinTabAction(cell, tabOpenState);
         this.addMuteTabAction(cell, tabOpenState);
         this.addUnmuteTabAction(cell, tabOpenState);
+        this.addMoveTabAction(cell, tabOpenState);
         this.addDuplicateTabAction(cell, tabOpenState);
         this.addReloadTabAction(cell, tabOpenState);
         this.tabView.addActionSeparator(cell);
@@ -179,6 +213,30 @@ export class OpenedTabView {
     private addUnmuteTabAction(cell: HTMLElement, tabOpenState: TabOpenState) {
         this.tabView.addUnmuteTabAction(cell, async (event) => {
             this.commandBus.handle(new UnmuteTab(tabOpenState.id));
+        });
+    }
+
+    private addMoveTabAction(cell: HTMLElement, tabOpenState: TabOpenState) {
+        this.tabView.addMoveTabAction(cell, async (event) => {
+            this.tabView.enableMoveMode([cell.parentElement]);
+        });
+    }
+
+    private addMoveSelectedTabsAction(cell: HTMLElement) {
+        this.tabView.addMoveSelectedTabsAction(cell, async (event) => {
+            const checkedList = Array.from<HTMLElement>(this.tabView.tbodyElement.querySelectorAll('.tabSelector input:checked'));
+            const selectedRows: HTMLElement[] = [];
+
+            for (const checkboxElement of checkedList) {
+                const row = checkboxElement.closest('tr') as HTMLElement;
+                selectedRows.push(row);
+            }
+
+            if (0 == selectedRows.length) {
+                return;
+            }
+
+            this.tabView.enableMoveMode(selectedRows);
         });
     }
 

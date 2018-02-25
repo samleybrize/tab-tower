@@ -7,11 +7,24 @@ $selected-row-left-border-width: 8px;
     thead {
         position: sticky;
         z-index: 2;
+
+        th {
+            &:nth-child(1) {
+                position: relative;
+
+                a {
+                    cursor: pointer;
+                }
+            }
+        }
     }
 
     tbody {
         td {
+            transition: opacity 0.3s ease;
+
             &:nth-child(1) {
+                position: relative;
                 border-left: $selected-row-left-border-width solid transparent;
                 transition: border-left-color 0.3s ease;
             }
@@ -26,6 +39,29 @@ $selected-row-left-border-width: 8px;
                 }
             }
         }
+
+        tr.beingMoved {
+            &,
+            &:hover {
+                background-color: map-get($amber, lighten-4); // amber lighten-5
+            }
+
+            td {
+                &:nth-child(1) {
+                    border-left-color: #ff9800; // orange
+                }
+            }
+
+            .tabSelector {
+                pointer-events: none;
+                opacity: 0;
+            }
+
+            .moveModeIndicator {
+                pointer-events: all;
+                opacity: 1;
+            }
+        }
     }
 
     &.show {
@@ -36,6 +72,7 @@ $selected-row-left-border-width: 8px;
 
     .generalTabSelector {
         text-align: center;
+        transition: opacity 0.3s ease;
 
         label {
             height: 21px;
@@ -47,12 +84,29 @@ $selected-row-left-border-width: 8px;
 
     .tabSelector {
         text-align: center;
+        transition: opacity 0.3s ease;
 
         label {
             height: 21px;
             padding-left: 21px;
             transform: scale(0.9);
         }
+    }
+
+    .moveModeIndicator,
+    .moveModeCancel {
+        position: absolute;
+        top: $table-cell-padding;
+        width: calc(100% - #{$table-cell-padding} - #{$table-cell-padding} + #{$selected-row-left-border-width});
+        text-align: center;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .moveModeCancel {
+        top: calc(#{$table-cell-padding} + 5px);
+        width: calc(100% - #{$table-cell-padding} - #{$table-cell-padding});
     }
 
     .title {
@@ -85,6 +139,7 @@ $selected-row-left-border-width: 8px;
     }
 
     .indicators {
+        position: relative;
         text-align: right;
         white-space: nowrap;
 
@@ -148,6 +203,25 @@ $selected-row-left-border-width: 8px;
         .incognitoIndicator {
             display: none;
         }
+
+        .movePlaceholder {
+            position: absolute;
+            right: $table-cell-padding;
+            font-weight: normal;
+            text-align: center;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+
+            i {
+                vertical-align: middle;
+            }
+        }
+    }
+
+    thead .indicators .movePlaceholder {
+        position: relative;
+        right: 0;
     }
 
     .lastAccess {
@@ -215,6 +289,50 @@ $selected-row-left-border-width: 8px;
         &.show {
             pointer-events: all;
             opacity: 1;
+        }
+    }
+
+    &.moveMode {
+        tbody .title,
+        tbody .lastAccess,
+        tbody .more,
+        thead .more {
+            pointer-events: none;
+            cursor: default;
+        }
+
+        tbody .more,
+        thead .more {
+            opacity: 0;
+        }
+
+        .generalTabSelector,
+        .tabSelector {
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .moveModeCancel {
+            pointer-events: all;
+            opacity: 1;
+        }
+
+        .title a em {
+            color: grey;
+        }
+
+        .movePlaceholder {
+            pointer-events: all;
+            cursor: pointer;
+            opacity: 1;
+        }
+
+        tbody .indicators {
+            .on,
+            .off {
+                pointer-events: none;
+                opacity: 0;
+            }
         }
     }
 

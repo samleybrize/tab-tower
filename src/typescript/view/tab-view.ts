@@ -6,6 +6,7 @@ import { StringMatcher } from '../utils/string-matcher';
 
 type HtmlClickListener = (this: HTMLAnchorElement, ev: HTMLElementEventMap['click']) => any;
 type TabTitleClickCallback = (row: HTMLElement) => void;
+type TabMoveBelowCallback = (targetRow: HTMLElement) => void;
 
 interface TabRow {
     row: HTMLElement;
@@ -22,13 +23,14 @@ export class TabView {
     readonly noTabRow: HTMLElement;
     private lastClickedTabSelector: HTMLInputElement;
     private filterTerms: string[] = null;
+    private tabsRowsToMove: HTMLElement[] = null;
     private pendingTasks: Array<() => void> = [];
     isInitialized = false;
 
     constructor(
         private stringMatcher: StringMatcher,
         private detectedBrowser: DetectedBrowser,
-        private containerElement: HTMLElement,
+        public readonly containerElement: HTMLElement,
         private defaultFaviconUrl: string,
     ) {
         if (null == containerElement) {
@@ -44,6 +46,12 @@ export class TabView {
 
         this.noTabRow = this.createNoTabRow();
         this.tbodyElement.appendChild(this.noTabRow);
+    }
+
+    init(headMoveBelowCallback: TabMoveBelowCallback) {
+        const headRow = this.theadElement.querySelector('tr');
+        const placeholder = this.createMovePlaceholder((event) => headMoveBelowCallback(headRow), 'Move above others');
+        this.theadElement.querySelector('.indicators').appendChild(placeholder);
     }
 
     private createTable(containerElement: HTMLElement): HTMLTableElement {
@@ -114,13 +122,14 @@ export class TabView {
         faviconUrl: string,
         isAudible: boolean,
         lastAccess: Date,
-        clickListener: TabTitleClickCallback,
+        titleClickCallback: TabTitleClickCallback,
+        moveBelowCallback: TabMoveBelowCallback,
     ): TabRow {
         const row = document.createElement('tr');
 
         const selectCell = this.createSelectorCell(row, idsPrefix);
-        const titleCell = this.createTitleCell((event) => clickListener(row));
-        const onOffIndicatorsCell = this.createCell('indicators');
+        const titleCell = this.createTitleCell((event) => titleClickCallback(row));
+        const onOffIndicatorsCell = this.createIndicatorsCell((event) => moveBelowCallback(row));
         const lastAccessCell = this.createCell('lastAccess');
         const actionsCell = this.createActionsCell(idsPrefix);
         this.addAudibleIndicator(onOffIndicatorsCell);
@@ -158,10 +167,15 @@ export class TabView {
 
     createSelectorCell(row: HTMLElement, idsPrefix: string): HTMLElement {
         const checkboxId = `${idsPrefix}-selector`;
-        const cell = this.createCell('tabSelector');
+        const cell = document.createElement('td');
         cell.innerHTML = `
-            <input type="checkbox" class="filled-in" id="${checkboxId}" />
-            <label for="${checkboxId}" />
+            <div class="tabSelector">
+                <input type="checkbox" class="filled-in" id="${checkboxId}" />
+                <label for="${checkboxId}" />
+            </div>
+            <div class="moveModeIndicator">
+                <i class="material-icons">swap_vert</i>
+            </div>
         `;
 
         const checkboxElement = cell.querySelector('input');
@@ -229,10 +243,14 @@ export class TabView {
 
     createGeneralSelectorCell(idsPrefix: string): HTMLElement {
         const cell = document.createElement('th');
-        cell.classList.add('generalTabSelector');
         cell.innerHTML = `
-            <input type="checkbox" class="filled-in" id="${idsPrefix}" />
-            <label for="${idsPrefix}" />
+            <div class="generalTabSelector">
+                <input type="checkbox" class="filled-in" id="${idsPrefix}" />
+                <label for="${idsPrefix}" />
+            </div>
+            <div class="moveModeCancel">
+                <a data-tooltip="Cancel tab move"><i class="material-icons">close</i></a>
+            </div>
         `;
 
         const checkboxElement = cell.querySelector('input');
@@ -254,6 +272,13 @@ export class TabView {
                 this.hideTitleActions();
             }
         });
+
+        const moveModeCancelButton = cell.querySelector('.moveModeCancel a');
+        moveModeCancelButton.addEventListener('click', async () => {
+            this.disableMoveMode();
+        });
+
+        jQuery(cell).find('[data-tooltip]').tooltip();
 
         return cell;
     }
@@ -320,6 +345,25 @@ export class TabView {
         cell.appendChild(linkElement);
 
         return cell;
+    }
+
+    createIndicatorsCell(moveListener: HtmlClickListener): HTMLElement {
+        const cell = this.createCell('indicators');
+        const placeholder = this.createMovePlaceholder(moveListener);
+        cell.appendChild(placeholder);
+
+        return cell;
+    }
+
+    private createMovePlaceholder(moveListener: HtmlClickListener, label?: string) {
+        label = label ? label : 'Move below';
+
+        const placeholder = document.createElement('a');
+        placeholder.classList.add('movePlaceholder');
+        placeholder.innerHTML = `${label} <i class="material-icons">arrow_downward</i>`;
+        placeholder.addEventListener('click', moveListener);
+
+        return placeholder;
     }
 
     addOnOffIndicator(cell: HTMLElement, className: string, label: string) {
@@ -487,6 +531,14 @@ export class TabView {
         this.addCloseTabAction(cell, this.clickButtonOnSelectedRows.bind(this, 'closeButton'));
     }
 
+    addMoveTabAction(cell: HTMLElement, clickListener: HtmlClickListener) {
+        this.addAction(cell, 'Move', 'moveButton', 'swap_vert', false, clickListener);
+    }
+
+    addMoveSelectedTabsAction(cell: HTMLElement, clickListener: HtmlClickListener) {
+        this.addMoveTabAction(cell, clickListener);
+    }
+
     showFollowButton(row: HTMLElement) {
         row.querySelector('.followButton').classList.remove('transparent');
     }
@@ -617,6 +669,28 @@ export class TabView {
 
     hideUnmuteButton(row: HTMLElement) {
         row.querySelector('.unmuteButton').classList.add('transparent');
+    }
+
+    enableMoveMode(rowList: HTMLElement[]) {
+        for (const row of rowList) {
+            row.classList.add('beingMoved');
+        }
+
+        this.tabsRowsToMove = rowList;
+        this.containerElement.classList.add('moveMode');
+    }
+
+    disableMoveMode() {
+        for (const row of this.tabsRowsToMove) {
+            row.classList.remove('beingMoved');
+        }
+
+        this.tabsRowsToMove = null;
+        this.containerElement.classList.remove('moveMode');
+    }
+
+    getTabRowsToMove() {
+        return this.tabsRowsToMove;
     }
 
     updateTabTitle(row: HTMLElement, title: string) {

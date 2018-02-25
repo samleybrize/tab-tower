@@ -1,9 +1,11 @@
+$table-cell-padding: 15px;
+
 table {
     background: white;
 
     td,
     th {
-        padding: 15px 15px;
+        padding: $table-cell-padding $table-cell-padding;
     }
 
     th {

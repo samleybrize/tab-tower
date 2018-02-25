@@ -15,6 +15,7 @@ import { CloseTab } from './tab/command/close-tab';
 import { DuplicateTab } from './tab/command/duplicate-tab';
 import { FocusTab } from './tab/command/focus-tab';
 import { FollowTab } from './tab/command/follow-tab';
+import { MoveOpenedTabs } from './tab/command/move-opened-tabs';
 import { MuteTab } from './tab/command/mute-tab';
 import { PinTab } from './tab/command/pin-tab';
 import { ReloadTab } from './tab/command/reload-tab';
@@ -92,6 +93,7 @@ async function main() {
     commandBus.register(DuplicateTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(FocusTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(FollowTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
+    commandBus.register(MoveOpenedTabs, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(MuteTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(PinTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(ReloadTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);

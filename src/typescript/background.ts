@@ -16,6 +16,7 @@ import { CloseTab } from './tab/command/close-tab';
 import { DuplicateTab } from './tab/command/duplicate-tab';
 import { FocusTab } from './tab/command/focus-tab';
 import { FollowTab } from './tab/command/follow-tab';
+import { MoveOpenedTabs } from './tab/command/move-opened-tabs';
 import { MuteTab } from './tab/command/mute-tab';
 import { PinTab } from './tab/command/pin-tab';
 import { ReloadTab } from './tab/command/reload-tab';
@@ -50,6 +51,7 @@ import { NativeRecentlyClosedTabAssociationMaintainer } from './tab/native-recen
 import { WebStoragePersister as WebStorageNativeRecentlyClosedTabAssociationPersister } from './tab/native-recently-closed-tab/web-storage-persister';
 import { NativeTabEventHandler } from './tab/native-tab-event-handler';
 import { ClosedTabRetriever } from './tab/opened-tab/closed-tab-retriever';
+import { OpenedTabMover } from './tab/opened-tab/opened-tab-mover';
 import { OpenedTabRetriever } from './tab/opened-tab/opened-tab-retriever';
 import { PrivilegedUrlDetector } from './tab/privileged-url-detector';
 import { GetClosedTabOpenStateByOpenId } from './tab/query/get-closed-tab-open-state-by-open-id';
@@ -105,6 +107,7 @@ async function main() {
     const tabAssociationMaintainer = new TabAssociationMaintainer(eventBus, queryBus);
     const tabAssociationRetriever = new TabAssociationRetriever(queryBus);
 
+    const openedTabMover = new OpenedTabMover();
     const tabCloser = new TabCloser();
     const tabDuplicator = new TabDuplicator();
     const tabFocuser = new TabFocuser();
@@ -140,6 +143,7 @@ async function main() {
         commandBus.register(DuplicateTab, tabDuplicator.duplicateTab, tabDuplicator);
         commandBus.register(FocusTab, tabFocuser.focusTab, tabFocuser);
         commandBus.register(FollowTab, tabFollower.followTab, tabFollower);
+        commandBus.register(MoveOpenedTabs, openedTabMover.moveOpenedTabs, openedTabMover);
         commandBus.register(MuteTab, tabMuter.muteTab, tabMuter);
         commandBus.register(PinTab, tabPinner.pinTab, tabPinner);
         commandBus.register(ReloadTab, tabReloader.reloadTab, tabReloader);

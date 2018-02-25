@@ -55,7 +55,7 @@ export class FollowedTabView {
 
         this.tabView.isInitialized = true;
         this.tabCounter.setNumberOfFollowedTabs(numberOfFollowedTabs);
-        this.createTitleActions(this.tabView.titleActionsCell);
+        this.createSelectedTabsActions(this.tabView.titleActionsCell);
         await this.tabView.playPendingTasks();
         this.tabView.applyTabFilter();
         this.tabView.showNoTabRowIfTableIsEmpty();
@@ -80,6 +80,7 @@ export class FollowedTabView {
                     this.commandBus.handle(new RestoreFollowedTab(tab.followState.id));
                 }
             },
+            null, // TODO
         );
 
         tabRow.row.setAttribute('data-follow-id', '' + tab.followState.id);
@@ -105,7 +106,7 @@ export class FollowedTabView {
         return !!tab.openState;
     }
 
-    private createTitleActions(cell: HTMLElement) {
+    private createSelectedTabsActions(cell: HTMLElement) {
         this.tabView.addPinSelectedTabsAction(cell);
         this.tabView.addUnpinSelectedTabsAction(cell);
         this.tabView.addMuteSelectedTabsAction(cell);

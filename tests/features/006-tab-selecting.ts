@@ -1,7 +1,6 @@
 import { assert } from 'chai';
 import { WebDriver } from 'selenium-webdriver';
 
-import { sleep } from '../../src/typescript/utils/sleep';
 import { BrowserInstructionSender } from '../utils/browser-instruction-sender';
 import { ExtensionUrl } from '../utils/extension-url';
 import { FirefoxConfig } from '../webdriver/firefox-config';

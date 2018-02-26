@@ -204,7 +204,7 @@ $selected-row-left-border-width: 8px;
             display: none;
         }
 
-        .movePlaceholder {
+        .moveBelow {
             position: absolute;
             right: $table-cell-padding;
             font-weight: normal;
@@ -219,7 +219,7 @@ $selected-row-left-border-width: 8px;
         }
     }
 
-    thead .indicators .movePlaceholder {
+    thead .indicators .moveBelow {
         position: relative;
         right: 0;
     }
@@ -321,7 +321,7 @@ $selected-row-left-border-width: 8px;
             color: grey;
         }
 
-        .movePlaceholder {
+        .moveBelow {
             pointer-events: all;
             cursor: pointer;
             opacity: 1;

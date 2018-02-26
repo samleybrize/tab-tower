@@ -92,7 +92,9 @@ export class OpenedTabView {
                 }
             },
             (targetRow) => {
-                const targetIndex = +targetRow.getAttribute('data-index') + 1;
+                const targetRowIndex = +targetRow.getAttribute('data-index');
+                const isTargetRowBeingMoved = targetRow.classList.contains('beingMoved');
+                const targetIndex = isTargetRowBeingMoved ? targetRowIndex : targetRowIndex + 1;
                 const tabIdList = this.getTabIdListToMove();
 
                 this.commandBus.handle(new MoveOpenedTabs(tabIdList, targetIndex));

@@ -88,6 +88,22 @@ export class TabsTestHelper {
         return tabRow.findElement(By.css('.duplicateButton'));
     }
 
+    getMoveButton(tabRow: WebElement) {
+        return tabRow.findElement(By.css('.moveButton'));
+    }
+
+    getMoveBelowButton(tabRow: WebElement) {
+        return tabRow.findElement(By.css('.moveBelow'));
+    }
+
+    getMoveAboveOthersButton(container: WebElement) {
+        return container.findElement(By.css('thead .moveBelow'));
+    }
+
+    getMoveCancelButton(container: WebElement) {
+        return container.findElement(By.css('thead .moveModeCancel'));
+    }
+
     getCloseButton(tabRow: WebElement) {
         return tabRow.findElement(By.css('.closeButton'));
     }
@@ -327,9 +343,41 @@ export class TabsTestHelper {
 
     async clickOnSelectionTabDuplicateButton(titleRow: WebElement) {
         await this.clickOnTabMoreButton(titleRow);
-        await titleRow.findElement(By.css('.duplicateButton')).click();
+        await this.getDuplicateButton(titleRow).click();
 
         await sleep(1000);
+    }
+
+    async clickOnTabMoveButton(tabRow: WebElement) {
+        await this.clickOnTabMoreButton(tabRow);
+        await this.getMoveButton(tabRow).click();
+
+        await sleep(600);
+    }
+
+    async clickOnSelectionTabMoveButton(titleRow: WebElement) {
+        await this.clickOnTabMoreButton(titleRow);
+        await this.getMoveButton(titleRow).click();
+
+        await sleep(500);
+    }
+
+    async clickOnTabMoveBelowButton(tabRow: WebElement) {
+        await this.getMoveBelowButton(tabRow).click();
+
+        await sleep(500);
+    }
+
+    async clickOnMoveAboveOthersButton(container: WebElement) {
+        await this.getMoveAboveOthersButton(container).click();
+
+        await sleep(500);
+    }
+
+    async clickOnTabMoveCancelButton(container: WebElement) {
+        await this.getMoveCancelButton(container).click();
+
+        await sleep(500);
     }
 
     async clickOnTabSelector(tabRow: WebElement) {
@@ -390,6 +438,14 @@ export class TabsTestHelper {
 
     async assertTabRowIsNotVisible(tabRow: WebElement) {
         assert.isFalse(await tabRow.isDisplayed(), 'Tab row is visible');
+    }
+
+    async assertNoTabIndicatorIsVisible(containerElement: WebElement) {
+        const indicatorList = await containerElement.findElements(By.css('.indicator'));
+
+        for (const indicatorElement of indicatorList) {
+            assert.isFalse(await indicatorElement.isDisplayed(), 'A tab indicator is visible');
+        }
     }
 
     async assertTabReaderModeIndicatorIsOn(tabRow: WebElement) {
@@ -638,6 +694,14 @@ export class TabsTestHelper {
         }
     }
 
+    async assertNoTabSelectorIsVisible(containerElement: WebElement) {
+        const tabSelectorList = await containerElement.findElements(By.css('.tabSelector, .generalTabSelector'));
+
+        for (const tabSelectorElement of tabSelectorList) {
+            assert.isFalse(await tabSelectorElement.isDisplayed(), 'A tab selector is visible');
+        }
+    }
+
     async assertTabSelectorIsChecked(tabRow: WebElement) {
         const isChecked = await this.getTabSelectorInput(tabRow).isSelected();
 
@@ -662,6 +726,14 @@ export class TabsTestHelper {
         assert.isFalse(isChecked, 'Title tab selector is checked');
     }
 
+    async assertNoTabMoreButtonIsVisible(containerElement: WebElement) {
+        const moreList = await containerElement.findElements(By.css('.more'));
+
+        for (const moreElement of moreList) {
+            assert.isFalse(await moreElement.isDisplayed(), 'A more button is visible');
+        }
+    }
+
     async assertSelectionTabMoreButtonIsVisible(container: WebElement) {
         const isDisplayed = await this.getSelectionTabMoreButton(container).isDisplayed();
 
@@ -672,5 +744,33 @@ export class TabsTestHelper {
         const isDisplayed = await this.getSelectionTabMoreButton(container).isDisplayed();
 
         assert.isFalse(isDisplayed, 'Title tab more button is visible');
+    }
+
+    async assertTabMoveBelowButtonIsVisible(tabRow: WebElement) {
+        const isDisplayed = await this.getMoveBelowButton(tabRow).isDisplayed();
+
+        assert.isTrue(isDisplayed, 'Move below button is not visible');
+    }
+
+    async assertMoveAboveOthersButtonIsVisible(containerElement: WebElement) {
+        const isDisplayed = await this.getMoveAboveOthersButton(containerElement).isDisplayed();
+
+        assert.isTrue(isDisplayed, 'Move above others button is not visible');
+    }
+
+    async assertTabIsBeingMoved(tabRow: WebElement) {
+        const hasBeingMovedClass = await this.hasClass(tabRow, 'beingMoved');
+        const isMoveIndicatorVisible = await tabRow.findElement(By.css('.moveModeIndicator')).isDisplayed();
+
+        assert.isTrue(hasBeingMovedClass, 'Tab row has not the "beingMoved" class');
+        assert.isTrue(isMoveIndicatorVisible, 'Tab row move indicator is not visible');
+    }
+
+    async assertTabIsNotBeingMoved(tabRow: WebElement) {
+        const hasBeingMovedClass = await this.hasClass(tabRow, 'beingMoved');
+        const isMoveIndicatorVisible = await tabRow.findElement(By.css('.moveModeIndicator')).isDisplayed();
+
+        assert.isFalse(hasBeingMovedClass, 'Tab row has the "beingMoved" class');
+        assert.isFalse(isMoveIndicatorVisible, 'Tab row move indicator is visible');
     }
 }

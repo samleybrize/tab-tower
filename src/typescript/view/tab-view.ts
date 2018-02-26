@@ -359,7 +359,7 @@ export class TabView {
         label = label ? label : 'Move below';
 
         const placeholder = document.createElement('a');
-        placeholder.classList.add('movePlaceholder');
+        placeholder.classList.add('moveBelow');
         placeholder.innerHTML = `${label} <i class="material-icons">arrow_downward</i>`;
         placeholder.addEventListener('click', moveListener);
 
@@ -370,6 +370,7 @@ export class TabView {
         const badgeElement = document.createElement('span');
         badgeElement.classList.add(className);
         badgeElement.classList.add('badge');
+        badgeElement.classList.add('indicator');
         badgeElement.innerHTML = `<i class="material-icons"></i> <span>${label}</span>`;
 
         cell.appendChild(badgeElement);
@@ -394,6 +395,7 @@ export class TabView {
     addAudibleIndicator(cell: HTMLElement) {
         const iconElement = document.createElement('span');
         iconElement.classList.add('audibleIndicator');
+        iconElement.classList.add('indicator');
         iconElement.innerHTML = `<i class="material-icons">volume_up</i>`;
 
         cell.appendChild(iconElement);

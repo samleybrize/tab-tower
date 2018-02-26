@@ -1,5 +1,6 @@
 export class TabFollowState {
     id: string;
+    position: number;
     title: string = null;
     isIncognito: boolean = false;
     isInReaderMode: boolean = false;
@@ -12,6 +13,7 @@ export class TabFollowState {
     static fromObject(sourceObject: any): TabFollowState {
         const followState = new TabFollowState();
         followState.id = sourceObject.id;
+        followState.position = sourceObject.position;
         followState.title = sourceObject.title;
         followState.isIncognito = sourceObject.isIncognito;
         followState.isInReaderMode = sourceObject.isInReaderMode;

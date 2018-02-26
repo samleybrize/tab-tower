@@ -29,19 +29,19 @@ export class TabsTestHelper {
     }
 
     getTabTitle(tabRow: WebElement) {
-        return tabRow.findElement(By.css('.title a span')).getText();
+        return tabRow.findElement(By.css('.title span')).getText();
     }
 
     getTabUrlAttribute(tabRow: WebElement) {
-        return tabRow.findElement(By.css('.title a')).getAttribute('data-url');
+        return tabRow.findElement(By.css('.title')).getAttribute('data-url');
     }
 
     getTabShownUrl(tabRow: WebElement) {
-        return tabRow.findElement(By.css('.title a em')).getText();
+        return tabRow.findElement(By.css('.title em')).getText();
     }
 
     getTabFaviconUrl(tabRow: WebElement) {
-        return tabRow.findElement(By.css('.title a img')).getAttribute('src');
+        return tabRow.findElement(By.css('.title img')).getAttribute('src');
     }
 
     getReaderModeIndicator(tabRow: WebElement) {
@@ -97,7 +97,7 @@ export class TabsTestHelper {
     }
 
     getMoveAboveOthersButton(container: WebElement) {
-        return container.findElement(By.css('thead .moveBelow'));
+        return container.findElement(By.css('thead .moveAboveOthers'));
     }
 
     getMoveCancelButton(container: WebElement) {
@@ -121,11 +121,11 @@ export class TabsTestHelper {
     }
 
     getGeneralTabSelectorLabel(container: WebElement) {
-        return container.findElement(By.css('thead .generalTabSelector label'));
+        return container.findElement(By.css('thead .tabSelector label'));
     }
 
     getGeneralTabSelectorInput(container: WebElement) {
-        return container.findElement(By.css('thead .generalTabSelector input'));
+        return container.findElement(By.css('thead .tabSelector input'));
     }
 
     getSelectionTabMoreButton(container: WebElement) {
@@ -695,7 +695,7 @@ export class TabsTestHelper {
     }
 
     async assertNoTabSelectorIsVisible(containerElement: WebElement) {
-        const tabSelectorList = await containerElement.findElements(By.css('.tabSelector, .generalTabSelector'));
+        const tabSelectorList = await containerElement.findElements(By.css('.tabSelector, .tabSelector'));
 
         for (const tabSelectorElement of tabSelectorList) {
             assert.isFalse(await tabSelectorElement.isDisplayed(), 'A tab selector is visible');
@@ -760,7 +760,7 @@ export class TabsTestHelper {
 
     async assertTabIsBeingMoved(tabRow: WebElement) {
         const hasBeingMovedClass = await this.hasClass(tabRow, 'beingMoved');
-        const isMoveIndicatorVisible = await tabRow.findElement(By.css('.moveModeIndicator')).isDisplayed();
+        const isMoveIndicatorVisible = await tabRow.findElement(By.css('.beingMovedIndicator')).isDisplayed();
 
         assert.isTrue(hasBeingMovedClass, 'Tab row has not the "beingMoved" class');
         assert.isTrue(isMoveIndicatorVisible, 'Tab row move indicator is not visible');
@@ -768,7 +768,7 @@ export class TabsTestHelper {
 
     async assertTabIsNotBeingMoved(tabRow: WebElement) {
         const hasBeingMovedClass = await this.hasClass(tabRow, 'beingMoved');
-        const isMoveIndicatorVisible = await tabRow.findElement(By.css('.moveModeIndicator')).isDisplayed();
+        const isMoveIndicatorVisible = await tabRow.findElement(By.css('.beingMovedIndicator')).isDisplayed();
 
         assert.isFalse(hasBeingMovedClass, 'Tab row has the "beingMoved" class');
         assert.isFalse(isMoveIndicatorVisible, 'Tab row move indicator is visible');

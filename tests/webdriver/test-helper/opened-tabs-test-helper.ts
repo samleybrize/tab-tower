@@ -62,7 +62,7 @@ export class OpenedTabsTestHelper {
     async clickOnTabTitle(tabRow: WebElement) {
         const tabIndex = +await tabRow.getAttribute('data-index');
 
-        await tabRow.findElement(By.css('.title a')).click();
+        await tabRow.findElement(By.css('.title')).click();
         await this.driver.wait(async () => {
             return tabIndex === (await this.browserInstructionSender.getActiveTab()).index;
         }, 10000);
@@ -207,7 +207,7 @@ export class OpenedTabsTestHelper {
 
     async showTitleTooltip(tabRow: WebElement) {
         const tabId = await tabRow.getAttribute('data-tab-id');
-        await this.tabsTestHelper.showElementTooltip(`#openedTabList tbody tr[data-tab-id="${tabId}"] .title a`);
+        await this.tabsTestHelper.showElementTooltip(`#openedTabList tbody tr[data-tab-id="${tabId}"] .title`);
     }
 
     async getNumberOfTabsWithUrl(url?: string) {
@@ -215,7 +215,7 @@ export class OpenedTabsTestHelper {
             url = 'about:newtab';
         }
 
-        const titleElementList = await this.driver.findElements(By.css('#openedTabList tbody tr[data-tab-id] .title a'));
+        const titleElementList = await this.driver.findElements(By.css('#openedTabList tbody tr[data-tab-id] .title'));
 
         return this.tabsTestHelper.getNumberOfTabsWithUrl(titleElementList, url);
     }
@@ -521,10 +521,12 @@ export class OpenedTabsTestHelper {
     }
 
     async assertSelectionTabMoreButtonIsVisible() {
+        await sleep(300);
         await this.tabsTestHelper.assertSelectionTabMoreButtonIsVisible(this.getContainerElement());
     }
 
     async assertSelectionTabMoreButtonIsNotVisible() {
+        await sleep(300);
         await this.tabsTestHelper.assertSelectionTabMoreButtonIsNotVisible(this.getContainerElement());
     }
 

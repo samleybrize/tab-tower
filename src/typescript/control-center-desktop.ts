@@ -47,6 +47,12 @@ import { GetTabAssociationsWithOpenState } from './tab/query/get-tab-association
 import { tabQueries } from './tab/query/tab-queries';
 import { ObjectUnserializer } from './utils/object-unserializer';
 import { StringMatcher } from './utils/string-matcher';
+import { IndicatorManipulator } from './view/component/indicator-manipulator';
+import { MoreMenuManipulator } from './view/component/more-menu-manipulator';
+import { TabFilterApplier } from './view/component/tab-filter-applier';
+import { TabMoveAction } from './view/component/tab-move-action';
+import { TabSelectorManipulator } from './view/component/tab-selector-manipulator';
+import { TabTitleManipulator } from './view/component/tab-title-manipulator';
 import { FollowedTabView } from './view/followed-tab-view';
 import { HeaderView } from './view/header-view';
 import { OpenedTabView } from './view/opened-tab-view';
@@ -64,9 +70,54 @@ async function main() {
     const detectedBrowser = new DetectedBrowser();
     const stringMatcher = new StringMatcher();
     const tabCounter = new TabCounter();
-    const followedTabView = new FollowedTabView(commandBus, queryBus, tabCounter, new TabView(stringMatcher, detectedBrowser, document.querySelector('#followedTabList'), defaultFaviconUrl));
-    const openedTabView = new OpenedTabView(commandBus, queryBus, tabCounter, new TabView(stringMatcher, detectedBrowser, document.querySelector('#openedTabList'), defaultFaviconUrl));
     const tabSearchView = new TabFilterView(eventBus, document.querySelector('#headerTabFilter'));
+
+    const openedTabView = (() => {
+        const openedTabViewContainer: HTMLElement = document.querySelector('#openedTabList');
+        const indicatorManipulator = new IndicatorManipulator();
+        const moreMenuManipulator = new MoreMenuManipulator();
+        const tabFilterApplier = new TabFilterApplier(stringMatcher, openedTabViewContainer);
+        const tabMoveAction = new TabMoveAction(openedTabViewContainer);
+        const tabSelectorManipulator = new TabSelectorManipulator(openedTabViewContainer);
+        const tabTitleManipulator = new TabTitleManipulator(detectedBrowser, defaultFaviconUrl);
+
+        return new OpenedTabView(
+            commandBus,
+            queryBus,
+            tabCounter,
+            new TabView(indicatorManipulator, moreMenuManipulator, tabFilterApplier, tabMoveAction, tabSelectorManipulator, tabTitleManipulator, openedTabViewContainer),
+            indicatorManipulator,
+            moreMenuManipulator,
+            tabFilterApplier,
+            tabMoveAction,
+            tabSelectorManipulator,
+            tabTitleManipulator,
+        );
+    })();
+
+    const followedTabView = (() => {
+        const followedTabViewContainer: HTMLElement = document.querySelector('#followedTabList');
+        const indicatorManipulator = new IndicatorManipulator();
+        const moreMenuManipulator = new MoreMenuManipulator();
+        const tabFilterApplier = new TabFilterApplier(stringMatcher, followedTabViewContainer);
+        const tabMoveAction = new TabMoveAction(followedTabViewContainer);
+        const tabSelectorManipulator = new TabSelectorManipulator(followedTabViewContainer);
+        const tabTitleManipulator = new TabTitleManipulator(detectedBrowser, defaultFaviconUrl);
+
+        return new FollowedTabView(
+            commandBus,
+            queryBus,
+            tabCounter,
+            new TabView(indicatorManipulator, moreMenuManipulator, tabFilterApplier, tabMoveAction, tabSelectorManipulator, tabTitleManipulator, followedTabViewContainer),
+            indicatorManipulator,
+            moreMenuManipulator,
+            tabFilterApplier,
+            tabMoveAction,
+            tabSelectorManipulator,
+            tabTitleManipulator,
+        );
+    })();
+
     const headerView = new HeaderView(followedTabView, openedTabView, document.querySelector('#header'));
 
     tabCounter.observeNumberOfFollowedTabs(headerView.notifyNumberOfFollowedTabsChanged.bind(headerView));

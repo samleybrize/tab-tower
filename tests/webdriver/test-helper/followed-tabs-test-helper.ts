@@ -63,7 +63,7 @@ export class FollowedTabsTestHelper {
         const openIndicator = this.getOpenIndicator(tabRow);
         const tabId = await this.getWebElementAttribute(tabRow, 'data-opened-tab-id');
 
-        const titleElement = tabRow.findElement(By.css('.title a'));
+        const titleElement = tabRow.findElement(By.css('.title'));
         await titleElement.click();
 
         await this.driver.wait(async () => {
@@ -81,10 +81,10 @@ export class FollowedTabsTestHelper {
         let url: string;
 
         if (null === tabId) {
-            url = await this.getWebElementAttribute(tabRow.findElement(By.css('.title a')), 'data-url');
+            url = await this.getWebElementAttribute(tabRow.findElement(By.css('.title')), 'data-url');
         }
 
-        const titleElement = tabRow.findElement(By.css('.title a'));
+        const titleElement = tabRow.findElement(By.css('.title'));
 
         await Promise.all([
             titleElement.click(),
@@ -240,11 +240,11 @@ export class FollowedTabsTestHelper {
 
     async showTitleTooltip(tabRow: WebElement) {
         const followId = await tabRow.getAttribute('data-follow-id');
-        await this.tabsTestHelper.showElementTooltip(`#followedTabList tbody tr[data-follow-id="${followId}"] .title a`);
+        await this.tabsTestHelper.showElementTooltip(`#followedTabList tbody tr[data-follow-id="${followId}"] .title`);
     }
 
     async getNumberOfTabsWithUrl(url?: string) {
-        const titleElementList = await this.driver.findElements(By.css('#followedTabList tbody tr[data-follow-id] .title a'));
+        const titleElementList = await this.driver.findElements(By.css('#followedTabList tbody tr[data-follow-id] .title'));
 
         return this.tabsTestHelper.getNumberOfTabsWithUrl(titleElementList, url);
     }
@@ -371,7 +371,7 @@ export class FollowedTabsTestHelper {
     }
 
     async assertTabReaderModeTestPageTitle(tabRow: WebElement) {
-        const title = await tabRow.findElement(By.css('.title a span')).getText();
+        const title = await tabRow.findElement(By.css('.title span')).getText();
         assert.match(title, /mozilla/i);
         assert.notMatch(title, /http/i);
     }

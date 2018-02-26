@@ -30,6 +30,12 @@ import { TabOpenState } from '../tab/opened-tab/tab-open-state';
 import { GetTabAssociationByOpenId } from '../tab/query/get-tab-association-by-open-id';
 import { GetTabAssociationsWithOpenState } from '../tab/query/get-tab-associations-with-open-state';
 import { TabAssociation } from '../tab/tab-association/tab-association';
+import { IndicatorManipulator, IndicatorType } from './component/indicator-manipulator';
+import { MoreActionType, MoreMenu, MoreMenuManipulator } from './component/more-menu-manipulator';
+import { TabFilterApplier } from './component/tab-filter-applier';
+import { MoveAboveOthersClickCallback, MoveBelowClickCallback, TabMoveAction } from './component/tab-move-action';
+import { TabSelectorManipulator } from './component/tab-selector-manipulator';
+import { TabTitleClickCallback, TabTitleManipulator } from './component/tab-title-manipulator';
 import { TabCounter } from './tab-counter';
 import { TabView } from './tab-view';
 
@@ -39,17 +45,25 @@ export class OpenedTabView {
         private queryBus: QueryBus,
         private tabCounter: TabCounter,
         private tabView: TabView,
+        private indicatorManipulator: IndicatorManipulator,
+        private moreMenuManipulator: MoreMenuManipulator,
+        private tabFilterApplier: TabFilterApplier,
+        private tabMoveAction: TabMoveAction,
+        private tabSelectorManipulator: TabSelectorManipulator,
+        private tabTitleManipulator: TabTitleManipulator,
     ) {
     }
 
     async init() {
-        this.tabView.init(() => {
+        const selectionTabMoreMenu = this.createSelectionTabMoreMenu();
+        const moveAboveOthersCallback: MoveAboveOthersClickCallback = () => {
             const tabIdList = this.getTabIdListToMove();
+            this.tabMoveAction.disableMoveMode();
 
             this.commandBus.handle(new MoveOpenedTabs(tabIdList, 0));
+        };
+        this.tabView.init(selectionTabMoreMenu, moveAboveOthersCallback);
 
-            this.tabView.disableMoveMode();
-        });
         const tabList = await this.queryBus.query(new GetTabAssociationsWithOpenState());
         let numberOfOpenedTabs = 0;
 
@@ -60,76 +74,18 @@ export class OpenedTabView {
 
             const row = this.createTabRow(tab.openState, this.isTabFollowed(tab));
             this.tabView.tbodyElement.appendChild(row);
-            this.tabView.initActionsDropdown(row);
+            this.moreMenuManipulator.initMoreDropdown(row);
             numberOfOpenedTabs++;
         }
 
-        this.tabView.isInitialized = true;
+        await this.tabView.markAsInitialized();
         this.tabCounter.setNumberOfOpenedTabs(numberOfOpenedTabs);
-        this.createSelectedTabsActions(this.tabView.titleActionsCell);
-        await this.tabView.playPendingTasks();
-        this.tabView.applyTabFilter();
+        this.tabFilterApplier.applyFilter();
         this.tabView.showNoTabRowIfTableIsEmpty();
     }
 
-    private isTabFollowed(tab: TabAssociation) {
-        return !!tab.followState;
-    }
-
-    private createTabRow(tabOpenState: TabOpenState, isFollowed: boolean): HTMLElement {
-        const tabRow = this.tabView.createTabRow(
-            `opened-tab-${tabOpenState.id}`,
-            tabOpenState.title,
-            tabOpenState.url,
-            tabOpenState.faviconUrl,
-            tabOpenState.isAudible,
-            tabOpenState.lastAccess,
-            (row) => {
-                const tabId = +row.getAttribute('data-tab-id');
-
-                if (tabId) {
-                    this.commandBus.handle(new FocusTab(tabId));
-                }
-            },
-            (targetRow) => {
-                const targetRowIndex = +targetRow.getAttribute('data-index');
-                const isTargetRowBeingMoved = targetRow.classList.contains('beingMoved');
-                const targetIndex = isTargetRowBeingMoved ? targetRowIndex : targetRowIndex + 1;
-                const tabIdList = this.getTabIdListToMove();
-
-                this.commandBus.handle(new MoveOpenedTabs(tabIdList, targetIndex));
-
-                this.tabView.disableMoveMode();
-            },
-        );
-
-        tabRow.row.setAttribute('data-tab-id', '' + tabOpenState.id);
-
-        this.tabView.addMuteIndicator(tabRow.onOffIndicatorsCell);
-        this.tabView.addOnOffIndicator(tabRow.onOffIndicatorsCell, 'followedIndicator', 'followed');
-        this.tabView.addPinIndicator(tabRow.onOffIndicatorsCell);
-        this.tabView.addReaderModeIndicator(tabRow.onOffIndicatorsCell);
-        this.tabView.addIncognitoIndicator(tabRow.onOffIndicatorsCell);
-        this.createTabActions(tabRow.actionsCell, tabOpenState);
-
-        this.updateFollowState(tabRow.row, isFollowed);
-        this.updateTabIndex(tabRow.row, tabOpenState.index);
-        this.tabView.updateTabFavicon(tabRow.row, tabOpenState.faviconUrl);
-        this.tabView.updateTabIncognitoState(tabRow.row, tabOpenState.isIncognito);
-        this.tabView.updateTabReaderModeState(tabRow.row, tabOpenState.isInReaderMode);
-        this.tabView.updateTabAudibleIndicator(tabRow.row, tabOpenState.isAudible);
-        this.tabView.updateTabAudioMuteState(tabRow.row, tabOpenState.isAudioMuted);
-        this.tabView.updateTabPinState(tabRow.row, tabOpenState.isPinned);
-        this.tabView.updateTabTitle(tabRow.row, tabOpenState.title);
-        this.updateTabUrl(tabRow.row, tabOpenState.url, tabOpenState.isPrivileged, tabOpenState.isIgnored);
-        this.tabView.updateTabLastAccess(tabRow.row, tabOpenState.lastAccess);
-        this.tabView.updateTabTitleTooltip(tabRow.row, 'Go to tab');
-
-        return tabRow.row;
-    }
-
     private getTabIdListToMove() {
-        const tabRowsToMove = this.tabView.getTabRowsToMove();
+        const tabRowsToMove = this.tabMoveAction.getTabRowsToMove();
 
         if (null == tabRowsToMove) {
             return [];
@@ -144,141 +100,179 @@ export class OpenedTabView {
         return tabIdList;
     }
 
-    private createSelectedTabsActions(cell: HTMLElement) {
-        this.tabView.addFollowSelectedTabsAction(cell);
-        this.tabView.addPinSelectedTabsAction(cell);
-        this.tabView.addUnpinSelectedTabsAction(cell);
-        this.tabView.addMuteSelectedTabsAction(cell);
-        this.tabView.addUnmuteSelectedTabsAction(cell);
-        this.addMoveSelectedTabsAction(cell);
-        this.tabView.addDuplicateSelectedTabsAction(cell);
-        this.tabView.addReloadSelectedTabsAction(cell);
-        this.tabView.addActionSeparator(cell);
-        this.tabView.addCloseSelectedTabsAction(cell);
-        this.tabView.addUnfollowSelectedTabsAction(cell);
+    private isTabFollowed(tab: TabAssociation) {
+        return !!tab.followState;
     }
 
-    private createTabActions(cell: HTMLElement, tabOpenState: TabOpenState) {
-        this.addFollowTabAction(cell, tabOpenState);
-        this.addPinTabAction(cell, tabOpenState);
-        this.addUnpinTabAction(cell, tabOpenState);
-        this.addMuteTabAction(cell, tabOpenState);
-        this.addUnmuteTabAction(cell, tabOpenState);
-        this.addMoveTabAction(cell, tabOpenState);
-        this.addDuplicateTabAction(cell, tabOpenState);
-        this.addReloadTabAction(cell, tabOpenState);
-        this.tabView.addActionSeparator(cell);
-        this.addCloseTabAction(cell, tabOpenState);
-        this.addUnfollowTabAction(cell, tabOpenState);
-    }
+    private createTabRow(tabOpenState: TabOpenState, isFollowed: boolean): HTMLElement {
+        const indicatorList = this.createIndicatorList();
+        const moreMenu = this.createTabMoreMenu(tabOpenState);
 
-    private addFollowTabAction(cell: HTMLElement, tabOpenState: TabOpenState) {
-        this.tabView.addFollowTabAction(cell, async (event) => {
-            if (this.tabView.isFollowButtonDisabled(cell)) {
-                return;
+        const titleClickCallback: TabTitleClickCallback = (clickedElement) => {
+            const row = clickedElement.closest('tr');
+            const tabId = +row.getAttribute('data-tab-id');
+
+            if (tabId) {
+                this.commandBus.handle(new FocusTab(tabId));
             }
+        };
+        const moveBelowCallback: MoveBelowClickCallback = (clickedButton) => {
+            const targetRow = clickedButton.closest('tr');
+            const targetRowIndex = +targetRow.getAttribute('data-index');
+            const isTargetRowBeingMoved = targetRow.classList.contains('beingMoved');
+            const targetIndex = isTargetRowBeingMoved ? targetRowIndex : targetRowIndex + 1;
+            const tabIdList = this.getTabIdListToMove();
 
-            const upToDateTab = await this.queryBus.query(new GetTabAssociationByOpenId(tabOpenState.id));
-            this.commandBus.handle(new FollowTab(upToDateTab));
-        });
+            this.commandBus.handle(new MoveOpenedTabs(tabIdList, targetIndex));
+
+            this.tabMoveAction.disableMoveMode();
+        };
+
+        const tabRow = this.tabView.createTabRow(
+            `opened-tab-${tabOpenState.id}`,
+            tabOpenState.title,
+            tabOpenState.url,
+            tabOpenState.faviconUrl,
+            tabOpenState.isAudible,
+            tabOpenState.isInReaderMode,
+            tabOpenState.isAudioMuted,
+            tabOpenState.isPinned,
+            tabOpenState.isIncognito,
+            tabOpenState.lastAccess,
+            indicatorList,
+            moreMenu,
+            titleClickCallback,
+            moveBelowCallback,
+        );
+
+        tabRow.row.setAttribute('data-tab-id', '' + tabOpenState.id);
+
+        this.updateFollowState(tabRow.row, isFollowed);
+        this.updateTabIndex(tabRow.row, tabOpenState.index);
+        this.updateTabUrl(tabRow.row, tabOpenState.url, tabOpenState.isPrivileged, tabOpenState.isIgnored);
+        this.tabTitleManipulator.updateTitleTooltip(tabRow.row, 'Go to tab');
+
+        return tabRow.row;
     }
 
-    private addUnfollowTabAction(cell: HTMLElement, tabOpenState: TabOpenState) {
-        this.tabView.addUnfollowTabAction(cell, async (event) => {
-            if (this.tabView.isUnfollowButtonDisabled(cell)) {
-                return;
-            }
+    private createIndicatorList() {
+        const indicatorList = [
+            this.indicatorManipulator.create(IndicatorType.Audible),
+            this.indicatorManipulator.create(IndicatorType.Muted),
+            this.indicatorManipulator.create(IndicatorType.Followed),
+            this.indicatorManipulator.create(IndicatorType.Pinned),
+            this.indicatorManipulator.create(IndicatorType.ReaderView),
+            this.indicatorManipulator.create(IndicatorType.Incognito),
+        ];
 
-            const upToDateTab = await this.queryBus.query(new GetTabAssociationByOpenId(tabOpenState.id));
-            this.commandBus.handle(new UnfollowTab(upToDateTab));
-        });
+        return indicatorList;
     }
 
-    private addPinTabAction(cell: HTMLElement, tabOpenState: TabOpenState) {
-        this.tabView.addPinTabAction(cell, async (event) => {
-            this.commandBus.handle(new PinTab(tabOpenState.id));
-        });
+    private createSelectionTabMoreMenu() {
+        const moreMenu: MoreMenu = {};
+        moreMenu[MoreActionType.Follow] = this.tabView.triggerTabActionOnSelectedRows.bind(this.tabView, MoreActionType.Follow);
+        moreMenu[MoreActionType.Pin] = this.tabView.triggerTabActionOnSelectedRows.bind(this.tabView, MoreActionType.Pin);
+        moreMenu[MoreActionType.Unpin] = this.tabView.triggerTabActionOnSelectedRows.bind(this.tabView, MoreActionType.Unpin);
+        moreMenu[MoreActionType.Mute] = this.tabView.triggerTabActionOnSelectedRows.bind(this.tabView, MoreActionType.Mute);
+        moreMenu[MoreActionType.Unmute] = this.tabView.triggerTabActionOnSelectedRows.bind(this.tabView, MoreActionType.Unmute);
+        moreMenu[MoreActionType.Move] = this.tabView.moveSelectedTabsAction.bind(this);
+        moreMenu[MoreActionType.Duplicate] = this.tabView.triggerTabActionOnSelectedRows.bind(this.tabView, MoreActionType.Duplicate);
+        moreMenu[MoreActionType.Reload] = this.tabView.triggerTabActionOnSelectedRows.bind(this.tabView, MoreActionType.Reload);
+        moreMenu[MoreActionType.Separator] = null;
+        moreMenu[MoreActionType.Close] = this.tabView.triggerTabActionOnSelectedRows.bind(this.tabView, MoreActionType.Close);
+        moreMenu[MoreActionType.Unfollow] = this.tabView.triggerTabActionOnSelectedRows.bind(this.tabView, MoreActionType.Unfollow);
+
+        return moreMenu;
     }
 
-    private addUnpinTabAction(cell: HTMLElement, tabOpenState: TabOpenState) {
-        this.tabView.addUnpinTabAction(cell, async (event) => {
-            this.commandBus.handle(new UnpinTab(tabOpenState.id));
-        });
+    private createTabMoreMenu(tabOpenState: TabOpenState) {
+        const moreMenu: MoreMenu = {};
+        moreMenu[MoreActionType.Follow] = this.followTabAction.bind(this, tabOpenState);
+        moreMenu[MoreActionType.Pin] = this.pinTabAction.bind(this, tabOpenState);
+        moreMenu[MoreActionType.Unpin] = this.unpinTabAction.bind(this, tabOpenState);
+        moreMenu[MoreActionType.Mute] = this.muteTabAction.bind(this, tabOpenState);
+        moreMenu[MoreActionType.Unmute] = this.unmuteTabAction.bind(this, tabOpenState);
+        moreMenu[MoreActionType.Move] = this.tabView.moveTabAction.bind(this);
+        moreMenu[MoreActionType.Duplicate] = this.duplicateTabAction.bind(this, tabOpenState);
+        moreMenu[MoreActionType.Reload] = this.reloadTabAction.bind(this, tabOpenState);
+        moreMenu[MoreActionType.Separator] = null;
+        moreMenu[MoreActionType.Close] = this.closeTabAction.bind(this, tabOpenState);
+        moreMenu[MoreActionType.Unfollow] = this.unfollowTabAction.bind(this, tabOpenState);
+
+        return moreMenu;
     }
 
-    private addMuteTabAction(cell: HTMLElement, tabOpenState: TabOpenState) {
-        this.tabView.addMuteTabAction(cell, async (event) => {
-            this.commandBus.handle(new MuteTab(tabOpenState.id));
-        });
+    private async followTabAction(tabOpenState: TabOpenState, clickedElement: HTMLAnchorElement) {
+        const row = clickedElement.closest('tr') as HTMLElement;
+
+        if (this.moreMenuManipulator.isActionDisabled(row, MoreActionType.Follow)) {
+            return;
+        }
+
+        const upToDateTab = await this.queryBus.query(new GetTabAssociationByOpenId(tabOpenState.id));
+        this.commandBus.handle(new FollowTab(upToDateTab));
     }
 
-    private addUnmuteTabAction(cell: HTMLElement, tabOpenState: TabOpenState) {
-        this.tabView.addUnmuteTabAction(cell, async (event) => {
-            this.commandBus.handle(new UnmuteTab(tabOpenState.id));
-        });
+    private async  unfollowTabAction(tabOpenState: TabOpenState, clickedElement: HTMLAnchorElement) {
+        const row = clickedElement.closest('tr') as HTMLElement;
+
+        if (this.moreMenuManipulator.isActionDisabled(row, MoreActionType.Unfollow)) {
+            return;
+        }
+
+        const upToDateTab = await this.queryBus.query(new GetTabAssociationByOpenId(tabOpenState.id));
+        this.commandBus.handle(new UnfollowTab(upToDateTab));
     }
 
-    private addMoveTabAction(cell: HTMLElement, tabOpenState: TabOpenState) {
-        this.tabView.addMoveTabAction(cell, async (event) => {
-            this.tabView.enableMoveMode([cell.parentElement]);
-        });
+    private pinTabAction(tabOpenState: TabOpenState, clickedElement: HTMLAnchorElement) {
+        this.commandBus.handle(new PinTab(tabOpenState.id));
     }
 
-    private addMoveSelectedTabsAction(cell: HTMLElement) {
-        this.tabView.addMoveSelectedTabsAction(cell, async (event) => {
-            const checkedList = Array.from<HTMLElement>(this.tabView.tbodyElement.querySelectorAll('.tabSelector input:checked'));
-            const selectedRows: HTMLElement[] = [];
-
-            for (const checkboxElement of checkedList) {
-                const row = checkboxElement.closest('tr') as HTMLElement;
-                selectedRows.push(row);
-            }
-
-            if (0 == selectedRows.length) {
-                return;
-            }
-
-            this.tabView.enableMoveMode(selectedRows);
-        });
+    private unpinTabAction(tabOpenState: TabOpenState, clickedElement: HTMLAnchorElement) {
+        this.commandBus.handle(new UnpinTab(tabOpenState.id));
     }
 
-    private addDuplicateTabAction(cell: HTMLElement, tabOpenState: TabOpenState) {
-        this.tabView.addDuplicateTabAction(cell, async (event) => {
-            this.commandBus.handle(new DuplicateTab(tabOpenState.id));
-        });
+    private muteTabAction(tabOpenState: TabOpenState, clickedElement: HTMLAnchorElement) {
+        this.commandBus.handle(new MuteTab(tabOpenState.id));
     }
 
-    private addReloadTabAction(cell: HTMLElement, tabOpenState: TabOpenState) {
-        this.tabView.addReloadTabAction(cell, async (event) => {
-            this.commandBus.handle(new ReloadTab(tabOpenState.id));
-        });
+    private unmuteTabAction(tabOpenState: TabOpenState, clickedElement: HTMLAnchorElement) {
+        this.commandBus.handle(new UnmuteTab(tabOpenState.id));
     }
 
-    private addCloseTabAction(cell: HTMLElement, tabOpenState: TabOpenState) {
-        this.tabView.addCloseTabAction(cell, async (event) => {
-            if (this.tabView.isCloseButtonDisabled(cell)) {
-                return;
-            }
+    private duplicateTabAction(tabOpenState: TabOpenState, clickedElement: HTMLAnchorElement) {
+        this.commandBus.handle(new DuplicateTab(tabOpenState.id));
+    }
 
-            this.commandBus.handle(new CloseTab(tabOpenState.id));
-        });
+    private reloadTabAction(tabOpenState: TabOpenState, clickedElement: HTMLAnchorElement) {
+        this.commandBus.handle(new ReloadTab(tabOpenState.id));
+    }
+
+    private closeTabAction(tabOpenState: TabOpenState, clickedElement: HTMLAnchorElement) {
+        const row = clickedElement.closest('tr') as HTMLElement;
+
+        if (this.moreMenuManipulator.isActionDisabled(row, MoreActionType.Close)) {
+            return;
+        }
+
+        this.commandBus.handle(new CloseTab(tabOpenState.id));
     }
 
     private updateTabUrl(row: HTMLElement, url: string, isPrivileged: boolean, isIgnored: boolean) {
-        this.tabView.updateTabUrl(row, url);
+        this.tabTitleManipulator.updateUrl(row, url);
 
         if (isPrivileged || isIgnored) {
-            this.tabView.disableFollowButton(row);
-            this.tabView.disableUnfollowButton(row);
+            this.moreMenuManipulator.disableAction(row, MoreActionType.Follow);
+            this.moreMenuManipulator.disableAction(row, MoreActionType.Unfollow);
         } else {
-            this.tabView.enableFollowButton(row);
-            this.tabView.enableUnfollowButton(row);
+            this.moreMenuManipulator.enableAction(row, MoreActionType.Follow);
+            this.moreMenuManipulator.enableAction(row, MoreActionType.Unfollow);
         }
 
         if (isIgnored) {
-            this.tabView.disableCloseButton(row);
+            this.moreMenuManipulator.disableAction(row, MoreActionType.Close);
         } else {
-            this.tabView.enableCloseButton(row);
+            this.moreMenuManipulator.enableAction(row, MoreActionType.Close);
         }
     }
 
@@ -287,14 +281,14 @@ export class OpenedTabView {
     }
 
     private updateFollowState(row: HTMLElement, isFollowed: boolean) {
-        this.tabView.updateOnOffIndicator(row, 'followedIndicator', isFollowed);
+        this.indicatorManipulator.changeState(row, IndicatorType.Followed, isFollowed);
 
         if (isFollowed) {
-            this.tabView.hideFollowButton(row);
-            this.tabView.showUnfollowButton(row);
+            this.moreMenuManipulator.hideAction(row, MoreActionType.Follow);
+            this.moreMenuManipulator.showAction(row, MoreActionType.Unfollow);
         } else {
-            this.tabView.showFollowButton(row);
-            this.tabView.hideUnfollowButton(row);
+            this.moreMenuManipulator.showAction(row, MoreActionType.Follow);
+            this.moreMenuManipulator.hideAction(row, MoreActionType.Unfollow);
         }
     }
 
@@ -306,6 +300,7 @@ export class OpenedTabView {
         this.tabView.hide();
     }
 
+    // TODO merge "onTabOpen" with "handleTabOpen"
     async onTabOpen(event: TabOpened) {
         this.tabView.addPendingTask(this.handleTabOpen.bind(this, event));
     }
@@ -325,8 +320,8 @@ export class OpenedTabView {
             this.insertRowAtIndex(rowToInsert, event.tabOpenState.index);
         }
 
-        this.tabView.initActionsDropdown(rowToInsert);
-        this.tabView.applyTabFilter();
+        this.moreMenuManipulator.initMoreDropdown(rowToInsert);
+        this.tabFilterApplier.applyFilter();
         this.tabView.showNoTabRowIfTableIsEmpty();
         this.tabCounter.incrementNumberOfOpenedTabs();
     }
@@ -367,10 +362,10 @@ export class OpenedTabView {
     }
 
     async onOpenTabMove(event: OpenedTabMoved) {
-        this.tabView.addPendingTask(this.handleOpenTabMode.bind(this, event));
+        this.tabView.addPendingTask(this.handleOpenTabMove.bind(this, event));
     }
 
-    private async handleOpenTabMode(event: OpenedTabMoved) {
+    private async handleOpenTabMove(event: OpenedTabMoved) {
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
@@ -388,7 +383,7 @@ export class OpenedTabView {
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
-            this.tabView.updateTabFavicon(tabRow, event.tabOpenState.faviconUrl);
+            this.tabTitleManipulator.updateFavicon(tabRow, event.tabOpenState.faviconUrl);
             this.tabView.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }
@@ -401,7 +396,7 @@ export class OpenedTabView {
         const tabRow = this.getTabRowByTabId(event.tabOpenState.id);
 
         if (tabRow) {
-            this.tabView.updateTabTitle(tabRow, event.tabOpenState.title);
+            this.tabTitleManipulator.updateTitle(tabRow, event.tabOpenState.title);
             this.tabView.updateTabLastAccess(tabRow, event.tabOpenState.lastAccess);
         }
     }
@@ -520,6 +515,7 @@ export class OpenedTabView {
     }
 
     async onTabFilterRequest(event: TabFilterRequested) {
-        this.tabView.filterTabs(event.filterTerms);
+        this.tabFilterApplier.setFilterTerms(event.filterTerms);
+        this.tabFilterApplier.applyFilter();
     }
 }

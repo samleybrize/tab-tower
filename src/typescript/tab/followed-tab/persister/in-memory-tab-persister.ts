@@ -65,6 +65,7 @@ export class InMemoryTabPersister implements TabPersister {
     private copyFollowState(source: TabFollowState, destination: TabFollowState) {
         destination.faviconUrl = source.faviconUrl;
         destination.id = source.id;
+        destination.position = source.position;
         destination.isIncognito = source.isIncognito;
         destination.isInReaderMode = source.isInReaderMode;
         destination.isAudioMuted = source.isAudioMuted;

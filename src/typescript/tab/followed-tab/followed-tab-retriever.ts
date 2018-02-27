@@ -1,4 +1,5 @@
 import { GetTabFollowStateByFollowId } from '../query/get-tab-follow-state-by-follow-id';
+import { GetTabFollowStateWeightList } from '../query/get-tab-follow-state-weight-list';
 import { GetTabFollowStates } from '../query/get-tab-follow-states';
 import { GetTabFollowStatesWithOpenLongLivedId } from '../query/get-tab-follow-states-with-open-long-lived-id';
 import { TabPersister } from './persister/tab-persister';
@@ -31,5 +32,9 @@ export class FollowedTabRetriever {
 
     async queryById(query: GetTabFollowStateByFollowId): Promise<TabFollowState> {
         return this.tabPersister.getByFollowId(query.followId);
+    }
+
+    async queryWeightList(query: GetTabFollowStateWeightList): Promise<number[]> {
+        return this.tabPersister.getWeightList();
     }
 }

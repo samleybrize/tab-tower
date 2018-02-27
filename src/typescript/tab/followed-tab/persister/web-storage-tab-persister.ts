@@ -1,3 +1,4 @@
+import { FollowedTabWeightCalculator } from '../followed-tab-weight-calculator';
 import { TabFollowState } from '../tab-follow-state';
 import { TabPersister } from './tab-persister';
 
@@ -14,10 +15,14 @@ export class WebStorageTabPersister implements TabPersister {
                 continue;
             }
 
-            followStateList.push(TabFollowState.fromObject(storageObject[id]));
+            followStateList.push(await this.createFollowStateFromStorageObject(storageObject[id]));
         }
 
         return followStateList;
+    }
+
+    private async createFollowStateFromStorageObject(storageObject: any) {
+        return TabFollowState.fromObject(storageObject);
     }
 
     async getByFollowId(followId: string): Promise<TabFollowState> {
@@ -25,7 +30,7 @@ export class WebStorageTabPersister implements TabPersister {
         const storageObject = await browser.storage.local.get(id);
 
         if (storageObject[id]) {
-            return TabFollowState.fromObject(storageObject[id]);
+            return this.createFollowStateFromStorageObject(storageObject[id]);
         }
 
         return null;
@@ -45,6 +50,17 @@ export class WebStorageTabPersister implements TabPersister {
         }
 
         return null;
+    }
+
+    async getWeightList(): Promise<number[]> {
+        const followStateList = await this.getAll();
+        const weightList = [];
+
+        for (const followState of followStateList) {
+            weightList.push(followState.weight);
+        }
+
+        return weightList;
     }
 
     async persist(tabFollowState: TabFollowState) {
@@ -189,6 +205,22 @@ export class WebStorageTabPersister implements TabPersister {
             this.actionStack.push(async () => {
                 const followState = await this.getByFollowId(followId);
                 followState.isAudioMuted = mutedState;
+
+                await this.persistImmediately(followState);
+                resolve();
+            });
+        });
+
+        this.startActionStackPlaying();
+
+        return promise;
+    }
+
+    async setWeight(followId: string, weight: number): Promise<void> {
+        const promise = new Promise<void>((resolve, reject) => {
+            this.actionStack.push(async () => {
+                const followState = await this.getByFollowId(followId);
+                followState.weight = weight;
 
                 await this.persistImmediately(followState);
                 resolve();

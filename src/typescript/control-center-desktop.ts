@@ -15,6 +15,7 @@ import { CloseTab } from './tab/command/close-tab';
 import { DuplicateTab } from './tab/command/duplicate-tab';
 import { FocusTab } from './tab/command/focus-tab';
 import { FollowTab } from './tab/command/follow-tab';
+import { MoveFollowedTabs } from './tab/command/move-followed-tabs';
 import { MoveOpenedTabs } from './tab/command/move-opened-tabs';
 import { MuteTab } from './tab/command/mute-tab';
 import { PinTab } from './tab/command/pin-tab';
@@ -24,6 +25,7 @@ import { tabCommands } from './tab/command/tab-commands';
 import { UnfollowTab } from './tab/command/unfollow-tab';
 import { UnmuteTab } from './tab/command/unmute-tab';
 import { UnpinTab } from './tab/command/unpin-tab';
+import { FollowedTabMoved } from './tab/event/followed-tab-moved';
 import { OpenedTabAssociatedToFollowedTab } from './tab/event/opened-tab-associated-to-followed-tab';
 import { OpenedTabAudibleStateUpdated } from './tab/event/opened-tab-audible-state-updated';
 import { OpenedTabAudioMuteStateUpdated } from './tab/event/opened-tab-audio-mute-state-updated';
@@ -144,6 +146,7 @@ async function main() {
     commandBus.register(DuplicateTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(FocusTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(FollowTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
+    commandBus.register(MoveFollowedTabs, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(MoveOpenedTabs, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(MuteTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(PinTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
@@ -158,6 +161,7 @@ async function main() {
     queryBus.register(GetTabAssociationByFollowId, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
     queryBus.register(GetTabAssociationByOpenId, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
 
+    eventBus.subscribe(FollowedTabMoved, followedTabView.onFollowedTabMove, followedTabView);
     eventBus.subscribe(TabClosed, followedTabView.onTabClose, followedTabView);
     eventBus.subscribe(TabClosed, openedTabView.onTabClose, openedTabView);
     eventBus.subscribe(TabOpened, openedTabView.onTabOpen, openedTabView);

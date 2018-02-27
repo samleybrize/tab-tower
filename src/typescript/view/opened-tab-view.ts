@@ -213,7 +213,7 @@ export class OpenedTabView {
         this.commandBus.handle(new FollowTab(upToDateTab));
     }
 
-    private async  unfollowTabAction(tabOpenState: TabOpenState, clickedElement: HTMLAnchorElement) {
+    private async unfollowTabAction(tabOpenState: TabOpenState, clickedElement: HTMLAnchorElement) {
         const row = clickedElement.closest('tr') as HTMLElement;
 
         if (this.moreMenuManipulator.isActionDisabled(row, MoreActionType.Unfollow)) {
@@ -327,12 +327,13 @@ export class OpenedTabView {
     }
 
     private insertRowAtIndex(rowToInsert: HTMLElement, insertAtIndex: number) {
-        const rowList = Array.from(this.tabView.tbodyElement.querySelectorAll('tr')).reverse();
+        const existingRowList = Array.from(this.tabView.tbodyElement.querySelectorAll('tr')).reverse();
 
-        for (const existingRow of rowList) {
-            const rowIndex = +existingRow.getAttribute('data-index');
+        for (const existingRow of existingRowList) {
+            const indexAttribute = existingRow.getAttribute('data-index');
+            const existingRowIndex = +indexAttribute;
 
-            if (null !== rowIndex && rowIndex < insertAtIndex) {
+            if (null !== indexAttribute && existingRowIndex < insertAtIndex) {
                 existingRow.insertAdjacentElement('afterend', rowToInsert);
 
                 return;

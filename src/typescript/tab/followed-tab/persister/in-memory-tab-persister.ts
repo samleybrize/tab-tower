@@ -4,6 +4,7 @@ import { TabPersister } from './tab-persister';
 export class InMemoryTabPersister implements TabPersister {
     private followStateMap = new Map<string, TabFollowState>();
     private longLivedIdAssociationMap = new Map<string, string>();
+    private weightMap = new Map<string, number>();
     private isRetrievedFromDecorated = false;
 
     constructor(private decoratedTabPersister?: TabPersister) {
@@ -26,6 +27,7 @@ export class InMemoryTabPersister implements TabPersister {
 
         for (const followState of followStateList) {
             this.followStateMap.set(followState.id, followState);
+            this.weightMap.set(followState.id, followState.weight);
             this.updateLongLivedIdAssociationMap(followState.id, null, followState.openLongLivedId);
         }
 
@@ -65,7 +67,7 @@ export class InMemoryTabPersister implements TabPersister {
     private copyFollowState(source: TabFollowState, destination: TabFollowState) {
         destination.faviconUrl = source.faviconUrl;
         destination.id = source.id;
-        destination.position = source.position;
+        destination.weight = source.weight;
         destination.isIncognito = source.isIncognito;
         destination.isInReaderMode = source.isInReaderMode;
         destination.isAudioMuted = source.isAudioMuted;
@@ -73,6 +75,10 @@ export class InMemoryTabPersister implements TabPersister {
         destination.openLastAccess = source.openLastAccess;
         destination.title = source.title;
         destination.url = source.url;
+    }
+
+    async getWeightList(): Promise<number[]> {
+        return Array.from(this.weightMap.values());
     }
 
     async persist(tabFollowState: TabFollowState) {
@@ -90,6 +96,7 @@ export class InMemoryTabPersister implements TabPersister {
 
             this.updateLongLivedIdAssociationMap(tabFollowState.id, null, tabFollowState.openLongLivedId);
             this.followStateMap.set(clonedFollowState.id, clonedFollowState);
+            this.weightMap.set(clonedFollowState.id, clonedFollowState.weight);
         }
 
         if (this.decoratedTabPersister) {
@@ -234,6 +241,25 @@ export class InMemoryTabPersister implements TabPersister {
         }
     }
 
+    async setWeight(followId: string, weight: number): Promise<void> {
+        if (!this.isRetrievedFromDecorated) {
+            await this.retrieveFromDecorated();
+        }
+
+        const existingTabFollowState = this.followStateMap.get(followId);
+
+        if (null == existingTabFollowState) {
+            return;
+        }
+
+        existingTabFollowState.weight = weight;
+        this.weightMap.set(followId, weight);
+
+        if (this.decoratedTabPersister) {
+            this.decoratedTabPersister.setWeight(followId, weight);
+        }
+    }
+
     async remove(followId: string): Promise<void> {
         if (!this.isRetrievedFromDecorated) {
             await this.retrieveFromDecorated();
@@ -247,6 +273,7 @@ export class InMemoryTabPersister implements TabPersister {
 
         this.updateLongLivedIdAssociationMap(followId, followStateToRemove.openLongLivedId, null);
         this.followStateMap.delete(followId);
+        this.weightMap.delete(followId);
 
         if (this.decoratedTabPersister) {
             this.decoratedTabPersister.remove(followId);

@@ -16,6 +16,7 @@ import { CloseTab } from './tab/command/close-tab';
 import { DuplicateTab } from './tab/command/duplicate-tab';
 import { FocusTab } from './tab/command/focus-tab';
 import { FollowTab } from './tab/command/follow-tab';
+import { MoveFollowedTabs } from './tab/command/move-followed-tabs';
 import { MoveOpenedTabs } from './tab/command/move-opened-tabs';
 import { MuteTab } from './tab/command/mute-tab';
 import { PinTab } from './tab/command/pin-tab';
@@ -25,6 +26,7 @@ import { tabCommands } from './tab/command/tab-commands';
 import { UnfollowTab } from './tab/command/unfollow-tab';
 import { UnmuteTab } from './tab/command/unmute-tab';
 import { UnpinTab } from './tab/command/unpin-tab';
+import { FollowedTabMoved } from './tab/event/followed-tab-moved';
 import { OpenedTabAssociatedToFollowedTab } from './tab/event/opened-tab-associated-to-followed-tab';
 import { OpenedTabAudibleStateUpdated } from './tab/event/opened-tab-audible-state-updated';
 import { OpenedTabAudioMuteStateUpdated } from './tab/event/opened-tab-audio-mute-state-updated';
@@ -41,8 +43,10 @@ import { tabEvents } from './tab/event/tab-events';
 import { TabFollowed } from './tab/event/tab-followed';
 import { TabOpened } from './tab/event/tab-opened';
 import { TabUnfollowed } from './tab/event/tab-unfollowed';
+import { FollowedTabMover } from './tab/followed-tab/followed-tab-mover';
 import { FollowedTabRetriever } from './tab/followed-tab/followed-tab-retriever';
 import { FollowedTabUpdater } from './tab/followed-tab/followed-tab-updater';
+import { FollowedTabWeightCalculator } from './tab/followed-tab/followed-tab-weight-calculator';
 import { InMemoryTabPersister } from './tab/followed-tab/persister/in-memory-tab-persister';
 import { WebStorageTabPersister } from './tab/followed-tab/persister/web-storage-tab-persister';
 import { TabFollower } from './tab/followed-tab/tab-follower';
@@ -63,6 +67,7 @@ import { GetTabAssociationByOpenId } from './tab/query/get-tab-association-by-op
 import { GetTabAssociationsWithFollowState } from './tab/query/get-tab-associations-with-follow-state';
 import { GetTabAssociationsWithOpenState } from './tab/query/get-tab-associations-with-open-state';
 import { GetTabFollowStateByFollowId } from './tab/query/get-tab-follow-state-by-follow-id';
+import { GetTabFollowStateWeightList } from './tab/query/get-tab-follow-state-weight-list';
 import { GetTabFollowStates } from './tab/query/get-tab-follow-states';
 import { GetTabFollowStatesWithOpenLongLivedId } from './tab/query/get-tab-follow-states-with-open-long-lived-id';
 import { GetTabOpenStateByOpenId } from './tab/query/get-tab-open-state-by-open-id';
@@ -86,9 +91,10 @@ async function main() {
     const eventBus = new EventBus();
     const queryBus = new QueryBus();
 
+    const followedTabWeightCalculator = new FollowedTabWeightCalculator();
     const webStorageTabPersister = new WebStorageTabPersister();
     const inMemoryTabPersister = new InMemoryTabPersister(webStorageTabPersister);
-    const tabFollower = new TabFollower(inMemoryTabPersister, commandBus, eventBus);
+    const tabFollower = new TabFollower(inMemoryTabPersister, followedTabWeightCalculator, commandBus, eventBus, queryBus);
     const tabUnfollower = new TabUnfollower(inMemoryTabPersister, eventBus);
     const followedTabUpdater = new FollowedTabUpdater(inMemoryTabPersister, commandBus, queryBus);
     const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
@@ -107,6 +113,7 @@ async function main() {
     const tabAssociationMaintainer = new TabAssociationMaintainer(eventBus, queryBus);
     const tabAssociationRetriever = new TabAssociationRetriever(queryBus);
 
+    const followedTabMover = new FollowedTabMover(inMemoryTabPersister, followedTabWeightCalculator, eventBus);
     const openedTabMover = new OpenedTabMover();
     const tabCloser = new TabCloser();
     const tabDuplicator = new TabDuplicator();
@@ -143,6 +150,7 @@ async function main() {
         commandBus.register(DuplicateTab, tabDuplicator.duplicateTab, tabDuplicator);
         commandBus.register(FocusTab, tabFocuser.focusTab, tabFocuser);
         commandBus.register(FollowTab, tabFollower.followTab, tabFollower);
+        commandBus.register(MoveFollowedTabs, followedTabMover.moveFollowedTabs, followedTabMover);
         commandBus.register(MoveOpenedTabs, openedTabMover.moveOpenedTabs, openedTabMover);
         commandBus.register(MuteTab, tabMuter.muteTab, tabMuter);
         commandBus.register(PinTab, tabPinner.pinTab, tabPinner);
@@ -163,6 +171,7 @@ async function main() {
         queryBus.register(GetTabAssociationByFollowId, tabAssociationRetriever.queryByFollowId, tabAssociationRetriever);
         queryBus.register(GetTabAssociationByOpenId, tabAssociationRetriever.queryByOpenId, tabAssociationRetriever);
         queryBus.register(GetTabFollowStateByFollowId, followedTabRetriever.queryById, followedTabRetriever);
+        queryBus.register(GetTabFollowStateWeightList, followedTabRetriever.queryWeightList, followedTabRetriever);
         queryBus.register(GetTabFollowStates, followedTabRetriever.queryAll, followedTabRetriever);
         queryBus.register(GetTabFollowStatesWithOpenLongLivedId, followedTabRetriever.queryAllWithOpenLongLivedId, followedTabRetriever);
         queryBus.register(GetTabOpenStateByOpenId, openedTabRetriever.queryById, openedTabRetriever);
@@ -170,6 +179,7 @@ async function main() {
     }
 
     function initEventBus() {
+        eventBus.subscribe(FollowedTabMoved, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(TabClosed, nativeRecentlyClosedTabAssociationMaintainer.onTabClose, nativeRecentlyClosedTabAssociationMaintainer);
         eventBus.subscribe(TabClosed, openedTabRetriever.onTabClose, openedTabRetriever);
         eventBus.subscribe(TabClosed, sendMessageEventHandler.onEvent, sendMessageEventHandler);

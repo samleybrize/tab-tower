@@ -1,3 +1,4 @@
+import { FollowedTabMoved } from './followed-tab-moved';
 import { OpenedTabAssociatedToFollowedTab } from './opened-tab-associated-to-followed-tab';
 import { OpenedTabAudibleStateUpdated } from './opened-tab-audible-state-updated';
 import { OpenedTabAudioMuteStateUpdated } from './opened-tab-audio-mute-state-updated';
@@ -18,6 +19,7 @@ import { TabOpened } from './tab-opened';
 import { TabUnfollowed } from './tab-unfollowed';
 
 export const tabEvents = [
+    FollowedTabMoved,
     OpenedTabAssociatedToFollowedTab,
     OpenedTabAudibleStateUpdated,
     OpenedTabAudioMuteStateUpdated,

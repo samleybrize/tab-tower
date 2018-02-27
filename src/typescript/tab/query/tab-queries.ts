@@ -7,6 +7,7 @@ import { GetTabAssociationByOpenId } from './get-tab-association-by-open-id';
 import { GetTabAssociationsWithFollowState } from './get-tab-associations-with-follow-state';
 import { GetTabAssociationsWithOpenState } from './get-tab-associations-with-open-state';
 import { GetTabFollowStateByFollowId } from './get-tab-follow-state-by-follow-id';
+import { GetTabFollowStateWeightList } from './get-tab-follow-state-weight-list';
 import { GetTabFollowStates } from './get-tab-follow-states';
 import { GetTabFollowStatesWithOpenLongLivedId } from './get-tab-follow-states-with-open-long-lived-id';
 import { GetTabOpenStateByOpenId } from './get-tab-open-state-by-open-id';
@@ -22,6 +23,7 @@ export const tabQueries = [
     GetTabAssociationByFollowId,
     GetTabAssociationByOpenId,
     GetTabFollowStateByFollowId,
+    GetTabFollowStateWeightList,
     GetTabFollowStates,
     GetTabFollowStatesWithOpenLongLivedId,
     GetTabOpenStateByOpenId,

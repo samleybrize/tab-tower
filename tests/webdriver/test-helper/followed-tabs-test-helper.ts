@@ -224,6 +224,27 @@ export class FollowedTabsTestHelper {
         await this.tabsTestHelper.clickOnSelectionTabDuplicateButton(headerRow);
     }
 
+    async clickOnTabMoveButton(tabRow: WebElement) {
+        await this.tabsTestHelper.clickOnTabMoveButton(tabRow);
+    }
+
+    async clickOnSelectionTabMoveButton() {
+        const headerRow = this.getHeaderRow();
+        await this.tabsTestHelper.clickOnSelectionTabMoveButton(headerRow);
+    }
+
+    async clickOnTabMoveBelowButton(tabRow: WebElement) {
+        await this.tabsTestHelper.clickOnTabMoveBelowButton(tabRow);
+    }
+
+    async clickOnMoveAboveOthersButton() {
+        await this.tabsTestHelper.clickOnMoveAboveOthersButton(this.getContainerElement());
+    }
+
+    async clickOnTabMoveCancelButton() {
+        await this.tabsTestHelper.clickOnTabMoveCancelButton(this.getContainerElement());
+    }
+
     async clickOnTabSelector(tabRow: WebElement) {
         await this.tabsTestHelper.clickOnTabSelector(tabRow);
     }
@@ -360,6 +381,10 @@ export class FollowedTabsTestHelper {
 
     async assertTabRowIsNotVisible(tabRow: WebElement) {
         await this.tabsTestHelper.assertTabRowIsNotVisible(tabRow);
+    }
+
+    async assertNoTabIndicatorIsVisible() {
+        await this.tabsTestHelper.assertNoTabIndicatorIsVisible(this.getContainerElement());
     }
 
     async assertTabReaderModeIndicatorIsOn(tabRow: WebElement) {
@@ -519,6 +544,10 @@ export class FollowedTabsTestHelper {
         await this.tabsTestHelper.assertNoTooltipVisible(containerElement);
     }
 
+    async assertNoTabSelectorIsVisible() {
+        await this.tabsTestHelper.assertNoTabSelectorIsVisible(this.getContainerElement());
+    }
+
     async assertTabSelectorIsChecked(tabRow: WebElement) {
         await this.tabsTestHelper.assertTabSelectorIsChecked(tabRow);
     }
@@ -535,11 +564,31 @@ export class FollowedTabsTestHelper {
         await this.tabsTestHelper.assertGeneralTabSelectorIsNotChecked(this.getContainerElement());
     }
 
+    async assertNoTabMoreButtonIsVisible() {
+        await this.tabsTestHelper.assertNoTabMoreButtonIsVisible(this.getContainerElement());
+    }
+
     async assertSelectionTabMoreButtonIsVisible() {
         await this.tabsTestHelper.assertSelectionTabMoreButtonIsVisible(this.getContainerElement());
     }
 
     async assertSelectionTabMoreButtonIsNotVisible() {
         await this.tabsTestHelper.assertSelectionTabMoreButtonIsNotVisible(this.getContainerElement());
+    }
+
+    async assertTabMoveBelowButtonIsVisible(tabRow: WebElement) {
+        await this.tabsTestHelper.assertTabMoveBelowButtonIsVisible(tabRow);
+    }
+
+    async assertMoveAboveOthersButtonIsVisible() {
+        await this.tabsTestHelper.assertMoveAboveOthersButtonIsVisible(this.getContainerElement());
+    }
+
+    async assertTabIsBeingMoved(tabRow: WebElement) {
+        await this.tabsTestHelper.assertTabIsBeingMoved(tabRow);
+    }
+
+    async assertTabIsNotBeingMoved(tabRow: WebElement) {
+        await this.tabsTestHelper.assertTabIsNotBeingMoved(tabRow);
     }
 }

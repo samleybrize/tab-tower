@@ -3,7 +3,6 @@ import { MoveFollowedTabs } from '../command/move-followed-tabs';
 import { FollowedTabMoved } from '../event/followed-tab-moved';
 import { FollowedTabWeightCalculator } from './followed-tab-weight-calculator';
 import { TabPersister } from './persister/tab-persister';
-import { TabFollowState } from './tab-follow-state';
 
 export class FollowedTabMover {
     constructor(

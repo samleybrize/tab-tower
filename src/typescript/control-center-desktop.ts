@@ -92,7 +92,6 @@ async function main() {
             moreMenuManipulator,
             tabFilterApplier,
             tabMoveAction,
-            tabSelectorManipulator,
             tabTitleManipulator,
         );
     })();
@@ -115,7 +114,6 @@ async function main() {
             moreMenuManipulator,
             tabFilterApplier,
             tabMoveAction,
-            tabSelectorManipulator,
             tabTitleManipulator,
         );
     })();

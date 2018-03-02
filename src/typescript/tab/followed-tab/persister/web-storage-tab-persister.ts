@@ -1,4 +1,3 @@
-import { FollowedTabWeightCalculator } from '../followed-tab-weight-calculator';
 import { TabFollowState } from '../tab-follow-state';
 import { TabPersister } from './tab-persister';
 

@@ -34,7 +34,6 @@ import { IndicatorManipulator, IndicatorType } from './component/indicator-manip
 import { MoreActionType, MoreMenu, MoreMenuManipulator } from './component/more-menu-manipulator';
 import { TabFilterApplier } from './component/tab-filter-applier';
 import { MoveAboveOthersClickCallback, MoveBelowClickCallback, TabMoveAction } from './component/tab-move-action';
-import { TabSelectorManipulator } from './component/tab-selector-manipulator';
 import { TabTitleClickCallback, TabTitleManipulator } from './component/tab-title-manipulator';
 import { TabCounter } from './tab-counter';
 import { TabView } from './tab-view';
@@ -49,7 +48,6 @@ export class OpenedTabView {
         private moreMenuManipulator: MoreMenuManipulator,
         private tabFilterApplier: TabFilterApplier,
         private tabMoveAction: TabMoveAction,
-        private tabSelectorManipulator: TabSelectorManipulator,
         private tabTitleManipulator: TabTitleManipulator,
     ) {
     }

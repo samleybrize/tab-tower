@@ -96,8 +96,8 @@ describe('Audible tabs', () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
             await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
             await testHelper.focusTab(1);
             await testHelper.focusTab(0);
@@ -119,8 +119,8 @@ describe('Audible tabs', () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
             await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
             await testHelper.focusTab(1);
             await testHelper.focusTab(0);
@@ -138,8 +138,8 @@ describe('Audible tabs', () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
             await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
             await testHelper.focusTab(1);
             await testHelper.focusTab(0);
@@ -158,8 +158,8 @@ describe('Audible tabs', () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
             await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
             await testHelper.focusTab(1);
             await testHelper.focusTab(0);
@@ -177,8 +177,8 @@ describe('Audible tabs', () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
             await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
             await testHelper.focusTab(1);
             await testHelper.focusTab(0);
@@ -213,8 +213,8 @@ describe('Audible tabs', () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
             await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
             await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
 
             await testHelper.restoreRecentlyClosedTab(0);

@@ -67,7 +67,7 @@ export class FollowedTabsTestHelper {
         await titleElement.click();
 
         await this.driver.wait(async () => {
-            if (null !== tabId) {
+            if ('' !== tabId) {
                 return +tabId === (await this.browserInstructionSender.getActiveTab()).id;
             } else {
                 return await this.tabsTestHelper.hasClass(openIndicator, 'on');
@@ -80,7 +80,7 @@ export class FollowedTabsTestHelper {
         const tabId = await this.getWebElementAttribute(tabRow, 'data-opened-tab-id');
         let url: string;
 
-        if (null === tabId) {
+        if ('' === tabId) {
             url = await this.getWebElementAttribute(tabRow.findElement(By.css('.title')), 'data-url');
         }
 
@@ -92,7 +92,7 @@ export class FollowedTabsTestHelper {
         ]);
         await sleep(200);
 
-        if (null !== tabId) {
+        if ('' !== tabId) {
             await this.driver.wait(async () => {
                 return +tabId === (await this.browserInstructionSender.getActiveTab()).id;
             }, 10000);

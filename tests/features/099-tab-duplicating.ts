@@ -272,7 +272,7 @@ describe('Tab duplicating', () => {
 
             await testHelper.showFollowedTabsList();
             const newFollowedTabRowList = await followedTabsHelper.getTabRowList();
-            await openedTabsHelper.assertTabReaderModeIndicatorIsOn(newFollowedTabRowList[1]);
+            await openedTabsHelper.assertTabReaderModeIndicatorIsOn(newFollowedTabRowList[0]);
         });
 
         it('Duplicating a tab with reader mode disabled from the browser should open a new tab with reader mode disabled', async () => {
@@ -324,7 +324,7 @@ describe('Tab duplicating', () => {
 
             await testHelper.showFollowedTabsList();
             const newFollowedTabRowList = await followedTabsHelper.getTabRowList();
-            await openedTabsHelper.assertTabReaderModeIndicatorIsOff(newFollowedTabRowList[1]);
+            await openedTabsHelper.assertTabReaderModeIndicatorIsOff(newFollowedTabRowList[0]);
         });
     });
 
@@ -382,7 +382,7 @@ describe('Tab duplicating', () => {
 
             await testHelper.showFollowedTabsList();
             const newFollowedTabRowList = await followedTabsHelper.getTabRowList();
-            await openedTabsHelper.assertTabPinIndicatorIsOn(newFollowedTabRowList[1]);
+            await openedTabsHelper.assertTabPinIndicatorIsOn(newFollowedTabRowList[0]);
         });
 
         it('Duplicating an unpinned tab from the browser should open a new unpinned tab', async () => {
@@ -434,7 +434,7 @@ describe('Tab duplicating', () => {
 
             await testHelper.showFollowedTabsList();
             const newFollowedTabRowList = await followedTabsHelper.getTabRowList();
-            await openedTabsHelper.assertTabPinIndicatorIsOff(newFollowedTabRowList[1]);
+            await openedTabsHelper.assertTabPinIndicatorIsOff(newFollowedTabRowList[0]);
         });
     });
 
@@ -488,7 +488,7 @@ describe('Tab duplicating', () => {
 
             await testHelper.showFollowedTabsList();
             const newFollowedTabRowList = await followedTabsHelper.getTabRowList();
-            await openedTabsHelper.assertTabAudibleIndicatorIsOn(newFollowedTabRowList[1]);
+            await openedTabsHelper.assertTabAudibleIndicatorIsOn(newFollowedTabRowList[0]);
         });
 
         it('Duplicating an inaudible tab from the browser should open a new inaudible tab', async () => {
@@ -540,7 +540,7 @@ describe('Tab duplicating', () => {
 
             await testHelper.showFollowedTabsList();
             const newFollowedTabRowList = await followedTabsHelper.getTabRowList();
-            await openedTabsHelper.assertTabAudibleIndicatorIsOff(newFollowedTabRowList[1]);
+            await openedTabsHelper.assertTabAudibleIndicatorIsOff(newFollowedTabRowList[0]);
         });
     });
 
@@ -598,7 +598,7 @@ describe('Tab duplicating', () => {
 
             await testHelper.showFollowedTabsList();
             const newFollowedTabRowList = await followedTabsHelper.getTabRowList();
-            await openedTabsHelper.assertTabMuteIndicatorIsOn(newFollowedTabRowList[1]);
+            await openedTabsHelper.assertTabMuteIndicatorIsOn(newFollowedTabRowList[0]);
         });
 
         it('Duplicating an unmuted tab from the browser should open a new unmuted tab', async () => {
@@ -650,7 +650,7 @@ describe('Tab duplicating', () => {
 
             await testHelper.showFollowedTabsList();
             const newFollowedTabRowList = await followedTabsHelper.getTabRowList();
-            await openedTabsHelper.assertTabMuteIndicatorIsOff(newFollowedTabRowList[1]);
+            await openedTabsHelper.assertTabMuteIndicatorIsOff(newFollowedTabRowList[0]);
         });
     });
 
@@ -678,8 +678,8 @@ describe('Tab duplicating', () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
             await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
             await testHelper.showFollowedTabsList();
             const followedTabRowList = await followedTabsHelper.getTabRowList();
@@ -702,8 +702,8 @@ describe('Tab duplicating', () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
-            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
             await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
             await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[2]);
 
             await testHelper.showFollowedTabsList();

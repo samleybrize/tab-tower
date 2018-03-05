@@ -138,8 +138,8 @@ describe('Tab following', () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
         await testHelper.showFollowedTabsList();
         const followedTabRowList = await followedTabsHelper.getTabRowList();
@@ -213,8 +213,8 @@ describe('Tab following', () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
         await testHelper.closeTab(1);
         await testHelper.clearRecentlyClosedTabs();
@@ -230,8 +230,8 @@ describe('Tab following', () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
         await testHelper.closeTab(1);
 
@@ -249,8 +249,8 @@ describe('Tab following', () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
         await testHelper.showFollowedTabsList();
         const followedTabRowList = await followedTabsHelper.getTabRowList();
@@ -299,8 +299,8 @@ describe('Tab following', () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
         await testHelper.clearRecentlyClosedTabs();
 
@@ -339,8 +339,8 @@ describe('Tab following', () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[3]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
 
         await testHelper.showFollowedTabsList();
         const followedTabRowList = await followedTabsHelper.getTabRowList();
@@ -357,8 +357,8 @@ describe('Tab following', () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[3]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
 
         await testHelper.moveTab(2, 1);
 
@@ -377,8 +377,8 @@ describe('Tab following', () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1), 3);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[0]);
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[3]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[0]);
 
         await testHelper.changeTabUrl(1, firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP));
         await testHelper.moveTab(1, 0);
@@ -398,8 +398,8 @@ describe('Tab following', () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1), 3);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[0]);
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[3]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[0]);
 
         await testHelper.changeTabUrl(1, firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP));
         await testHelper.moveTab(1, 0);
@@ -423,8 +423,8 @@ describe('Tab following', () => {
         await testHelper.openTab(testPage2Url);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
 
         await testHelper.switchToWindowHandle(1);
         await driver.get('about:config');
@@ -462,9 +462,9 @@ describe('Tab following', () => {
         await testHelper.clearRecentlyClosedTabs();
 
         const followedTabRowList = await followedTabsHelper.getTabRowList();
-        await followedTabsHelper.assertTabTitle(followedTabRowList[1], 'Test page 2');
-        await followedTabsHelper.assertTabUrl(followedTabRowList[1], testPage2Url);
-        await followedTabsHelper.assertTabFaviconUrl(followedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_2));
+        await followedTabsHelper.assertTabTitle(followedTabRowList[0], 'Test page 2');
+        await followedTabsHelper.assertTabUrl(followedTabRowList[0], testPage2Url);
+        await followedTabsHelper.assertTabFaviconUrl(followedTabRowList[0], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_2));
     });
 
     it('A duplicated tab should never be followed', async () => {
@@ -493,9 +493,9 @@ describe('Tab following', () => {
         await testHelper.openTab(testPage2Url);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[3]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[2]);
 
@@ -530,9 +530,9 @@ describe('Tab following', () => {
         await testHelper.openTab(testPage2Url);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[3]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
         await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[2]);
 
@@ -578,8 +578,8 @@ describe('Tab following', () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
         const openedTabsRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnTabFollowButton(openedTabsRowList[2]);
         await openedTabsHelper.clickOnTabFollowButton(openedTabsRowList[1]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabsRowList[2]);
 
         await testHelper.reloadExtension();
         await testHelper.openIgnoredTab(firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP), 0);
@@ -614,14 +614,14 @@ describe('Tab following', () => {
         await testHelper.openTab(testPage1Url);
 
         const openedTabRowList = await openedTabsHelper.getTabRowList();
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[3]);
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[4]);
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[5]);
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[6]);
-        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[7]);
         await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[8]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[7]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[6]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[5]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[4]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[3]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
 
         await testHelper.showFollowedTabsList();
         const followedTabRowList = await followedTabsHelper.getTabRowList();

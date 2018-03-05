@@ -76,7 +76,7 @@ describe('Tab moving', () => {
             await openedTabsHelper.assertTabIsBeingMoved(openedTabRowList[3]);
         });
 
-        it('A click on "move below" should move the tab row below the clicked row', async () => {
+        it('A click on "move below" should move the tab row below the clicked row when the former is lower than the latter', async () => {
             const openedTabRowList = await openedTabsHelper.getTabRowList();
             await openedTabsHelper.clickOnTabMoveButton(openedTabRowList[3]);
             await openedTabsHelper.clickOnTabMoveBelowButton(openedTabRowList[1]);
@@ -86,6 +86,18 @@ describe('Tab moving', () => {
             await openedTabsHelper.assertTabUrl(newOpenedTabRowList[1], testPage1Url);
             await openedTabsHelper.assertTabUrl(newOpenedTabRowList[2], testFilter1Url);
             await openedTabsHelper.assertTabUrl(newOpenedTabRowList[3], testPage2Url);
+        });
+
+        it('A click on "move below" should move the tab row below the clicked row when the former is higher than the latter', async () => {
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabMoveButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabMoveBelowButton(openedTabRowList[2]);
+
+            const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabUrl(newOpenedTabRowList[0], controlCenterDesktopUrl);
+            await openedTabsHelper.assertTabUrl(newOpenedTabRowList[1], testPage2Url);
+            await openedTabsHelper.assertTabUrl(newOpenedTabRowList[2], testPage1Url);
+            await openedTabsHelper.assertTabUrl(newOpenedTabRowList[3], testFilter1Url);
         });
 
         it('A click on "move below" should move the tab to the right of the one associated to the clicked row', async () => {
@@ -163,6 +175,32 @@ describe('Tab moving', () => {
             await openedTabsHelper.assertTabUrl(newOpenedTabRowList[1], testPage2Url);
             await openedTabsHelper.assertTabUrl(newOpenedTabRowList[2], testFilter1Url);
             await openedTabsHelper.assertTabUrl(newOpenedTabRowList[3], testPage1Url);
+        });
+
+        it('A click on "move below" should move selected tab rows below the clicked row when they are higher than the clicked row', async () => {
+            const testFilter2Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_FILTER_WITH_SOME_TEXT);
+            const testFilter3Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_FILTER_WITH_OTHER_TEXT);
+            const testPage3Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITHOUT_FAVICON);
+            await testHelper.openTab(testFilter2Url);
+            await testHelper.openTab(testFilter3Url);
+            await testHelper.openTab(testPage3Url);
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[5]);
+
+            await openedTabsHelper.clickOnSelectionTabMoveButton();
+            await openedTabsHelper.clickOnTabMoveBelowButton(openedTabRowList[3]);
+
+            const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabUrl(newOpenedTabRowList[0], controlCenterDesktopUrl);
+            await openedTabsHelper.assertTabUrl(newOpenedTabRowList[1], testFilter1Url);
+            await openedTabsHelper.assertTabUrl(newOpenedTabRowList[2], testPage1Url);
+            await openedTabsHelper.assertTabUrl(newOpenedTabRowList[3], testPage2Url);
+            await openedTabsHelper.assertTabUrl(newOpenedTabRowList[4], testFilter3Url);
+            await openedTabsHelper.assertTabUrl(newOpenedTabRowList[5], testFilter2Url);
+            await openedTabsHelper.assertTabUrl(newOpenedTabRowList[6], testPage3Url);
         });
 
         it('A click on "move below" should move selected tabs to the right of the one associated to the clicked row and keep their order', async () => {
@@ -253,6 +291,19 @@ describe('Tab moving', () => {
             const activeTab = await browserInstructionSender.getActiveTab();
             assert.equal(activeTab.index, 2);
         });
+
+        it('Move mode should not be impacted when an opened tab is moved from the browser', async () => {
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabMoveButton(openedTabRowList[3]);
+
+            await testHelper.moveTab(3, 1);
+
+            const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabMoveBelowButton(newOpenedTabRowList[2]);
+
+            const newOpenedTabRowList2 = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabUrl(newOpenedTabRowList2[2], testFilter1Url);
+        });
     });
 
     describe('Tab following', () => {
@@ -309,7 +360,7 @@ describe('Tab moving', () => {
             await followedTabsHelper.assertTabIsBeingMoved(followedTabRowList[3]);
         });
 
-        it('A click on "move below" should move the tab row below the clicked row', async () => {
+        it('A click on "move below" should move the tab row below the clicked row when the former is lower than the latter', async () => {
             const followedTabRowList = await followedTabsHelper.getTabRowList();
             await followedTabsHelper.clickOnTabMoveButton(followedTabRowList[3]);
             await followedTabsHelper.clickOnTabMoveBelowButton(followedTabRowList[1]);
@@ -319,6 +370,18 @@ describe('Tab moving', () => {
             await followedTabsHelper.assertTabUrl(newFollowedTabRowList[1], testPage2Url);
             await followedTabsHelper.assertTabUrl(newFollowedTabRowList[2], testFilter2Url);
             await followedTabsHelper.assertTabUrl(newFollowedTabRowList[3], testFilter1Url);
+        });
+
+        it('A click on "move below" should move the tab row below the clicked row when the former is higher than the latter', async () => {
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabMoveButton(followedTabRowList[1]);
+            await followedTabsHelper.clickOnTabMoveBelowButton(followedTabRowList[2]);
+
+            const newFollowedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertTabUrl(newFollowedTabRowList[0], testPage1Url);
+            await followedTabsHelper.assertTabUrl(newFollowedTabRowList[1], testFilter1Url);
+            await followedTabsHelper.assertTabUrl(newFollowedTabRowList[2], testPage2Url);
+            await followedTabsHelper.assertTabUrl(newFollowedTabRowList[3], testFilter2Url);
         });
 
         it('A click on "move above others" should move the tab row at the first position', async () => {
@@ -372,6 +435,39 @@ describe('Tab moving', () => {
             await followedTabsHelper.assertTabUrl(newFollowedTabRowList[1], testFilter1Url);
             await followedTabsHelper.assertTabUrl(newFollowedTabRowList[2], testFilter2Url);
             await followedTabsHelper.assertTabUrl(newFollowedTabRowList[3], testPage2Url);
+        });
+
+        it('A click on "move below" should move selected tab rows below the clicked row when they are higher than the clicked row', async () => {
+            const testFilter3Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_FILTER_WITH_OTHER_TEXT);
+            const testPage3Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITHOUT_FAVICON);
+            const testPage4Url = firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_WITH_NOT_FOUND_FAVICON);
+            await testHelper.openTab(testFilter3Url);
+            await testHelper.openTab(testPage3Url);
+            await testHelper.openTab(testPage4Url);
+
+            await testHelper.showOpenedTabsList();
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[7]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[6]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[5]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[1]);
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[2]);
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[5]);
+
+            await followedTabsHelper.clickOnSelectionTabMoveButton();
+            await followedTabsHelper.clickOnTabMoveBelowButton(followedTabRowList[3]);
+
+            const newFollowedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertTabUrl(newFollowedTabRowList[0], testFilter3Url);
+            await followedTabsHelper.assertTabUrl(newFollowedTabRowList[1], testPage1Url);
+            await followedTabsHelper.assertTabUrl(newFollowedTabRowList[2], testPage3Url);
+            await followedTabsHelper.assertTabUrl(newFollowedTabRowList[3], testPage4Url);
+            await followedTabsHelper.assertTabUrl(newFollowedTabRowList[4], testFilter1Url);
+            await followedTabsHelper.assertTabUrl(newFollowedTabRowList[5], testPage2Url);
+            await followedTabsHelper.assertTabUrl(newFollowedTabRowList[6], testFilter2Url);
         });
 
         it('A click on the "move above others" should move selected tab rows at the first position', async () => {

@@ -117,6 +117,7 @@ export class OpenedTabView {
         const moveBelowCallback: MoveBelowClickCallback = (clickedButton) => {
             const targetRow = clickedButton.closest('tr');
             const targetRowIndex = +targetRow.getAttribute('data-index');
+
             const isTargetRowBeingMoved = targetRow.classList.contains('beingMoved');
             const targetIndex = isTargetRowBeingMoved ? targetRowIndex : targetRowIndex + 1;
             const tabIdList = this.getTabIdListToMove();
@@ -173,7 +174,7 @@ export class OpenedTabView {
         moreMenu[MoreActionType.Unpin] = this.tabView.triggerTabActionOnSelectedRows.bind(this.tabView, MoreActionType.Unpin);
         moreMenu[MoreActionType.Mute] = this.tabView.triggerTabActionOnSelectedRows.bind(this.tabView, MoreActionType.Mute);
         moreMenu[MoreActionType.Unmute] = this.tabView.triggerTabActionOnSelectedRows.bind(this.tabView, MoreActionType.Unmute);
-        moreMenu[MoreActionType.Move] = this.tabView.moveSelectedTabsAction.bind(this);
+        moreMenu[MoreActionType.Move] = this.tabView.moveSelectedTabsAction.bind(this.tabView);
         moreMenu[MoreActionType.Duplicate] = this.tabView.triggerTabActionOnSelectedRows.bind(this.tabView, MoreActionType.Duplicate);
         moreMenu[MoreActionType.Reload] = this.tabView.triggerTabActionOnSelectedRows.bind(this.tabView, MoreActionType.Reload);
         moreMenu[MoreActionType.Separator] = null;

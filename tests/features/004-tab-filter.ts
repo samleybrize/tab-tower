@@ -92,6 +92,18 @@ describe('Tab filter', () => {
             await openedTabsHelper.assertNoTabRowIsNotVisible();
         });
 
+        it('Should filter opened tabs by url with protocol ignored', async () => {
+            await tabFilterHelper.sendTextToInput('moz-extension');
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[0]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[1]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[2]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[3]);
+            await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[4]);
+            await openedTabsHelper.assertNoTabRowIsVisible();
+        });
+
         it('Should show the no tab row in opened tabs list when the filter do not match any tab', async () => {
             await tabFilterHelper.sendTextToInput('unknown');
 
@@ -199,6 +211,16 @@ describe('Tab filter', () => {
             await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[1]);
             await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[2]);
             await followedTabsHelper.assertNoTabRowIsNotVisible();
+        });
+
+        it('Should filter followed tabs by url with protocol ignored', async () => {
+            await tabFilterHelper.sendTextToInput('moz-extension');
+
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[0]);
+            await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[1]);
+            await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[2]);
+            await followedTabsHelper.assertNoTabRowIsVisible();
         });
 
         it('Should show the no tab row in followed tabs list when the filter do not match any tab', async () => {

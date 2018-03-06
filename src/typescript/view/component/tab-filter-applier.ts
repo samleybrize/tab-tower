@@ -54,11 +54,12 @@ export class TabFilterApplier {
     }
 
     private getTextsToMatch(filtrableElement: HTMLElement) {
-        const matchableElementList = Array.from(filtrableElement.querySelectorAll('.filterMatchable'));
+        const matchableElementList = Array.from(filtrableElement.querySelectorAll('[data-filter-matchable-text]'));
         const matchableTexts: string[] = [];
 
         for (const matchableElement of matchableElementList) {
-            matchableTexts.push(matchableElement.textContent.toLowerCase().trim());
+            const filterMatchableText = matchableElement.getAttribute('data-filter-matchable-text');
+            matchableTexts.push(filterMatchableText.toLowerCase().trim());
         }
 
         return matchableTexts;

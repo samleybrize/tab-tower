@@ -11,8 +11,8 @@ export class TabTitleManipulator {
         linkElement.classList.add('title');
         linkElement.innerHTML = `
             <img />
-            <span class="filterMatchable"></span>
-            <em class="filterMatchable"></em>
+            <span></span>
+            <em></em>
         `;
         linkElement.addEventListener('click', () => clickCallback(linkElement));
 
@@ -30,7 +30,9 @@ export class TabTitleManipulator {
     }
 
     updateTitle(row: HTMLElement, title: string) {
-        row.querySelector('.title span').textContent = title;
+        const titleTextElement = row.querySelector('.title span');
+        titleTextElement.textContent = title;
+        titleTextElement.setAttribute('data-filter-matchable-text', title);
     }
 
     updateTitleTooltip(row: HTMLElement, tooltipText: string) {
@@ -41,7 +43,18 @@ export class TabTitleManipulator {
 
     updateUrl(row: HTMLElement, url: string) {
         row.querySelector('.title').setAttribute('data-url', '' + url);
-        row.querySelector('.title em').textContent = url;
+
+        const urlElement = row.querySelector('.title em');
+        urlElement.textContent = url;
+
+        const matchableUrl = this.getMatchableUrl(url);
+        urlElement.setAttribute('data-filter-matchable-text', matchableUrl);
+    }
+
+    private getMatchableUrl(fullUrl: string) {
+        const url = new URL(fullUrl);
+
+        return `${url.hostname}${url.pathname}${url.search}${url.hash}`;
     }
 
     updateFavicon(row: HTMLElement, faviconUrl: string) {

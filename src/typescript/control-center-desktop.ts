@@ -189,10 +189,14 @@ async function main() {
     eventBus.subscribe(TabUnfollowed, followedTabView.onTabUnfollow, followedTabView);
     eventBus.subscribe(TabUnfollowed, openedTabView.onTabUnfollow, openedTabView);
 
+    // TODO wait that the background is ready
     headerView.init();
-    followedTabView.init();
-    openedTabView.init();
+    await Promise.all([
+        followedTabView.init(),
+        openedTabView.init(),
+    ]);
     tabSearchView.init();
+    document.querySelector('#loading').classList.add('transparent');
 }
 
 main();

@@ -99,7 +99,7 @@ async function main() {
     const followedTabUpdater = new FollowedTabUpdater(inMemoryTabPersister, commandBus, queryBus);
     const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
 
-    const controlCenterDesktopUrlStartWith = `moz-extension://${location.host}/ui/control-center-desktop.html`;
+    const controlCenterDesktopUrlStartWith = browser.extension.getURL('/ui/control-center-desktop.html');
     const privilegedUrlDetector = new PrivilegedUrlDetector();
     const openedTabRetriever = new OpenedTabRetriever(privilegedUrlDetector, [controlCenterDesktopUrlStartWith]);
     const closedTabRetriever = new ClosedTabRetriever(queryBus);
@@ -222,14 +222,14 @@ async function main() {
 
     async function initTabHandling() {
         await openedTabRetriever.init();
-        closedTabRetriever.init();
+        await closedTabRetriever.init();
         await nativeRecentlyClosedTabAssociationMaintainer.init();
         nativeEventHandler.init();
         await tabAssociationMaintainer.associateOpenedTabsWithFollowedTabs();
     }
 
     async function initBrowserAction() {
-        const controlCenterDesktopUrl = `moz-extension://${location.host}/ui/control-center-desktop.html`;
+        const controlCenterDesktopUrl = browser.extension.getURL('/ui/control-center-desktop.html');
         browser.browserAction.onClicked.addListener(async () => {
             const uiTabs = await browser.tabs.query({url: controlCenterDesktopUrl});
 

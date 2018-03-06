@@ -56,10 +56,13 @@ export class TabFilterView {
         });
         this.inputElement.addEventListener('change', this.notifyInputChange.bind(this));
 
-        if (this.inputElement.value) {
-            this.expand();
-            this.notifyInputChange();
-        }
+        setTimeout(() => {
+            // need to be in a setTimeout, otherwise the prefilled-text might not be found at browser start
+            if (this.inputElement.value) {
+                this.expand();
+                this.notifyInputChange();
+            }
+        }, 100);
     }
 
     private collapse() {

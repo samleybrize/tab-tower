@@ -1,3 +1,4 @@
+import { GetBackgroundState } from './background/get-background-state';
 import { DetectedBrowser } from './browser/detected-browser';
 import { CommandBus } from './bus/command-bus';
 import { EventBus } from './bus/event-bus';
@@ -48,6 +49,7 @@ import { GetTabAssociationsWithFollowState } from './tab/query/get-tab-associati
 import { GetTabAssociationsWithOpenState } from './tab/query/get-tab-associations-with-open-state';
 import { tabQueries } from './tab/query/tab-queries';
 import { ObjectUnserializer } from './utils/object-unserializer';
+import { sleep } from './utils/sleep';
 import { StringMatcher } from './utils/string-matcher';
 import { IndicatorManipulator } from './view/component/indicator-manipulator';
 import { MoreMenuManipulator } from './view/component/more-menu-manipulator';
@@ -72,7 +74,7 @@ async function main() {
     const detectedBrowser = new DetectedBrowser();
     const stringMatcher = new StringMatcher();
     const tabCounter = new TabCounter();
-    const tabSearchView = new TabFilterView(eventBus, document.querySelector('#headerTabFilter'));
+    const tabFilterView = new TabFilterView(eventBus, document.querySelector('#headerTabFilter'));
 
     const openedTabView = (() => {
         const openedTabViewContainer: HTMLElement = document.querySelector('#openedTabList');
@@ -154,6 +156,7 @@ async function main() {
     commandBus.register(UnmuteTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(UnpinTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
 
+    queryBus.register(GetBackgroundState, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
     queryBus.register(GetTabAssociationsWithFollowState, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
     queryBus.register(GetTabAssociationsWithOpenState, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
     queryBus.register(GetTabAssociationByFollowId, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
@@ -189,14 +192,33 @@ async function main() {
     eventBus.subscribe(TabUnfollowed, followedTabView.onTabUnfollow, followedTabView);
     eventBus.subscribe(TabUnfollowed, openedTabView.onTabUnfollow, openedTabView);
 
-    // TODO wait that the background is ready
-    headerView.init();
-    await Promise.all([
-        followedTabView.init(),
-        openedTabView.init(),
-    ]);
-    tabSearchView.init();
-    document.querySelector('#loading').classList.add('transparent');
+    async function initViews() {
+        await waitBackgroundReady();
+
+        headerView.init();
+        tabFilterView.init();
+
+        await Promise.all([
+            followedTabView.init(),
+            openedTabView.init(),
+        ]);
+
+        document.querySelector('#loading').classList.add('transparent');
+    }
+
+    async function waitBackgroundReady() {
+        while (true) {
+            const backgroundState = await queryBus.query(new GetBackgroundState());
+
+            if ('ready' == backgroundState) {
+                return;
+            }
+
+            await sleep(100);
+        }
+    }
+
+    await initViews();
 }
 
 main();

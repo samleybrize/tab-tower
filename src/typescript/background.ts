@@ -1,3 +1,5 @@
+import { BackgroundStateRetriever } from './background/background-state-retriever';
+import { GetBackgroundState } from './background/get-background-state';
 import { BrowserActionBadge } from './browser/browser-action-badge';
 import { CommandBus } from './bus/command-bus';
 import { EventBus } from './bus/event-bus';
@@ -130,10 +132,13 @@ async function main() {
     const sendMessageEventHandler = new SendMessageEventHandler(messageSender);
     const sendMessageQueryHandler = new SendMessageQueryHandler(messageSender);
 
+    const backgroundStateRetriever = new BackgroundStateRetriever();
+
     function initMessaging() {
         objectUnserializer.addSupportedClasses(tabCommands);
         objectUnserializer.addSupportedClasses(tabEvents);
         objectUnserializer.addSupportedClasses(tabQueries);
+        objectUnserializer.addSupportedClasses([GetBackgroundState]);
 
         const receivedQueryMessageHandler = new ReceivedQueryMessageHandler(queryBus, objectUnserializer);
         const bidirectionalQueryMessageHandler = new BidirectionalQueryMessageHandler(receivedQueryMessageHandler, sendMessageQueryHandler);
@@ -162,6 +167,7 @@ async function main() {
     }
 
     function initQueryBus() {
+        queryBus.register(GetBackgroundState, backgroundStateRetriever.queryBackgroundState, backgroundStateRetriever);
         queryBus.register(GetClosedTabOpenStateByOpenId, closedTabRetriever.queryById, closedTabRetriever);
         queryBus.register(GetFollowIdAssociatedToOpenId, tabAssociationMaintainer.queryAssociatedFollowId, tabAssociationMaintainer);
         queryBus.register(GetOpenIdAssociatedToFollowId, tabAssociationMaintainer.queryAssociatedOpenId, tabAssociationMaintainer);
@@ -253,6 +259,7 @@ async function main() {
     initEventBus();
     await initTabHandling();
     await initBrowserAction();
+    backgroundStateRetriever.state = 'ready';
 }
 
 main();

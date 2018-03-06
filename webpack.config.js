@@ -8,11 +8,11 @@ function getMaterializePath() {
     return ('test' == process.env.NODE_ENV) ? './node_modules/materialize-css/dist/js/materialize.js' : './node_modules/materialize-css/dist/js/materialize.min.js';
 }
 
-const backgroundEntries = ['./src/typescript/background.ts'];
+const backgroundEntries = ['./src/typescript/background/background.ts'];
 const controlCenterDesktopEntries = [
     getJqueryPath(),
     getMaterializePath(),
-    './src/typescript/control-center-desktop.ts',
+    './src/typescript/view/control-center-desktop.ts',
 ];
 
 if ('test' == process.env.NODE_ENV) {

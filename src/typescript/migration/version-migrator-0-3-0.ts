@@ -13,7 +13,7 @@ export class VersionMigrator0_3_0 implements VersionMigrator {
     async migrate() {
         const followStateMap = await this.getAllStoredFollowedStates();
         const followStatesThatMissWeight = this.getFollowStatesThatMissWeight(followStateMap);
-        await this.assignWeights(followStateMap);
+        await this.assignWeights(followStatesThatMissWeight);
     }
 
     private async getAllStoredFollowedStates(): Promise<Map<string, any>> {

@@ -135,6 +135,22 @@ client.onmessage = async (event) => {
             client.send(JSON.stringify({messageId: message.data.messageId}));
             break;
 
+        case 'set-to-webstorage':
+            await browser.storage.local.set(message.data.storageObject);
+
+            client.send(JSON.stringify({
+                messageId: message.data.messageId,
+            }));
+            break;
+
+        case 'clear-webstorage':
+            await browser.storage.local.clear();
+
+            client.send(JSON.stringify({
+                messageId: message.data.messageId,
+            }));
+            break;
+
         case 'reload-extension':
             browser.runtime.reload();
             break;
@@ -193,6 +209,13 @@ client.onmessage = async (event) => {
                 messageId: message.data.messageId,
                 text: await browser.browserAction.getBadgeText({tabId}),
                 backgroundColor: await browser.browserAction.getBadgeBackgroundColor({tabId}),
+            }));
+            break;
+
+        case 'get-webstorage-content':
+            client.send(JSON.stringify({
+                messageId: message.data.messageId,
+                storageObject: await browser.storage.local.get(),
             }));
             break;
     }

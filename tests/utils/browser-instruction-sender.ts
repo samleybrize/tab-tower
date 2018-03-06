@@ -230,6 +230,26 @@ export class BrowserInstructionSender {
         `);
     }
 
+    async setToWebStorage(storageObject: object) {
+        return new Promise<browser.tabs.Tab>((resolve, reject) => {
+            const messageId = Math.random();
+            this.receiveCallbackMap.set(messageId, (message) => {
+                resolve(null);
+            });
+            this.send({action: 'set-to-webstorage', data: {messageId, storageObject}});
+        });
+    }
+
+    async clearWebStorage() {
+        return new Promise<browser.tabs.Tab>((resolve, reject) => {
+            const messageId = Math.random();
+            this.receiveCallbackMap.set(messageId, (message) => {
+                resolve(null);
+            });
+            this.send({action: 'clear-webstorage', data: {messageId}});
+        });
+    }
+
     async reloadExtension() {
         return this.send({action: 'reload-extension', data: {}});
     }
@@ -291,6 +311,16 @@ export class BrowserInstructionSender {
                 resolve(message ? {text: message.text, backgroundColor: message.backgroundColor } : null);
             });
             this.send({action: 'get-browser-action-badge', data: {messageId, tabIndex}});
+        });
+    }
+
+    async getWebStorageContent() {
+        return new Promise<object>((resolve, reject) => {
+            const messageId = Math.random();
+            this.receiveCallbackMap.set(messageId, (message) => {
+                resolve(message ? message.storageObject : null);
+            });
+            this.send({action: 'get-webstorage-content', data: {messageId}});
         });
     }
 }

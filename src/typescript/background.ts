@@ -222,7 +222,7 @@ async function main() {
 
     async function initTabHandling() {
         await openedTabRetriever.init();
-        await closedTabRetriever.init();
+        closedTabRetriever.init();
         await nativeRecentlyClosedTabAssociationMaintainer.init();
         nativeEventHandler.init();
         await tabAssociationMaintainer.associateOpenedTabsWithFollowedTabs();

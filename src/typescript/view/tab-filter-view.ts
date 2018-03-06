@@ -1,5 +1,6 @@
 import { EventBus } from '../bus/event-bus';
 import { TabFilterRequested } from '../tab/event/tab-filter-requested';
+import { sleep } from '../utils/sleep';
 
 export class TabFilterView {
     private inputElement: HTMLInputElement;
@@ -36,7 +37,7 @@ export class TabFilterView {
         this.initInput();
     }
 
-    private initInput() {
+    private async initInput() {
         this.inputElement.addEventListener('blur', (event) => {
             if ('' == this.inputElement.value) {
                 this.collapse();
@@ -56,13 +57,13 @@ export class TabFilterView {
         });
         this.inputElement.addEventListener('change', this.notifyInputChange.bind(this));
 
-        setTimeout(() => {
-            // need to be in a setTimeout, otherwise the prefilled-text might not be found at browser start
-            if (this.inputElement.value) {
-                this.expand();
-                this.notifyInputChange();
-            }
-        }, 100);
+        // needed, otherwise the prefilled-text might not be found at browser start
+        await sleep(100);
+
+        if (this.inputElement.value) {
+            this.expand();
+            this.notifyInputChange();
+        }
     }
 
     private collapse() {

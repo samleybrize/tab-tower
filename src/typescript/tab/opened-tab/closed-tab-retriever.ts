@@ -1,4 +1,5 @@
 import { QueryBus } from '../../bus/query-bus';
+import { sleep } from '../../utils/sleep';
 import { OpenedTabFaviconUrlUpdated } from '../event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from '../event/opened-tab-focused';
 import { OpenedTabMoved } from '../event/opened-tab-moved';
@@ -19,10 +20,10 @@ export class ClosedTabRetriever {
     }
 
     async init() {
-        if (this.openedTabMap.size > 0) {
-            return;
-        }
+        // needed, otherwise session tabs might not be found at browser start
+        await sleep(200);
 
+        this.openedTabMap.clear();
         const tabList = await this.queryBus.query(new GetTabOpenStates());
 
         for (const tab of tabList) {

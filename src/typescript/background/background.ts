@@ -11,6 +11,7 @@ import { ReceivedQueryMessageHandler } from '../message/receiver/received-query-
 import { BackgroundMessageSender } from '../message/sender/background-message-sender';
 import { SendMessageEventHandler } from '../message/sender/send-message-event-handler';
 import { SendMessageQueryHandler } from '../message/sender/send-message-query-handler';
+import { PostUpdateMigrator } from '../migration/post-update-migrator';
 import { AssociateOpenedTabToFollowedTab } from '../tab/command/associate-opened-tab-to-followed-tab';
 import { CloseTab } from '../tab/command/close-tab';
 import { DuplicateTab } from '../tab/command/duplicate-tab';
@@ -93,6 +94,12 @@ async function main() {
     const eventBus = new EventBus();
     const queryBus = new QueryBus();
 
+    const backgroundStateRetriever = new BackgroundStateRetriever();
+    queryBus.register(GetBackgroundState, backgroundStateRetriever.queryBackgroundState, backgroundStateRetriever);
+
+    const postUpdateMigrator = new PostUpdateMigrator();
+    await postUpdateMigrator.migrate();
+
     const followedTabWeightCalculator = new FollowedTabWeightCalculator();
     const webStorageTabPersister = new WebStorageTabPersister();
     const inMemoryTabPersister = new InMemoryTabPersister(webStorageTabPersister);
@@ -132,8 +139,6 @@ async function main() {
     const sendMessageEventHandler = new SendMessageEventHandler(messageSender);
     const sendMessageQueryHandler = new SendMessageQueryHandler(messageSender);
 
-    const backgroundStateRetriever = new BackgroundStateRetriever();
-
     function initMessaging() {
         objectUnserializer.addSupportedClasses(tabCommands);
         objectUnserializer.addSupportedClasses(tabEvents);
@@ -167,7 +172,6 @@ async function main() {
     }
 
     function initQueryBus() {
-        queryBus.register(GetBackgroundState, backgroundStateRetriever.queryBackgroundState, backgroundStateRetriever);
         queryBus.register(GetClosedTabOpenStateByOpenId, closedTabRetriever.queryById, closedTabRetriever);
         queryBus.register(GetFollowIdAssociatedToOpenId, tabAssociationMaintainer.queryAssociatedFollowId, tabAssociationMaintainer);
         queryBus.register(GetOpenIdAssociatedToFollowId, tabAssociationMaintainer.queryAssociatedOpenId, tabAssociationMaintainer);

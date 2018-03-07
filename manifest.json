@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Tab Tower",
     "version": "0.3.0",
-    "description": "Description",
+    "description": "Enhanced tab experience",
     "applications": {
         "gecko": {
             "id": "tab-tower@stephen.berquet",

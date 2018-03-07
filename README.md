@@ -1,6 +1,6 @@
 # Tab Tower
 
-Advanced browser tabs manager.
+Enhanced tab experience for Firefox.
 
 ## Development
 

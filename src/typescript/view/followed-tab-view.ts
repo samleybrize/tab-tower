@@ -472,6 +472,7 @@ export class FollowedTabView {
         if (followedTabRow) {
             jQuery(followedTabRow).find('[data-tooltip]').tooltip('remove');
             followedTabRow.remove();
+            this.tabView.showOrHideSelectionActionsDependingOfSelectedTabs();
             this.tabView.showNoTabRowIfTableIsEmpty();
             this.tabCounter.decrementNumberOfFollowedTabs();
         }

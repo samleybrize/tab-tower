@@ -249,6 +249,14 @@ export class TabView {
         this.moreMenuManipulator.hideMoreButton(this.theadElement);
     }
 
+    showOrHideSelectionActionsDependingOfSelectedTabs() {
+        if (this.tabSelectorManipulator.isThereACheckedTabSelector()) {
+            this.showSelectionActions();
+        } else {
+            this.hideSelectionActions();
+        }
+    }
+
     createTitleCell(clickListener: TabTitleClickCallback): HTMLElement {
         const titleElement = this.tabTitleManipulator.create(clickListener);
 

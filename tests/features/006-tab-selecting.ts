@@ -179,6 +179,17 @@ describe('Tab selecting', () => {
             await openedTabsHelper.assertTabSelectorIsNotChecked(openedTabRowList[3]);
         });
 
+        it('The selection more button should be unrevealed when a selected opened tab is removed and there is no remaining selected opened tab', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabSelector(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabCloseButton(openedTabRowList[1]);
+
+            await openedTabsHelper.waitThatSelectionTabMoreButtonIsFullyHidden();
+            await openedTabsHelper.assertSelectionTabMoreButtonIsNotVisible();
+        });
+
         it('No opened tab selector should be checked at startup', async () => {
             await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
@@ -475,6 +486,23 @@ describe('Tab selecting', () => {
             await followedTabsHelper.assertTabSelectorIsNotChecked(followedTabRowList[1]);
             await followedTabsHelper.assertTabSelectorIsNotChecked(followedTabRowList[2]);
             await followedTabsHelper.assertTabSelectorIsNotChecked(followedTabRowList[3]);
+        });
+
+        it('The selection more button should be unrevealed when a selected followed tab is removed and there is no remaining selected followed tab', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+
+            await testHelper.showFollowedTabsList();
+            const followedTabRowList = await followedTabsHelper.getTabRowList();
+            await followedTabsHelper.clickOnTabSelector(followedTabRowList[0]);
+            await followedTabsHelper.clickOnTabUnfollowButton(followedTabRowList[0]);
+
+            await followedTabsHelper.waitThatSelectionTabMoreButtonIsFullyHidden();
+            await followedTabsHelper.assertSelectionTabMoreButtonIsNotVisible();
         });
 
         it('No followed tab selector should be checked at startup', async () => {

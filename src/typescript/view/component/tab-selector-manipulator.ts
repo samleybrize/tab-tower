@@ -92,7 +92,7 @@ export class TabSelectorManipulator {
         }
     }
 
-    private isThereACheckedTabSelector() {
+    isThereACheckedTabSelector() {
         return null != this.root.querySelector('.tabSelector input:checked:not(.noShiftSelect)');
     }
 

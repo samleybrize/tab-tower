@@ -136,7 +136,7 @@ export class TabsTestHelper {
         await this.driver.wait(async () => {
             return '1' == await indicatorElement.getCssValue('opacity');
         }, 3000);
-        await sleep(3000);
+        await sleep(500);
     }
 
     async waitThatReaderModeIndicatorIsFullyOn(tabRow: WebElement) {
@@ -157,6 +157,14 @@ export class TabsTestHelper {
     async waitThatAudibleIndicatorIsFullyOn(tabRow: WebElement) {
         const indicator = this.getAudibleIndicator(tabRow);
         await this.waitThatOnOffIndicatorIsFullyOn(indicator);
+    }
+
+    async waitThatSelectionTabMoreButtonIsFullyHidden(titleRow: WebElement) {
+        const tabMoreButton = this.getSelectionTabMoreButton(titleRow);
+
+        await this.driver.wait(async () => {
+            return '0' == await tabMoreButton.getCssValue('opacity');
+        }, 3000);
     }
 
     async hideMoreDropdown(tabRow: WebElement) {

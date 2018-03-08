@@ -269,6 +269,10 @@ export class OpenedTabsTestHelper {
         await this.tabsTestHelper.waitThatOnOffIndicatorIsFullyOn(indicator);
     }
 
+    async waitThatSelectionTabMoreButtonIsFullyHidden() {
+        await this.tabsTestHelper.waitThatSelectionTabMoreButtonIsFullyHidden(this.getContainerElement());
+    }
+
     async changeTabLastAccessText(tabRow: WebElement, newText: string) {
         const tabId = await tabRow.getAttribute('data-tab-id');
         await this.driver.executeScript(`

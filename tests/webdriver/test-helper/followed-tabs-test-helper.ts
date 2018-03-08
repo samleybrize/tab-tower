@@ -311,6 +311,10 @@ export class FollowedTabsTestHelper {
         await this.tabsTestHelper.waitThatOnOffIndicatorIsFullyOn(indicator);
     }
 
+    async waitThatSelectionTabMoreButtonIsFullyHidden() {
+        await this.tabsTestHelper.waitThatSelectionTabMoreButtonIsFullyHidden(this.getContainerElement());
+    }
+
     async changeTabLastAccessText(tabRow: WebElement, newText: string) {
         const followId = await tabRow.getAttribute('data-follow-id');
         await this.driver.executeScript(`

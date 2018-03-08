@@ -15,6 +15,11 @@ const relativePathToIncludeList = [
     'ui',
     'manifest.json',
 ];
+const relativePathToRemoveList = [
+    'dist/css/style.css.map',
+    'dist/js/background.js.map',
+    'dist/js/control-center-desktop.js.map',
+];
 
 if (isTestEnv) {
     relativePathToIncludeList.push('tests/resources');
@@ -116,6 +121,12 @@ function exportProjectFiles() {
             path.join(exportPath, relativePathToInclude),
             {dereference: true},
         );
+    }
+
+    if (!isTestEnv) {
+        for (const relativePathToRemove of relativePathToRemoveList) {
+            fs.unlinkSync(path.join(exportPath, relativePathToRemove));
+        }
     }
 }
 

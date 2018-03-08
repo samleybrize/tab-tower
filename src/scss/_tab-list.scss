@@ -6,7 +6,11 @@ $selected-row-left-border-width: 8px;
 
     thead {
         position: sticky;
-        z-index: 2;
+        top: $navbar-height;
+        z-index:  2;
+        background: white;
+        border-bottom: none;
+        box-shadow: 0 1px #d0d0d0;
 
         th {
             &:nth-child(1) {

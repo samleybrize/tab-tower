@@ -216,9 +216,6 @@ describe('Tab selecting', () => {
             const openedTabList = await browserInstructionSender.getAllTabs();
             assert.equal(openedTabList.length, 1);
             assert.equal(openedTabList[0].url, firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP));
-
-            await openedTabsHelper.clickOnSelectionTabMoreButton(true);
-            await testHelper.takeViewportScreenshot('title-more-dropdown-open-list');
         });
 
         it('Clicking on the selection follow button should follow selected opened tabs', async () => {
@@ -233,6 +230,9 @@ describe('Tab selecting', () => {
             await openedTabsHelper.assertTabFollowIndicatorIsOff(openedTabRowList[0]);
             await openedTabsHelper.assertTabFollowIndicatorIsOn(openedTabRowList[1]);
             await openedTabsHelper.assertTabFollowIndicatorIsOn(openedTabRowList[2]);
+
+            await openedTabsHelper.clickOnSelectionTabMoreButton(true);
+            await testHelper.takeViewportScreenshot('title-more-dropdown-open-list');
         });
 
         it('Clicking on the selection follow button should not follow selected unfollowable opened tabs', async () => {

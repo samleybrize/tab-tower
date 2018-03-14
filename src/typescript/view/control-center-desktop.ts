@@ -48,6 +48,7 @@ import { GetTabAssociationByOpenId } from '../tab/query/get-tab-association-by-o
 import { GetTabAssociationsWithFollowState } from '../tab/query/get-tab-associations-with-follow-state';
 import { GetTabAssociationsWithOpenState } from '../tab/query/get-tab-associations-with-open-state';
 import { tabQueries } from '../tab/query/tab-queries';
+import { TabMatcher } from '../tab/tab-matcher';
 import { ObjectUnserializer } from '../utils/object-unserializer';
 import { sleep } from '../utils/sleep';
 import { StringMatcher } from '../utils/string-matcher';
@@ -73,8 +74,9 @@ async function main() {
 
     const detectedBrowser = new DetectedBrowser();
     const stringMatcher = new StringMatcher();
+    const tabMatcher = new TabMatcher(stringMatcher);
     const tabCounter = new TabCounter();
-    const tabFilterView = new TabFilterView(eventBus, document.querySelector('#headerTabFilter'));
+    const tabFilterView = new TabFilterView(eventBus, tabMatcher, document.querySelector('#headerTabFilter'));
 
     const openedTabView = (() => {
         const openedTabViewContainer: HTMLElement = document.querySelector('#openedTabList');
@@ -83,7 +85,7 @@ async function main() {
         const tabFilterApplier = new TabFilterApplier(stringMatcher, openedTabViewContainer);
         const tabMoveAction = new TabMoveAction(openedTabViewContainer);
         const tabSelectorManipulator = new TabSelectorManipulator(openedTabViewContainer);
-        const tabTitleManipulator = new TabTitleManipulator(detectedBrowser, defaultFaviconUrl);
+        const tabTitleManipulator = new TabTitleManipulator(detectedBrowser, tabMatcher, defaultFaviconUrl);
 
         return new OpenedTabView(
             commandBus,
@@ -105,7 +107,7 @@ async function main() {
         const tabFilterApplier = new TabFilterApplier(stringMatcher, followedTabViewContainer);
         const tabMoveAction = new TabMoveAction(followedTabViewContainer);
         const tabSelectorManipulator = new TabSelectorManipulator(followedTabViewContainer);
-        const tabTitleManipulator = new TabTitleManipulator(detectedBrowser, defaultFaviconUrl);
+        const tabTitleManipulator = new TabTitleManipulator(detectedBrowser, tabMatcher, defaultFaviconUrl);
 
         return new FollowedTabView(
             commandBus,

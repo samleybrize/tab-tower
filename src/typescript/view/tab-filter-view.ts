@@ -1,5 +1,6 @@
 import { EventBus } from '../bus/event-bus';
 import { TabFilterRequested } from '../tab/event/tab-filter-requested';
+import { TabMatcher } from '../tab/tab-matcher';
 import { sleep } from '../utils/sleep';
 
 export class TabFilterView {
@@ -7,7 +8,7 @@ export class TabFilterView {
     private labelElement: HTMLLabelElement;
     private resetButton: HTMLElement;
 
-    constructor(private eventBus: EventBus, private containerElement: HTMLInputElement) {
+    constructor(private eventBus: EventBus, private tabMatcher: TabMatcher, private containerElement: HTMLInputElement) {
         if (null == containerElement) {
             throw new Error('null input element received');
         }
@@ -76,7 +77,7 @@ export class TabFilterView {
 
     private notifyInputChange() {
         const value = '' + this.inputElement.value;
-        const filterTerms = value.toLowerCase().split(' ');
+        const filterTerms = this.tabMatcher.getMatchTermsFromString(value);
 
         this.eventBus.publish(new TabFilterRequested(filterTerms));
     }

@@ -10,7 +10,10 @@
         }
     },
     "icons": {
+        "16": "icons/tab-tower.svg",
+        "32": "icons/tab-tower.svg",
         "48": "icons/tab-tower.svg",
+        "64": "icons/tab-tower.svg",
         "96": "icons/tab-tower.svg"
     },
     "browser_action": {
@@ -32,5 +35,8 @@
         "storage",
         "tabs",
         "unlimitedStorage"
-    ]
+    ],
+    "omnibox": {
+        "keyword": "tt"
+    }
 }

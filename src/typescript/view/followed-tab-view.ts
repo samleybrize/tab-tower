@@ -7,7 +7,7 @@ import { MoveFollowedTabs } from '../tab/command/move-followed-tabs';
 import { MuteTab } from '../tab/command/mute-tab';
 import { PinTab } from '../tab/command/pin-tab';
 import { ReloadTab } from '../tab/command/reload-tab';
-import { RestoreFollowedTab } from '../tab/command/restore-followed-tab';
+import { RestoreFollowedTab, TabOpenTarget } from '../tab/command/restore-followed-tab';
 import { UnfollowTab } from '../tab/command/unfollow-tab';
 import { UnmuteTab } from '../tab/command/unmute-tab';
 import { UnpinTab } from '../tab/command/unpin-tab';
@@ -125,7 +125,7 @@ export class FollowedTabView {
                 this.commandBus.handle(new FocusTab(openTabId));
             } else if (!isOpeningTab) {
                 row.setAttribute('data-is-opening-tab', '1');
-                this.commandBus.handle(new RestoreFollowedTab(tab.followState.id));
+                this.commandBus.handle(new RestoreFollowedTab(tab.followState.id, TabOpenTarget.NewBackgroundTab));
             }
         };
         const moveBelowCallback: MoveBelowClickCallback = (clickedButton) => {

@@ -1,7 +1,9 @@
 import { BrowserActionBadge } from '../browser/browser-action-badge';
+import { OmniboxSuggestionHandler } from '../browser/omnibox-suggestion-handler';
 import { CommandBus } from '../bus/command-bus';
 import { EventBus } from '../bus/event-bus';
 import { QueryBus } from '../bus/query-bus';
+import { ControlCenterOpener } from '../control-center-opener';
 import { BidirectionalQueryMessageHandler } from '../message/bidirectional-query-message-handler';
 import { ContentMessageReceiver } from '../message/receiver/content-message-receiver';
 import { ReceivedCommandMessageHandler } from '../message/receiver/received-command-message-handler';
@@ -17,6 +19,7 @@ import { CloseTab } from '../tab/command/close-tab';
 import { DuplicateTab } from '../tab/command/duplicate-tab';
 import { FocusTab } from '../tab/command/focus-tab';
 import { FollowTab } from '../tab/command/follow-tab';
+import { GoToControlCenter } from '../tab/command/go-to-control-center';
 import { MoveFollowedTabs } from '../tab/command/move-followed-tabs';
 import { MoveOpenedTabs } from '../tab/command/move-opened-tabs';
 import { MuteTab } from '../tab/command/mute-tab';
@@ -46,6 +49,7 @@ import { TabOpened } from '../tab/event/tab-opened';
 import { TabUnfollowed } from '../tab/event/tab-unfollowed';
 import { FollowedTabMover } from '../tab/followed-tab/followed-tab-mover';
 import { FollowedTabRetriever } from '../tab/followed-tab/followed-tab-retriever';
+import { FollowedTabSearcher } from '../tab/followed-tab/followed-tab-searcher';
 import { FollowedTabUpdater } from '../tab/followed-tab/followed-tab-updater';
 import { FollowedTabWeightCalculator } from '../tab/followed-tab/followed-tab-weight-calculator';
 import { InMemoryTabPersister } from '../tab/followed-tab/persister/in-memory-tab-persister';
@@ -73,12 +77,14 @@ import { GetTabFollowStates } from '../tab/query/get-tab-follow-states';
 import { GetTabFollowStatesWithOpenLongLivedId } from '../tab/query/get-tab-follow-states-with-open-long-lived-id';
 import { GetTabOpenStateByOpenId } from '../tab/query/get-tab-open-state-by-open-id';
 import { GetTabOpenStates } from '../tab/query/get-tab-open-states';
+import { SearchTabFollowStates } from '../tab/query/search-tab-follow-states';
 import { tabQueries } from '../tab/query/tab-queries';
 import { TabAssociationMaintainer } from '../tab/tab-association/tab-association-maintainer';
 import { TabAssociationRetriever } from '../tab/tab-association/tab-association-retriever';
 import { TabCloser } from '../tab/tab-closer';
 import { TabDuplicator } from '../tab/tab-duplicator';
 import { TabFocuser } from '../tab/tab-focuser';
+import { TabMatcher } from '../tab/tab-matcher';
 import { TabMuter } from '../tab/tab-muter';
 import { TabOpener } from '../tab/tab-opener';
 import { TabPinner } from '../tab/tab-pinner';
@@ -86,8 +92,12 @@ import { TabReloader } from '../tab/tab-reloader';
 import { TabUnmuter } from '../tab/tab-unmuter';
 import { TabUnpinner } from '../tab/tab-unpinner';
 import { ObjectUnserializer } from '../utils/object-unserializer';
+import { StringMatcher } from '../utils/string-matcher';
 import { BackgroundStateRetriever } from './background-state-retriever';
 import { GetBackgroundState } from './get-background-state';
+
+const controlCenterDesktopLabel = 'Tab Tower Control Center';
+const controlCenterDesktopUrl = browser.extension.getURL('/ui/control-center-desktop.html');
 
 async function main() {
     const commandBus = new CommandBus();
@@ -100,6 +110,9 @@ async function main() {
     const postUpdateMigrator = new PostUpdateMigrator();
     await postUpdateMigrator.migrate();
 
+    const stringMatcher = new StringMatcher();
+    const tabMatcher = new TabMatcher(stringMatcher);
+
     const followedTabWeightCalculator = new FollowedTabWeightCalculator();
     const webStorageTabPersister = new WebStorageTabPersister();
     const inMemoryTabPersister = new InMemoryTabPersister(webStorageTabPersister);
@@ -107,10 +120,10 @@ async function main() {
     const tabUnfollower = new TabUnfollower(inMemoryTabPersister, eventBus);
     const followedTabUpdater = new FollowedTabUpdater(inMemoryTabPersister, commandBus, queryBus);
     const followedTabRetriever = new FollowedTabRetriever(inMemoryTabPersister);
+    const followedTabSearcher = new FollowedTabSearcher(queryBus, tabMatcher);
 
-    const controlCenterDesktopUrlStartWith = browser.extension.getURL('/ui/control-center-desktop.html');
     const privilegedUrlDetector = new PrivilegedUrlDetector();
-    const openedTabRetriever = new OpenedTabRetriever(privilegedUrlDetector, [controlCenterDesktopUrlStartWith]);
+    const openedTabRetriever = new OpenedTabRetriever(privilegedUrlDetector, [controlCenterDesktopUrl]);
     const closedTabRetriever = new ClosedTabRetriever(queryBus);
     const tabOpener = new TabOpener(commandBus, queryBus);
 
@@ -118,10 +131,12 @@ async function main() {
     const nativeRecentlyClosedTabAssociationMaintainer = new NativeRecentlyClosedTabAssociationMaintainer(nativeRecentlyClosedTabAssociationPersister);
 
     const browserActionBadge = new BrowserActionBadge(queryBus);
+    const omniboxSuggestionHandler = new OmniboxSuggestionHandler(commandBus, queryBus, controlCenterDesktopLabel);
 
     const tabAssociationMaintainer = new TabAssociationMaintainer(eventBus, queryBus);
     const tabAssociationRetriever = new TabAssociationRetriever(queryBus);
 
+    const controlCenterOpener = new ControlCenterOpener(controlCenterDesktopUrl);
     const followedTabMover = new FollowedTabMover(inMemoryTabPersister, followedTabWeightCalculator, eventBus);
     const openedTabMover = new OpenedTabMover();
     const tabCloser = new TabCloser();
@@ -160,6 +175,7 @@ async function main() {
         commandBus.register(DuplicateTab, tabDuplicator.duplicateTab, tabDuplicator);
         commandBus.register(FocusTab, tabFocuser.focusTab, tabFocuser);
         commandBus.register(FollowTab, tabFollower.followTab, tabFollower);
+        commandBus.register(GoToControlCenter, controlCenterOpener.goToControlCenter, controlCenterOpener);
         commandBus.register(MoveFollowedTabs, followedTabMover.moveFollowedTabs, followedTabMover);
         commandBus.register(MoveOpenedTabs, openedTabMover.moveOpenedTabs, openedTabMover);
         commandBus.register(MuteTab, tabMuter.muteTab, tabMuter);
@@ -186,6 +202,7 @@ async function main() {
         queryBus.register(GetTabFollowStatesWithOpenLongLivedId, followedTabRetriever.queryAllWithOpenLongLivedId, followedTabRetriever);
         queryBus.register(GetTabOpenStateByOpenId, openedTabRetriever.queryById, openedTabRetriever);
         queryBus.register(GetTabOpenStates, openedTabRetriever.queryAll, openedTabRetriever);
+        queryBus.register(SearchTabFollowStates, followedTabSearcher.searchFollowStates, followedTabSearcher);
     }
 
     function initEventBus() {
@@ -240,21 +257,8 @@ async function main() {
     }
 
     async function initBrowserAction() {
-        const controlCenterDesktopUrl = browser.extension.getURL('/ui/control-center-desktop.html');
         browser.browserAction.onClicked.addListener(async () => {
-            const uiTabs = await browser.tabs.query({url: controlCenterDesktopUrl});
-
-            if (uiTabs.length > 0) {
-                browser.tabs.update(uiTabs[0].id, {active: true});
-
-                return;
-            }
-
-            browser.tabs.create({
-                active: true,
-                index: 0,
-                url: controlCenterDesktopUrl,
-            });
+            commandBus.handle(new GoToControlCenter());
         });
     }
 

@@ -2,6 +2,7 @@ import { CloseTab } from './close-tab';
 import { DuplicateTab } from './duplicate-tab';
 import { FocusTab } from './focus-tab';
 import { FollowTab } from './follow-tab';
+import { GoToControlCenter } from './go-to-control-center';
 import { MoveFollowedTabs } from './move-followed-tabs';
 import { MoveOpenedTabs } from './move-opened-tabs';
 import { MuteTab } from './mute-tab';
@@ -17,6 +18,7 @@ export const tabCommands = [
     DuplicateTab,
     FocusTab,
     FollowTab,
+    GoToControlCenter,
     MoveFollowedTabs,
     MoveOpenedTabs,
     MuteTab,

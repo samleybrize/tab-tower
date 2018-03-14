@@ -2,8 +2,9 @@ import { CommandBus } from '../bus/command-bus';
 import { QueryBus } from '../bus/query-bus';
 import { sleep } from '../utils/sleep';
 import { AssociateOpenedTabToFollowedTab } from './command/associate-opened-tab-to-followed-tab';
-import { RestoreFollowedTab } from './command/restore-followed-tab';
+import { RestoreFollowedTab, TabOpenTarget } from './command/restore-followed-tab';
 import { TabFollowState } from './followed-tab/tab-follow-state';
+import { GetOpenIdAssociatedToFollowId } from './query/get-open-id-associated-to-follow-id';
 import { GetSessionIdAssociatedToOpenLongLivedId } from './query/get-session-id-associated-to-open-long-lived-id';
 import { GetTabFollowStateByFollowId } from './query/get-tab-follow-state-by-follow-id';
 import { GetTabOpenStateByOpenId } from './query/get-tab-open-state-by-open-id';
@@ -16,18 +17,37 @@ export class TabOpener {
     }
 
     async restoreFollowedTab(command: RestoreFollowedTab) {
+        const isRestoredTabMustBeFocused = this.isRestoredTabMustBeFocused(command.target);
+        const associatedOpenId = await this.queryBus.query(new GetOpenIdAssociatedToFollowId(command.followId));
+
+        if (associatedOpenId) {
+            if (isRestoredTabMustBeFocused) {
+                await browser.tabs.update(associatedOpenId, {active: true});
+            }
+
+            return;
+        }
+
         const followState = await this.queryBus.query(new GetTabFollowStateByFollowId(command.followId));
-        let openedTab: browser.tabs.Tab = await this.restoreFromRecentlyClosedTabs(followState);
+        let openedTab: browser.tabs.Tab = await this.restoreFromRecentlyClosedTabs(followState, isRestoredTabMustBeFocused);
 
         if (null == openedTab) {
-            openedTab = await this.restoreFromNewTab(followState);
+            openedTab = await this.restoreFromNewTab(followState, isRestoredTabMustBeFocused);
         }
 
         await this.waitForNewTabLoad(openedTab.id);
         this.associateNewTabToFollowedTab(command, openedTab);
     }
 
-    private async restoreFromRecentlyClosedTabs(followState: TabFollowState) {
+    private isRestoredTabMustBeFocused(openTarget: TabOpenTarget) {
+        if (TabOpenTarget.CurrentTab == openTarget || TabOpenTarget.NewForegroundTab == openTarget) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private async restoreFromRecentlyClosedTabs(followState: TabFollowState, isRestoredTabMustBeFocused: boolean) {
         const sessionId = await this.queryBus.query(new GetSessionIdAssociatedToOpenLongLivedId(followState.openLongLivedId));
 
         if (null != sessionId) {
@@ -39,7 +59,10 @@ export class TabOpener {
                 await browser.tabs.update(session.tab.id, {pinned: false});
             }
 
-            await browser.tabs.update(activeTab.id, {active: true});
+            if (!isRestoredTabMustBeFocused) {
+                await browser.tabs.update(activeTab.id, {active: true});
+            }
+
             await browser.tabs.move(session.tab.id, {index: targetIndex});
 
             return session.tab;
@@ -48,9 +71,9 @@ export class TabOpener {
         return null;
     }
 
-    private async restoreFromNewTab(followState: TabFollowState) {
+    private async restoreFromNewTab(followState: TabFollowState, isRestoredTabMustBeFocused: boolean) {
         const createTabOptions: browser.tabs.CreateProperties = {
-            active: false,
+            active: isRestoredTabMustBeFocused,
             url: followState.url,
         };
 

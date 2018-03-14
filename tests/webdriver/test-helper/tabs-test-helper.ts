@@ -397,7 +397,7 @@ export class TabsTestHelper {
     async clickOnGeneralTabSelector(container: WebElement) {
         const tabSelector = this.getGeneralTabSelectorLabel(container);
         await tabSelector.click();
-        await sleep(300);
+        await sleep(400);
     }
 
     async showElementTooltip(quotelessCssSelector: string) {

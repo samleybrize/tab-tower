@@ -1,9 +1,10 @@
 import { DetectedBrowser } from '../../browser/detected-browser';
+import { TabMatcher } from '../../tab/tab-matcher';
 
 export type TabTitleClickCallback = (clickedElement: HTMLAnchorElement) => void;
 
 export class TabTitleManipulator {
-    constructor(private detectedBrowser: DetectedBrowser, private defaultFaviconUrl: string) {
+    constructor(private detectedBrowser: DetectedBrowser, private tabMatcher: TabMatcher, private defaultFaviconUrl: string) {
     }
 
     create(clickCallback: TabTitleClickCallback) {
@@ -47,14 +48,8 @@ export class TabTitleManipulator {
         const urlElement = row.querySelector('.title em');
         urlElement.textContent = url;
 
-        const matchableUrl = this.getMatchableUrl(url);
+        const matchableUrl = this.tabMatcher.getMatchableUrl(url);
         urlElement.setAttribute('data-filter-matchable-text', matchableUrl);
-    }
-
-    private getMatchableUrl(fullUrl: string) {
-        const url = new URL(fullUrl);
-
-        return `${url.hostname}${url.pathname}${url.search}${url.hash}`;
     }
 
     updateFavicon(row: HTMLElement, faviconUrl: string) {

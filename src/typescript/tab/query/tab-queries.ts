@@ -12,6 +12,7 @@ import { GetTabFollowStates } from './get-tab-follow-states';
 import { GetTabFollowStatesWithOpenLongLivedId } from './get-tab-follow-states-with-open-long-lived-id';
 import { GetTabOpenStateByOpenId } from './get-tab-open-state-by-open-id';
 import { GetTabOpenStates } from './get-tab-open-states';
+import { SearchTabFollowStates } from './search-tab-follow-states';
 
 export const tabQueries = [
     GetClosedTabOpenStateByOpenId,
@@ -28,4 +29,6 @@ export const tabQueries = [
     GetTabFollowStatesWithOpenLongLivedId,
     GetTabOpenStateByOpenId,
     GetTabOpenStates,
+    GetTabOpenStates,
+    SearchTabFollowStates,
 ];

@@ -44,7 +44,7 @@ describe('Browser action', () => {
         await testHelper.assertBrowserActionBadgeIndicateThatTabIsFollowed(1);
     });
 
-    it('Browser action button should have a followed badge when when switching to a followed tab', async () => {
+    it('Browser action button should have a followed badge when switching to a followed tab', async () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
@@ -56,7 +56,7 @@ describe('Browser action', () => {
         await testHelper.assertBrowserActionBadgeIndicateThatTabIsFollowed(2);
     });
 
-    it('Browser action button should not have a followed badge when when switching to a non-followed tab', async () => {
+    it('Browser action button should not have a followed badge when switching to a non-followed tab', async () => {
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
         await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
 
@@ -79,5 +79,18 @@ describe('Browser action', () => {
         await testHelper.focusTab(1);
 
         await testHelper.assertBrowserActionBadgeIsNotShown(1);
+    });
+
+    it('Browser action button should have a followed badge when a followed tab navigates to a new url', async () => {
+        await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+
+        const openedTabRowList = await openedTabsHelper.getTabRowList();
+        await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+        await testHelper.focusTab(1);
+
+        await testHelper.changeTabUrl(1, firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+        await testHelper.focusTab(0);
+
+        await testHelper.assertBrowserActionBadgeIndicateThatTabIsFollowed(1);
     });
 });

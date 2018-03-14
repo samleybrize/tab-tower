@@ -49,7 +49,7 @@ export class MoreMenuManipulator {
         element.appendChild(dropdownElement);
 
         if (isHidden) {
-            element.classList.add('transparent');
+            moreButton.classList.add('transparent');
         }
 
         return element;

@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Tab Tower",
-    "version": "0.3.3",
+    "version": "0.3.4",
     "description": "Enhanced tab experience",
     "applications": {
         "gecko": {

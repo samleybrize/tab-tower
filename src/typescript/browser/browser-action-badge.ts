@@ -20,7 +20,7 @@ export class BrowserActionBadge {
     async onOpenedTabUrlUpdate(event: OpenedTabUrlUpdated) {
         const associatedFollowId = await this.queryBus.query(new GetFollowIdAssociatedToOpenId(event.tabOpenState.id));
 
-        if (null === associatedFollowId) {
+        if ('string' !== typeof associatedFollowId) {
             this.markOpenedTabAsNotFollowed(event.tabOpenState.id);
         } else {
             this.markOpenedTabAsFollowed(event.tabOpenState.id);

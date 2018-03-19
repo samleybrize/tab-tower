@@ -1,11 +1,11 @@
 import { EventBus } from '../../bus/event-bus';
 import { UnfollowTab } from '../command/unfollow-tab';
 import { TabUnfollowed } from '../event/tab-unfollowed';
-import { TabPersister } from './persister/tab-persister';
+import { FollowStatePersister } from './persister/follow-state-persister';
 
 export class TabUnfollower {
     constructor(
-        private tabPersister: TabPersister,
+        private tabPersister: FollowStatePersister,
         private eventBus: EventBus,
     ) {
     }

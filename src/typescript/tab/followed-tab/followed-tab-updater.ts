@@ -10,11 +10,11 @@ import { OpenedTabTitleUpdated } from '../event/opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from '../event/opened-tab-url-updated';
 import { TabOpened } from '../event/tab-opened';
 import { GetFollowIdAssociatedToOpenId } from '../query/get-follow-id-associated-to-open-id';
-import { TabPersister } from './persister/tab-persister';
+import { FollowStatePersister } from './persister/follow-state-persister';
 
 export class FollowedTabUpdater {
     constructor(
-        private tabPersister: TabPersister,
+        private tabPersister: FollowStatePersister,
         private commandBus: CommandBus,
         private queryBus: QueryBus,
     ) {

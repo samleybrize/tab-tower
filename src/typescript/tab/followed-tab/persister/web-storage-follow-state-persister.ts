@@ -1,7 +1,7 @@
 import { TabFollowState } from '../tab-follow-state';
-import { TabPersister } from './tab-persister';
+import { FollowStatePersister } from './follow-state-persister';
 
-export class WebStorageTabPersister implements TabPersister {
+export class WebStorageFollowStatePersister implements FollowStatePersister {
     private actionStack: Array<() => Promise<any>> = [];
     private isActionStackPlaying = false;
 

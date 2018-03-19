@@ -52,8 +52,8 @@ import { FollowedTabRetriever } from '../tab/followed-tab/followed-tab-retriever
 import { FollowedTabSearcher } from '../tab/followed-tab/followed-tab-searcher';
 import { FollowedTabUpdater } from '../tab/followed-tab/followed-tab-updater';
 import { FollowedTabWeightCalculator } from '../tab/followed-tab/followed-tab-weight-calculator';
-import { InMemoryTabPersister } from '../tab/followed-tab/persister/in-memory-tab-persister';
-import { WebStorageTabPersister } from '../tab/followed-tab/persister/web-storage-tab-persister';
+import { InMemoryFollowStatePersister } from '../tab/followed-tab/persister/in-memory-follow-state-persister';
+import { WebStorageFollowStatePersister } from '../tab/followed-tab/persister/web-storage-follow-state-persister';
 import { TabFollower } from '../tab/followed-tab/tab-follower';
 import { TabUnfollower } from '../tab/followed-tab/tab-unfollower';
 import { NativeRecentlyClosedTabAssociationMaintainer } from '../tab/native-recently-closed-tab/native-recently-closed-tab-association-maintainer';
@@ -114,8 +114,8 @@ async function main() {
     const tabMatcher = new TabMatcher(stringMatcher);
 
     const followedTabWeightCalculator = new FollowedTabWeightCalculator();
-    const webStorageTabPersister = new WebStorageTabPersister();
-    const inMemoryTabPersister = new InMemoryTabPersister(webStorageTabPersister);
+    const webStorageTabPersister = new WebStorageFollowStatePersister();
+    const inMemoryTabPersister = new InMemoryFollowStatePersister(webStorageTabPersister);
     const tabFollower = new TabFollower(inMemoryTabPersister, followedTabWeightCalculator, commandBus, eventBus, queryBus);
     const tabUnfollower = new TabUnfollower(inMemoryTabPersister, eventBus);
     const followedTabUpdater = new FollowedTabUpdater(inMemoryTabPersister, commandBus, queryBus);

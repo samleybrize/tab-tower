@@ -9,12 +9,12 @@ import { TabFollowed } from '../event/tab-followed';
 import { TabOpenState } from '../opened-tab/tab-open-state';
 import { GetTabFollowStateWeightList } from '../query/get-tab-follow-state-weight-list';
 import { FollowedTabWeightCalculator } from './followed-tab-weight-calculator';
-import { TabPersister } from './persister/tab-persister';
+import { FollowStatePersister } from './persister/follow-state-persister';
 import { TabFollowState } from './tab-follow-state';
 
 export class TabFollower {
     constructor(
-        private tabPersister: TabPersister,
+        private tabPersister: FollowStatePersister,
         private followedTabWeightCalculator: FollowedTabWeightCalculator,
         private commandBus: CommandBus,
         private eventBus: EventBus,

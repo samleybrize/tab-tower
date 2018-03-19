@@ -1,13 +1,13 @@
 import { TabFollowState } from '../tab-follow-state';
-import { TabPersister } from './tab-persister';
+import { FollowStatePersister } from './follow-state-persister';
 
-export class InMemoryTabPersister implements TabPersister {
+export class InMemoryFollowStatePersister implements FollowStatePersister {
     private followStateMap = new Map<string, TabFollowState>();
     private longLivedIdAssociationMap = new Map<string, string>();
     private weightMap = new Map<string, number>();
     private isRetrievedFromDecorated = false;
 
-    constructor(private decoratedTabPersister?: TabPersister) {
+    constructor(private decoratedTabPersister?: FollowStatePersister) {
     }
 
     async getAll(): Promise<TabFollowState[]> {

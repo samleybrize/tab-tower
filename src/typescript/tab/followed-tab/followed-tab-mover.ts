@@ -2,11 +2,11 @@ import { EventBus } from '../../bus/event-bus';
 import { MoveFollowedTabs } from '../command/move-followed-tabs';
 import { FollowedTabMoved } from '../event/followed-tab-moved';
 import { FollowedTabWeightCalculator } from './followed-tab-weight-calculator';
-import { TabPersister } from './persister/tab-persister';
+import { FollowStatePersister } from './persister/follow-state-persister';
 
 export class FollowedTabMover {
     constructor(
-        private tabPersister: TabPersister,
+        private tabPersister: FollowStatePersister,
         private followedTabWeightCalculator: FollowedTabWeightCalculator,
         private eventBus: EventBus,
     ) {

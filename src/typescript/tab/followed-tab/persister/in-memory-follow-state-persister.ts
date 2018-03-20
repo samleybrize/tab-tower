@@ -47,10 +47,7 @@ export class InMemoryFollowStatePersister implements FollowStatePersister {
             return null;
         }
 
-        const clonedFollowState = new TabFollowState();
-        this.copyFollowState(followState, clonedFollowState);
-
-        return clonedFollowState;
+        return TabFollowState.fromObject(followState);
     }
 
     async getByOpenLongLivedId(openLongLivedId: string): Promise<TabFollowState> {

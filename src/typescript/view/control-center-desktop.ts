@@ -22,6 +22,7 @@ import { MuteTab } from '../tab/command/mute-tab';
 import { PinTab } from '../tab/command/pin-tab';
 import { ReloadTab } from '../tab/command/reload-tab';
 import { RestoreFollowedTab } from '../tab/command/restore-followed-tab';
+import { RestoreRecentlyUnfollowedTab } from '../tab/command/restore-recently-unfollowed-tab';
 import { tabCommands } from '../tab/command/tab-commands';
 import { UnfollowTab } from '../tab/command/unfollow-tab';
 import { UnmuteTab } from '../tab/command/unmute-tab';
@@ -154,6 +155,7 @@ async function main() {
     commandBus.register(PinTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(ReloadTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(RestoreFollowedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
+    commandBus.register(RestoreRecentlyUnfollowedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(UnfollowTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(UnmuteTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(UnpinTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);

@@ -1,4 +1,6 @@
+import { AssociateOpenedTabToFollowedTab } from './associate-opened-tab-to-followed-tab';
 import { CloseTab } from './close-tab';
+import { DeleteRecentlyUnfollowedTab } from './delete-recently-unfollowed-tab';
 import { DuplicateTab } from './duplicate-tab';
 import { FocusTab } from './focus-tab';
 import { FollowTab } from './follow-tab';
@@ -9,12 +11,15 @@ import { MuteTab } from './mute-tab';
 import { PinTab } from './pin-tab';
 import { ReloadTab } from './reload-tab';
 import { RestoreFollowedTab } from './restore-followed-tab';
+import { RestoreRecentlyUnfollowedTab } from './restore-recently-unfollowed-tab';
 import { UnfollowTab } from './unfollow-tab';
 import { UnmuteTab } from './unmute-tab';
 import { UnpinTab } from './unpin-tab';
 
 export const tabCommands = [
+    AssociateOpenedTabToFollowedTab,
     CloseTab,
+    DeleteRecentlyUnfollowedTab,
     DuplicateTab,
     FocusTab,
     FollowTab,
@@ -25,6 +30,7 @@ export const tabCommands = [
     PinTab,
     ReloadTab,
     RestoreFollowedTab,
+    RestoreRecentlyUnfollowedTab,
     UnfollowTab,
     UnmuteTab,
     UnpinTab,

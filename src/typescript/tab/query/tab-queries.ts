@@ -1,6 +1,8 @@
 import { GetClosedTabOpenStateByOpenId } from './get-closed-tab-open-state-by-open-id';
 import { GetFollowIdAssociatedToOpenId } from './get-follow-id-associated-to-open-id';
 import { GetOpenIdAssociatedToFollowId } from './get-open-id-associated-to-follow-id';
+import { GetRecentlyUnfollowedTabs } from './get-recently-unfollowed-tabs';
+import { GetRecentlyUnfollowedTabByFollowId } from './get-recently-unfollowed-tabs-by-follow-id';
 import { GetSessionIdAssociatedToOpenLongLivedId } from './get-session-id-associated-to-open-long-lived-id';
 import { GetTabAssociationByFollowId } from './get-tab-association-by-follow-id';
 import { GetTabAssociationByOpenId } from './get-tab-association-by-open-id';
@@ -18,17 +20,18 @@ export const tabQueries = [
     GetClosedTabOpenStateByOpenId,
     GetFollowIdAssociatedToOpenId,
     GetOpenIdAssociatedToFollowId,
+    GetRecentlyUnfollowedTabByFollowId,
+    GetRecentlyUnfollowedTabs,
     GetSessionIdAssociatedToOpenLongLivedId,
-    GetTabAssociationsWithFollowState,
-    GetTabAssociationsWithOpenState,
     GetTabAssociationByFollowId,
     GetTabAssociationByOpenId,
+    GetTabAssociationsWithFollowState,
+    GetTabAssociationsWithOpenState,
     GetTabFollowStateByFollowId,
     GetTabFollowStateWeightList,
-    GetTabFollowStates,
     GetTabFollowStatesWithOpenLongLivedId,
+    GetTabFollowStates,
     GetTabOpenStateByOpenId,
-    GetTabOpenStates,
     GetTabOpenStates,
     SearchTabFollowStates,
 ];

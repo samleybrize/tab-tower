@@ -1,23 +1,19 @@
 import * as uuid from 'uuid';
 
 import { CommandBus } from '../../bus/command-bus';
-import { EventBus } from '../../bus/event-bus';
 import { QueryBus } from '../../bus/query-bus';
 import { AssociateOpenedTabToFollowedTab } from '../command/associate-opened-tab-to-followed-tab';
 import { FollowTab } from '../command/follow-tab';
-import { TabFollowed } from '../event/tab-followed';
+import { RegisterTabFollowState } from '../command/register-tab-follow-state';
 import { TabOpenState } from '../opened-tab/tab-open-state';
 import { GetTabFollowStateWeightList } from '../query/get-tab-follow-state-weight-list';
 import { FollowedTabWeightCalculator } from './followed-tab-weight-calculator';
-import { FollowStatePersister } from './persister/follow-state-persister';
 import { TabFollowState } from './tab-follow-state';
 
 export class TabFollower {
     constructor(
-        private tabPersister: FollowStatePersister,
         private followedTabWeightCalculator: FollowedTabWeightCalculator,
         private commandBus: CommandBus,
-        private eventBus: EventBus,
         private queryBus: QueryBus,
     ) {
     }
@@ -30,11 +26,9 @@ export class TabFollower {
         }
 
         const tabFollowState = await this.createTabFollowStateFromOpenState(command.tab.openState);
-        tab.followState = tabFollowState;
-        await this.tabPersister.persist(tabFollowState);
-        this.eventBus.publish(new TabFollowed(tab));
 
-        await this.commandBus.handle(new AssociateOpenedTabToFollowedTab(tab.openState, tab.followState));
+        await this.commandBus.handle(new RegisterTabFollowState(tabFollowState));
+        await this.commandBus.handle(new AssociateOpenedTabToFollowedTab(tab.openState, tabFollowState));
     }
 
     private async createTabFollowStateFromOpenState(openState: TabOpenState): Promise<TabFollowState> {

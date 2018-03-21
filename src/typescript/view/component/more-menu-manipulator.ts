@@ -1,10 +1,12 @@
 export enum MoreActionType {
     Close = 'close',
+    Delete = 'deleteRecentlyUnfollowedTab',
     Duplicate = 'duplicate',
     Follow = 'follow',
     Move = 'move',
     Mute = 'mute',
     Reload = 'reload',
+    RestoreRecentlyUnfollowedTab = 'restoreRecentlyUnfollowedTab',
     Pin = 'pin',
     Separator = 'separator',
     Unfollow = 'unfollow',
@@ -26,11 +28,13 @@ interface MoreActionDescriptor {
 
 const moreActionDescriptors: {[index in MoreActionType]: MoreActionDescriptor} = {
     close: {cssClassName: 'closeButton', label: 'Close', iconName: 'close', isDangerous: true},
+    deleteRecentlyUnfollowedTab: {cssClassName: 'deleteRecentlyUnfollowedTabButton', label: 'Delete', iconName: 'delete', isDangerous: true},
     duplicate: {cssClassName: 'duplicateButton', label: 'Duplicate', iconName: 'content_copy', isDangerous: false},
     follow: {cssClassName: 'followButton', label: 'Follow', iconName: 'settings_backup_restore', isDangerous: false},
     move: {cssClassName: 'moveButton', label: 'Move', iconName: 'swap_vert', isDangerous: false},
     mute: {cssClassName: 'muteButton', label: 'Mute', iconName: 'volume_off', isDangerous: false},
     reload: {cssClassName: 'reloadButton', label: 'Reload', iconName: 'autorenew', isDangerous: false},
+    restoreRecentlyUnfollowedTab: {cssClassName: 'restoreRecentlyUnfollowedTabButton', label: 'Restore', iconName: 'settings_backup_restore', isDangerous: false},
     pin: {cssClassName: 'pinButton', label: 'Pin', iconName: 'stars', isDangerous: false},
     separator: {cssClassName: null, label: null, iconName: null, isDangerous: false, isSeparator: true},
     unfollow: {cssClassName: 'unfollowButton', label: 'Unfollow', iconName: 'not_interested', isDangerous: true},
@@ -127,17 +131,26 @@ export class MoreMenuManipulator {
 
     showMoreButton(row: HTMLElement) {
         const moreButton = this.getMoreButton(row);
-        moreButton.classList.remove('transparent');
+
+        if (moreButton) {
+            moreButton.classList.remove('transparent');
+        }
     }
 
     hideMoreButton(row: HTMLElement) {
         const moreButton = this.getMoreButton(row);
-        moreButton.classList.add('transparent');
+
+        if (moreButton) {
+            moreButton.classList.add('transparent');
+        }
     }
 
     enableAction(row: HTMLElement, actionType: MoreActionType) {
         const actionElement = this.getActionElement(row, actionType);
-        actionElement.classList.remove('disabled');
+
+        if (actionElement) {
+            actionElement.classList.remove('disabled');
+        }
     }
 
     private getActionElement(row: HTMLElement, actionType: MoreActionType) {
@@ -149,27 +162,39 @@ export class MoreMenuManipulator {
 
     disableAction(row: HTMLElement, actionType: MoreActionType) {
         const actionElement = this.getActionElement(row, actionType);
-        actionElement.classList.add('disabled');
+
+        if (actionElement) {
+            actionElement.classList.add('disabled');
+        }
     }
 
     isActionDisabled(row: HTMLElement, actionType: MoreActionType) {
         const actionElement = this.getActionElement(row, actionType);
 
-        return actionElement.classList.contains('disabled');
+        return actionElement ? actionElement.classList.contains('disabled') : null;
     }
 
     showAction(row: HTMLElement, actionType: MoreActionType) {
         const actionElement = this.getActionElement(row, actionType);
-        actionElement.classList.remove('transparent');
+
+        if (actionElement) {
+            actionElement.classList.remove('transparent');
+        }
     }
 
     hideAction(row: HTMLElement, actionType: MoreActionType) {
         const actionElement = this.getActionElement(row, actionType);
-        actionElement.classList.add('transparent');
+
+        if (actionElement) {
+            actionElement.classList.add('transparent');
+        }
     }
 
     triggerAction(row: HTMLElement, actionType: MoreActionType) {
         const actionElement = this.getActionElement(row, actionType);
-        actionElement.querySelector('a').click();
+
+        if (actionElement) {
+            actionElement.querySelector('a').click();
+        }
     }
 }

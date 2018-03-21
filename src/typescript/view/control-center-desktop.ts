@@ -13,6 +13,7 @@ import { ContentMessageSender } from '../message/sender/content-message-sender';
 import { SendMessageCommandHandler } from '../message/sender/send-message-command-handler';
 import { SendMessageQueryHandler } from '../message/sender/send-message-query-handler';
 import { CloseTab } from '../tab/command/close-tab';
+import { DeleteRecentlyUnfollowedTab } from '../tab/command/delete-recently-unfollowed-tab';
 import { DuplicateTab } from '../tab/command/duplicate-tab';
 import { FocusTab } from '../tab/command/focus-tab';
 import { FollowTab } from '../tab/command/follow-tab';
@@ -38,12 +39,15 @@ import { OpenedTabPinStateUpdated } from '../tab/event/opened-tab-pin-state-upda
 import { OpenedTabReaderModeStateUpdated } from '../tab/event/opened-tab-reader-mode-state-updated';
 import { OpenedTabTitleUpdated } from '../tab/event/opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from '../tab/event/opened-tab-url-updated';
+import { RecentlyUnfollowedTabAdded } from '../tab/event/recently-unfollowed-tab-added';
+import { RecentlyUnfollowedTabDeleted } from '../tab/event/recently-unfollowed-tab-deleted';
 import { TabClosed } from '../tab/event/tab-closed';
 import { tabEvents } from '../tab/event/tab-events';
 import { TabFilterRequested } from '../tab/event/tab-filter-requested';
 import { TabFollowed } from '../tab/event/tab-followed';
 import { TabOpened } from '../tab/event/tab-opened';
 import { TabUnfollowed } from '../tab/event/tab-unfollowed';
+import { GetRecentlyUnfollowedTabs } from '../tab/query/get-recently-unfollowed-tabs';
 import { GetTabAssociationByFollowId } from '../tab/query/get-tab-association-by-follow-id';
 import { GetTabAssociationByOpenId } from '../tab/query/get-tab-association-by-open-id';
 import { GetTabAssociationsWithFollowState } from '../tab/query/get-tab-associations-with-follow-state';
@@ -65,6 +69,7 @@ import { OpenedTabView } from '../view/opened-tab-view';
 import { TabCounter } from '../view/tab-counter';
 import { TabFilterView } from '../view/tab-filter-view';
 import { TabView } from '../view/tab-view';
+import { RecentlyUnfollowedTabView } from './recently-unfollowed-tab-view';
 
 const defaultFaviconUrl = '/ui/images/default-favicon.svg';
 
@@ -123,10 +128,30 @@ async function main() {
         );
     })();
 
-    const headerView = new HeaderView(followedTabView, openedTabView, document.querySelector('#header'));
+    const recentlyUnfollowedTabView = (() => {
+        const recentlyUnfollowedTabViewContainer: HTMLElement = document.querySelector('#recentlyUnfollowedTabList');
+        const indicatorManipulator = new IndicatorManipulator();
+        const moreMenuManipulator = new MoreMenuManipulator();
+        const tabFilterApplier = new TabFilterApplier(stringMatcher, recentlyUnfollowedTabViewContainer);
+        const tabMoveAction = new TabMoveAction(recentlyUnfollowedTabViewContainer);
+        const tabSelectorManipulator = new TabSelectorManipulator(recentlyUnfollowedTabViewContainer);
+        const tabTitleManipulator = new TabTitleManipulator(detectedBrowser, tabMatcher, defaultFaviconUrl);
+
+        return new RecentlyUnfollowedTabView(
+            commandBus,
+            queryBus,
+            tabCounter,
+            new TabView(indicatorManipulator, moreMenuManipulator, tabFilterApplier, tabMoveAction, tabSelectorManipulator, tabTitleManipulator, recentlyUnfollowedTabViewContainer),
+            moreMenuManipulator,
+            tabFilterApplier,
+        );
+    })();
+
+    const headerView = new HeaderView(followedTabView, openedTabView, recentlyUnfollowedTabView, document.querySelector('#header'));
 
     tabCounter.observeNumberOfFollowedTabs(headerView.notifyNumberOfFollowedTabsChanged.bind(headerView));
     tabCounter.observeNumberOfOpenedTabs(headerView.notifyNumberOfOpenedTabsChanged.bind(headerView));
+    tabCounter.observeNumberOfRecentlyUnfollowedTabs(headerView.notifyNumberOfRecentlyUnfollowedTabsChanged.bind(headerView));
 
     const objectUnserializer = new ObjectUnserializer();
     objectUnserializer.addSupportedClasses(tabCommands);
@@ -146,6 +171,7 @@ async function main() {
     messageReceiver.listen();
 
     commandBus.register(CloseTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
+    commandBus.register(DeleteRecentlyUnfollowedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(DuplicateTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(FocusTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     commandBus.register(FollowTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
@@ -161,6 +187,7 @@ async function main() {
     commandBus.register(UnpinTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
 
     queryBus.register(GetBackgroundState, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
+    queryBus.register(GetRecentlyUnfollowedTabs, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
     queryBus.register(GetTabAssociationsWithFollowState, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
     queryBus.register(GetTabAssociationsWithOpenState, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
     queryBus.register(GetTabAssociationByFollowId, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
@@ -191,6 +218,8 @@ async function main() {
     eventBus.subscribe(OpenedTabTitleUpdated, openedTabView.onOpenTabTitleUpdate, openedTabView);
     eventBus.subscribe(OpenedTabUrlUpdated, followedTabView.onOpenTabUrlUpdate, followedTabView);
     eventBus.subscribe(OpenedTabUrlUpdated, openedTabView.onOpenTabUrlUpdate, openedTabView);
+    eventBus.subscribe(RecentlyUnfollowedTabAdded, recentlyUnfollowedTabView.onRecentlyUnfollowedTabAdd, recentlyUnfollowedTabView);
+    eventBus.subscribe(RecentlyUnfollowedTabDeleted, recentlyUnfollowedTabView.onRecentlyUnfollowedTabDelete, recentlyUnfollowedTabView);
     eventBus.subscribe(TabFilterRequested, followedTabView.onTabFilterRequest, followedTabView);
     eventBus.subscribe(TabFilterRequested, openedTabView.onTabFilterRequest, openedTabView);
     eventBus.subscribe(TabUnfollowed, followedTabView.onTabUnfollow, followedTabView);
@@ -203,6 +232,7 @@ async function main() {
         tabFilterView.init();
 
         await Promise.all([
+            recentlyUnfollowedTabView.init(),
             followedTabView.init(),
             openedTabView.init(),
         ]);

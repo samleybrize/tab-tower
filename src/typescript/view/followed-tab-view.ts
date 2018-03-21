@@ -216,7 +216,7 @@ export class FollowedTabView {
         return moreMenu;
     }
 
-    private async  unfollowTabAction(tab: TabAssociation, clickedElement: HTMLAnchorElement) {
+    private async unfollowTabAction(tab: TabAssociation, clickedElement: HTMLAnchorElement) {
         const upToDateTab = await this.queryBus.query(new GetTabAssociationByFollowId(tab.followState.id));
         this.commandBus.handle(new UnfollowTab(upToDateTab));
     }
@@ -257,7 +257,7 @@ export class FollowedTabView {
         this.commandBus.handle(new ReloadTab(tab.openState.id));
     }
 
-    private async  closeTabAction(tab: TabAssociation, clickedElement: HTMLAnchorElement) {
+    private async closeTabAction(tab: TabAssociation, clickedElement: HTMLAnchorElement) {
         const upToDateTab = await this.queryBus.query(new GetTabAssociationByFollowId(tab.followState.id));
 
         if (null == upToDateTab.openState) {

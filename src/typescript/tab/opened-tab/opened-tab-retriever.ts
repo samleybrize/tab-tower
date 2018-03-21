@@ -4,6 +4,7 @@ import { TabClosed } from '../event/tab-closed';
 import { TabOpened } from '../event/tab-opened';
 import { PrivilegedUrlDetector } from '../privileged-url-detector';
 import { GetTabOpenStateByOpenId } from '../query/get-tab-open-state-by-open-id';
+import { GetTabOpenStateByOpenLongLivedId } from '../query/get-tab-open-state-by-open-long-lived-id';
 import { GetTabOpenStates } from '../query/get-tab-open-states';
 import { TabOpenState } from './tab-open-state';
 
@@ -121,15 +122,27 @@ export class OpenedTabRetriever {
     }
 
     async queryById(query: GetTabOpenStateByOpenId): Promise<TabOpenState> {
+        return this.getById(query.openId);
+    }
+
+    private async getById(openId: number) {
         let rawTab: browser.tabs.Tab;
 
         try {
             // a not found id throws an error
-            rawTab = await browser.tabs.get(query.openId);
+            rawTab = await browser.tabs.get(openId);
         } catch (error) {
             return null;
         }
 
         return await this.createTab(rawTab);
+    }
+
+    async queryByLongLivedId(query: GetTabOpenStateByOpenLongLivedId): Promise<TabOpenState> {
+        const openId = this.longLivedIdMap.get(query.openLongLivedId);
+
+        if (openId) {
+            return this.getById(openId);
+        }
     }
 }

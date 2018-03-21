@@ -31,6 +31,10 @@ export class TabMoveAction {
     }
 
     createMoveBelowButton(clickCallback: MoveBelowClickCallback) {
+        if (null === clickCallback) {
+            return null;
+        }
+
         const moveBelowButton = document.createElement('a');
         moveBelowButton.classList.add('moveBelow');
         moveBelowButton.innerHTML = `Move below <i class="material-icons">arrow_downward</i>`;
@@ -44,6 +48,10 @@ export class TabMoveAction {
     }
 
     createMoveAboveOthersButton(clickCallback: MoveAboveOthersClickCallback) {
+        if (null === clickCallback) {
+            return null;
+        }
+
         const moveAboveOthersButton = document.createElement('a');
         moveAboveOthersButton.classList.add('moveAboveOthers');
         moveAboveOthersButton.innerHTML = `Move above others <i class="material-icons">arrow_downward</i>`;

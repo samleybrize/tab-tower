@@ -11,6 +11,8 @@ import { OpenedTabPinStateUpdated } from './opened-tab-pin-state-updated';
 import { OpenedTabReaderModeStateUpdated } from './opened-tab-reader-mode-state-updated';
 import { OpenedTabTitleUpdated } from './opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from './opened-tab-url-updated';
+import { RecentlyUnfollowedTabAdded } from './recently-unfollowed-tab-added';
+import { RecentlyUnfollowedTabDeleted } from './recently-unfollowed-tab-deleted';
 import { TabCloseHandled } from './tab-close-handled';
 import { TabClosed } from './tab-closed';
 import { TabFilterRequested } from './tab-filter-requested';
@@ -32,6 +34,8 @@ export const tabEvents = [
     OpenedTabReaderModeStateUpdated,
     OpenedTabTitleUpdated,
     OpenedTabUrlUpdated,
+    RecentlyUnfollowedTabAdded,
+    RecentlyUnfollowedTabDeleted,
     TabCloseHandled,
     TabClosed,
     TabFilterRequested,

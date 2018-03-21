@@ -15,7 +15,10 @@ export class TabTitleManipulator {
             <span></span>
             <em></em>
         `;
-        linkElement.addEventListener('click', () => clickCallback(linkElement));
+
+        if (clickCallback) {
+            linkElement.addEventListener('click', () => clickCallback(linkElement));
+        }
 
         const imgElement = linkElement.querySelector('img');
         imgElement.addEventListener('error', (event) => {

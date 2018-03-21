@@ -50,12 +50,15 @@ export class TabView {
         await this.playPendingTasks();
     }
 
-    init(moreMenu: MoreMenu, moveAboveOthersCallback: MoveAboveOthersClickCallback) {
+    init(moreMenu: MoreMenu, moveAboveOthersCallback?: MoveAboveOthersClickCallback) {
         const idsPrefix = 'general-' + ('' + Math.random()).substr(2);
 
         const headRow = this.theadElement.querySelector('tr');
-        const moveAboveOthersButton = this.tabMoveAction.createMoveAboveOthersButton(moveAboveOthersCallback);
-        this.theadElement.querySelector('.indicators').appendChild(moveAboveOthersButton);
+
+        if (moveAboveOthersCallback) {
+            const moveAboveOthersButton = this.tabMoveAction.createMoveAboveOthersButton(moveAboveOthersCallback);
+            this.theadElement.querySelector('.indicators').appendChild(moveAboveOthersButton);
+        }
 
         const generalSelectorCell = this.createGeneralSelectorCell(idsPrefix);
         const generalSelectorOldCell = headRow.querySelector('th:nth-child(1)');
@@ -140,7 +143,7 @@ export class TabView {
         indicatorList: HTMLElement[],
         moreMenu: MoreMenu,
         titleClickCallback: TabTitleClickCallback,
-        moveBelowCallback: MoveBelowClickCallback,
+        moveBelowCallback?: MoveBelowClickCallback,
     ): TabRow {
         const row = document.createElement('tr');
         row.classList.add('filtrable');
@@ -266,11 +269,13 @@ export class TabView {
         return cell;
     }
 
-    createIndicatorsCell(indicatorList: HTMLElement[], moveBelowHandler: MoveBelowClickCallback): HTMLElement {
-        const moveBelowButton = this.tabMoveAction.createMoveBelowButton(moveBelowHandler);
-
+    createIndicatorsCell(indicatorList: HTMLElement[], moveBelowHandler?: MoveBelowClickCallback): HTMLElement {
         const cell = this.createCell('indicators');
-        cell.appendChild(moveBelowButton);
+
+        if (moveBelowHandler) {
+            const moveBelowButton = this.tabMoveAction.createMoveBelowButton(moveBelowHandler);
+            cell.appendChild(moveBelowButton);
+        }
 
         for (const indicatorElement of indicatorList) {
             cell.appendChild(indicatorElement);

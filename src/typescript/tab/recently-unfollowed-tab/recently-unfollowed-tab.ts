@@ -5,7 +5,8 @@ export class RecentlyUnfollowedTab {
     }
 
     static fromObject(sourceObject: any): RecentlyUnfollowedTab {
-        const recentlyUnfollowedTab = new RecentlyUnfollowedTab(sourceObject.followState, sourceObject.unfollowedAt);
+        const followState = TabFollowState.fromObject(sourceObject.followState);
+        const recentlyUnfollowedTab = new RecentlyUnfollowedTab(followState, sourceObject.unfollowedAt);
 
         return recentlyUnfollowedTab;
     }

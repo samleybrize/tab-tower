@@ -94,7 +94,9 @@ export class IndicatorManipulator {
         let classToAdd: string;
         let classToRemove: string;
 
-        if (isOn) {
+        if (null == indicatorElement) {
+            return;
+        } else if (isOn) {
             classToAdd = 'on';
             classToRemove = 'off';
         } else {

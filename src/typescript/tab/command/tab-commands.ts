@@ -9,6 +9,7 @@ import { MoveFollowedTabs } from './move-followed-tabs';
 import { MoveOpenedTabs } from './move-opened-tabs';
 import { MuteTab } from './mute-tab';
 import { PinTab } from './pin-tab';
+import { RegisterTabFollowState } from './register-tab-follow-state';
 import { ReloadTab } from './reload-tab';
 import { RestoreFollowedTab } from './restore-followed-tab';
 import { RestoreRecentlyUnfollowedTab } from './restore-recently-unfollowed-tab';
@@ -28,6 +29,7 @@ export const tabCommands = [
     MoveOpenedTabs,
     MuteTab,
     PinTab,
+    RegisterTabFollowState,
     ReloadTab,
     RestoreFollowedTab,
     RestoreRecentlyUnfollowedTab,

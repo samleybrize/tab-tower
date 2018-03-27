@@ -6,6 +6,7 @@ import { ExtensionUrl } from '../utils/extension-url';
 import { FirefoxConfig } from '../webdriver/firefox-config';
 import { FollowedTabsTestHelper } from '../webdriver/test-helper/followed-tabs-test-helper';
 import { OpenedTabsTestHelper } from '../webdriver/test-helper/opened-tabs-test-helper';
+import { RecentlyUnfollowedTabsTestHelper } from '../webdriver/test-helper/recently-unfollowed-tabs-test-helper';
 import { TestHelper } from '../webdriver/test-helper/test-helper';
 
 let browserInstructionSender: BrowserInstructionSender;
@@ -14,12 +15,14 @@ let firefoxConfig: FirefoxConfig;
 let testHelper: TestHelper;
 let followedTabsHelper: FollowedTabsTestHelper;
 let openedTabsHelper: OpenedTabsTestHelper;
+let recentlyUnfollowedTabsHelper: RecentlyUnfollowedTabsTestHelper;
 
 describe('Tab selecting', () => {
     before(async () => {
         testHelper = new TestHelper();
         followedTabsHelper = testHelper.getFollowedTabsHelper();
         openedTabsHelper = testHelper.getOpenedTabsHelper();
+        recentlyUnfollowedTabsHelper = testHelper.getRecentlyUnfollowedTabsHelper();
         browserInstructionSender = testHelper.getBrowserInstructionSender();
         driver = testHelper.getDriver();
         firefoxConfig = testHelper.getFirefoxConfig();
@@ -562,6 +565,342 @@ describe('Tab selecting', () => {
             await followedTabsHelper.clickOnSelectionTabUnfollowButton();
 
             await followedTabsHelper.assertNumberOfTabs(0);
+        });
+    });
+
+    describe('Recently unfollowed tabs', () => {
+        it('Clicking on an off recently unfollowed tab selector should check it', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[1]);
+
+            await testHelper.showRecentlyUnfollowedTabsList();
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[1]);
+
+            await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.assertTabSelectorIsChecked(recentlyUnfollowedTabRowList[1]);
+
+            await testHelper.takeViewportScreenshot('tab-selector-checked-recently-unfollow-list');
+        });
+
+        it('Clicking on an on recently unfollowed tab selector should uncheck it', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[1]);
+
+            await testHelper.showRecentlyUnfollowedTabsList();
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[1]);
+
+            await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(recentlyUnfollowedTabRowList[1]);
+
+            await testHelper.takeViewportScreenshot('tab-selector-unchecked-recently-unfollow-list');
+        });
+
+        it('Clicking on the general recently unfollowed tab selector when it is off should check all recently unfollowed tab selectors', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[1]);
+
+            await testHelper.showRecentlyUnfollowedTabsList(true);
+            await recentlyUnfollowedTabsHelper.clickOnGeneralTabSelector();
+
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.assertGeneralTabSelectorIsChecked();
+            await recentlyUnfollowedTabsHelper.assertTabSelectorIsChecked(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.assertTabSelectorIsChecked(recentlyUnfollowedTabRowList[1]);
+
+            await testHelper.takeViewportScreenshot('title-tab-selector-checked-recently-unfollow-list');
+        });
+
+        it('Clicking on the general recently unfollowed tab selector when it is on should uncheck all recently unfollowed tab selectors', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[1]);
+
+            await testHelper.showRecentlyUnfollowedTabsList(true);
+            await recentlyUnfollowedTabsHelper.clickOnGeneralTabSelector();
+            await recentlyUnfollowedTabsHelper.clickOnGeneralTabSelector();
+
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.assertGeneralTabSelectorIsNotChecked();
+            await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(recentlyUnfollowedTabRowList[1]);
+        });
+
+        it('Unchecking all recently unfollowed tab selectors when the general recently unfollowed tab selector is on should uncheck the general recently unfollowed tab selector', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[1]);
+
+            await testHelper.showRecentlyUnfollowedTabsList(true);
+            await recentlyUnfollowedTabsHelper.clickOnGeneralTabSelector();
+
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[1]);
+
+            await recentlyUnfollowedTabsHelper.assertGeneralTabSelectorIsNotChecked();
+        });
+
+        it('Checking a recently unfollowed tab selector should reveal the selection more button', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[1]);
+
+            await testHelper.showRecentlyUnfollowedTabsList();
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[1]);
+
+            await recentlyUnfollowedTabsHelper.assertSelectionTabMoreButtonIsVisible();
+        });
+
+        it('Unchecking all recently unfollowed tab selectors should unreveal the selection more button', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[1]);
+
+            await testHelper.showRecentlyUnfollowedTabsList();
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[1]);
+
+            await recentlyUnfollowedTabsHelper.assertSelectionTabMoreButtonIsNotVisible();
+        });
+
+        it('Unchecking a recently unfollowed tab selector and leaving one on should not unreveal the selection more button', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[1]);
+
+            await testHelper.showRecentlyUnfollowedTabsList();
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[1]);
+
+            await recentlyUnfollowedTabsHelper.assertSelectionTabMoreButtonIsVisible();
+        });
+
+        it('Checking the general recently unfollowed tab selector should reveal the selection more button', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[1]);
+
+            await testHelper.showRecentlyUnfollowedTabsList(true);
+            await recentlyUnfollowedTabsHelper.clickOnGeneralTabSelector();
+
+            await recentlyUnfollowedTabsHelper.assertSelectionTabMoreButtonIsVisible();
+        });
+
+        it('Unchecking the general recently unfollowed tab selector should unreveal the selection more button', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[1]);
+
+            await testHelper.showRecentlyUnfollowedTabsList(true);
+            await recentlyUnfollowedTabsHelper.clickOnGeneralTabSelector();
+            await recentlyUnfollowedTabsHelper.clickOnGeneralTabSelector();
+
+            await recentlyUnfollowedTabsHelper.assertSelectionTabMoreButtonIsNotVisible();
+        });
+
+        it('Clicking on an off recently unfollowed tab selector with shift pressed should check selectors from it to the last clicked', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[4]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[3]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[4]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[3]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[1]);
+
+            await testHelper.showRecentlyUnfollowedTabsList();
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.shiftClickOnTabSelector(recentlyUnfollowedTabRowList[3]);
+
+            await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.assertTabSelectorIsChecked(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.assertTabSelectorIsChecked(recentlyUnfollowedTabRowList[2]);
+            await recentlyUnfollowedTabsHelper.assertTabSelectorIsChecked(recentlyUnfollowedTabRowList[3]);
+        });
+
+        it('Clicking on an on recently unfollowed tab selector with shift pressed should uncheck selectors from it to the last clicked', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[4]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[3]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[4]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[3]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[1]);
+
+            await testHelper.showRecentlyUnfollowedTabsList();
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[2]);
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[3]);
+
+            await recentlyUnfollowedTabsHelper.shiftClickOnTabSelector(recentlyUnfollowedTabRowList[1]);
+
+            await recentlyUnfollowedTabsHelper.assertTabSelectorIsChecked(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(recentlyUnfollowedTabRowList[2]);
+            await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(recentlyUnfollowedTabRowList[3]);
+        });
+
+        it('The selection more button should be unrevealed when a selected recently unfollowed tab is removed and there is no remaining selected recently unfollowed tab', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[1]);
+
+            await testHelper.showRecentlyUnfollowedTabsList();
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.clickOnTabDeleteButton(recentlyUnfollowedTabRowList[0]);
+
+            await recentlyUnfollowedTabsHelper.waitThatSelectionTabMoreButtonIsFullyHidden();
+            await recentlyUnfollowedTabsHelper.assertSelectionTabMoreButtonIsNotVisible();
+        });
+
+        it('No recently unfollowed tab selector should be checked at startup', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[1]);
+
+            await testHelper.showRecentlyUnfollowedTabsList();
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[1]);
+
+            await testHelper.reloadTab(0);
+
+            const newRecentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(newRecentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(newRecentlyUnfollowedTabRowList[1]);
+
+            await recentlyUnfollowedTabsHelper.clickOnSelectionTabMoreButton(true);
+            await testHelper.takeViewportScreenshot('title-more-dropdown-recently-unfollow-list');
+        });
+
+        it('Clicking on the selection restore button should restore selected recently unfollowed tabs', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[1]);
+
+            await testHelper.showRecentlyUnfollowedTabsList();
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.clickOnSelectionTabRestoreButton();
+
+            await recentlyUnfollowedTabsHelper.assertNumberOfTabs(0);
+
+            await testHelper.showFollowedTabsList();
+            await followedTabsHelper.assertNumberOfTabs(2);
+        });
+
+        it('Clicking on the selection delete button should delete selected recently unfollowed tabs', async () => {
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
+            await testHelper.openTab(firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_2));
+
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabFollowButton(openedTabRowList[1]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[1]);
+
+            await testHelper.showRecentlyUnfollowedTabsList();
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.clickOnSelectionTabDeleteButton();
+
+            await recentlyUnfollowedTabsHelper.assertNumberOfTabs(0);
         });
     });
 });

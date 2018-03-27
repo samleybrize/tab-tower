@@ -16,6 +16,9 @@ const controlCenterDesktopEntries = [
 ];
 
 if ('test' == process.env.NODE_ENV) {
+    backgroundEntries.unshift('./tests/utils/declare-test-environment.ts');
+    controlCenterDesktopEntries.unshift('./tests/utils/declare-test-environment.ts');
+
     backgroundEntries.push('./tests/utils/browser-instruction-receiver.ts');
     controlCenterDesktopEntries.push('./tests/utils/test-tab-opener.ts');
 }

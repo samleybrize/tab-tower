@@ -11,6 +11,7 @@ import { WebDriverRetriever } from '../webdriver-retriever';
 import { FollowedTabsTestHelper } from './followed-tabs-test-helper';
 import { NavigationTestHelper } from './navigation-test-helper';
 import { OpenedTabsTestHelper } from './opened-tabs-test-helper';
+import { RecentlyUnfollowedTabsTestHelper } from './recently-unfollowed-tabs-test-helper';
 import { TabFilterTestHelper } from './tab-filter-test-helper';
 import { TabsTestHelper } from './tabs-test-helper';
 
@@ -23,6 +24,7 @@ export class TestHelper {
     private tabsTestHelper: TabsTestHelper;
     private openedTabsTestHelper: OpenedTabsTestHelper;
     private followedTabsTestHelper: FollowedTabsTestHelper;
+    private recentlyUnfollowedTabsTestHelper: RecentlyUnfollowedTabsTestHelper;
     private navigationTestHelper: NavigationTestHelper;
     private screenshotTaker: ScreenshotTaker;
     private tabFilterTestHelper: TabFilterTestHelper;
@@ -40,6 +42,7 @@ export class TestHelper {
         this.tabsTestHelper = new TabsTestHelper(this.driver, this.browserInstructionSender);
         this.openedTabsTestHelper = new OpenedTabsTestHelper(this.tabsTestHelper, this.driver, this.browserInstructionSender);
         this.followedTabsTestHelper = new FollowedTabsTestHelper(this.tabsTestHelper, this.driver, this.browserInstructionSender);
+        this.recentlyUnfollowedTabsTestHelper = new RecentlyUnfollowedTabsTestHelper(this.tabsTestHelper, this.driver, this.browserInstructionSender);
         this.navigationTestHelper = new NavigationTestHelper(this.driver, this.screenshotTaker);
         this.tabFilterTestHelper = new TabFilterTestHelper(this.driver, this.browserInstructionSender, this.screenshotTaker);
     }
@@ -70,6 +73,10 @@ export class TestHelper {
 
     getFollowedTabsHelper() {
         return this.followedTabsTestHelper;
+    }
+
+    getRecentlyUnfollowedTabsHelper() {
+        return this.recentlyUnfollowedTabsTestHelper;
     }
 
     getNavigationHelper() {
@@ -359,6 +366,16 @@ export class TestHelper {
         const followedTabListElement = this.driver.findElement(By.css('#followedTabList'));
         await this.driver.findElement(By.css('#header .followedTabs')).click();
         await this.driver.wait(until.elementIsVisible(followedTabListElement), 3000);
+
+        if (waitFullyVisible) {
+            await sleep(500);
+        }
+    }
+
+    async showRecentlyUnfollowedTabsList(waitFullyVisible?: boolean) {
+        const recentlyUnfollowedTabListElement = this.driver.findElement(By.css('#recentlyUnfollowedTabList'));
+        await this.driver.findElement(By.css('#header .recentlyUnfollowedTabs')).click();
+        await this.driver.wait(until.elementIsVisible(recentlyUnfollowedTabListElement), 3000);
 
         if (waitFullyVisible) {
             await sleep(500);

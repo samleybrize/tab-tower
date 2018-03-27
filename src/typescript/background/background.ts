@@ -113,7 +113,7 @@ import { GetBackgroundState } from './get-background-state';
 
 const controlCenterDesktopLabel = 'Tab Tower Control Center';
 const controlCenterDesktopUrl = browser.extension.getURL('/ui/control-center-desktop.html');
-const maximumNumberOfRecentlyUnfollowedTabs = 100;
+const maximumNumberOfRecentlyUnfollowedTabs = window.isTestEnvironment ? window.testConfiguration.maximumNumberOfRecentlyUnfollowedTabs : 100;
 
 async function main() {
     const commandBus = new CommandBus();

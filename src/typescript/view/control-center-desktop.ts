@@ -222,6 +222,7 @@ async function main() {
     eventBus.subscribe(RecentlyUnfollowedTabDeleted, recentlyUnfollowedTabView.onRecentlyUnfollowedTabDelete, recentlyUnfollowedTabView);
     eventBus.subscribe(TabFilterRequested, followedTabView.onTabFilterRequest, followedTabView);
     eventBus.subscribe(TabFilterRequested, openedTabView.onTabFilterRequest, openedTabView);
+    eventBus.subscribe(TabFilterRequested, recentlyUnfollowedTabView.onTabFilterRequest, recentlyUnfollowedTabView);
     eventBus.subscribe(TabUnfollowed, followedTabView.onTabUnfollow, followedTabView);
     eventBus.subscribe(TabUnfollowed, openedTabView.onTabUnfollow, openedTabView);
 

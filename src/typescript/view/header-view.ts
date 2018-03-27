@@ -7,7 +7,6 @@ export class HeaderView {
     private followedTabButton: HTMLElement;
     private recentlyUnfollowedTabButton: HTMLElement;
     private newTabButton: HTMLElement;
-    private breadcrumb: HTMLElement;
 
     constructor(
         private followedTabView: FollowedTabView,
@@ -19,7 +18,6 @@ export class HeaderView {
         this.followedTabButton = headerContainer.querySelector('.followedTabs');
         this.recentlyUnfollowedTabButton = headerContainer.querySelector('.recentlyUnfollowedTabs');
         this.newTabButton = headerContainer.querySelector('.newTab');
-        this.breadcrumb = headerContainer.querySelector('.brand-logo span');
     }
 
     init() {
@@ -31,8 +29,6 @@ export class HeaderView {
             this.openedTabButton.classList.add('active');
             this.followedTabButton.classList.remove('active');
             this.recentlyUnfollowedTabButton.classList.remove('active');
-
-            this.changeBreadcrumbText('Opened tabs');
         });
 
         this.followedTabButton.addEventListener('click', () => {
@@ -43,8 +39,6 @@ export class HeaderView {
             this.openedTabButton.classList.remove('active');
             this.followedTabButton.classList.add('active');
             this.recentlyUnfollowedTabButton.classList.remove('active');
-
-            this.changeBreadcrumbText('Followed tabs');
         });
 
         this.recentlyUnfollowedTabButton.addEventListener('click', () => {
@@ -55,8 +49,6 @@ export class HeaderView {
             this.openedTabButton.classList.remove('active');
             this.followedTabButton.classList.remove('active');
             this.recentlyUnfollowedTabButton.classList.add('active');
-
-            this.changeBreadcrumbText('Recently Unfollowed tabs');
         });
 
         this.newTabButton.setAttribute('data-tooltip', 'New tab');
@@ -66,16 +58,6 @@ export class HeaderView {
         });
 
         this.openedTabButton.click();
-    }
-
-    private changeBreadcrumbText(newText: string) {
-        this.breadcrumb.classList.remove('transition');
-
-        // needed to trigger the animation
-        setTimeout(() => {
-            this.breadcrumb.textContent = newText;
-            this.breadcrumb.classList.add('transition');
-        }, 0);
     }
 
     notifyNumberOfOpenedTabsChanged(counter: number) {

@@ -34,7 +34,7 @@ const moreActionDescriptors: {[index in MoreActionType]: MoreActionDescriptor} =
     move: {cssClassName: 'moveButton', label: 'Move', iconName: 'swap_vert', isDangerous: false},
     mute: {cssClassName: 'muteButton', label: 'Mute', iconName: 'volume_off', isDangerous: false},
     reload: {cssClassName: 'reloadButton', label: 'Reload', iconName: 'autorenew', isDangerous: false},
-    restoreRecentlyUnfollowedTab: {cssClassName: 'restoreRecentlyUnfollowedTabButton', label: 'Restore', iconName: 'settings_backup_restore', isDangerous: false},
+    restoreRecentlyUnfollowedTab: {cssClassName: 'restoreRecentlyUnfollowedTabButton', label: 'Move to followed tabs', iconName: 'settings_backup_restore', isDangerous: false},
     pin: {cssClassName: 'pinButton', label: 'Pin', iconName: 'stars', isDangerous: false},
     separator: {cssClassName: null, label: null, iconName: null, isDangerous: false, isSeparator: true},
     unfollow: {cssClassName: 'unfollowButton', label: 'Unfollow', iconName: 'not_interested', isDangerous: true},

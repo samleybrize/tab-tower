@@ -16,12 +16,20 @@ export class NavigationTestHelper {
         return this.driver.findElement(By.css('#followedTabList'));
     }
 
+    async getRecentlyUnfollowedTabsListElement() {
+        return this.driver.findElement(By.css('#recentlyUnfollowedTabList'));
+    }
+
     async getOpenedTabsCounterElement() {
         return this.driver.findElement(By.css('#header .openedTabs .counter'));
     }
 
     async getFollowedTabsCounterElement() {
         return this.driver.findElement(By.css('#header .followedTabs .counter'));
+    }
+
+    async getRecentlyUnfollowedTabsCounterElement() {
+        return this.driver.findElement(By.css('#header .recentlyUnfollowedTabs .counter'));
     }
 
     async clickOnOpenedTabsButton() {
@@ -40,6 +48,16 @@ export class NavigationTestHelper {
         await this.driver.findElement(By.css('#header .followedTabs')).click();
         await this.driver.wait(async () => {
             return await followedTabsListElement.isDisplayed();
+        });
+        await sleep(500);
+    }
+
+    async clickOnRecentlyUnfollowedTabsButton() {
+        const recentlyUnfollowedTabsListElement = await this.getRecentlyUnfollowedTabsListElement();
+
+        await this.driver.findElement(By.css('#header .recentlyUnfollowedTabs')).click();
+        await this.driver.wait(async () => {
+            return await recentlyUnfollowedTabsListElement.isDisplayed();
         });
         await sleep(500);
     }
@@ -76,14 +94,19 @@ export class NavigationTestHelper {
         `);
     }
 
+    async changeShownNumberOfRecentlyUnfollowedTabs(newNumber: number) {
+        await this.driver.executeScript(`
+            const element = document.querySelector('#header .recentlyUnfollowedTabs .counter');
+
+            if (element) {
+                element.innerText = '${newNumber}';
+            }
+        `);
+    }
+
     async takeHeaderScreenshot(screenshotIdentifier: string) {
         const headerElement = this.driver.findElement(By.css('#header'));
         await this.screenshotTaker.takeElement(screenshotIdentifier, headerElement);
-    }
-
-    async assertBreadcrumbText(expectedText: string) {
-        const breadcrumbElement = this.driver.findElement(By.css('#header .title span'));
-        assert.equal(await breadcrumbElement.getText(), expectedText);
     }
 
     async assertOpenedTabsListIsVisible() {
@@ -113,6 +136,21 @@ export class NavigationTestHelper {
 
     async assertFollowedTabsCounter(expectedNumber: number) {
         const followedTabsCounter = await this.getFollowedTabsCounterElement();
+        assert.equal(await followedTabsCounter.getText(), '' + expectedNumber);
+    }
+
+    async assertRecentlyUnfollowedTabsListIsVisible() {
+        const followedTabsListElement = await this.getRecentlyUnfollowedTabsListElement();
+        assert.isTrue(await followedTabsListElement.isDisplayed(), 'Recently unfollowed tab list is not visible');
+    }
+
+    async assertRecentlyUnfollowedTabsListIsNotVisible() {
+        const followedTabsListElement = await this.getRecentlyUnfollowedTabsListElement();
+        assert.isFalse(await followedTabsListElement.isDisplayed(), 'Recently unfollowed tab list is visible');
+    }
+
+    async assertRecentlyUnfollowedTabsCounter(expectedNumber: number) {
+        const followedTabsCounter = await this.getRecentlyUnfollowedTabsCounterElement();
         assert.equal(await followedTabsCounter.getText(), '' + expectedNumber);
     }
 }

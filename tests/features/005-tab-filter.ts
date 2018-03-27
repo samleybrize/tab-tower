@@ -4,6 +4,7 @@ import { ExtensionUrl } from '../utils/extension-url';
 import { FirefoxConfig } from '../webdriver/firefox-config';
 import { FollowedTabsTestHelper } from '../webdriver/test-helper/followed-tabs-test-helper';
 import { OpenedTabsTestHelper } from '../webdriver/test-helper/opened-tabs-test-helper';
+import { RecentlyUnfollowedTabsTestHelper } from '../webdriver/test-helper/recently-unfollowed-tabs-test-helper';
 import { TabFilterTestHelper } from '../webdriver/test-helper/tab-filter-test-helper';
 import { TestHelper } from '../webdriver/test-helper/test-helper';
 
@@ -12,6 +13,7 @@ let firefoxConfig: FirefoxConfig;
 let testHelper: TestHelper;
 let followedTabsHelper: FollowedTabsTestHelper;
 let openedTabsHelper: OpenedTabsTestHelper;
+let recentlyUnfollowedTabsHelper: RecentlyUnfollowedTabsTestHelper;
 let tabFilterHelper: TabFilterTestHelper;
 
 describe('Tab filter', () => {
@@ -19,6 +21,7 @@ describe('Tab filter', () => {
         testHelper = new TestHelper();
         followedTabsHelper = testHelper.getFollowedTabsHelper();
         openedTabsHelper = testHelper.getOpenedTabsHelper();
+        recentlyUnfollowedTabsHelper = testHelper.getRecentlyUnfollowedTabsHelper();
         tabFilterHelper = testHelper.getTabFilterHelper();
         driver = testHelper.getDriver();
         firefoxConfig = testHelper.getFirefoxConfig();
@@ -130,6 +133,7 @@ describe('Tab filter', () => {
         });
 
         it('Should do nothing when clicking on the reset button while the input is empty', async () => {
+            await tabFilterHelper.focusInput();
             await tabFilterHelper.clickOnResetButton();
 
             const openedTabRowList = await openedTabsHelper.getTabRowList();
@@ -245,6 +249,7 @@ describe('Tab filter', () => {
         });
 
         it('Should do nothing when clicking on the reset button while the input is empty', async () => {
+            await tabFilterHelper.focusInput();
             await tabFilterHelper.clickOnResetButton();
 
             const followedTabRowList = await followedTabsHelper.getTabRowList();
@@ -275,6 +280,123 @@ describe('Tab filter', () => {
             await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[1]);
             await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[2]);
             await followedTabsHelper.assertNoTabRowIsNotVisible();
+        });
+    });
+
+    describe('Recently unfollowed tabs', () => {
+        before(async () => {
+            await testHelper.showOpenedTabsList();
+            const openedTabRowList = await openedTabsHelper.getTabRowList();
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[3]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[2]);
+            await openedTabsHelper.clickOnTabUnfollowButton(openedTabRowList[1]);
+
+            await testHelper.showRecentlyUnfollowedTabsList();
+        });
+
+        it('Should filter recently unfollowed tabs by title on input with one word', async () => {
+            await tabFilterHelper.sendTextToInput('azerty');
+
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.assertTabRowIsNotVisible(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsNotVisible(recentlyUnfollowedTabRowList[2]);
+            await recentlyUnfollowedTabsHelper.assertNoTabRowIsNotVisible();
+        });
+
+        it('Should filter recently unfollowed tabs by title on input with two word', async () => {
+            await tabFilterHelper.sendTextToInput('azerty qwerty');
+
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.assertTabRowIsNotVisible(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[2]);
+            await recentlyUnfollowedTabsHelper.assertNoTabRowIsNotVisible();
+        });
+
+        it('Should filter recently unfollowed tabs by url on input with one word', async () => {
+            await tabFilterHelper.sendTextToInput('some');
+
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.assertTabRowIsNotVisible(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsNotVisible(recentlyUnfollowedTabRowList[2]);
+            await recentlyUnfollowedTabsHelper.assertNoTabRowIsNotVisible();
+        });
+
+        it('Should filter recently unfollowed tabs by url on input with two word', async () => {
+            await tabFilterHelper.sendTextToInput('some other');
+
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.assertTabRowIsNotVisible(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[2]);
+            await recentlyUnfollowedTabsHelper.assertNoTabRowIsNotVisible();
+        });
+
+        it('Should filter recently unfollowed tabs by url with protocol ignored', async () => {
+            await tabFilterHelper.sendTextToInput('moz-extension');
+
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.assertTabRowIsNotVisible(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsNotVisible(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsNotVisible(recentlyUnfollowedTabRowList[2]);
+            await recentlyUnfollowedTabsHelper.assertNoTabRowIsVisible();
+        });
+
+        it('Should show the no tab row in recently unfollowed tabs list when the filter do not match any tab', async () => {
+            await tabFilterHelper.sendTextToInput('unknown');
+
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.assertTabRowIsNotVisible(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsNotVisible(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsNotVisible(recentlyUnfollowedTabRowList[2]);
+            await recentlyUnfollowedTabsHelper.assertNoTabRowIsVisible();
+        });
+
+        it('Should disable filter when clearing the input', async () => {
+            await tabFilterHelper.sendTextToInput('some');
+            await tabFilterHelper.clearInput();
+
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[2]);
+            await recentlyUnfollowedTabsHelper.assertNoTabRowIsNotVisible();
+        });
+
+        it('Should do nothing when clicking on the reset button while the input is empty', async () => {
+            await tabFilterHelper.focusInput();
+            await tabFilterHelper.clickOnResetButton();
+
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[2]);
+            await recentlyUnfollowedTabsHelper.assertNoTabRowIsNotVisible();
+        });
+
+        it('Should disable filter when the reset button is clicked', async () => {
+            await tabFilterHelper.sendTextToInput('some');
+            await tabFilterHelper.clickOnResetButton();
+
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[2]);
+            await recentlyUnfollowedTabsHelper.assertNoTabRowIsNotVisible();
+        });
+
+        it('Should filter at startup when the input is not empty', async () => {
+            await tabFilterHelper.sendTextToInput('some');
+            await testHelper.reloadTab(0);
+            await testHelper.showRecentlyUnfollowedTabsList();
+
+            const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
+            await recentlyUnfollowedTabsHelper.assertTabRowIsNotVisible(recentlyUnfollowedTabRowList[0]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.assertTabRowIsNotVisible(recentlyUnfollowedTabRowList[2]);
+            await recentlyUnfollowedTabsHelper.assertNoTabRowIsNotVisible();
         });
     });
 

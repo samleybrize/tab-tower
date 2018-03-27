@@ -3,3 +3,4 @@
 /node_modules
 /tests/screenshots/*
 !/tests/screenshots/.gitkeep
+yarn-error.log

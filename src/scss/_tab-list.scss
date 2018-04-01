@@ -21,6 +21,17 @@ $selected-row-left-border-width: 8px;
                     cursor: pointer;
                 }
             }
+
+            .more {
+                margin-top: -8px;
+                margin-bottom: -8px;
+            }
+
+            .tabSelector {
+                position: relative;
+                top: 3px;
+                left: 2px;
+            }
         }
     }
 
@@ -73,18 +84,6 @@ $selected-row-left-border-width: 8px;
         display: block;
         animation-duration: 0.6s;
         animation-name: viewShow;
-    }
-
-    .generalTabSelector {
-        text-align: center;
-        transition: opacity 0.3s ease;
-
-        label {
-            height: 21px;
-            padding-left: 21px;
-            vertical-align: middle;
-            transform: scale(0.9);
-        }
     }
 
     .tabSelector {

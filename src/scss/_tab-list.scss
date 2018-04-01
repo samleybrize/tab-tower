@@ -117,16 +117,21 @@ $selected-row-left-border-width: 8px;
     .title {
         display: block;
         color: #444;
+        white-space: nowrap;
         cursor: pointer;
 
         img {
+            position: relative;
+            top: 4px;
             height: 16px;
             margin-right: 8px;
-            vertical-align: middle;
+            vertical-align: top;
         }
 
         span {
+            display: inline-block;
             word-break: break-all;
+            white-space: normal;
             vertical-align: middle;
         }
 
@@ -137,6 +142,7 @@ $selected-row-left-border-width: 8px;
             font-size: 11px;
             color: #a2a2a2;
             word-break: break-all;
+            white-space: normal;
         }
     }
 

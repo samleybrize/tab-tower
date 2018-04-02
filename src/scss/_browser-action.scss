@@ -1,0 +1,64 @@
+#browserAction {
+    min-width: 300px;
+    text-align: center;
+    white-space: nowrap;
+
+    .currentTabNotFollowed,
+    .currentTabFollowed {
+        text-align: center;
+
+        &.transparent {
+            display: none;
+        }
+
+        .followIndicator {
+            padding: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            color: white;
+            text-align: center;
+        }
+
+        i {
+            font-size: 20px;
+            vertical-align: middle;
+        }
+
+        button {
+            margin-bottom: 20px;
+
+            span {
+                vertical-align: middle;
+            }
+        }
+    }
+
+    .currentTabFollowed {
+        .followIndicator {
+            background: #42a5f5; // blue lighten-1
+        }
+    }
+
+    .currentTabNotFollowed {
+        .followIndicator {
+            background: #ff9800; // orange
+        }
+    }
+
+    .goToControlCenter {
+        display: block;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        margin-right: 5px;
+        margin-left: 5px;
+        font-weight: 500;
+        text-align: center;
+        cursor: pointer;
+        border-top: 1px solid #ccc;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}

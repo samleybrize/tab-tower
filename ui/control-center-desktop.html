@@ -9,69 +9,71 @@
 </head>
 
 <body>
-    <div id="loading">
-        <div class="preloader-wrapper big active preloader">
-            <div class="spinner-layer spinner-blue-only">
-                <div class="circle-clipper left">
-                    <div class="circle"></div>
-                </div>
-                <div class="gap-patch">
-                    <div class="circle"></div>
-                </div>
-                <div class="circle-clipper right">
-                    <div class="circle"></div>
+    <div id="controlCenterDesktop">
+        <div id="loading">
+            <div class="preloader-wrapper big active preloader">
+                <div class="spinner-layer spinner-blue-only">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div id="header" class="navbar-fixed">
-        <nav>
-            <div class="nav-wrapper">
-                <span class="brand-logo title">
-                    <img src="/icons/tab-tower.svg" /> Tab Tower
-                </span>
-                <ul class="right hide-on-med-and-down">
-                    <li>
-                        <div id="headerTabFilter" class="input-field collapsed">
-                            <input id="headerTabFilterInput" type="search" />
-                            <label class="label-icon" for="headerTabFilterInput">
-                                <i class="material-icons">search</i>
-                            </label>
-                            <i class="material-icons resetButton">close</i>
-                        </div>
-                    </li>
-                    <li class="newTab waves-effect waves-light">
-                        <a>
-                            <i class="material-icons">add</i>
-                        </a>
-                    </li>
-                    <li class="openedTabs waves-effect waves-light">
-                        <a>
-                            Opened tabs
-                            <span class="counter" data-badge-caption="">0</span>
-                        </a>
-                    </li>
-                    <li class="followedTabs waves-effect waves-light">
-                        <a>
-                            Followed tabs
-                            <span class="counter" data-badge-caption="">0</span>
-                        </a>
-                    </li>
-                    <li class="recentlyUnfollowedTabs waves-effect waves-light">
-                        <a>
-                            Recently unfollowed tabs
-                            <span class="counter" data-badge-caption="">0</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    </div>
+        <div id="header" class="navbar-fixed">
+            <nav>
+                <div class="nav-wrapper">
+                    <span class="brand-logo title">
+                        <img src="/icons/tab-tower.svg" /> Tab Tower
+                    </span>
+                    <ul class="right hide-on-med-and-down">
+                        <li>
+                            <div id="headerTabFilter" class="input-field collapsed">
+                                <input id="headerTabFilterInput" type="search" />
+                                <label class="label-icon" for="headerTabFilterInput">
+                                    <i class="material-icons">search</i>
+                                </label>
+                                <i class="material-icons resetButton">close</i>
+                            </div>
+                        </li>
+                        <li class="newTab waves-effect waves-light">
+                            <a>
+                                <i class="material-icons">add</i>
+                            </a>
+                        </li>
+                        <li class="openedTabs waves-effect waves-light">
+                            <a>
+                                Opened tabs
+                                <span class="counter" data-badge-caption="">0</span>
+                            </a>
+                        </li>
+                        <li class="followedTabs waves-effect waves-light">
+                            <a>
+                                Followed tabs
+                                <span class="counter" data-badge-caption="">0</span>
+                            </a>
+                        </li>
+                        <li class="recentlyUnfollowedTabs waves-effect waves-light">
+                            <a>
+                                Recently unfollowed tabs
+                                <span class="counter" data-badge-caption="">0</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
 
-    <div id="openedTabList"></div>
-    <div id="followedTabList"></div>
-    <div id="recentlyUnfollowedTabList"></div>
+        <div id="openedTabList"></div>
+        <div id="followedTabList"></div>
+        <div id="recentlyUnfollowedTabList"></div>
+    </div>
 
     <script src="/dist/js/control-center-desktop.js"></script>
 </body>

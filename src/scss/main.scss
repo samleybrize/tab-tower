@@ -8,12 +8,14 @@ $dropdown-color: #444;
 @import 'materialize';
 @import 'material-icons';
 @import 'animations';
+@import 'browser-action';
+@import 'control-center-desktop';
 @import 'header';
 @import 'loading';
 @import 'tables';
 @import 'tab-list';
 
+html,
 body {
-    padding-bottom: 20px;
-    background: #fafafa;
+    height: 100%;
 }

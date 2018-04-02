@@ -17,12 +17,14 @@
         "96": "icons/tab-tower.svg"
     },
     "browser_action": {
+        "browser_style": false,
+        "default_popup": "ui/browser-action.html",
+        "default_title": "Tab Tower",
         "default_icon": {
             "16": "icons/tab-tower.svg",
             "32": "icons/tab-tower.svg",
             "64": "icons/tab-tower.svg"
-        },
-        "default_title": "Tab Tower"
+        }
     },
     "background": {
         "scripts": [

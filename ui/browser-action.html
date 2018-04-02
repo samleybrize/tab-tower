@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Tab Tower - Browser action</title>
+    <link rel="icon" type="image/png" href="/icons/tab-tower.svg" />
+    <link rel="stylesheet" href="/dist/css/style.css" />
+</head>
+
+<body>
+    <div id="browserAction">
+        <div class="currentTabFollowed transparent">
+            <div class="followIndicator">This tab is followed</div>
+            <button class="unfollowCurrentTab btn orange">
+                <i class="material-icons">not_interested</i>
+                <span>Unfollow this tab</span>
+            </button>
+        </div>
+
+        <div class="currentTabNotFollowed transparent">
+            <div class="followIndicator">This tab is not followed</div>
+            <button class="followCurrentTab btn">
+                <i class="material-icons">settings_backup_restore</i>
+                <span>Follow this tab</span>
+            </button>
+        </div>
+
+        <a class="goToControlCenter">Go to the control center</a>
+    </div>
+
+    <script src="/dist/js/browser-action.js"></script>
+</body>
+
+</html>

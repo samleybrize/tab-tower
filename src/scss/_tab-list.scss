@@ -32,6 +32,22 @@ $selected-row-left-border-width: 8px;
                 top: 3px;
                 left: 2px;
             }
+
+            .numberOfTabsContainer,
+            .numberOfVisibleTabsContainer {
+                &.transparent {
+                    display: none;
+                }
+            }
+
+            .numberOfSelectedTabsContainer {
+                color: #2196f3; // blue
+                transition: opacity 0.3s ease;
+
+                &.transparent {
+                    opacity: 0;
+                }
+            }
         }
     }
 

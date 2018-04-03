@@ -1,6 +1,6 @@
 import { sleep } from '../../utils/sleep';
 
-export type TabSelectorNativeCheckboxStateChanged = (checkboxElement: HTMLInputElement, isChecked: boolean) => void;
+export type TabSelectorNativeCheckboxStateChanged = (checkboxElement: HTMLInputElement, isChecked: boolean, numberOfCheckedTabs: number) => void;
 export type OnTabSelectorClick = (checkboxElement: HTMLInputElement, isChecked: boolean, isThereACheckedTabSelector: boolean) => void;
 
 export class TabSelectorManipulator {
@@ -26,7 +26,8 @@ export class TabSelectorManipulator {
 
         checkboxElement.addEventListener('change', () => {
             if (onNativeCheckboxStateChange) {
-                onNativeCheckboxStateChange(checkboxElement, checkboxElement.checked);
+                const numberOfCheckedTabs = this.root.querySelectorAll('.tabSelector :checked:not(.noShiftSelect)').length;
+                onNativeCheckboxStateChange(checkboxElement, checkboxElement.checked, numberOfCheckedTabs);
             }
         });
 

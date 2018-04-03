@@ -40,6 +40,7 @@ export class RecentlyUnfollowedTabView {
 
         await this.tabView.markAsInitialized();
         this.tabCounter.setNumberOfRecentlyUnfollowedTabs(numberOfTabs);
+        this.tabView.setNumberOfTabs(numberOfTabs);
         this.tabFilterApplier.applyFilter();
         this.tabView.showNoTabRowIfTableIsEmpty();
     }
@@ -131,6 +132,7 @@ export class RecentlyUnfollowedTabView {
         this.moreMenuManipulator.initMoreDropdown(row);
         this.tabFilterApplier.applyFilter();
         this.tabCounter.incrementNumberOfRecentlyUnfollowedTabs();
+        this.tabView.incrementNumberOfTabs();
     }
 
     private insertRowAtFirstPosition(rowToInsert: HTMLElement) {
@@ -160,6 +162,7 @@ export class RecentlyUnfollowedTabView {
             this.tabView.showOrHideSelectionActionsDependingOfSelectedTabs();
             this.tabView.showNoTabRowIfTableIsEmpty();
             this.tabCounter.decrementNumberOfRecentlyUnfollowedTabs();
+            this.tabView.decrementNumberOfTabs();
         }
     }
 

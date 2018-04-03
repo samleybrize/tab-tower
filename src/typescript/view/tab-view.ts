@@ -18,6 +18,12 @@ interface TabRow {
 export class TabView {
     readonly tbodyElement: HTMLElement;
     readonly theadElement: HTMLElement;
+    readonly numberOfTabsElement: HTMLElement;
+    readonly numberOfTabsContainerElement: HTMLElement;
+    readonly numberOfVisibleTabsElement: HTMLElement;
+    readonly numberOfVisibleTabsContainerElement: HTMLElement;
+    readonly numberOfSelectedTabsElement: HTMLElement;
+    readonly numberOfSelectedTabsContainerElement: HTMLElement;
     readonly noTabRow: HTMLElement;
     private pendingTasks: Array<() => void> = [];
     private isInitialized = false;
@@ -40,6 +46,12 @@ export class TabView {
 
         this.tbodyElement = tableElement.querySelector('tbody');
         this.theadElement = tableElement.querySelector('thead');
+        this.numberOfTabsContainerElement = this.theadElement.querySelector('.numberOfTabsContainer');
+        this.numberOfTabsElement = this.numberOfTabsContainerElement.querySelector('.numberOfTabs');
+        this.numberOfVisibleTabsContainerElement = this.theadElement.querySelector('.numberOfVisibleTabsContainer');
+        this.numberOfVisibleTabsElement = this.numberOfVisibleTabsContainerElement.querySelector('.numberOfVisibleTabs');
+        this.numberOfSelectedTabsContainerElement = this.theadElement.querySelector('.numberOfSelectedTabsContainer');
+        this.numberOfSelectedTabsElement = this.numberOfSelectedTabsContainerElement.querySelector('.numberOfSelectedTabs');
 
         this.noTabRow = this.createNoTabRow();
         this.tbodyElement.appendChild(this.noTabRow);
@@ -70,8 +82,17 @@ export class TabView {
 
         this.tabFilterApplier.init(
             () => this.isInitialized,
-            () => {
+            (numberOfVisibleTabs, totalNumberOfTabs) => {
                 this.showNoTabRowIfTableIsEmpty();
+                this.numberOfVisibleTabsElement.textContent = '' + numberOfVisibleTabs;
+
+                if (numberOfVisibleTabs == totalNumberOfTabs) {
+                    this.numberOfVisibleTabsContainerElement.classList.add('transparent');
+                    this.numberOfTabsContainerElement.classList.remove('transparent');
+                } else {
+                    this.numberOfVisibleTabsContainerElement.classList.remove('transparent');
+                    this.numberOfTabsContainerElement.classList.add('transparent');
+                }
             },
         );
     }
@@ -84,7 +105,17 @@ export class TabView {
             <thead>
                 <tr>
                     <th></th>
-                    <th>Title</th>
+                    <th>
+                        <span class="numberOfTabsContainer">
+                            <span class="numberOfTabs">0</span> tabs
+                        </span>
+                        <span class="numberOfVisibleTabsContainer transparent">
+                            <span class="numberOfVisibleTabs">0</span> tabs (filtered)
+                        </span>
+                        <span class="numberOfSelectedTabsContainer transparent">
+                            &bull; <span class="numberOfSelectedTabs">0</span> selected
+                        </span>
+                    </th>
                     <th class="indicators"></th>
                     <th class="lastAccess">Last access</th>
                     <th class="actions"></th>
@@ -190,12 +221,14 @@ export class TabView {
     }
 
     createTabSelectorCell(row: HTMLElement, idsPrefix: string): HTMLElement {
-        const onCheckboxStateChange: TabSelectorNativeCheckboxStateChanged = (checkboxElement, isChecked) => {
+        const onCheckboxStateChange: TabSelectorNativeCheckboxStateChanged = (checkboxElement, isChecked, numberOfCheckedTabs) => {
             if (isChecked) {
                 row.classList.add('selected');
             } else {
                 row.classList.remove('selected');
             }
+
+            this.updateNumberOfSelectedTabs(numberOfCheckedTabs);
         };
         const onSelectorLabelClick: OnTabSelectorClick = async (checkboxElement, isChecked, isThereACheckedTabSelector) => {
             if (isChecked) {
@@ -213,6 +246,16 @@ export class TabView {
         cell.appendChild(beingMovedIndicator);
 
         return cell;
+    }
+
+    private updateNumberOfSelectedTabs(numberOfSelectedTabs: number) {
+        this.numberOfSelectedTabsElement.textContent = '' + numberOfSelectedTabs;
+
+        if (numberOfSelectedTabs <= 0) {
+            this.numberOfSelectedTabsContainerElement.classList.add('transparent');
+        } else {
+            this.numberOfSelectedTabsContainerElement.classList.remove('transparent');
+        }
     }
 
     createGeneralSelectorCell(idsPrefix: string): HTMLElement {
@@ -366,6 +409,24 @@ export class TabView {
 
     updateTabIncognitoState(row: HTMLElement, isIncognito: boolean) {
         this.indicatorManipulator.changeState(row, IndicatorType.Incognito, isIncognito);
+    }
+
+    setNumberOfTabs(numberOfTabs: number) {
+        this.numberOfTabsElement.textContent = '' + numberOfTabs;
+    }
+
+    incrementNumberOfTabs() {
+        let numberOfTabs = +this.numberOfTabsElement.textContent;
+        numberOfTabs++;
+
+        this.setNumberOfTabs(numberOfTabs);
+    }
+
+    decrementNumberOfTabs() {
+        let numberOfTabs = +this.numberOfTabsElement.textContent;
+        numberOfTabs--;
+
+        this.setNumberOfTabs(numberOfTabs);
     }
 
     addPendingTask(task: () => void) {

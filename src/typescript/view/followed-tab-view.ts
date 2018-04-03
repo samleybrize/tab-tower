@@ -79,6 +79,7 @@ export class FollowedTabView {
 
         await this.tabView.markAsInitialized();
         this.tabCounter.setNumberOfFollowedTabs(numberOfFollowedTabs);
+        this.tabView.setNumberOfTabs(numberOfFollowedTabs);
         this.tabFilterApplier.applyFilter();
         this.tabView.showNoTabRowIfTableIsEmpty();
     }
@@ -432,6 +433,7 @@ export class FollowedTabView {
         this.moreMenuManipulator.initMoreDropdown(row);
         this.tabFilterApplier.applyFilter();
         this.tabCounter.incrementNumberOfFollowedTabs();
+        this.tabView.incrementNumberOfTabs();
     }
 
     private insertRowDependingOnWeight(rowToInsert: HTMLElement, rowToInsertWeight: number) {
@@ -475,6 +477,7 @@ export class FollowedTabView {
             this.tabView.showOrHideSelectionActionsDependingOfSelectedTabs();
             this.tabView.showNoTabRowIfTableIsEmpty();
             this.tabCounter.decrementNumberOfFollowedTabs();
+            this.tabView.decrementNumberOfTabs();
         }
     }
 

@@ -1,7 +1,7 @@
 import { StringMatcher } from '../../utils/string-matcher';
 
 export type PreTabFilterCallback = () => boolean;
-export type PostTabFilterCallback = () => void;
+export type PostTabFilterCallback = (numberOfVisibleTabs: number, totalNumberOfTabs: number) => void;
 
 export class TabFilterApplier {
     private filterTerms: string[] = null;
@@ -29,12 +29,13 @@ export class TabFilterApplier {
             return;
         } else if (!this.hasFilterTerms()) {
             this.unfilterAll();
-            this.postTabFilterCallback();
+            this.postTabFilterCallback(this.getNumberOfVisibleTabs(), this.getTotalNumberOfTabs());
 
             return;
         }
 
         const filtrableElementList = Array.from<HTMLElement>(this.root.querySelectorAll('.filtrable'));
+        let totalNumberOfTabs = 0;
 
         for (const filtrableElement of filtrableElementList) {
             const matchableTexts = this.getTextsToMatch(filtrableElement);
@@ -44,9 +45,19 @@ export class TabFilterApplier {
             } else {
                 filtrableElement.classList.add('filtered');
             }
+
+            totalNumberOfTabs++;
         }
 
-        this.postTabFilterCallback();
+        this.postTabFilterCallback(this.getNumberOfVisibleTabs(), totalNumberOfTabs);
+    }
+
+    private getTotalNumberOfTabs() {
+        return this.root.querySelectorAll('.filtrable').length;
+    }
+
+    private getNumberOfVisibleTabs() {
+        return this.root.querySelectorAll('.filtrable:not(.filtered)').length;
     }
 
     private hasFilterTerms() {

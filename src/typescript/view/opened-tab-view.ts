@@ -78,6 +78,7 @@ export class OpenedTabView {
 
         await this.tabView.markAsInitialized();
         this.tabCounter.setNumberOfOpenedTabs(numberOfOpenedTabs);
+        this.tabView.setNumberOfTabs(numberOfOpenedTabs);
         this.tabFilterApplier.applyFilter();
         this.tabView.showNoTabRowIfTableIsEmpty();
     }
@@ -323,6 +324,7 @@ export class OpenedTabView {
         this.tabFilterApplier.applyFilter();
         this.tabView.showNoTabRowIfTableIsEmpty();
         this.tabCounter.incrementNumberOfOpenedTabs();
+        this.tabView.incrementNumberOfTabs();
     }
 
     private insertRowAtIndex(rowToInsert: HTMLElement, insertAtIndex: number) {
@@ -359,6 +361,7 @@ export class OpenedTabView {
             this.tabView.showOrHideSelectionActionsDependingOfSelectedTabs();
             this.tabView.showNoTabRowIfTableIsEmpty();
             this.tabCounter.decrementNumberOfOpenedTabs();
+            this.tabView.decrementNumberOfTabs();
         }
     }
 

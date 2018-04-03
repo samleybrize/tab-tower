@@ -8,6 +8,7 @@ import { ExtensionUrl } from '../../utils/extension-url';
 import { FirefoxConfig } from '../firefox-config';
 import { ScreenshotTaker } from '../screenshot-taker';
 import { WebDriverRetriever } from '../webdriver-retriever';
+import { BrowserActionTestHelper } from './browser-action-test-helper';
 import { FollowedTabsTestHelper } from './followed-tabs-test-helper';
 import { NavigationTestHelper } from './navigation-test-helper';
 import { OpenedTabsTestHelper } from './opened-tabs-test-helper';
@@ -26,6 +27,7 @@ export class TestHelper {
     private followedTabsTestHelper: FollowedTabsTestHelper;
     private recentlyUnfollowedTabsTestHelper: RecentlyUnfollowedTabsTestHelper;
     private navigationTestHelper: NavigationTestHelper;
+    private browserActionTestHelper: BrowserActionTestHelper;
     private screenshotTaker: ScreenshotTaker;
     private tabFilterTestHelper: TabFilterTestHelper;
 
@@ -44,6 +46,7 @@ export class TestHelper {
         this.followedTabsTestHelper = new FollowedTabsTestHelper(this.tabsTestHelper, this.driver, this.browserInstructionSender);
         this.recentlyUnfollowedTabsTestHelper = new RecentlyUnfollowedTabsTestHelper(this.tabsTestHelper, this.driver, this.browserInstructionSender);
         this.navigationTestHelper = new NavigationTestHelper(this.driver, this.screenshotTaker);
+        this.browserActionTestHelper = new BrowserActionTestHelper(this.driver);
         this.tabFilterTestHelper = new TabFilterTestHelper(this.driver, this.browserInstructionSender, this.screenshotTaker);
     }
 
@@ -81,6 +84,10 @@ export class TestHelper {
 
     getNavigationHelper() {
         return this.navigationTestHelper;
+    }
+
+    getBrowserActionHelper() {
+        return this.browserActionTestHelper;
     }
 
     getTabFilterHelper() {

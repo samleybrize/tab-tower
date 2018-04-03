@@ -1,5 +1,6 @@
 export class ExtensionUrl {
     static readonly CONTROL_CENTER_DESKTOP = '/ui/control-center-desktop.html';
+    static readonly BROWSER_ACTION = '/ui/browser-action.html';
     static readonly DEFAULT_FAVICON = '/ui/images/default-favicon.svg';
     static readonly EXTENSION_FAVICON = '/icons/tab-tower.svg';
 

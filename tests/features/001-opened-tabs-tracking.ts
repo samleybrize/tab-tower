@@ -47,6 +47,9 @@ describe('Opened tabs tracking', () => {
         await openedTabsHelper.assertTabFaviconUrl(openedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_1));
         await openedTabsHelper.assertTabTitleTooltip(openedTabRowList[1], 'Go to tab');
 
+        await openedTabsHelper.assertShownNumberOfTabs('2');
+        await openedTabsHelper.assertNumberOfTabsIsVisible();
+
         await testHelper.takeViewportScreenshot('opened-tabs-list');
         await openedTabsHelper.clickOnTabMoreButton(openedTabRowList[1], true);
         await testHelper.takeViewportScreenshot('close-button-visible-open-list');
@@ -107,6 +110,8 @@ describe('Opened tabs tracking', () => {
         await testHelper.closeTab(1);
 
         await openedTabsHelper.assertNumberOfTabs(1);
+        await openedTabsHelper.assertShownNumberOfTabs('1');
+        await openedTabsHelper.assertNumberOfTabsIsVisible();
     });
 
     it('No tooltip related to an opened tab should be visible when this opened tab is closed', async () => {
@@ -138,6 +143,9 @@ describe('Opened tabs tracking', () => {
         await openedTabsHelper.assertTabTitle(openedTabRowList[2], 'Test page 1');
         await openedTabsHelper.assertTabUrl(openedTabRowList[2], testPage1Url);
         await openedTabsHelper.assertTabFaviconUrl(openedTabRowList[2], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_1));
+
+        await openedTabsHelper.assertShownNumberOfTabs('3');
+        await openedTabsHelper.assertNumberOfTabsIsVisible();
     });
 
     it('Associated tab should be closed when clicking on a close button in the opened tab list', async () => {
@@ -155,6 +163,9 @@ describe('Opened tabs tracking', () => {
         await openedTabsHelper.assertTabTitle(newOpenedTabRowList[1], 'Test page 1');
         await openedTabsHelper.assertTabUrl(newOpenedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
         await openedTabsHelper.assertTabFaviconUrl(newOpenedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_1));
+
+        await openedTabsHelper.assertShownNumberOfTabs('2');
+        await openedTabsHelper.assertNumberOfTabsIsVisible();
 
         const tabList = await browserInstructionSender.getAllTabs();
         assert.equal(tabList.length, 2);
@@ -224,6 +235,9 @@ describe('Opened tabs tracking', () => {
         await openedTabsHelper.assertTabFaviconUrl(openedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_2));
         await openedTabsHelper.assertTabUrl(openedTabRowList[2], controlCenterDesktopUrl);
         await openedTabsHelper.assertTabFaviconUrl(openedTabRowList[2], firefoxConfig.getExtensionUrl(ExtensionUrl.EXTENSION_FAVICON));
+
+        await openedTabsHelper.assertShownNumberOfTabs('3');
+        await openedTabsHelper.assertNumberOfTabsIsVisible();
     });
 
     it('Tooltips must be positioned inside the window', async () => {
@@ -253,5 +267,7 @@ describe('Opened tabs tracking', () => {
         await testHelper.createWindow(true, firefoxConfig.getExtensionUrl(ExtensionUrl.TEST_PAGE_1));
 
         await openedTabsHelper.assertNumberOfTabs(1);
+        await openedTabsHelper.assertShownNumberOfTabs('1');
+        await openedTabsHelper.assertNumberOfTabsIsVisible();
     });
 });

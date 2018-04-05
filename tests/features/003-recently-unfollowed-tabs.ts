@@ -37,6 +37,9 @@ describe('Recently unfollowed tabs', () => {
 
         await recentlyUnfollowedTabsHelper.assertNoTabRowIsVisible();
         await recentlyUnfollowedTabsHelper.assertNumberOfTabs(0);
+
+        await recentlyUnfollowedTabsHelper.assertShownNumberOfTabs('0');
+        await recentlyUnfollowedTabsHelper.assertNumberOfTabsIsVisible();
     });
 
     it('Unfollowed tabs should be shown in the recently unfollowed tabs list', async () => {
@@ -60,6 +63,9 @@ describe('Recently unfollowed tabs', () => {
         await recentlyUnfollowedTabsHelper.assertTabTitle(recentlyUnfollowedTabRowList[1], 'Test page 1');
         await recentlyUnfollowedTabsHelper.assertTabUrl(recentlyUnfollowedTabRowList[1], testPage1Url);
         await recentlyUnfollowedTabsHelper.assertTabFaviconUrl(recentlyUnfollowedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_1));
+
+        await recentlyUnfollowedTabsHelper.assertShownNumberOfTabs('2');
+        await recentlyUnfollowedTabsHelper.assertNumberOfTabsIsVisible();
     });
 
     it('A click on the delete button should delete the recently unfollowed tab', async () => {
@@ -83,6 +89,9 @@ describe('Recently unfollowed tabs', () => {
         await recentlyUnfollowedTabsHelper.assertTabTitle(newRecentlyUnfollowedTabRowList[0], 'Test page 1');
         await recentlyUnfollowedTabsHelper.assertTabUrl(newRecentlyUnfollowedTabRowList[0], testPage1Url);
         await recentlyUnfollowedTabsHelper.assertTabFaviconUrl(newRecentlyUnfollowedTabRowList[0], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_1));
+
+        await recentlyUnfollowedTabsHelper.assertShownNumberOfTabs('1');
+        await recentlyUnfollowedTabsHelper.assertNumberOfTabsIsVisible();
     });
 
     it('A click on the restore button should move the tab to followed tabs', async () => {
@@ -105,6 +114,9 @@ describe('Recently unfollowed tabs', () => {
         const newRecentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
         await recentlyUnfollowedTabsHelper.assertNumberOfTabs(1);
         await recentlyUnfollowedTabsHelper.assertTabUrl(newRecentlyUnfollowedTabRowList[0], testPage1Url);
+
+        await recentlyUnfollowedTabsHelper.assertShownNumberOfTabs('1');
+        await recentlyUnfollowedTabsHelper.assertNumberOfTabsIsVisible();
 
         await testHelper.showFollowedTabsList();
         const followedTabRowList = await followedTabsHelper.getTabRowList();
@@ -162,6 +174,9 @@ describe('Recently unfollowed tabs', () => {
         await recentlyUnfollowedTabsHelper.assertTabTitle(recentlyUnfollowedTabRowList[1], 'Test page 1');
         await recentlyUnfollowedTabsHelper.assertTabUrl(recentlyUnfollowedTabRowList[1], testPage1Url);
         await recentlyUnfollowedTabsHelper.assertTabFaviconUrl(recentlyUnfollowedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_1));
+
+        await recentlyUnfollowedTabsHelper.assertShownNumberOfTabs('2');
+        await recentlyUnfollowedTabsHelper.assertNumberOfTabsIsVisible();
     });
 
     it('Should show restored followed tabs at startup', async () => {
@@ -189,6 +204,9 @@ describe('Recently unfollowed tabs', () => {
         await followedTabsHelper.assertNumberOfTabs(1);
         await followedTabsHelper.assertTabUrl(followedTabRowList[0], testPage1Url);
         await followedTabsHelper.assertTabOpenIndicatorIsOn(followedTabRowList[0]);
+
+        await followedTabsHelper.assertShownNumberOfTabs('1');
+        await followedTabsHelper.assertNumberOfTabsIsVisible();
     });
 
     it('Should keep only the last 5 recently unfollowed tabs', async () => {
@@ -227,5 +245,8 @@ describe('Recently unfollowed tabs', () => {
         await recentlyUnfollowedTabsHelper.assertTabUrl(recentlyUnfollowedTabRowList[2], testPage4Url);
         await recentlyUnfollowedTabsHelper.assertTabUrl(recentlyUnfollowedTabRowList[3], testPage3Url);
         await recentlyUnfollowedTabsHelper.assertTabUrl(recentlyUnfollowedTabRowList[4], testPage2Url);
+
+        await recentlyUnfollowedTabsHelper.assertShownNumberOfTabs('5');
+        await recentlyUnfollowedTabsHelper.assertNumberOfTabsIsVisible();
     });
 });

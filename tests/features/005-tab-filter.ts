@@ -57,6 +57,10 @@ describe('Tab filter', () => {
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[3]);
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[4]);
             await openedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await openedTabsHelper.assertShownNumberOfVisibleTabs('1');
+            await openedTabsHelper.assertNumberOfTabsIsNotVisible();
+            await openedTabsHelper.assertNumberOfVisibleTabsIsVisible();
         });
 
         it('Should filter opened tabs by title on input with two word', async () => {
@@ -69,6 +73,10 @@ describe('Tab filter', () => {
             await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[3]);
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[4]);
             await openedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await openedTabsHelper.assertShownNumberOfVisibleTabs('2');
+            await openedTabsHelper.assertNumberOfTabsIsNotVisible();
+            await openedTabsHelper.assertNumberOfVisibleTabsIsVisible();
         });
 
         it('Should filter opened tabs by url on input with one word', async () => {
@@ -81,6 +89,10 @@ describe('Tab filter', () => {
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[3]);
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[4]);
             await openedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await openedTabsHelper.assertShownNumberOfVisibleTabs('1');
+            await openedTabsHelper.assertNumberOfTabsIsNotVisible();
+            await openedTabsHelper.assertNumberOfVisibleTabsIsVisible();
         });
 
         it('Should filter opened tabs by url on input with two word', async () => {
@@ -93,6 +105,10 @@ describe('Tab filter', () => {
             await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[3]);
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[4]);
             await openedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await openedTabsHelper.assertShownNumberOfVisibleTabs('2');
+            await openedTabsHelper.assertNumberOfTabsIsNotVisible();
+            await openedTabsHelper.assertNumberOfVisibleTabsIsVisible();
         });
 
         it('Should filter opened tabs by url with protocol ignored', async () => {
@@ -117,6 +133,10 @@ describe('Tab filter', () => {
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[3]);
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[4]);
             await openedTabsHelper.assertNoTabRowIsVisible();
+
+            await openedTabsHelper.assertShownNumberOfVisibleTabs('0');
+            await openedTabsHelper.assertNumberOfTabsIsNotVisible();
+            await openedTabsHelper.assertNumberOfVisibleTabsIsVisible();
         });
 
         it('Should disable filter when clearing the input', async () => {
@@ -130,6 +150,10 @@ describe('Tab filter', () => {
             await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[3]);
             await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[4]);
             await openedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await openedTabsHelper.assertShownNumberOfTabs('5');
+            await openedTabsHelper.assertNumberOfTabsIsVisible();
+            await openedTabsHelper.assertNumberOfVisibleTabsIsNotVisible();
         });
 
         it('Should do nothing when clicking on the reset button while the input is empty', async () => {
@@ -143,6 +167,10 @@ describe('Tab filter', () => {
             await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[3]);
             await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[4]);
             await openedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await openedTabsHelper.assertShownNumberOfTabs('5');
+            await openedTabsHelper.assertNumberOfTabsIsVisible();
+            await openedTabsHelper.assertNumberOfVisibleTabsIsNotVisible();
         });
 
         it('Should disable filter when the reset button is clicked', async () => {
@@ -156,6 +184,10 @@ describe('Tab filter', () => {
             await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[3]);
             await openedTabsHelper.assertTabRowIsVisible(openedTabRowList[4]);
             await openedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await openedTabsHelper.assertShownNumberOfTabs('5');
+            await openedTabsHelper.assertNumberOfTabsIsVisible();
+            await openedTabsHelper.assertNumberOfVisibleTabsIsNotVisible();
         });
 
         it('Should filter at startup when the input is not empty', async () => {
@@ -169,6 +201,10 @@ describe('Tab filter', () => {
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[3]);
             await openedTabsHelper.assertTabRowIsNotVisible(openedTabRowList[4]);
             await openedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await openedTabsHelper.assertShownNumberOfVisibleTabs('1');
+            await openedTabsHelper.assertNumberOfTabsIsNotVisible();
+            await openedTabsHelper.assertNumberOfVisibleTabsIsVisible();
         });
     });
 
@@ -185,6 +221,10 @@ describe('Tab filter', () => {
             await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[1]);
             await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[2]);
             await followedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await followedTabsHelper.assertShownNumberOfVisibleTabs('1');
+            await followedTabsHelper.assertNumberOfTabsIsNotVisible();
+            await followedTabsHelper.assertNumberOfVisibleTabsIsVisible();
         });
 
         it('Should filter followed tabs by title on input with two word', async () => {
@@ -195,6 +235,10 @@ describe('Tab filter', () => {
             await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[1]);
             await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[2]);
             await followedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await followedTabsHelper.assertShownNumberOfVisibleTabs('2');
+            await followedTabsHelper.assertNumberOfTabsIsNotVisible();
+            await followedTabsHelper.assertNumberOfVisibleTabsIsVisible();
         });
 
         it('Should filter followed tabs by url on input with one word', async () => {
@@ -205,6 +249,10 @@ describe('Tab filter', () => {
             await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[1]);
             await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[2]);
             await followedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await followedTabsHelper.assertShownNumberOfVisibleTabs('1');
+            await followedTabsHelper.assertNumberOfTabsIsNotVisible();
+            await followedTabsHelper.assertNumberOfVisibleTabsIsVisible();
         });
 
         it('Should filter followed tabs by url on input with two word', async () => {
@@ -215,6 +263,10 @@ describe('Tab filter', () => {
             await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[1]);
             await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[2]);
             await followedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await followedTabsHelper.assertShownNumberOfVisibleTabs('2');
+            await followedTabsHelper.assertNumberOfTabsIsNotVisible();
+            await followedTabsHelper.assertNumberOfVisibleTabsIsVisible();
         });
 
         it('Should filter followed tabs by url with protocol ignored', async () => {
@@ -235,6 +287,10 @@ describe('Tab filter', () => {
             await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[1]);
             await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[2]);
             await followedTabsHelper.assertNoTabRowIsVisible();
+
+            await followedTabsHelper.assertShownNumberOfVisibleTabs('0');
+            await followedTabsHelper.assertNumberOfTabsIsNotVisible();
+            await followedTabsHelper.assertNumberOfVisibleTabsIsVisible();
         });
 
         it('Should disable filter when clearing the input', async () => {
@@ -246,6 +302,10 @@ describe('Tab filter', () => {
             await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[1]);
             await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[2]);
             await followedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await followedTabsHelper.assertShownNumberOfTabs('3');
+            await followedTabsHelper.assertNumberOfTabsIsVisible();
+            await followedTabsHelper.assertNumberOfVisibleTabsIsNotVisible();
         });
 
         it('Should do nothing when clicking on the reset button while the input is empty', async () => {
@@ -257,6 +317,10 @@ describe('Tab filter', () => {
             await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[1]);
             await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[2]);
             await followedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await followedTabsHelper.assertShownNumberOfTabs('3');
+            await followedTabsHelper.assertNumberOfTabsIsVisible();
+            await followedTabsHelper.assertNumberOfVisibleTabsIsNotVisible();
         });
 
         it('Should disable filter when the reset button is clicked', async () => {
@@ -268,6 +332,10 @@ describe('Tab filter', () => {
             await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[1]);
             await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[2]);
             await followedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await followedTabsHelper.assertShownNumberOfTabs('3');
+            await followedTabsHelper.assertNumberOfTabsIsVisible();
+            await followedTabsHelper.assertNumberOfVisibleTabsIsNotVisible();
         });
 
         it('Should filter at startup when the input is not empty', async () => {
@@ -280,6 +348,10 @@ describe('Tab filter', () => {
             await followedTabsHelper.assertTabRowIsVisible(followedTabRowList[1]);
             await followedTabsHelper.assertTabRowIsNotVisible(followedTabRowList[2]);
             await followedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await followedTabsHelper.assertShownNumberOfVisibleTabs('1');
+            await followedTabsHelper.assertNumberOfTabsIsNotVisible();
+            await followedTabsHelper.assertNumberOfVisibleTabsIsVisible();
         });
     });
 
@@ -302,6 +374,10 @@ describe('Tab filter', () => {
             await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[1]);
             await recentlyUnfollowedTabsHelper.assertTabRowIsNotVisible(recentlyUnfollowedTabRowList[2]);
             await recentlyUnfollowedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await recentlyUnfollowedTabsHelper.assertShownNumberOfVisibleTabs('1');
+            await recentlyUnfollowedTabsHelper.assertNumberOfTabsIsNotVisible();
+            await recentlyUnfollowedTabsHelper.assertNumberOfVisibleTabsIsVisible();
         });
 
         it('Should filter recently unfollowed tabs by title on input with two word', async () => {
@@ -312,6 +388,10 @@ describe('Tab filter', () => {
             await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[1]);
             await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[2]);
             await recentlyUnfollowedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await recentlyUnfollowedTabsHelper.assertShownNumberOfVisibleTabs('2');
+            await recentlyUnfollowedTabsHelper.assertNumberOfTabsIsNotVisible();
+            await recentlyUnfollowedTabsHelper.assertNumberOfVisibleTabsIsVisible();
         });
 
         it('Should filter recently unfollowed tabs by url on input with one word', async () => {
@@ -322,6 +402,10 @@ describe('Tab filter', () => {
             await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[1]);
             await recentlyUnfollowedTabsHelper.assertTabRowIsNotVisible(recentlyUnfollowedTabRowList[2]);
             await recentlyUnfollowedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await recentlyUnfollowedTabsHelper.assertShownNumberOfVisibleTabs('1');
+            await recentlyUnfollowedTabsHelper.assertNumberOfTabsIsNotVisible();
+            await recentlyUnfollowedTabsHelper.assertNumberOfVisibleTabsIsVisible();
         });
 
         it('Should filter recently unfollowed tabs by url on input with two word', async () => {
@@ -332,6 +416,10 @@ describe('Tab filter', () => {
             await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[1]);
             await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[2]);
             await recentlyUnfollowedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await recentlyUnfollowedTabsHelper.assertShownNumberOfVisibleTabs('2');
+            await recentlyUnfollowedTabsHelper.assertNumberOfTabsIsNotVisible();
+            await recentlyUnfollowedTabsHelper.assertNumberOfVisibleTabsIsVisible();
         });
 
         it('Should filter recently unfollowed tabs by url with protocol ignored', async () => {
@@ -352,6 +440,10 @@ describe('Tab filter', () => {
             await recentlyUnfollowedTabsHelper.assertTabRowIsNotVisible(recentlyUnfollowedTabRowList[1]);
             await recentlyUnfollowedTabsHelper.assertTabRowIsNotVisible(recentlyUnfollowedTabRowList[2]);
             await recentlyUnfollowedTabsHelper.assertNoTabRowIsVisible();
+
+            await recentlyUnfollowedTabsHelper.assertShownNumberOfVisibleTabs('0');
+            await recentlyUnfollowedTabsHelper.assertNumberOfTabsIsNotVisible();
+            await recentlyUnfollowedTabsHelper.assertNumberOfVisibleTabsIsVisible();
         });
 
         it('Should disable filter when clearing the input', async () => {
@@ -363,6 +455,10 @@ describe('Tab filter', () => {
             await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[1]);
             await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[2]);
             await recentlyUnfollowedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await recentlyUnfollowedTabsHelper.assertShownNumberOfTabs('3');
+            await recentlyUnfollowedTabsHelper.assertNumberOfTabsIsVisible();
+            await recentlyUnfollowedTabsHelper.assertNumberOfVisibleTabsIsNotVisible();
         });
 
         it('Should do nothing when clicking on the reset button while the input is empty', async () => {
@@ -374,6 +470,10 @@ describe('Tab filter', () => {
             await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[1]);
             await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[2]);
             await recentlyUnfollowedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await recentlyUnfollowedTabsHelper.assertShownNumberOfTabs('3');
+            await recentlyUnfollowedTabsHelper.assertNumberOfTabsIsVisible();
+            await recentlyUnfollowedTabsHelper.assertNumberOfVisibleTabsIsNotVisible();
         });
 
         it('Should disable filter when the reset button is clicked', async () => {
@@ -385,6 +485,10 @@ describe('Tab filter', () => {
             await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[1]);
             await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[2]);
             await recentlyUnfollowedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await recentlyUnfollowedTabsHelper.assertShownNumberOfTabs('3');
+            await recentlyUnfollowedTabsHelper.assertNumberOfTabsIsVisible();
+            await recentlyUnfollowedTabsHelper.assertNumberOfVisibleTabsIsNotVisible();
         });
 
         it('Should filter at startup when the input is not empty', async () => {
@@ -397,6 +501,10 @@ describe('Tab filter', () => {
             await recentlyUnfollowedTabsHelper.assertTabRowIsVisible(recentlyUnfollowedTabRowList[1]);
             await recentlyUnfollowedTabsHelper.assertTabRowIsNotVisible(recentlyUnfollowedTabRowList[2]);
             await recentlyUnfollowedTabsHelper.assertNoTabRowIsNotVisible();
+
+            await recentlyUnfollowedTabsHelper.assertShownNumberOfVisibleTabs('1');
+            await recentlyUnfollowedTabsHelper.assertNumberOfTabsIsNotVisible();
+            await recentlyUnfollowedTabsHelper.assertNumberOfVisibleTabsIsVisible();
         });
     });
 

@@ -39,6 +39,9 @@ describe('Tab following', () => {
 
         await followedTabsHelper.assertNoTabRowIsVisible();
         await followedTabsHelper.assertNumberOfTabs(0);
+
+        await followedTabsHelper.assertShownNumberOfTabs('0');
+        await followedTabsHelper.assertNumberOfTabsIsVisible();
     });
 
     it('Opened tabs should be followable', async () => {
@@ -74,6 +77,9 @@ describe('Tab following', () => {
         await followedTabsHelper.assertTabOpenIndicatorIsOn(followedTabRowList[0]);
         await followedTabsHelper.assertTabLastAccessDateIsRoughlyEqualToDate(followedTabRowList[0], new Date());
         await followedTabsHelper.assertTabTitleTooltip(followedTabRowList[0], 'Go to tab');
+
+        await followedTabsHelper.assertShownNumberOfTabs('1');
+        await followedTabsHelper.assertNumberOfTabsIsVisible();
 
         await followedTabsHelper.clickOnTabMoreButton(followedTabRowList[0], true);
         await testHelper.takeViewportScreenshot('close-button-visible-follow-list');
@@ -189,6 +195,9 @@ describe('Tab following', () => {
 
         await testHelper.showFollowedTabsList();
         await followedTabsHelper.assertNumberOfTabs(0);
+
+        await followedTabsHelper.assertShownNumberOfTabs('0');
+        await followedTabsHelper.assertNumberOfTabsIsVisible();
     });
 
     it('Tab unfollowed from the followed tabs list should be removed from the followed tabs list', async () => {
@@ -206,6 +215,9 @@ describe('Tab following', () => {
 
         await testHelper.showFollowedTabsList();
         await followedTabsHelper.assertNumberOfTabs(0);
+
+        await followedTabsHelper.assertShownNumberOfTabs('0');
+        await followedTabsHelper.assertNumberOfTabsIsVisible();
     });
 
     it('Open status of a followed tab should be updated when closing its associated opened tab', async () => {
@@ -257,6 +269,8 @@ describe('Tab following', () => {
         await followedTabsHelper.clickOnTabCloseButton(followedTabRowList[1]);
 
         await followedTabsHelper.assertTabOpenIndicatorIsOff(followedTabRowList[1]);
+        await followedTabsHelper.assertShownNumberOfTabs('2');
+        await followedTabsHelper.assertNumberOfTabsIsVisible();
 
         const tabList = await browserInstructionSender.getAllTabs();
         assert.equal(tabList.length, 2);
@@ -290,6 +304,9 @@ describe('Tab following', () => {
 
         await followedTabsHelper.assertNoTabRowIsVisible();
         await followedTabsHelper.assertNumberOfTabs(0);
+
+        await followedTabsHelper.assertShownNumberOfTabs('0');
+        await followedTabsHelper.assertNumberOfTabsIsVisible();
     });
 
     it('A click on a followed tab that is closed should open it', async () => {
@@ -316,6 +333,9 @@ describe('Tab following', () => {
         assert.equal(openedTab.favIconUrl, tabFavicon2Url);
         assert.equal(openedTab.url, testPage2Url);
         assert.equal(openedTab.title, 'Test page 2');
+
+        await followedTabsHelper.assertShownNumberOfTabs('2');
+        await followedTabsHelper.assertNumberOfTabsIsVisible();
     });
 
     it('Two clicks on a followed tab that is closed should open it once', async () => {
@@ -331,6 +351,8 @@ describe('Tab following', () => {
         await followedTabsHelper.clickTwoTimesOnTabTitle(followedTabRowList[0]);
 
         await openedTabsHelper.assertNumberOfTabs(2);
+        await followedTabsHelper.assertShownNumberOfTabs('1');
+        await followedTabsHelper.assertNumberOfTabsIsVisible();
     });
 
     it('A click on a followed tab that is opened should focus the associated opened tab', async () => {
@@ -519,6 +541,9 @@ describe('Tab following', () => {
         await followedTabsHelper.assertTabUrl(newFollowedTabRowList[1], testPage2Url);
         await followedTabsHelper.assertTabFaviconUrl(newFollowedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_2));
         await followedTabsHelper.assertTabLastAccessDateIsRoughlyEqualToDate(newFollowedTabRowList[1], tabOpenDate);
+
+        await followedTabsHelper.assertShownNumberOfTabs('2');
+        await followedTabsHelper.assertNumberOfTabsIsVisible();
     });
 
     it('Should show followed tabs at startup', async () => {
@@ -556,6 +581,9 @@ describe('Tab following', () => {
         await followedTabsHelper.assertTabUrl(newFollowedTabRowList[1], testPage2Url);
         await followedTabsHelper.assertTabFaviconUrl(newFollowedTabRowList[1], firefoxConfig.getExtensionUrl(ExtensionUrl.FAVICON_2));
         await followedTabsHelper.assertTabLastAccessDateIsRoughlyEqualToDate(newFollowedTabRowList[1], tabOpenDate);
+
+        await followedTabsHelper.assertShownNumberOfTabs('2');
+        await followedTabsHelper.assertNumberOfTabsIsVisible();
     });
 
     it('Default favicon should be shown at startup when the favicon url returns a 401 status code', async () => {
@@ -591,6 +619,9 @@ describe('Tab following', () => {
         await followedTabsHelper.assertNumberOfTabs(2);
         await followedTabsHelper.assertTabOpenIndicatorIsOn(newFollowedTabRowList[0]);
         await followedTabsHelper.assertTabOpenIndicatorIsOn(newFollowedTabRowList[1]);
+
+        await followedTabsHelper.assertShownNumberOfTabs('2');
+        await followedTabsHelper.assertNumberOfTabsIsVisible();
 
         await followedTabsHelper.clickOnTabTitle(newFollowedTabRowList[0]);
         let activeTab = await browserInstructionSender.getActiveTab();

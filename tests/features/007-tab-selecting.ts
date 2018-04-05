@@ -45,6 +45,8 @@ describe('Tab selecting', () => {
 
             await openedTabsHelper.assertTabSelectorIsNotChecked(openedTabRowList[0]);
             await openedTabsHelper.assertTabSelectorIsChecked(openedTabRowList[1]);
+            await openedTabsHelper.assertNumberOfSelectedTabsIsVisible();
+            await openedTabsHelper.assertShownNumberOfSelectedTabs('1');
 
             await testHelper.takeViewportScreenshot('tab-selector-checked-open-list');
         });
@@ -58,6 +60,7 @@ describe('Tab selecting', () => {
 
             await openedTabsHelper.assertTabSelectorIsNotChecked(openedTabRowList[0]);
             await openedTabsHelper.assertTabSelectorIsNotChecked(openedTabRowList[1]);
+            await openedTabsHelper.assertNumberOfSelectedTabsIsNotVisible();
 
             await testHelper.takeViewportScreenshot('tab-selector-unchecked-open-list');
         });
@@ -71,6 +74,8 @@ describe('Tab selecting', () => {
             await openedTabsHelper.assertGeneralTabSelectorIsChecked();
             await openedTabsHelper.assertTabSelectorIsChecked(openedTabRowList[0]);
             await openedTabsHelper.assertTabSelectorIsChecked(openedTabRowList[1]);
+            await openedTabsHelper.assertNumberOfSelectedTabsIsVisible();
+            await openedTabsHelper.assertShownNumberOfSelectedTabs('2');
 
             await testHelper.takeViewportScreenshot('title-tab-selector-checked-open-list');
         });
@@ -85,6 +90,7 @@ describe('Tab selecting', () => {
             await openedTabsHelper.assertGeneralTabSelectorIsNotChecked();
             await openedTabsHelper.assertTabSelectorIsNotChecked(openedTabRowList[0]);
             await openedTabsHelper.assertTabSelectorIsNotChecked(openedTabRowList[1]);
+            await openedTabsHelper.assertNumberOfSelectedTabsIsNotVisible();
         });
 
         it('Unchecking all opened tab selectors when the general opened tab selector is on should uncheck the general opened tab selector', async () => {
@@ -161,6 +167,9 @@ describe('Tab selecting', () => {
             await openedTabsHelper.assertTabSelectorIsChecked(openedTabRowList[1]);
             await openedTabsHelper.assertTabSelectorIsChecked(openedTabRowList[2]);
             await openedTabsHelper.assertTabSelectorIsChecked(openedTabRowList[3]);
+
+            await openedTabsHelper.assertNumberOfSelectedTabsIsVisible();
+            await openedTabsHelper.assertShownNumberOfSelectedTabs('3');
         });
 
         it('Clicking on an on opened tab selector with shift pressed should uncheck selectors from it to the last clicked', async () => {
@@ -180,6 +189,9 @@ describe('Tab selecting', () => {
             await openedTabsHelper.assertTabSelectorIsNotChecked(openedTabRowList[1]);
             await openedTabsHelper.assertTabSelectorIsNotChecked(openedTabRowList[2]);
             await openedTabsHelper.assertTabSelectorIsNotChecked(openedTabRowList[3]);
+
+            await openedTabsHelper.assertNumberOfSelectedTabsIsVisible();
+            await openedTabsHelper.assertShownNumberOfSelectedTabs('1');
         });
 
         it('The selection more button should be unrevealed when a selected opened tab is removed and there is no remaining selected opened tab', async () => {
@@ -205,6 +217,8 @@ describe('Tab selecting', () => {
             const newOpenedTabRowList = await openedTabsHelper.getTabRowList();
             await openedTabsHelper.assertTabSelectorIsNotChecked(newOpenedTabRowList[0]);
             await openedTabsHelper.assertTabSelectorIsNotChecked(newOpenedTabRowList[1]);
+
+            await openedTabsHelper.assertNumberOfSelectedTabsIsNotVisible();
         });
 
         it('Clicking on the selection close button should close selected opened tabs', async () => {
@@ -235,7 +249,7 @@ describe('Tab selecting', () => {
             await openedTabsHelper.assertTabFollowIndicatorIsOn(openedTabRowList[2]);
 
             await openedTabsHelper.clickOnSelectionTabMoreButton(true);
-            await testHelper.takeViewportScreenshot('title-more-dropdown-open-list');
+            await testHelper.takeViewportScreenshot('selection-more-dropdown-open-list');
         });
 
         it('Clicking on the selection follow button should not follow selected unfollowable opened tabs', async () => {
@@ -284,6 +298,8 @@ describe('Tab selecting', () => {
 
             await followedTabsHelper.assertTabSelectorIsNotChecked(followedTabRowList[0]);
             await followedTabsHelper.assertTabSelectorIsChecked(followedTabRowList[1]);
+            await followedTabsHelper.assertNumberOfSelectedTabsIsVisible();
+            await followedTabsHelper.assertShownNumberOfSelectedTabs('1');
 
             await testHelper.takeViewportScreenshot('tab-selector-checked-follow-list');
         });
@@ -303,6 +319,7 @@ describe('Tab selecting', () => {
 
             await followedTabsHelper.assertTabSelectorIsNotChecked(followedTabRowList[0]);
             await followedTabsHelper.assertTabSelectorIsNotChecked(followedTabRowList[1]);
+            await followedTabsHelper.assertNumberOfSelectedTabsIsNotVisible();
 
             await testHelper.takeViewportScreenshot('tab-selector-unchecked-follow-list');
         });
@@ -322,6 +339,8 @@ describe('Tab selecting', () => {
             await followedTabsHelper.assertGeneralTabSelectorIsChecked();
             await followedTabsHelper.assertTabSelectorIsChecked(followedTabRowList[0]);
             await followedTabsHelper.assertTabSelectorIsChecked(followedTabRowList[1]);
+            await followedTabsHelper.assertNumberOfSelectedTabsIsVisible();
+            await followedTabsHelper.assertShownNumberOfSelectedTabs('2');
 
             await testHelper.takeViewportScreenshot('title-tab-selector-checked-follow-list');
         });
@@ -342,6 +361,7 @@ describe('Tab selecting', () => {
             await followedTabsHelper.assertGeneralTabSelectorIsNotChecked();
             await followedTabsHelper.assertTabSelectorIsNotChecked(followedTabRowList[0]);
             await followedTabsHelper.assertTabSelectorIsNotChecked(followedTabRowList[1]);
+            await followedTabsHelper.assertNumberOfSelectedTabsIsNotVisible();
         });
 
         it('Unchecking all followed tab selectors when the general followed tab selector is on should uncheck the general followed tab selector', async () => {
@@ -462,6 +482,9 @@ describe('Tab selecting', () => {
             await followedTabsHelper.assertTabSelectorIsChecked(followedTabRowList[1]);
             await followedTabsHelper.assertTabSelectorIsChecked(followedTabRowList[2]);
             await followedTabsHelper.assertTabSelectorIsChecked(followedTabRowList[3]);
+
+            await followedTabsHelper.assertNumberOfSelectedTabsIsVisible();
+            await followedTabsHelper.assertShownNumberOfSelectedTabs('3');
         });
 
         it('Clicking on an on followed tab selector with shift pressed should uncheck selectors from it to the last clicked', async () => {
@@ -489,6 +512,9 @@ describe('Tab selecting', () => {
             await followedTabsHelper.assertTabSelectorIsNotChecked(followedTabRowList[1]);
             await followedTabsHelper.assertTabSelectorIsNotChecked(followedTabRowList[2]);
             await followedTabsHelper.assertTabSelectorIsNotChecked(followedTabRowList[3]);
+
+            await followedTabsHelper.assertNumberOfSelectedTabsIsVisible();
+            await followedTabsHelper.assertShownNumberOfSelectedTabs('1');
         });
 
         it('The selection more button should be unrevealed when a selected followed tab is removed and there is no remaining selected followed tab', async () => {
@@ -526,6 +552,8 @@ describe('Tab selecting', () => {
             const newFollowedTabRowList = await followedTabsHelper.getTabRowList();
             await followedTabsHelper.assertTabSelectorIsNotChecked(newFollowedTabRowList[0]);
             await followedTabsHelper.assertTabSelectorIsNotChecked(newFollowedTabRowList[1]);
+
+            await followedTabsHelper.assertNumberOfSelectedTabsIsNotVisible();
         });
 
         it('Clicking on the selection close button should close selected followed tabs', async () => {
@@ -547,7 +575,7 @@ describe('Tab selecting', () => {
             assert.equal(openedTabList[0].url, firefoxConfig.getExtensionUrl(ExtensionUrl.CONTROL_CENTER_DESKTOP));
 
             await followedTabsHelper.clickOnSelectionTabMoreButton(true);
-            await testHelper.takeViewportScreenshot('title-more-dropdown-follow-list');
+            await testHelper.takeViewportScreenshot('selection-more-dropdown-follow-list');
         });
 
         it('Clicking on the selection unfollow button should unfollow selected followed tabs', async () => {
@@ -585,6 +613,8 @@ describe('Tab selecting', () => {
 
             await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(recentlyUnfollowedTabRowList[0]);
             await recentlyUnfollowedTabsHelper.assertTabSelectorIsChecked(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.assertNumberOfSelectedTabsIsVisible();
+            await recentlyUnfollowedTabsHelper.assertShownNumberOfSelectedTabs('1');
 
             await testHelper.takeViewportScreenshot('tab-selector-checked-recently-unfollow-list');
         });
@@ -606,6 +636,7 @@ describe('Tab selecting', () => {
 
             await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(recentlyUnfollowedTabRowList[0]);
             await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.assertNumberOfSelectedTabsIsNotVisible();
 
             await testHelper.takeViewportScreenshot('tab-selector-unchecked-recently-unfollow-list');
         });
@@ -627,6 +658,8 @@ describe('Tab selecting', () => {
             await recentlyUnfollowedTabsHelper.assertGeneralTabSelectorIsChecked();
             await recentlyUnfollowedTabsHelper.assertTabSelectorIsChecked(recentlyUnfollowedTabRowList[0]);
             await recentlyUnfollowedTabsHelper.assertTabSelectorIsChecked(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.assertNumberOfSelectedTabsIsVisible();
+            await recentlyUnfollowedTabsHelper.assertShownNumberOfSelectedTabs('2');
 
             await testHelper.takeViewportScreenshot('title-tab-selector-checked-recently-unfollow-list');
         });
@@ -649,6 +682,7 @@ describe('Tab selecting', () => {
             await recentlyUnfollowedTabsHelper.assertGeneralTabSelectorIsNotChecked();
             await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(recentlyUnfollowedTabRowList[0]);
             await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(recentlyUnfollowedTabRowList[1]);
+            await recentlyUnfollowedTabsHelper.assertNumberOfSelectedTabsIsNotVisible();
         });
 
         it('Unchecking all recently unfollowed tab selectors when the general recently unfollowed tab selector is on should uncheck the general recently unfollowed tab selector', async () => {
@@ -785,6 +819,9 @@ describe('Tab selecting', () => {
             await recentlyUnfollowedTabsHelper.assertTabSelectorIsChecked(recentlyUnfollowedTabRowList[1]);
             await recentlyUnfollowedTabsHelper.assertTabSelectorIsChecked(recentlyUnfollowedTabRowList[2]);
             await recentlyUnfollowedTabsHelper.assertTabSelectorIsChecked(recentlyUnfollowedTabRowList[3]);
+
+            await recentlyUnfollowedTabsHelper.assertNumberOfSelectedTabsIsVisible();
+            await recentlyUnfollowedTabsHelper.assertShownNumberOfSelectedTabs('3');
         });
 
         it('Clicking on an on recently unfollowed tab selector with shift pressed should uncheck selectors from it to the last clicked', async () => {
@@ -816,6 +853,9 @@ describe('Tab selecting', () => {
             await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(recentlyUnfollowedTabRowList[1]);
             await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(recentlyUnfollowedTabRowList[2]);
             await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(recentlyUnfollowedTabRowList[3]);
+
+            await recentlyUnfollowedTabsHelper.assertNumberOfSelectedTabsIsVisible();
+            await recentlyUnfollowedTabsHelper.assertShownNumberOfSelectedTabs('1');
         });
 
         it('The selection more button should be unrevealed when a selected recently unfollowed tab is removed and there is no remaining selected recently unfollowed tab', async () => {
@@ -857,9 +897,7 @@ describe('Tab selecting', () => {
             const newRecentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
             await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(newRecentlyUnfollowedTabRowList[0]);
             await recentlyUnfollowedTabsHelper.assertTabSelectorIsNotChecked(newRecentlyUnfollowedTabRowList[1]);
-
-            await recentlyUnfollowedTabsHelper.clickOnSelectionTabMoreButton(true);
-            await testHelper.takeViewportScreenshot('title-more-dropdown-recently-unfollow-list');
+            await recentlyUnfollowedTabsHelper.assertNumberOfSelectedTabsIsNotVisible();
         });
 
         it('Clicking on the selection restore button should restore selected recently unfollowed tabs', async () => {
@@ -898,6 +936,10 @@ describe('Tab selecting', () => {
             const recentlyUnfollowedTabRowList = await recentlyUnfollowedTabsHelper.getTabRowList();
             await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[0]);
             await recentlyUnfollowedTabsHelper.clickOnTabSelector(recentlyUnfollowedTabRowList[1]);
+
+            await recentlyUnfollowedTabsHelper.clickOnSelectionTabMoreButton(true);
+            await testHelper.takeViewportScreenshot('selection-more-dropdown-recently-unfollow-list');
+
             await recentlyUnfollowedTabsHelper.clickOnSelectionTabDeleteButton();
 
             await recentlyUnfollowedTabsHelper.assertNumberOfTabs(0);

@@ -289,6 +289,42 @@ export class OpenedTabsTestHelper {
         await this.tabsTestHelper.assertNumberOfTabs(openedTabRowList, expectedNumberOfTabs);
     }
 
+    async assertShownNumberOfTabs(expected: string) {
+        await this.tabsTestHelper.assertShownNumberOfTabs(this.getContainerElement(), expected);
+    }
+
+    async assertShownNumberOfVisibleTabs(expected: string) {
+        await this.tabsTestHelper.assertShownNumberOfVisibleTabs(this.getContainerElement(), expected);
+    }
+
+    async assertShownNumberOfSelectedTabs(expected: string) {
+        await this.tabsTestHelper.assertShownNumberOfSelectedTabs(this.getContainerElement(), expected);
+    }
+
+    async assertNumberOfTabsIsVisible() {
+        await this.tabsTestHelper.assertNumberOfTabsIsVisible(this.getContainerElement());
+    }
+
+    async assertNumberOfTabsIsNotVisible() {
+        await this.tabsTestHelper.assertNumberOfTabsIsNotVisible(this.getContainerElement());
+    }
+
+    async assertNumberOfVisibleTabsIsVisible() {
+        await this.tabsTestHelper.assertNumberOfVisibleTabsIsVisible(this.getContainerElement());
+    }
+
+    async assertNumberOfVisibleTabsIsNotVisible() {
+        await this.tabsTestHelper.assertNumberOfVisibleTabsIsNotVisible(this.getContainerElement());
+    }
+
+    async assertNumberOfSelectedTabsIsVisible() {
+        await this.tabsTestHelper.assertNumberOfSelectedTabsIsVisible(this.getContainerElement());
+    }
+
+    async assertNumberOfSelectedTabsIsNotVisible() {
+        await this.tabsTestHelper.assertNumberOfSelectedTabsIsNotVisible(this.getContainerElement());
+    }
+
     async assertTabUrl(tabRow: WebElement, expectedUrl: string) {
         await this.tabsTestHelper.assertTabUrl(tabRow, expectedUrl);
     }

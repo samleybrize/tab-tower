@@ -405,6 +405,60 @@ export class TabsTestHelper {
         await sleep(1000);
     }
 
+    async assertShownNumberOfTabs(container: WebElement, expected: string) {
+        const shownValue = await container.findElement(By.css('.numberOfTabs')).getText();
+
+        assert.equal(shownValue, expected);
+    }
+
+    async assertShownNumberOfVisibleTabs(container: WebElement, expected: string) {
+        const shownValue = await container.findElement(By.css('.numberOfVisibleTabs')).getText();
+
+        assert.equal(shownValue, expected);
+    }
+
+    async assertShownNumberOfSelectedTabs(container: WebElement, expected: string) {
+        const shownValue = await container.findElement(By.css('.numberOfSelectedTabs')).getText();
+
+        assert.equal(shownValue, expected);
+    }
+
+    async assertNumberOfTabsIsVisible(container: WebElement) {
+        const isVisible = await container.findElement(By.css('.numberOfTabsContainer')).isDisplayed();
+
+        assert.isTrue(isVisible, 'Number of tabs is not visible');
+    }
+
+    async assertNumberOfTabsIsNotVisible(container: WebElement) {
+        const isVisible = await container.findElement(By.css('.numberOfTabsContainer')).isDisplayed();
+
+        assert.isFalse(isVisible, 'Number of tabs is visible');
+    }
+
+    async assertNumberOfVisibleTabsIsVisible(container: WebElement) {
+        const isVisible = await container.findElement(By.css('.numberOfVisibleTabsContainer')).isDisplayed();
+
+        assert.isTrue(isVisible, 'Number of visible tabs is not visible');
+    }
+
+    async assertNumberOfVisibleTabsIsNotVisible(container: WebElement) {
+        const isVisible = await container.findElement(By.css('.numberOfVisibleTabsContainer')).isDisplayed();
+
+        assert.isFalse(isVisible, 'Number of visible tabs is visible');
+    }
+
+    async assertNumberOfSelectedTabsIsVisible(container: WebElement) {
+        const isVisible = await container.findElement(By.css('.numberOfSelectedTabsContainer')).isDisplayed();
+
+        assert.isTrue(isVisible, 'Number of selected tabs is not visible');
+    }
+
+    async assertNumberOfSelectedTabsIsNotVisible(container: WebElement) {
+        const isVisible = await container.findElement(By.css('.numberOfSelectedTabsContainer')).isDisplayed();
+
+        assert.isFalse(isVisible, 'Number of selected tabs is visible');
+    }
+
     async assertNumberOfTabs(tabRowList: WebElement[], expectedNumberOfTabs: number) {
         assert.strictEqual(tabRowList.length, expectedNumberOfTabs);
     }

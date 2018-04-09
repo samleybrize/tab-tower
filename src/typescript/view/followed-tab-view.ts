@@ -33,14 +33,12 @@ import { MoreActionType, MoreMenu, MoreMenuManipulator } from './component/more-
 import { TabFilterApplier } from './component/tab-filter-applier';
 import { MoveAboveOthersClickCallback, MoveBelowClickCallback, TabMoveAction } from './component/tab-move-action';
 import { TabTitleClickCallback, TabTitleManipulator } from './component/tab-title-manipulator';
-import { TabCounter } from './tab-counter';
 import { TabView } from './tab-view';
 
 export class FollowedTabView {
     constructor(
         private commandBus: CommandBus,
         private queryBus: QueryBus,
-        private tabCounter: TabCounter,
         private tabView: TabView,
         private indicatorManipulator: IndicatorManipulator,
         private moreMenuManipulator: MoreMenuManipulator,
@@ -78,7 +76,6 @@ export class FollowedTabView {
         }
 
         await this.tabView.markAsInitialized();
-        this.tabCounter.setNumberOfFollowedTabs(numberOfFollowedTabs);
         this.tabView.setNumberOfTabs(numberOfFollowedTabs);
         this.tabFilterApplier.applyFilter();
         this.tabView.showNoTabRowIfTableIsEmpty();
@@ -432,7 +429,6 @@ export class FollowedTabView {
         this.tabView.hideNoTabRow();
         this.moreMenuManipulator.initMoreDropdown(row);
         this.tabFilterApplier.applyFilter();
-        this.tabCounter.incrementNumberOfFollowedTabs();
         this.tabView.incrementNumberOfTabs();
     }
 
@@ -476,7 +472,6 @@ export class FollowedTabView {
             followedTabRow.remove();
             this.tabView.showOrHideSelectionActionsDependingOfSelectedTabs();
             this.tabView.showNoTabRowIfTableIsEmpty();
-            this.tabCounter.decrementNumberOfFollowedTabs();
             this.tabView.decrementNumberOfTabs();
         }
     }

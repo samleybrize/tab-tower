@@ -35,14 +35,12 @@ import { MoreActionType, MoreMenu, MoreMenuManipulator } from './component/more-
 import { TabFilterApplier } from './component/tab-filter-applier';
 import { MoveAboveOthersClickCallback, MoveBelowClickCallback, TabMoveAction } from './component/tab-move-action';
 import { TabTitleClickCallback, TabTitleManipulator } from './component/tab-title-manipulator';
-import { TabCounter } from './tab-counter';
 import { TabView } from './tab-view';
 
 export class OpenedTabView {
     constructor(
         private commandBus: CommandBus,
         private queryBus: QueryBus,
-        private tabCounter: TabCounter,
         private tabView: TabView,
         private indicatorManipulator: IndicatorManipulator,
         private moreMenuManipulator: MoreMenuManipulator,
@@ -77,7 +75,6 @@ export class OpenedTabView {
         }
 
         await this.tabView.markAsInitialized();
-        this.tabCounter.setNumberOfOpenedTabs(numberOfOpenedTabs);
         this.tabView.setNumberOfTabs(numberOfOpenedTabs);
         this.tabFilterApplier.applyFilter();
         this.tabView.showNoTabRowIfTableIsEmpty();
@@ -323,7 +320,6 @@ export class OpenedTabView {
         this.moreMenuManipulator.initMoreDropdown(rowToInsert);
         this.tabFilterApplier.applyFilter();
         this.tabView.showNoTabRowIfTableIsEmpty();
-        this.tabCounter.incrementNumberOfOpenedTabs();
         this.tabView.incrementNumberOfTabs();
     }
 
@@ -360,7 +356,6 @@ export class OpenedTabView {
             openedTabRow.remove();
             this.tabView.showOrHideSelectionActionsDependingOfSelectedTabs();
             this.tabView.showNoTabRowIfTableIsEmpty();
-            this.tabCounter.decrementNumberOfOpenedTabs();
             this.tabView.decrementNumberOfTabs();
         }
     }

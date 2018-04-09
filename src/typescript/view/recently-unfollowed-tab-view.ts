@@ -9,14 +9,12 @@ import { GetRecentlyUnfollowedTabs } from '../tab/query/get-recently-unfollowed-
 import { RecentlyUnfollowedTab } from '../tab/recently-unfollowed-tab/recently-unfollowed-tab';
 import { MoreActionType, MoreMenu, MoreMenuManipulator } from './component/more-menu-manipulator';
 import { TabFilterApplier } from './component/tab-filter-applier';
-import { TabCounter } from './tab-counter';
 import { TabView } from './tab-view';
 
 export class RecentlyUnfollowedTabView {
     constructor(
         private commandBus: CommandBus,
         private queryBus: QueryBus,
-        private tabCounter: TabCounter,
         private tabView: TabView,
         private moreMenuManipulator: MoreMenuManipulator,
         private tabFilterApplier: TabFilterApplier,
@@ -39,7 +37,6 @@ export class RecentlyUnfollowedTabView {
         }
 
         await this.tabView.markAsInitialized();
-        this.tabCounter.setNumberOfRecentlyUnfollowedTabs(numberOfTabs);
         this.tabView.setNumberOfTabs(numberOfTabs);
         this.tabFilterApplier.applyFilter();
         this.tabView.showNoTabRowIfTableIsEmpty();
@@ -131,7 +128,6 @@ export class RecentlyUnfollowedTabView {
         this.tabView.hideNoTabRow();
         this.moreMenuManipulator.initMoreDropdown(row);
         this.tabFilterApplier.applyFilter();
-        this.tabCounter.incrementNumberOfRecentlyUnfollowedTabs();
         this.tabView.incrementNumberOfTabs();
     }
 
@@ -161,7 +157,6 @@ export class RecentlyUnfollowedTabView {
             recentlyUnfollowedTabRow.remove();
             this.tabView.showOrHideSelectionActionsDependingOfSelectedTabs();
             this.tabView.showNoTabRowIfTableIsEmpty();
-            this.tabCounter.decrementNumberOfRecentlyUnfollowedTabs();
             this.tabView.decrementNumberOfTabs();
         }
     }

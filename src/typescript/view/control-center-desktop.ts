@@ -54,6 +54,7 @@ import { GetTabAssociationsWithFollowState } from '../tab/query/get-tab-associat
 import { GetTabAssociationsWithOpenState } from '../tab/query/get-tab-associations-with-open-state';
 import { tabQueries } from '../tab/query/tab-queries';
 import { TabMatcher } from '../tab/tab-matcher';
+import { Counter } from '../utils/counter';
 import { ObjectUnserializer } from '../utils/object-unserializer';
 import { sleep } from '../utils/sleep';
 import { StringMatcher } from '../utils/string-matcher';
@@ -66,7 +67,6 @@ import { TabTitleManipulator } from '../view/component/tab-title-manipulator';
 import { FollowedTabView } from '../view/followed-tab-view';
 import { HeaderView } from '../view/header-view';
 import { OpenedTabView } from '../view/opened-tab-view';
-import { TabCounter } from '../view/tab-counter';
 import { TabFilterView } from '../view/tab-filter-view';
 import { TabView } from '../view/tab-view';
 import { RecentlyUnfollowedTabView } from './recently-unfollowed-tab-view';
@@ -81,8 +81,11 @@ async function main() {
     const detectedBrowser = new DetectedBrowser();
     const stringMatcher = new StringMatcher();
     const tabMatcher = new TabMatcher(stringMatcher);
-    const tabCounter = new TabCounter();
     const tabFilterView = new TabFilterView(eventBus, tabMatcher, document.querySelector('#headerTabFilter'));
+
+    const openedTabCounter = new Counter();
+    const followedTabCounter = new Counter();
+    const recentlyUnfollowedTabCounter = new Counter();
 
     const openedTabView = (() => {
         const openedTabViewContainer: HTMLElement = document.querySelector('#openedTabList');
@@ -96,8 +99,7 @@ async function main() {
         return new OpenedTabView(
             commandBus,
             queryBus,
-            tabCounter,
-            new TabView(indicatorManipulator, moreMenuManipulator, tabFilterApplier, tabMoveAction, tabSelectorManipulator, tabTitleManipulator, openedTabViewContainer),
+            new TabView(openedTabCounter, indicatorManipulator, moreMenuManipulator, tabFilterApplier, tabMoveAction, tabSelectorManipulator, tabTitleManipulator, openedTabViewContainer),
             indicatorManipulator,
             moreMenuManipulator,
             tabFilterApplier,
@@ -118,8 +120,7 @@ async function main() {
         return new FollowedTabView(
             commandBus,
             queryBus,
-            tabCounter,
-            new TabView(indicatorManipulator, moreMenuManipulator, tabFilterApplier, tabMoveAction, tabSelectorManipulator, tabTitleManipulator, followedTabViewContainer),
+            new TabView(followedTabCounter, indicatorManipulator, moreMenuManipulator, tabFilterApplier, tabMoveAction, tabSelectorManipulator, tabTitleManipulator, followedTabViewContainer),
             indicatorManipulator,
             moreMenuManipulator,
             tabFilterApplier,
@@ -140,8 +141,7 @@ async function main() {
         return new RecentlyUnfollowedTabView(
             commandBus,
             queryBus,
-            tabCounter,
-            new TabView(indicatorManipulator, moreMenuManipulator, tabFilterApplier, tabMoveAction, tabSelectorManipulator, tabTitleManipulator, recentlyUnfollowedTabViewContainer),
+            new TabView(recentlyUnfollowedTabCounter, indicatorManipulator, moreMenuManipulator, tabFilterApplier, tabMoveAction, tabSelectorManipulator, tabTitleManipulator, recentlyUnfollowedTabViewContainer),
             moreMenuManipulator,
             tabFilterApplier,
         );
@@ -149,9 +149,9 @@ async function main() {
 
     const headerView = new HeaderView(followedTabView, openedTabView, recentlyUnfollowedTabView, document.querySelector('#header'));
 
-    tabCounter.observeNumberOfFollowedTabs(headerView.notifyNumberOfFollowedTabsChanged.bind(headerView));
-    tabCounter.observeNumberOfOpenedTabs(headerView.notifyNumberOfOpenedTabsChanged.bind(headerView));
-    tabCounter.observeNumberOfRecentlyUnfollowedTabs(headerView.notifyNumberOfRecentlyUnfollowedTabsChanged.bind(headerView));
+    openedTabCounter.observe(headerView.notifyNumberOfOpenedTabsChanged.bind(headerView));
+    followedTabCounter.observe(headerView.notifyNumberOfFollowedTabsChanged.bind(headerView));
+    recentlyUnfollowedTabCounter.observe(headerView.notifyNumberOfRecentlyUnfollowedTabsChanged.bind(headerView));
 
     const objectUnserializer = new ObjectUnserializer();
     objectUnserializer.addSupportedClasses(tabCommands);

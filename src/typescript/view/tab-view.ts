@@ -1,5 +1,6 @@
 import * as moment from 'moment';
 
+import { Counter } from '../utils/counter';
 import { IndicatorManipulator, IndicatorType } from './component/indicator-manipulator';
 import { MoreActionType, MoreMenu, MoreMenuManipulator } from './component/more-menu-manipulator';
 import { TabFilterApplier } from './component/tab-filter-applier';
@@ -29,6 +30,7 @@ export class TabView {
     private isInitialized = false;
 
     constructor(
+        private tabCounter: Counter,
         private indicatorManipulator: IndicatorManipulator,
         private moreMenuManipulator: MoreMenuManipulator,
         private tabFilterApplier: TabFilterApplier,
@@ -412,21 +414,18 @@ export class TabView {
     }
 
     setNumberOfTabs(numberOfTabs: number) {
+        this.tabCounter.set(numberOfTabs);
         this.numberOfTabsElement.textContent = '' + numberOfTabs;
     }
 
     incrementNumberOfTabs() {
-        let numberOfTabs = +this.numberOfTabsElement.textContent;
-        numberOfTabs++;
-
-        this.setNumberOfTabs(numberOfTabs);
+        this.tabCounter.increment();
+        this.setNumberOfTabs(this.tabCounter.get());
     }
 
     decrementNumberOfTabs() {
-        let numberOfTabs = +this.numberOfTabsElement.textContent;
-        numberOfTabs--;
-
-        this.setNumberOfTabs(numberOfTabs);
+        this.tabCounter.decrement();
+        this.setNumberOfTabs(this.tabCounter.get());
     }
 
     addPendingTask(task: () => void) {

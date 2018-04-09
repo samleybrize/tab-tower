@@ -1,39 +1,39 @@
 import { AssociateOpenedTabToFollowedTab } from './associate-opened-tab-to-followed-tab';
-import { CloseTab } from './close-tab';
+import { CloseOpenedTab } from './close-opened-tab';
 import { DeleteRecentlyUnfollowedTab } from './delete-recently-unfollowed-tab';
-import { DuplicateTab } from './duplicate-tab';
-import { FocusTab } from './focus-tab';
+import { DuplicateOpenedTab } from './duplicate-opened-tab';
+import { FocusOpenedTab } from './focus-opened-tab';
 import { FollowTab } from './follow-tab';
 import { GoToControlCenter } from './go-to-control-center';
 import { MoveFollowedTabs } from './move-followed-tabs';
 import { MoveOpenedTabs } from './move-opened-tabs';
-import { MuteTab } from './mute-tab';
-import { PinTab } from './pin-tab';
+import { MuteOpenedTab } from './mute-opened-tab';
+import { PinOpenedTab } from './pin-opened-tab';
 import { RegisterTabFollowState } from './register-tab-follow-state';
-import { ReloadTab } from './reload-tab';
+import { ReloadOpenedTab } from './reload-opened-tab';
 import { RestoreFollowedTab } from './restore-followed-tab';
 import { RestoreRecentlyUnfollowedTab } from './restore-recently-unfollowed-tab';
 import { UnfollowTab } from './unfollow-tab';
-import { UnmuteTab } from './unmute-tab';
-import { UnpinTab } from './unpin-tab';
+import { UnmuteOpenedTab } from './unmute-opened-tab';
+import { UnpinOpenedTab } from './unpin-opened-tab';
 
 export const tabCommands = [
     AssociateOpenedTabToFollowedTab,
-    CloseTab,
+    CloseOpenedTab,
     DeleteRecentlyUnfollowedTab,
-    DuplicateTab,
-    FocusTab,
+    DuplicateOpenedTab,
+    FocusOpenedTab,
     FollowTab,
     GoToControlCenter,
     MoveFollowedTabs,
     MoveOpenedTabs,
-    MuteTab,
-    PinTab,
+    MuteOpenedTab,
+    PinOpenedTab,
     RegisterTabFollowState,
-    ReloadTab,
+    ReloadOpenedTab,
     RestoreFollowedTab,
     RestoreRecentlyUnfollowedTab,
     UnfollowTab,
-    UnmuteTab,
-    UnpinTab,
+    UnmuteOpenedTab,
+    UnpinOpenedTab,
 ];

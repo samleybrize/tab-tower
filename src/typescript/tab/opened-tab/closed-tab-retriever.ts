@@ -1,5 +1,6 @@
 import { QueryBus } from '../../bus/query-bus';
 import { sleep } from '../../utils/sleep';
+import { OpenedTabCloseHandled } from '../event/opened-tab-close-handled';
 import { OpenedTabFaviconUrlUpdated } from '../event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from '../event/opened-tab-focused';
 import { OpenedTabMoved } from '../event/opened-tab-moved';
@@ -7,7 +8,6 @@ import { OpenedTabPinStateUpdated } from '../event/opened-tab-pin-state-updated'
 import { OpenedTabReaderModeStateUpdated } from '../event/opened-tab-reader-mode-state-updated';
 import { OpenedTabTitleUpdated } from '../event/opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from '../event/opened-tab-url-updated';
-import { TabCloseHandled } from '../event/tab-close-handled';
 import { TabOpened } from '../event/tab-opened';
 import { GetClosedTabOpenStateByOpenId } from '../query/get-closed-tab-open-state-by-open-id';
 import { GetTabOpenStates } from '../query/get-tab-open-states';
@@ -91,7 +91,7 @@ export class ClosedTabRetriever {
         }
     }
 
-    async onTabCloseHandled(event: TabCloseHandled) {
+    async onTabCloseHandled(event: OpenedTabCloseHandled) {
         this.openedTabMap.delete(event.closedTab.id);
     }
 

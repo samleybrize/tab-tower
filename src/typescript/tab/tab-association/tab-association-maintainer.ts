@@ -2,7 +2,7 @@ import { EventBus } from '../../bus/event-bus';
 import { QueryBus } from '../../bus/query-bus';
 import { AssociateOpenedTabToFollowedTab } from '../command/associate-opened-tab-to-followed-tab';
 import { OpenedTabAssociatedToFollowedTab } from '../event/opened-tab-associated-to-followed-tab';
-import { TabClosed } from '../event/tab-closed';
+import { OpenedTabClosed } from '../event/opened-tab-closed';
 import { TabUnfollowed } from '../event/tab-unfollowed';
 import { TabFollowState } from '../followed-tab/tab-follow-state';
 import { TabOpenState } from '../opened-tab/tab-open-state';
@@ -74,7 +74,7 @@ export class TabAssociationMaintainer {
         }
     }
 
-    async onTabClose(event: TabClosed) {
+    async onTabClose(event: OpenedTabClosed) {
         const followId = this.getAssociatedFollowId(event.closedTab.id);
 
         if (followId) {

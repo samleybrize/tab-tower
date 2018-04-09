@@ -1,29 +1,29 @@
 import { CommandBus } from '../bus/command-bus';
 import { QueryBus } from '../bus/query-bus';
-import { CloseTab } from '../tab/command/close-tab';
-import { DuplicateTab } from '../tab/command/duplicate-tab';
-import { FocusTab } from '../tab/command/focus-tab';
+import { CloseOpenedTab } from '../tab/command/close-opened-tab';
+import { DuplicateOpenedTab } from '../tab/command/duplicate-opened-tab';
+import { FocusOpenedTab } from '../tab/command/focus-opened-tab';
 import { MoveFollowedTabs } from '../tab/command/move-followed-tabs';
-import { MuteTab } from '../tab/command/mute-tab';
-import { PinTab } from '../tab/command/pin-tab';
-import { ReloadTab } from '../tab/command/reload-tab';
+import { MuteOpenedTab } from '../tab/command/mute-opened-tab';
+import { PinOpenedTab } from '../tab/command/pin-opened-tab';
+import { ReloadOpenedTab } from '../tab/command/reload-opened-tab';
 import { RestoreFollowedTab, TabOpenTarget } from '../tab/command/restore-followed-tab';
 import { UnfollowTab } from '../tab/command/unfollow-tab';
-import { UnmuteTab } from '../tab/command/unmute-tab';
-import { UnpinTab } from '../tab/command/unpin-tab';
+import { UnmuteOpenedTab } from '../tab/command/unmute-opened-tab';
+import { UnpinOpenedTab } from '../tab/command/unpin-opened-tab';
 import { FollowedTabMoved } from '../tab/event/followed-tab-moved';
 import { OpenedTabAssociatedToFollowedTab } from '../tab/event/opened-tab-associated-to-followed-tab';
 import { OpenedTabAudibleStateUpdated } from '../tab/event/opened-tab-audible-state-updated';
 import { OpenedTabAudioMuteStateUpdated } from '../tab/event/opened-tab-audio-mute-state-updated';
+import { OpenedTabClosed } from '../tab/event/opened-tab-closed';
 import { OpenedTabFaviconUrlUpdated } from '../tab/event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from '../tab/event/opened-tab-focused';
+import { OpenedTabFollowed } from '../tab/event/opened-tab-followed';
 import { OpenedTabPinStateUpdated } from '../tab/event/opened-tab-pin-state-updated';
 import { OpenedTabReaderModeStateUpdated } from '../tab/event/opened-tab-reader-mode-state-updated';
 import { OpenedTabTitleUpdated } from '../tab/event/opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from '../tab/event/opened-tab-url-updated';
-import { TabClosed } from '../tab/event/tab-closed';
 import { TabFilterRequested } from '../tab/event/tab-filter-requested';
-import { TabFollowed } from '../tab/event/tab-followed';
 import { TabUnfollowed } from '../tab/event/tab-unfollowed';
 import { GetTabAssociationByFollowId } from '../tab/query/get-tab-association-by-follow-id';
 import { GetTabAssociationsWithFollowState } from '../tab/query/get-tab-associations-with-follow-state';
@@ -120,7 +120,7 @@ export class FollowedTabView {
             const isOpeningTab = !!row.getAttribute('data-is-opening-tab');
 
             if (openTabId) {
-                this.commandBus.handle(new FocusTab(openTabId));
+                this.commandBus.handle(new FocusOpenedTab(openTabId));
             } else if (!isOpeningTab) {
                 row.setAttribute('data-is-opening-tab', '1');
                 this.commandBus.handle(new RestoreFollowedTab(tab.followState.id, TabOpenTarget.NewBackgroundTab));
@@ -226,7 +226,7 @@ export class FollowedTabView {
             return;
         }
 
-        this.commandBus.handle(new PinTab(upToDateTab.openState.id));
+        this.commandBus.handle(new PinOpenedTab(upToDateTab.openState.id));
     }
 
     private async unpinTabAction(tab: TabAssociation, clickedElement: HTMLAnchorElement) {
@@ -236,23 +236,23 @@ export class FollowedTabView {
             return;
         }
 
-        this.commandBus.handle(new UnpinTab(upToDateTab.openState.id));
+        this.commandBus.handle(new UnpinOpenedTab(upToDateTab.openState.id));
     }
 
     private muteTabAction(tab: TabAssociation, clickedElement: HTMLAnchorElement) {
-        this.commandBus.handle(new MuteTab(tab.openState.id));
+        this.commandBus.handle(new MuteOpenedTab(tab.openState.id));
     }
 
     private unmuteTabAction(tab: TabAssociation, clickedElement: HTMLAnchorElement) {
-        this.commandBus.handle(new UnmuteTab(tab.openState.id));
+        this.commandBus.handle(new UnmuteOpenedTab(tab.openState.id));
     }
 
     private duplicateTabAction(tab: TabAssociation, clickedElement: HTMLAnchorElement) {
-        this.commandBus.handle(new DuplicateTab(tab.openState.id));
+        this.commandBus.handle(new DuplicateOpenedTab(tab.openState.id));
     }
 
     private reloadTabAction(tab: TabAssociation, clickedElement: HTMLAnchorElement) {
-        this.commandBus.handle(new ReloadTab(tab.openState.id));
+        this.commandBus.handle(new ReloadOpenedTab(tab.openState.id));
     }
 
     private async closeTabAction(tab: TabAssociation, clickedElement: HTMLAnchorElement) {
@@ -262,7 +262,7 @@ export class FollowedTabView {
             return;
         }
 
-        this.commandBus.handle(new CloseTab(upToDateTab.openState.id));
+        this.commandBus.handle(new CloseOpenedTab(upToDateTab.openState.id));
     }
 
     private updateTabOpenState(row: HTMLElement, isOpened: boolean, openTabId: number) {
@@ -302,11 +302,11 @@ export class FollowedTabView {
     }
 
     // TODO merge "onTabClose" with "handleTabClose"
-    async onTabClose(event: TabClosed) {
+    async onTabClose(event: OpenedTabClosed) {
         this.tabView.addPendingTask(this.handleTabClose.bind(this, event));
     }
 
-    private async handleTabClose(event: TabClosed) {
+    private async handleTabClose(event: OpenedTabClosed) {
         const tabRow = this.getTabRowByOpenTabId(event.closedTab.id);
 
         if (tabRow) {
@@ -418,11 +418,11 @@ export class FollowedTabView {
         }
     }
 
-    async onTabFollow(event: TabFollowed) {
+    async onTabFollow(event: OpenedTabFollowed) {
         this.tabView.addPendingTask(this.handleTabFollow.bind(this, event));
     }
 
-    private async handleTabFollow(event: TabFollowed) {
+    private async handleTabFollow(event: OpenedTabFollowed) {
         const row = this.createTabRow(event.tab);
         this.insertRowDependingOnWeight(row, event.tab.followState.weight);
 

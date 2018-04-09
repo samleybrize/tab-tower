@@ -2,6 +2,8 @@ import { EventBus } from '../bus/event-bus';
 import { QueryBus } from '../bus/query-bus';
 import { OpenedTabAudibleStateUpdated } from './event/opened-tab-audible-state-updated';
 import { OpenedTabAudioMuteStateUpdated } from './event/opened-tab-audio-mute-state-updated';
+import { OpenedTabCloseHandled } from './event/opened-tab-close-handled';
+import { OpenedTabClosed } from './event/opened-tab-closed';
 import { OpenedTabFaviconUrlUpdated } from './event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from './event/opened-tab-focused';
 import { OpenedTabIsLoading } from './event/opened-tab-is-loading';
@@ -11,13 +13,11 @@ import { OpenedTabPinStateUpdated } from './event/opened-tab-pin-state-updated';
 import { OpenedTabReaderModeStateUpdated } from './event/opened-tab-reader-mode-state-updated';
 import { OpenedTabTitleUpdated } from './event/opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from './event/opened-tab-url-updated';
-import { TabCloseHandled } from './event/tab-close-handled';
-import { TabClosed } from './event/tab-closed';
 import { TabOpened } from './event/tab-opened';
+import { OpenedTabCloser } from './opened-tab-closer';
 import { GetClosedTabOpenStateByOpenId } from './query/get-closed-tab-open-state-by-open-id';
 import { GetTabOpenStateByOpenId } from './query/get-tab-open-state-by-open-id';
 import { GetTabOpenStates } from './query/get-tab-open-states';
-import { TabCloser } from './tab-closer';
 import { TabOpener } from './tab-opener';
 
 export class NativeTabEventHandler {
@@ -26,7 +26,7 @@ export class NativeTabEventHandler {
     constructor(
         private eventBus: EventBus,
         private queryBus: QueryBus,
-        private tabCloser: TabCloser,
+        private tabCloser: OpenedTabCloser,
         private tabOpener: TabOpener,
     ) {
     }
@@ -80,8 +80,8 @@ export class NativeTabEventHandler {
         }
 
         await this.tabCloser.waitForTabClose(tabId);
-        await this.eventBus.publish(new TabClosed(closedTab));
-        await this.eventBus.publish(new TabCloseHandled(closedTab));
+        await this.eventBus.publish(new OpenedTabClosed(closedTab));
+        await this.eventBus.publish(new OpenedTabCloseHandled(closedTab));
 
         const closedTabIndex = closedTab ? closedTab.index : 0;
         this.notifyTabMoveFromIndex(closedTabIndex);

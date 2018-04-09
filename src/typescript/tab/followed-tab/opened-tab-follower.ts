@@ -10,7 +10,7 @@ import { GetTabFollowStateWeightList } from '../query/get-tab-follow-state-weigh
 import { FollowedTabWeightCalculator } from './followed-tab-weight-calculator';
 import { TabFollowState } from './tab-follow-state';
 
-export class TabFollower {
+export class OpenedTabFollower {
     constructor(
         private followedTabWeightCalculator: FollowedTabWeightCalculator,
         private commandBus: CommandBus,

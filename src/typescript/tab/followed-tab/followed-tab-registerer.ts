@@ -3,7 +3,7 @@ import { EventBus } from '../../bus/event-bus';
 import { QueryBus } from '../../bus/query-bus';
 import { AssociateOpenedTabToFollowedTab } from '../command/associate-opened-tab-to-followed-tab';
 import { RegisterTabFollowState } from '../command/register-tab-follow-state';
-import { TabFollowed } from '../event/tab-followed';
+import { OpenedTabFollowed } from '../event/opened-tab-followed';
 import { GetTabOpenStateByOpenLongLivedId } from '../query/get-tab-open-state-by-open-long-lived-id';
 import { TabAssociation } from '../tab-association/tab-association';
 import { FollowStatePersister } from './persister/follow-state-persister';
@@ -21,7 +21,7 @@ export class FollowedTabRegisterer {
         }
 
         await this.tabPersister.persist(command.followState);
-        this.eventBus.publish(new TabFollowed(tabAssociation));
+        this.eventBus.publish(new OpenedTabFollowed(tabAssociation));
 
         if (tabAssociation.openState) {
             await this.commandBus.handle(new AssociateOpenedTabToFollowedTab(tabAssociation.openState, tabAssociation.followState));

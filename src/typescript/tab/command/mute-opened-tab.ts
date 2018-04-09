@@ -1,4 +1,4 @@
-export class PinTab {
+export class MuteOpenedTab {
     constructor(public readonly tabId: number) {
     }
 }

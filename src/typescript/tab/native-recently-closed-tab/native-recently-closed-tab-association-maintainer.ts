@@ -1,5 +1,5 @@
 import { sleep } from '../../utils/sleep';
-import { TabClosed } from '../event/tab-closed';
+import { OpenedTabClosed } from '../event/opened-tab-closed';
 import { TabOpenState } from '../opened-tab/tab-open-state';
 import { GetSessionIdAssociatedToOpenLongLivedId } from '../query/get-session-id-associated-to-open-long-lived-id';
 import { NativeRecentlyClosedTabAssociation } from './native-recently-closed-tab-association';
@@ -139,7 +139,7 @@ export class NativeRecentlyClosedTabAssociationMaintainer {
         }
     }
 
-    async onTabClose(event: TabClosed) {
+    async onTabClose(event: OpenedTabClosed) {
         this.closedTabsToAssociate.push(event.closedTab);
         this.scheduleNextClosedTabAssociation(false);
     }

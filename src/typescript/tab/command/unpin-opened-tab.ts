@@ -1,4 +1,4 @@
-export class CloseTab {
+export class UnpinOpenedTab {
     constructor(public readonly tabId: number) {
     }
 }

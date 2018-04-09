@@ -1,8 +1,8 @@
 import { sleep } from '../utils/sleep';
-import { CloseTab } from './command/close-tab';
+import { CloseOpenedTab } from './command/close-opened-tab';
 
-export class TabCloser {
-    async closeTab(command: CloseTab) {
+export class OpenedTabCloser {
+    async closeTab(command: CloseOpenedTab) {
         browser.tabs.remove(command.tabId);
     }
 

@@ -1,6 +1,6 @@
 import * as uuid from 'uuid';
 
-import { TabClosed } from '../event/tab-closed';
+import { OpenedTabClosed } from '../event/opened-tab-closed';
 import { TabOpened } from '../event/tab-opened';
 import { PrivilegedUrlDetector } from '../privileged-url-detector';
 import { GetTabOpenStateByOpenId } from '../query/get-tab-open-state-by-open-id';
@@ -26,7 +26,7 @@ export class OpenedTabRetriever {
         this.longLivedIdMap.set(event.tabOpenState.longLivedId, event.tabOpenState.id);
     }
 
-    async onTabClose(event: TabClosed) {
+    async onTabClose(event: OpenedTabClosed) {
         this.longLivedIdMap.delete(event.closedTab.longLivedId);
     }
 

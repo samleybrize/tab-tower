@@ -1,29 +1,29 @@
 import { CommandBus } from '../bus/command-bus';
 import { QueryBus } from '../bus/query-bus';
-import { CloseTab } from '../tab/command/close-tab';
-import { DuplicateTab } from '../tab/command/duplicate-tab';
-import { FocusTab } from '../tab/command/focus-tab';
+import { CloseOpenedTab } from '../tab/command/close-opened-tab';
+import { DuplicateOpenedTab } from '../tab/command/duplicate-opened-tab';
+import { FocusOpenedTab } from '../tab/command/focus-opened-tab';
 import { FollowTab } from '../tab/command/follow-tab';
 import { MoveOpenedTabs } from '../tab/command/move-opened-tabs';
-import { MuteTab } from '../tab/command/mute-tab';
-import { PinTab } from '../tab/command/pin-tab';
-import { ReloadTab } from '../tab/command/reload-tab';
+import { MuteOpenedTab } from '../tab/command/mute-opened-tab';
+import { PinOpenedTab } from '../tab/command/pin-opened-tab';
+import { ReloadOpenedTab } from '../tab/command/reload-opened-tab';
 import { UnfollowTab } from '../tab/command/unfollow-tab';
-import { UnmuteTab } from '../tab/command/unmute-tab';
-import { UnpinTab } from '../tab/command/unpin-tab';
+import { UnmuteOpenedTab } from '../tab/command/unmute-opened-tab';
+import { UnpinOpenedTab } from '../tab/command/unpin-opened-tab';
 import { OpenedTabAssociatedToFollowedTab } from '../tab/event/opened-tab-associated-to-followed-tab';
 import { OpenedTabAudibleStateUpdated } from '../tab/event/opened-tab-audible-state-updated';
 import { OpenedTabAudioMuteStateUpdated } from '../tab/event/opened-tab-audio-mute-state-updated';
+import { OpenedTabClosed } from '../tab/event/opened-tab-closed';
 import { OpenedTabFaviconUrlUpdated } from '../tab/event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from '../tab/event/opened-tab-focused';
+import { OpenedTabFollowed } from '../tab/event/opened-tab-followed';
 import { OpenedTabMoved } from '../tab/event/opened-tab-moved';
 import { OpenedTabPinStateUpdated } from '../tab/event/opened-tab-pin-state-updated';
 import { OpenedTabReaderModeStateUpdated } from '../tab/event/opened-tab-reader-mode-state-updated';
 import { OpenedTabTitleUpdated } from '../tab/event/opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from '../tab/event/opened-tab-url-updated';
-import { TabClosed } from '../tab/event/tab-closed';
 import { TabFilterRequested } from '../tab/event/tab-filter-requested';
-import { TabFollowed } from '../tab/event/tab-followed';
 import { TabOpened } from '../tab/event/tab-opened';
 import { TabUnfollowed } from '../tab/event/tab-unfollowed';
 import { TabOpenState } from '../tab/opened-tab/tab-open-state';
@@ -109,7 +109,7 @@ export class OpenedTabView {
             const tabId = +row.getAttribute('data-tab-id');
 
             if (tabId) {
-                this.commandBus.handle(new FocusTab(tabId));
+                this.commandBus.handle(new FocusOpenedTab(tabId));
             }
         };
         const moveBelowCallback: MoveBelowClickCallback = (clickedButton) => {
@@ -222,27 +222,27 @@ export class OpenedTabView {
     }
 
     private pinTabAction(tabOpenState: TabOpenState, clickedElement: HTMLAnchorElement) {
-        this.commandBus.handle(new PinTab(tabOpenState.id));
+        this.commandBus.handle(new PinOpenedTab(tabOpenState.id));
     }
 
     private unpinTabAction(tabOpenState: TabOpenState, clickedElement: HTMLAnchorElement) {
-        this.commandBus.handle(new UnpinTab(tabOpenState.id));
+        this.commandBus.handle(new UnpinOpenedTab(tabOpenState.id));
     }
 
     private muteTabAction(tabOpenState: TabOpenState, clickedElement: HTMLAnchorElement) {
-        this.commandBus.handle(new MuteTab(tabOpenState.id));
+        this.commandBus.handle(new MuteOpenedTab(tabOpenState.id));
     }
 
     private unmuteTabAction(tabOpenState: TabOpenState, clickedElement: HTMLAnchorElement) {
-        this.commandBus.handle(new UnmuteTab(tabOpenState.id));
+        this.commandBus.handle(new UnmuteOpenedTab(tabOpenState.id));
     }
 
     private duplicateTabAction(tabOpenState: TabOpenState, clickedElement: HTMLAnchorElement) {
-        this.commandBus.handle(new DuplicateTab(tabOpenState.id));
+        this.commandBus.handle(new DuplicateOpenedTab(tabOpenState.id));
     }
 
     private reloadTabAction(tabOpenState: TabOpenState, clickedElement: HTMLAnchorElement) {
-        this.commandBus.handle(new ReloadTab(tabOpenState.id));
+        this.commandBus.handle(new ReloadOpenedTab(tabOpenState.id));
     }
 
     private closeTabAction(tabOpenState: TabOpenState, clickedElement: HTMLAnchorElement) {
@@ -252,7 +252,7 @@ export class OpenedTabView {
             return;
         }
 
-        this.commandBus.handle(new CloseTab(tabOpenState.id));
+        this.commandBus.handle(new CloseOpenedTab(tabOpenState.id));
     }
 
     private updateTabUrl(row: HTMLElement, url: string, isPrivileged: boolean, isIgnored: boolean) {
@@ -344,11 +344,11 @@ export class OpenedTabView {
         return this.tabView.tbodyElement.querySelector(`tr[data-tab-id="${tabId}"]`);
     }
 
-    async onTabClose(event: TabClosed) {
+    async onTabClose(event: OpenedTabClosed) {
         this.tabView.addPendingTask(this.handleTabClose.bind(this, event));
     }
 
-    private async handleTabClose(event: TabClosed) {
+    private async handleTabClose(event: OpenedTabClosed) {
         const openedTabRow = this.getTabRowByTabId(event.closedTab.id);
 
         if (openedTabRow) {
@@ -465,11 +465,11 @@ export class OpenedTabView {
         }
     }
 
-    async onTabFollow(event: TabFollowed) {
+    async onTabFollow(event: OpenedTabFollowed) {
         this.tabView.addPendingTask(this.handleTabFollow.bind(this, event));
     }
 
-    private async handleTabFollow(event: TabFollowed) {
+    private async handleTabFollow(event: OpenedTabFollowed) {
         const tabRow = this.getTabRowByTabId(event.tab.openState.id);
 
         if (tabRow) {

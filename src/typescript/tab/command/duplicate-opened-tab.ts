@@ -1,4 +1,4 @@
-export class ReloadTab {
+export class DuplicateOpenedTab {
     constructor(public readonly tabId: number) {
     }
 }

@@ -2,12 +2,12 @@ import * as uuid from 'uuid';
 
 import { CommandBus } from '../../bus/command-bus';
 import { QueryBus } from '../../bus/query-bus';
-import { AssociateOpenedTabToFollowedTab } from '../command/associate-opened-tab-to-followed-tab';
-import { FollowTab } from '../command/follow-tab';
-import { RegisterTabFollowState } from '../command/register-tab-follow-state';
 import { TabOpenState } from '../opened-tab/tab-open-state';
-import { GetTabFollowStateWeightList } from '../query/get-tab-follow-state-weight-list';
+import { AssociateOpenedTabToFollowedTab } from '../tab-association/command/associate-opened-tab-to-followed-tab';
+import { FollowTab } from './command/follow-tab';
+import { RegisterTabFollowState } from './command/register-tab-follow-state';
 import { FollowedTabWeightCalculator } from './followed-tab-weight-calculator';
+import { GetTabFollowStateWeightList } from './query/get-tab-follow-state-weight-list';
 import { TabFollowState } from './tab-follow-state';
 
 export class OpenedTabFollower {

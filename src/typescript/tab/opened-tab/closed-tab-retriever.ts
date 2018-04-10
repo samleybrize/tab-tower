@@ -1,16 +1,16 @@
 import { QueryBus } from '../../bus/query-bus';
 import { sleep } from '../../utils/sleep';
-import { OpenedTabCloseHandled } from '../event/opened-tab-close-handled';
-import { OpenedTabFaviconUrlUpdated } from '../event/opened-tab-favicon-url-updated';
-import { OpenedTabFocused } from '../event/opened-tab-focused';
-import { OpenedTabMoved } from '../event/opened-tab-moved';
-import { OpenedTabPinStateUpdated } from '../event/opened-tab-pin-state-updated';
-import { OpenedTabReaderModeStateUpdated } from '../event/opened-tab-reader-mode-state-updated';
-import { OpenedTabTitleUpdated } from '../event/opened-tab-title-updated';
-import { OpenedTabUrlUpdated } from '../event/opened-tab-url-updated';
-import { TabOpened } from '../event/tab-opened';
-import { GetClosedTabOpenStateByOpenId } from '../query/get-closed-tab-open-state-by-open-id';
-import { GetTabOpenStates } from '../query/get-tab-open-states';
+import { OpenedTabCloseHandled } from './event/opened-tab-close-handled';
+import { OpenedTabFaviconUrlUpdated } from './event/opened-tab-favicon-url-updated';
+import { OpenedTabFocused } from './event/opened-tab-focused';
+import { OpenedTabMoved } from './event/opened-tab-moved';
+import { OpenedTabPinStateUpdated } from './event/opened-tab-pin-state-updated';
+import { OpenedTabReaderModeStateUpdated } from './event/opened-tab-reader-mode-state-updated';
+import { OpenedTabTitleUpdated } from './event/opened-tab-title-updated';
+import { OpenedTabUrlUpdated } from './event/opened-tab-url-updated';
+import { TabOpened } from './event/tab-opened';
+import { GetClosedTabOpenStateByOpenId } from './query/get-closed-tab-open-state-by-open-id';
+import { GetTabOpenStates } from './query/get-tab-open-states';
 import { TabOpenState } from './tab-open-state';
 
 export class ClosedTabRetriever {

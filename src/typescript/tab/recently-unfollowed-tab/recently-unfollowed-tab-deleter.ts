@@ -1,11 +1,11 @@
 import { EventBus } from '../../bus/event-bus';
 import { QueryBus } from '../../bus/query-bus';
-import { DeleteRecentlyUnfollowedTab } from '../command/delete-recently-unfollowed-tab';
-import { RecentlyUnfollowedTabAdded } from '../event/recently-unfollowed-tab-added';
-import { RecentlyUnfollowedTabDeleted } from '../event/recently-unfollowed-tab-deleted';
-import { GetRecentlyUnfollowedTabs } from '../query/get-recently-unfollowed-tabs';
-import { GetRecentlyUnfollowedTabByFollowId } from '../query/get-recently-unfollowed-tabs-by-follow-id';
+import { DeleteRecentlyUnfollowedTab } from './command/delete-recently-unfollowed-tab';
+import { RecentlyUnfollowedTabAdded } from './event/recently-unfollowed-tab-added';
+import { RecentlyUnfollowedTabDeleted } from './event/recently-unfollowed-tab-deleted';
 import { RecentlyUnfollowedTabPersister } from './persister/recently-unfollowed-tab-persister';
+import { GetRecentlyUnfollowedTabs } from './query/get-recently-unfollowed-tabs';
+import { GetRecentlyUnfollowedTabByFollowId } from './query/get-recently-unfollowed-tabs-by-follow-id';
 import { RecentlyUnfollowedTab } from './recently-unfollowed-tab';
 
 export class RecentlyUnfollowedTabDeleter {

@@ -1,9 +1,9 @@
 import { sleep } from '../../utils/sleep';
-import { OpenedTabClosed } from '../event/opened-tab-closed';
+import { OpenedTabClosed } from '../opened-tab/event/opened-tab-closed';
 import { TabOpenState } from '../opened-tab/tab-open-state';
-import { GetSessionIdAssociatedToOpenLongLivedId } from '../query/get-session-id-associated-to-open-long-lived-id';
 import { NativeRecentlyClosedTabAssociation } from './native-recently-closed-tab-association';
 import { NativeRecentlyClosedTabAssociationPersister } from './native-recently-closed-tab-association-persister';
+import { GetSessionIdAssociatedToOpenLongLivedId } from './query/get-session-id-associated-to-open-long-lived-id';
 
 export class NativeRecentlyClosedTabAssociationMaintainer {
     private nativeRecentlyClosedTabAssociationList: NativeRecentlyClosedTabAssociation[] = [];
@@ -117,11 +117,11 @@ export class NativeRecentlyClosedTabAssociationMaintainer {
         }
     }
 
-    async querySessionIdAssociatedToOpenLongLivedId(command: GetSessionIdAssociatedToOpenLongLivedId) {
+    async querySessionIdAssociatedToOpenLongLivedId(query: GetSessionIdAssociatedToOpenLongLivedId) {
         await this.waitAllPendingTasksCompleted();
 
         for (const association of this.nativeRecentlyClosedTabAssociationList) {
-            if (association.associatedOpenedTabLongLivedId === command.openLongLivedId) {
+            if (association.associatedOpenedTabLongLivedId === query.openLongLivedId) {
                 return association.sessionId;
             }
         }

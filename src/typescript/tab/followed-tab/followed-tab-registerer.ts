@@ -1,11 +1,11 @@
 import { CommandBus } from '../../bus/command-bus';
 import { EventBus } from '../../bus/event-bus';
 import { QueryBus } from '../../bus/query-bus';
-import { AssociateOpenedTabToFollowedTab } from '../command/associate-opened-tab-to-followed-tab';
-import { RegisterTabFollowState } from '../command/register-tab-follow-state';
-import { OpenedTabFollowed } from '../event/opened-tab-followed';
-import { GetTabOpenStateByOpenLongLivedId } from '../query/get-tab-open-state-by-open-long-lived-id';
+import { GetTabOpenStateByOpenLongLivedId } from '../opened-tab/query/get-tab-open-state-by-open-long-lived-id';
+import { AssociateOpenedTabToFollowedTab } from '../tab-association/command/associate-opened-tab-to-followed-tab';
 import { TabAssociation } from '../tab-association/tab-association';
+import { RegisterTabFollowState } from './command/register-tab-follow-state';
+import { OpenedTabFollowed } from './event/opened-tab-followed';
 import { FollowStatePersister } from './persister/follow-state-persister';
 
 export class FollowedTabRegisterer {

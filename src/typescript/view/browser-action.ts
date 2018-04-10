@@ -11,13 +11,13 @@ import { ReceivedQueryMessageHandler } from '../message/receiver/received-query-
 import { ContentMessageSender } from '../message/sender/content-message-sender';
 import { SendMessageCommandHandler } from '../message/sender/send-message-command-handler';
 import { SendMessageQueryHandler } from '../message/sender/send-message-query-handler';
-import { FollowTab } from '../tab/command/follow-tab';
+import * as tabCommands from '../tab/command';
 import { GoToControlCenter } from '../tab/command/go-to-control-center';
-import { tabCommands } from '../tab/command/tab-commands';
-import { UnfollowTab } from '../tab/command/unfollow-tab';
-import { tabEvents } from '../tab/event/tab-events';
-import { GetTabAssociationByOpenId } from '../tab/query/get-tab-association-by-open-id';
-import { tabQueries } from '../tab/query/tab-queries';
+import * as tabEvents from '../tab/event';
+import { FollowTab } from '../tab/followed-tab/command/follow-tab';
+import { UnfollowTab } from '../tab/followed-tab/command/unfollow-tab';
+import * as tabQueries from '../tab/query';
+import { GetTabAssociationByOpenId } from '../tab/tab-association/query/get-tab-association-by-open-id';
 import { ObjectUnserializer } from '../utils/object-unserializer';
 import { sleep } from '../utils/sleep';
 import { BrowserActionView } from './browser-action-view';
@@ -28,9 +28,9 @@ async function main() {
     const queryBus = new QueryBus();
 
     const objectUnserializer = new ObjectUnserializer();
-    objectUnserializer.addSupportedClasses(tabCommands);
-    objectUnserializer.addSupportedClasses(tabEvents);
-    objectUnserializer.addSupportedClasses(tabQueries);
+    objectUnserializer.addSupportedClassesFromImportObject(tabCommands);
+    objectUnserializer.addSupportedClassesFromImportObject(tabEvents);
+    objectUnserializer.addSupportedClassesFromImportObject(tabQueries);
 
     const messageSender = new ContentMessageSender();
     const sendMessageCommandHandler = new SendMessageCommandHandler(messageSender);

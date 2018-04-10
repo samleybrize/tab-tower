@@ -1,24 +1,24 @@
 import { EventBus } from '../bus/event-bus';
 import { QueryBus } from '../bus/query-bus';
-import { OpenedTabAudibleStateUpdated } from './event/opened-tab-audible-state-updated';
-import { OpenedTabAudioMuteStateUpdated } from './event/opened-tab-audio-mute-state-updated';
-import { OpenedTabCloseHandled } from './event/opened-tab-close-handled';
-import { OpenedTabClosed } from './event/opened-tab-closed';
-import { OpenedTabFaviconUrlUpdated } from './event/opened-tab-favicon-url-updated';
-import { OpenedTabFocused } from './event/opened-tab-focused';
-import { OpenedTabIsLoading } from './event/opened-tab-is-loading';
-import { OpenedTabLoadingIsComplete } from './event/opened-tab-loading-is-complete';
-import { OpenedTabMoved } from './event/opened-tab-moved';
-import { OpenedTabPinStateUpdated } from './event/opened-tab-pin-state-updated';
-import { OpenedTabReaderModeStateUpdated } from './event/opened-tab-reader-mode-state-updated';
-import { OpenedTabTitleUpdated } from './event/opened-tab-title-updated';
-import { OpenedTabUrlUpdated } from './event/opened-tab-url-updated';
-import { TabOpened } from './event/tab-opened';
-import { OpenedTabCloser } from './opened-tab-closer';
-import { GetClosedTabOpenStateByOpenId } from './query/get-closed-tab-open-state-by-open-id';
-import { GetTabOpenStateByOpenId } from './query/get-tab-open-state-by-open-id';
-import { GetTabOpenStates } from './query/get-tab-open-states';
-import { TabOpener } from './tab-opener';
+import { OpenedTabAudibleStateUpdated } from './opened-tab/event/opened-tab-audible-state-updated';
+import { OpenedTabAudioMuteStateUpdated } from './opened-tab/event/opened-tab-audio-mute-state-updated';
+import { OpenedTabCloseHandled } from './opened-tab/event/opened-tab-close-handled';
+import { OpenedTabClosed } from './opened-tab/event/opened-tab-closed';
+import { OpenedTabFaviconUrlUpdated } from './opened-tab/event/opened-tab-favicon-url-updated';
+import { OpenedTabFocused } from './opened-tab/event/opened-tab-focused';
+import { OpenedTabIsLoading } from './opened-tab/event/opened-tab-is-loading';
+import { OpenedTabLoadingIsComplete } from './opened-tab/event/opened-tab-loading-is-complete';
+import { OpenedTabMoved } from './opened-tab/event/opened-tab-moved';
+import { OpenedTabPinStateUpdated } from './opened-tab/event/opened-tab-pin-state-updated';
+import { OpenedTabReaderModeStateUpdated } from './opened-tab/event/opened-tab-reader-mode-state-updated';
+import { OpenedTabTitleUpdated } from './opened-tab/event/opened-tab-title-updated';
+import { OpenedTabUrlUpdated } from './opened-tab/event/opened-tab-url-updated';
+import { TabOpened } from './opened-tab/event/tab-opened';
+import { OpenedTabCloser } from './opened-tab/opened-tab-closer';
+import { OpenedTabWaiter } from './opened-tab/opened-tab-waiter';
+import { GetClosedTabOpenStateByOpenId } from './opened-tab/query/get-closed-tab-open-state-by-open-id';
+import { GetTabOpenStateByOpenId } from './opened-tab/query/get-tab-open-state-by-open-id';
+import { GetTabOpenStates } from './opened-tab/query/get-tab-open-states';
 
 export class NativeTabEventHandler {
     private isInited = false;
@@ -27,7 +27,7 @@ export class NativeTabEventHandler {
         private eventBus: EventBus,
         private queryBus: QueryBus,
         private tabCloser: OpenedTabCloser,
-        private tabOpener: TabOpener,
+        private openedTabWaiter: OpenedTabWaiter,
     ) {
     }
 
@@ -45,7 +45,7 @@ export class NativeTabEventHandler {
     }
 
     async onNativeTabCreate(nativeTab: browser.tabs.Tab) {
-        await this.tabOpener.waitForNewTabLoad(nativeTab.id);
+        await this.openedTabWaiter.waitForNewTabLoad(nativeTab.id);
         const tabOpenState = await this.queryBus.query(new GetTabOpenStateByOpenId(nativeTab.id));
 
         if (tabOpenState) {

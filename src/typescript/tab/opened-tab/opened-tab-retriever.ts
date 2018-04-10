@@ -1,11 +1,11 @@
 import * as uuid from 'uuid';
 
-import { OpenedTabClosed } from '../event/opened-tab-closed';
-import { TabOpened } from '../event/tab-opened';
 import { PrivilegedUrlDetector } from '../privileged-url-detector';
-import { GetTabOpenStateByOpenId } from '../query/get-tab-open-state-by-open-id';
-import { GetTabOpenStateByOpenLongLivedId } from '../query/get-tab-open-state-by-open-long-lived-id';
-import { GetTabOpenStates } from '../query/get-tab-open-states';
+import { OpenedTabClosed } from './event/opened-tab-closed';
+import { TabOpened } from './event/tab-opened';
+import { GetTabOpenStateByOpenId } from './query/get-tab-open-state-by-open-id';
+import { GetTabOpenStateByOpenLongLivedId } from './query/get-tab-open-state-by-open-long-lived-id';
+import { GetTabOpenStates } from './query/get-tab-open-states';
 import { TabOpenState } from './tab-open-state';
 
 export class OpenedTabRetriever {

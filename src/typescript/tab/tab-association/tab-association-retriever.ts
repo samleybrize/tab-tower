@@ -1,14 +1,14 @@
 import { QueryBus } from '../../bus/query-bus';
-import { GetFollowIdAssociatedToOpenId } from '../query/get-follow-id-associated-to-open-id';
-import { GetOpenIdAssociatedToFollowId } from '../query/get-open-id-associated-to-follow-id';
-import { GetTabAssociationByFollowId } from '../query/get-tab-association-by-follow-id';
-import { GetTabAssociationByOpenId } from '../query/get-tab-association-by-open-id';
-import { GetTabAssociationsWithFollowState } from '../query/get-tab-associations-with-follow-state';
-import { GetTabAssociationsWithOpenState } from '../query/get-tab-associations-with-open-state';
-import { GetTabFollowStateByFollowId } from '../query/get-tab-follow-state-by-follow-id';
-import { GetTabFollowStates } from '../query/get-tab-follow-states';
-import { GetTabOpenStateByOpenId } from '../query/get-tab-open-state-by-open-id';
-import { GetTabOpenStates } from '../query/get-tab-open-states';
+import { GetTabFollowStateByFollowId } from '../followed-tab/query/get-tab-follow-state-by-follow-id';
+import { GetTabFollowStates } from '../followed-tab/query/get-tab-follow-states';
+import { GetTabOpenStateByOpenId } from '../opened-tab/query/get-tab-open-state-by-open-id';
+import { GetTabOpenStates } from '../opened-tab/query/get-tab-open-states';
+import { GetFollowIdAssociatedToOpenId } from '../tab-association/query/get-follow-id-associated-to-open-id';
+import { GetOpenIdAssociatedToFollowId } from '../tab-association/query/get-open-id-associated-to-follow-id';
+import { GetTabAssociationByFollowId } from '../tab-association/query/get-tab-association-by-follow-id';
+import { GetTabAssociationByOpenId } from '../tab-association/query/get-tab-association-by-open-id';
+import { GetTabAssociationsWithFollowState } from '../tab-association/query/get-tab-associations-with-follow-state';
+import { GetTabAssociationsWithOpenState } from '../tab-association/query/get-tab-associations-with-open-state';
 import { TabAssociation } from './tab-association';
 
 export class TabAssociationRetriever {

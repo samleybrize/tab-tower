@@ -1,6 +1,6 @@
 import { EventBus } from '../../bus/event-bus';
-import { MoveFollowedTabs } from '../command/move-followed-tabs';
-import { FollowedTabMoved } from '../event/followed-tab-moved';
+import { MoveFollowedTabs } from './command/move-followed-tabs';
+import { FollowedTabMoved } from './event/followed-tab-moved';
 import { FollowedTabWeightCalculator } from './followed-tab-weight-calculator';
 import { FollowStatePersister } from './persister/follow-state-persister';
 

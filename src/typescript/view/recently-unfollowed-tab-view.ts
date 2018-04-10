@@ -1,11 +1,11 @@
 import { CommandBus } from '../bus/command-bus';
 import { QueryBus } from '../bus/query-bus';
-import { DeleteRecentlyUnfollowedTab } from '../tab/command/delete-recently-unfollowed-tab';
-import { RestoreRecentlyUnfollowedTab } from '../tab/command/restore-recently-unfollowed-tab';
-import { RecentlyUnfollowedTabAdded } from '../tab/event/recently-unfollowed-tab-added';
-import { RecentlyUnfollowedTabDeleted } from '../tab/event/recently-unfollowed-tab-deleted';
 import { TabFilterRequested } from '../tab/event/tab-filter-requested';
-import { GetRecentlyUnfollowedTabs } from '../tab/query/get-recently-unfollowed-tabs';
+import { DeleteRecentlyUnfollowedTab } from '../tab/recently-unfollowed-tab/command/delete-recently-unfollowed-tab';
+import { RestoreRecentlyUnfollowedTab } from '../tab/recently-unfollowed-tab/command/restore-recently-unfollowed-tab';
+import { RecentlyUnfollowedTabAdded } from '../tab/recently-unfollowed-tab/event/recently-unfollowed-tab-added';
+import { RecentlyUnfollowedTabDeleted } from '../tab/recently-unfollowed-tab/event/recently-unfollowed-tab-deleted';
+import { GetRecentlyUnfollowedTabs } from '../tab/recently-unfollowed-tab/query/get-recently-unfollowed-tabs';
 import { RecentlyUnfollowedTab } from '../tab/recently-unfollowed-tab/recently-unfollowed-tab';
 import { MoreActionType, MoreMenu, MoreMenuManipulator } from './component/more-menu-manipulator';
 import { TabFilterApplier } from './component/tab-filter-applier';

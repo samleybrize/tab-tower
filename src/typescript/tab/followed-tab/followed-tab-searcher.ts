@@ -1,7 +1,7 @@
 import { QueryBus } from '../../bus/query-bus';
-import { GetTabFollowStates } from '../query/get-tab-follow-states';
-import { SearchTabFollowStates } from '../query/search-tab-follow-states';
 import { TabMatcher } from '../tab-matcher';
+import { GetTabFollowStates } from './query/get-tab-follow-states';
+import { SearchTabFollowStates } from './query/search-tab-follow-states';
 import { TabFollowState } from './tab-follow-state';
 
 export class FollowedTabSearcher {

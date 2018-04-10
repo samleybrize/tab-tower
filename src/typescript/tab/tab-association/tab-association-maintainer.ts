@@ -1,15 +1,15 @@
 import { EventBus } from '../../bus/event-bus';
 import { QueryBus } from '../../bus/query-bus';
-import { AssociateOpenedTabToFollowedTab } from '../command/associate-opened-tab-to-followed-tab';
-import { OpenedTabAssociatedToFollowedTab } from '../event/opened-tab-associated-to-followed-tab';
-import { OpenedTabClosed } from '../event/opened-tab-closed';
-import { TabUnfollowed } from '../event/tab-unfollowed';
+import { TabUnfollowed } from '../followed-tab/event/tab-unfollowed';
+import { GetTabFollowStatesWithOpenLongLivedId } from '../followed-tab/query/get-tab-follow-states-with-open-long-lived-id';
 import { TabFollowState } from '../followed-tab/tab-follow-state';
+import { OpenedTabClosed } from '../opened-tab/event/opened-tab-closed';
+import { GetTabOpenStates } from '../opened-tab/query/get-tab-open-states';
 import { TabOpenState } from '../opened-tab/tab-open-state';
-import { GetFollowIdAssociatedToOpenId } from '../query/get-follow-id-associated-to-open-id';
-import { GetOpenIdAssociatedToFollowId } from '../query/get-open-id-associated-to-follow-id';
-import { GetTabFollowStatesWithOpenLongLivedId } from '../query/get-tab-follow-states-with-open-long-lived-id';
-import { GetTabOpenStates } from '../query/get-tab-open-states';
+import { GetFollowIdAssociatedToOpenId } from '../tab-association/query/get-follow-id-associated-to-open-id';
+import { GetOpenIdAssociatedToFollowId } from '../tab-association/query/get-open-id-associated-to-follow-id';
+import { AssociateOpenedTabToFollowedTab } from './command/associate-opened-tab-to-followed-tab';
+import { OpenedTabAssociatedToFollowedTab } from './event/opened-tab-associated-to-followed-tab';
 
 export class TabAssociationMaintainer {
     private openTabIdFollowIdAssociation = new Map<number, string>();

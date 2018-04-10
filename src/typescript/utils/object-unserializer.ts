@@ -12,6 +12,15 @@ export class ObjectUnserializer {
         }
     }
 
+    addSupportedClassesFromImportObject(importObject: object) {
+        const classList = Object
+            .getOwnPropertyNames(importObject as Record<string, ClassObject>)
+            .map((key) => (importObject as Record<string, ClassObject>)[key])
+        ;
+
+        this.addSupportedClasses(classList);
+    }
+
     fromClassNameAndData(className: string, data: object): object {
         const classObject = this.classMap.get(className);
 

@@ -1,9 +1,9 @@
 import { CommandBus } from '../bus/command-bus';
 import { QueryBus } from '../bus/query-bus';
 import { GoToControlCenter } from '../tab/command/go-to-control-center';
-import { RestoreFollowedTab, TabOpenTarget } from '../tab/command/restore-followed-tab';
-import { GetTabFollowStateByFollowId } from '../tab/query/get-tab-follow-state-by-follow-id';
-import { SearchTabFollowStates } from '../tab/query/search-tab-follow-states';
+import { RestoreFollowedTab, TabOpenTarget } from '../tab/followed-tab/command/restore-followed-tab';
+import { GetTabFollowStateByFollowId } from '../tab/followed-tab/query/get-tab-follow-state-by-follow-id';
+import { SearchTabFollowStates } from '../tab/followed-tab/query/search-tab-follow-states';
 
 export class OmniboxSuggestionHandler {
     constructor(private commandBus: CommandBus, private queryBus: QueryBus, defaultSuggestionLabel: string) {

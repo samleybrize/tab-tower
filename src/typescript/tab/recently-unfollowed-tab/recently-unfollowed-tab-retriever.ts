@@ -1,6 +1,6 @@
-import { GetRecentlyUnfollowedTabs } from '../query/get-recently-unfollowed-tabs';
-import { GetRecentlyUnfollowedTabByFollowId } from '../query/get-recently-unfollowed-tabs-by-follow-id';
 import { RecentlyUnfollowedTabPersister } from './persister/recently-unfollowed-tab-persister';
+import { GetRecentlyUnfollowedTabs } from './query/get-recently-unfollowed-tabs';
+import { GetRecentlyUnfollowedTabByFollowId } from './query/get-recently-unfollowed-tabs-by-follow-id';
 
 export class RecentlyUnfollowedTabRetriever {
     constructor(private persister: RecentlyUnfollowedTabPersister) {

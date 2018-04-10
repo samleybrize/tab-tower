@@ -1,9 +1,9 @@
 import { CommandBus } from '../bus/command-bus';
 import { QueryBus } from '../bus/query-bus';
-import { FollowTab } from '../tab/command/follow-tab';
 import { GoToControlCenter } from '../tab/command/go-to-control-center';
-import { UnfollowTab } from '../tab/command/unfollow-tab';
-import { GetTabAssociationByOpenId } from '../tab/query/get-tab-association-by-open-id';
+import { FollowTab } from '../tab/followed-tab/command/follow-tab';
+import { UnfollowTab } from '../tab/followed-tab/command/unfollow-tab';
+import { GetTabAssociationByOpenId } from '../tab/tab-association/query/get-tab-association-by-open-id';
 
 export class BrowserActionView {
     private followedContainer: HTMLElement;

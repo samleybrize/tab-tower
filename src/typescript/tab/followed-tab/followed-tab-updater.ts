@@ -1,15 +1,15 @@
 import { CommandBus } from '../../bus/command-bus';
 import { QueryBus } from '../../bus/query-bus';
-import { AssociateOpenedTabToFollowedTab } from '../command/associate-opened-tab-to-followed-tab';
-import { OpenedTabAssociatedToFollowedTab } from '../event/opened-tab-associated-to-followed-tab';
-import { OpenedTabAudioMuteStateUpdated } from '../event/opened-tab-audio-mute-state-updated';
-import { OpenedTabFaviconUrlUpdated } from '../event/opened-tab-favicon-url-updated';
-import { OpenedTabFocused } from '../event/opened-tab-focused';
-import { OpenedTabReaderModeStateUpdated } from '../event/opened-tab-reader-mode-state-updated';
-import { OpenedTabTitleUpdated } from '../event/opened-tab-title-updated';
-import { OpenedTabUrlUpdated } from '../event/opened-tab-url-updated';
-import { TabOpened } from '../event/tab-opened';
-import { GetFollowIdAssociatedToOpenId } from '../query/get-follow-id-associated-to-open-id';
+import { OpenedTabAudioMuteStateUpdated } from '../opened-tab/event/opened-tab-audio-mute-state-updated';
+import { OpenedTabFaviconUrlUpdated } from '../opened-tab/event/opened-tab-favicon-url-updated';
+import { OpenedTabFocused } from '../opened-tab/event/opened-tab-focused';
+import { OpenedTabReaderModeStateUpdated } from '../opened-tab/event/opened-tab-reader-mode-state-updated';
+import { OpenedTabTitleUpdated } from '../opened-tab/event/opened-tab-title-updated';
+import { OpenedTabUrlUpdated } from '../opened-tab/event/opened-tab-url-updated';
+import { TabOpened } from '../opened-tab/event/tab-opened';
+import { AssociateOpenedTabToFollowedTab } from '../tab-association/command/associate-opened-tab-to-followed-tab';
+import { OpenedTabAssociatedToFollowedTab } from '../tab-association/event/opened-tab-associated-to-followed-tab';
+import { GetFollowIdAssociatedToOpenId } from '../tab-association/query/get-follow-id-associated-to-open-id';
 import { FollowStatePersister } from './persister/follow-state-persister';
 
 export class FollowedTabUpdater {

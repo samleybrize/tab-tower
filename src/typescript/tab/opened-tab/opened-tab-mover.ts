@@ -1,4 +1,4 @@
-import { MoveOpenedTabs } from '../command/move-opened-tabs';
+import { MoveOpenedTabs } from './command/move-opened-tabs';
 
 export class OpenedTabMover {
     async moveOpenedTabs(command: MoveOpenedTabs) {

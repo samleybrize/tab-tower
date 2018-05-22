@@ -1,3 +1,4 @@
+// TODO todel
 export class StringMatcher {
     isCaseSensitiveMatch(searchTerms: string[], matchAgainst: string[]) {
         for (const searchTerm of searchTerms) {

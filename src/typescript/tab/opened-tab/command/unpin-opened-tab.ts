@@ -1,4 +1,4 @@
 export class UnpinOpenedTab {
-    constructor(public readonly tabId: number) {
+    constructor(public readonly tabId: string) {
     }
 }

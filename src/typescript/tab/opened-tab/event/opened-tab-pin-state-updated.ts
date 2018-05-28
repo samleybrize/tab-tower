@@ -1,6 +1,4 @@
-import { TabOpenState } from '../tab-open-state';
-
 export class OpenedTabPinStateUpdated {
-    constructor(public readonly tabOpenState: TabOpenState) {
+    constructor(public readonly tabId: string, public readonly isPinned: boolean) {
     }
 }

@@ -1,148 +1,216 @@
 import * as uuid from 'uuid';
 
-import { PrivilegedUrlDetector } from '../privileged-url-detector';
+import { TaskScheduler } from '../../utils/task-scheduler';
+import { OpenedTabAudibleStateUpdated } from './event/opened-tab-audible-state-updated';
+import { OpenedTabAudioMuteStateUpdated } from './event/opened-tab-audio-mute-state-updated';
 import { OpenedTabClosed } from './event/opened-tab-closed';
+import { OpenedTabDiscardStateUpdated } from './event/opened-tab-discard-state-updated';
+import { OpenedTabFaviconUrlUpdated } from './event/opened-tab-favicon-url-updated';
+import { OpenedTabFocused } from './event/opened-tab-focused';
+import { OpenedTabIsLoading } from './event/opened-tab-is-loading';
+import { OpenedTabLoadingIsComplete } from './event/opened-tab-loading-is-complete';
+import { OpenedTabMoved } from './event/opened-tab-moved';
+import { OpenedTabPinStateUpdated } from './event/opened-tab-pin-state-updated';
+import { OpenedTabTitleUpdated } from './event/opened-tab-title-updated';
+import { OpenedTabUrlUpdated } from './event/opened-tab-url-updated';
 import { TabOpened } from './event/tab-opened';
-import { GetTabOpenStateByOpenId } from './query/get-tab-open-state-by-open-id';
-import { GetTabOpenStateByOpenLongLivedId } from './query/get-tab-open-state-by-open-long-lived-id';
-import { GetTabOpenStates } from './query/get-tab-open-states';
-import { TabOpenState } from './tab-open-state';
+import { OpenedTab } from './opened-tab';
+import { OpenedTabBackend } from './opened-tab-backend';
+import { GetOpenedTabById } from './query/get-opened-tab-by-id';
+import { GetOpenedTabs } from './query/get-opened-tabs';
 
+// TODO multi window
 export class OpenedTabRetriever {
-    private longLivedIdMap = new Map<string, number>();
+    private tabMap = new Map<string, OpenedTab>();
+    private tabList: OpenedTab[] = null;
+    private focusedTab: OpenedTab = null;
 
-    constructor(private privilegedUrlDetector: PrivilegedUrlDetector, private ignoreUrlsThatStartWith: string[]) {
+    constructor(private openedTabBackend: OpenedTabBackend, private taskScheduler: TaskScheduler) {
     }
 
     async init() {
-        const tabList = await this.getAll();
-
-        for (const tab of tabList) {
-            this.longLivedIdMap.set(tab.longLivedId, tab.id);
-        }
-    }
-
-    async onTabOpen(event: TabOpened) {
-        this.longLivedIdMap.set(event.tabOpenState.longLivedId, event.tabOpenState.id);
-    }
-
-    async onTabClose(event: OpenedTabClosed) {
-        this.longLivedIdMap.delete(event.closedTab.longLivedId);
-    }
-
-    async queryAll(query: GetTabOpenStates): Promise<TabOpenState[]> {
-        return this.getAll();
-    }
-
-    private async getAll(): Promise<TabOpenState[]> {
-        const rawTabs = await browser.tabs.query({});
-        const tabList: TabOpenState[] = [];
-
-        for (const rawTab of rawTabs) {
-            const tab = await this.createTab(rawTab);
-
-            if (null == tab) {
-                continue;
-            }
-
-            tabList.push(tab);
-        }
-
-        return tabList;
-    }
-
-    private async createTab(rawTab: browser.tabs.Tab): Promise<TabOpenState> {
-        // incognito tabs are ignored for now
-        if (null === rawTab.id || null === rawTab.index || rawTab.incognito) {
+        if (null !== this.tabList) {
             return;
         }
 
-        const {url, isInReaderMode} = this.getUrlAndReaderModeState(rawTab);
-        const tabOpenState = new TabOpenState();
-        tabOpenState.id = rawTab.id;
-        tabOpenState.longLivedId = await this.getTabLongLivedId(rawTab.id, false);
-        tabOpenState.index = rawTab.index;
-        tabOpenState.title = rawTab.title;
-        tabOpenState.isIncognito = !!rawTab.incognito;
-        tabOpenState.isInReaderMode = isInReaderMode;
-        tabOpenState.isPinned = !!rawTab.pinned;
-        tabOpenState.isAudible = !!rawTab.audible;
-        tabOpenState.isAudioMuted = rawTab.mutedInfo ? !!rawTab.mutedInfo.muted : false;
-        tabOpenState.url = url;
-        tabOpenState.faviconUrl = rawTab.favIconUrl;
-        tabOpenState.isPrivileged = this.privilegedUrlDetector.isPrivileged(url, isInReaderMode);
-        tabOpenState.isIgnored = this.isUrlIgnored(rawTab.url);
-        tabOpenState.lastAccess = new Date(rawTab.lastAccessed);
+        const tabList = await this.openedTabBackend.getAll();
 
-        await this.assignNewLongLivedIdIfTabIsDuplicate(tabOpenState);
+        for (const tab of tabList) {
+            this.tabMap.set(tab.id, tab);
 
-        return tabOpenState;
-    }
-
-    private async assignNewLongLivedIdIfTabIsDuplicate(tabOpenState: TabOpenState) {
-        const tabIdCorrespondingToLongLivedId = this.longLivedIdMap.get(tabOpenState.longLivedId);
-
-        if (tabIdCorrespondingToLongLivedId && tabOpenState.id != tabIdCorrespondingToLongLivedId) {
-            tabOpenState.longLivedId = await this.getTabLongLivedId(tabOpenState.id, true);
-        }
-    }
-
-    private isUrlIgnored(url: string) {
-        for (const startToIgnore of this.ignoreUrlsThatStartWith) {
-            if (0 == url.indexOf(startToIgnore)) {
-                return true;
+            if (tab.isFocused) {
+                this.focusedTab = tab;
             }
         }
 
-        return false;
+        this.tabList = tabList;
     }
 
-    private getUrlAndReaderModeState(rawTab: browser.tabs.Tab) {
-        let url = rawTab.url;
-        let isInReaderMode = false;
+    async queryAll(query: GetOpenedTabs): Promise<OpenedTab[]> {
+        return this.tabList;
+    }
 
-        if (0 == url.indexOf('about:reader?')) {
-            url = new URL(url).searchParams.get('url');
-            url = decodeURI(url);
-            isInReaderMode = true;
+    async queryById(query: GetOpenedTabById): Promise<OpenedTab> {
+        return this.getById(query.tabId);
+    }
+
+    private async getById(tabId: string) {
+        return this.tabMap.get(tabId);
+    }
+
+    async onTabOpen(event: TabOpened) {
+        await this.taskScheduler.add(async () => {
+            const tabToInsert = event.tab;
+            this.tabMap.set(tabToInsert.id, tabToInsert);
+            this.insertTabOnTabList(tabToInsert);
+        }).executeAll();
+    }
+
+    private insertTabOnTabList(tabToInsert: OpenedTab) {
+        const insertAt = this.tabList.findIndex((tab) => tab.position > tabToInsert.position);
+
+        if (insertAt >= 0) {
+            this.tabList.splice(insertAt, 0, tabToInsert);
+        } else {
+            this.tabList.push(tabToInsert);
         }
-
-        return {url, isInReaderMode};
     }
 
-    private async getTabLongLivedId(tabId: number, alwaysRegenerate: boolean): Promise<string> {
-        let longLivedId = await browser.sessions.getTabValue(tabId, 'longLivedId');
+    async onTabClose(event: OpenedTabClosed) {
+        await this.taskScheduler.add(async () => {
+            const closedTabId = event.closedTab.id;
+            const closedTab = this.tabMap.get(closedTabId);
 
-        if (alwaysRegenerate || 'string' != typeof longLivedId) {
-            longLivedId = uuid.v1();
-            await browser.sessions.setTabValue(tabId, 'longLivedId', longLivedId);
-        }
+            if (null === closedTab) {
+                return;
+            }
 
-        return longLivedId;
+            this.tabMap.delete(closedTabId);
+            this.removeTabFromTabList(closedTab);
+        }).executeAll();
     }
 
-    async queryById(query: GetTabOpenStateByOpenId): Promise<TabOpenState> {
-        return this.getById(query.openId);
+    private removeTabFromTabList(tab: OpenedTab) {
+        const index = this.tabList.indexOf(tab);
+        this.tabList.splice(index, 1);
     }
 
-    private async getById(openId: number) {
-        let rawTab: browser.tabs.Tab;
+    async onTabLoading(event: OpenedTabIsLoading) {
+        await this.taskScheduler.add(async () => {
+            const tab = this.tabMap.get(event.tabId);
 
-        try {
-            // a not found id throws an error
-            rawTab = await browser.tabs.get(openId);
-        } catch (error) {
-            return null;
-        }
-
-        return await this.createTab(rawTab);
+            if (tab) {
+                tab.isLoading = true;
+            }
+        }).executeAll();
     }
 
-    async queryByLongLivedId(query: GetTabOpenStateByOpenLongLivedId): Promise<TabOpenState> {
-        const openId = this.longLivedIdMap.get(query.openLongLivedId);
+    async onTabLoadingComplete(event: OpenedTabLoadingIsComplete) {
+        await this.taskScheduler.add(async () => {
+            const tab = this.tabMap.get(event.tabId);
 
-        if (openId) {
-            return this.getById(openId);
-        }
+            if (tab) {
+                tab.isLoading = false;
+            }
+        }).executeAll();
+    }
+
+    async onTabAudibleStateUpdate(event: OpenedTabAudibleStateUpdated) {
+        await this.taskScheduler.add(async () => {
+            const tab = this.tabMap.get(event.tabId);
+
+            if (tab) {
+                tab.isAudible = event.isAudible;
+            }
+        }).executeAll();
+    }
+
+    async onTabAudioMuteStateUpdate(event: OpenedTabAudioMuteStateUpdated) {
+        await this.taskScheduler.add(async () => {
+            const tab = this.tabMap.get(event.tabId);
+
+            if (tab) {
+                tab.isAudioMuted = event.isAudioMuted;
+            }
+        }).executeAll();
+    }
+
+    async onTabDiscardStateUpdate(event: OpenedTabDiscardStateUpdated) {
+        await this.taskScheduler.add(async () => {
+            const tab = this.tabMap.get(event.tabId);
+
+            if (tab) {
+                tab.isDiscarded = event.isDiscarded;
+            }
+        }).executeAll();
+    }
+
+    async onTabFaviconUrlUpdate(event: OpenedTabFaviconUrlUpdated) {
+        await this.taskScheduler.add(async () => {
+            const tab = this.tabMap.get(event.tabId);
+
+            if (tab) {
+                tab.faviconUrl = event.faviconUrl;
+            }
+        }).executeAll();
+    }
+
+    async onTabFocus(event: OpenedTabFocused) {
+        await this.taskScheduler.add(async () => {
+            const tab = this.tabMap.get(event.tabId);
+
+            if (tab) {
+                if (this.focusedTab) {
+                    this.focusedTab.isFocused = false;
+                }
+
+                tab.isFocused = true;
+                tab.lastAccess = new Date();
+            }
+        }).executeAll();
+    }
+
+    async onTabMove(event: OpenedTabMoved) {
+        await this.taskScheduler.add(async () => {
+            const movedTab = this.tabMap.get(event.tabId);
+
+            if (null === movedTab) {
+                return;
+            }
+
+            movedTab.position = event.position;
+            this.removeTabFromTabList(movedTab);
+            this.insertTabOnTabList(movedTab);
+        }).executeAll();
+    }
+
+    async onTabPinStateUpdate(event: OpenedTabPinStateUpdated) {
+        await this.taskScheduler.add(async () => {
+            const tab = this.tabMap.get(event.tabId);
+
+            if (tab) {
+                tab.isPinned = event.isPinned;
+            }
+        }).executeAll();
+    }
+
+    async onTabTitleUpdate(event: OpenedTabTitleUpdated) {
+        await this.taskScheduler.add(async () => {
+            const tab = this.tabMap.get(event.tabId);
+
+            if (tab) {
+                tab.title = event.title;
+            }
+        }).executeAll();
+    }
+
+    async onTabUrlUpdate(event: OpenedTabUrlUpdated) {
+        await this.taskScheduler.add(async () => {
+            const tab = this.tabMap.get(event.tabId);
+
+            if (tab) {
+                tab.url = event.url;
+            }
+        }).executeAll();
     }
 }

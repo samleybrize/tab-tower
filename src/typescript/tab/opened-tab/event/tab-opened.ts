@@ -1,6 +1,6 @@
-import { TabOpenState } from '../tab-open-state';
+import { OpenedTab } from '../opened-tab';
 
 export class TabOpened {
-    constructor(public readonly tabOpenState: TabOpenState) {
+    constructor(public readonly tab: OpenedTab) {
     }
 }

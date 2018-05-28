@@ -1,4 +1,4 @@
 export class MoveOpenedTabs {
-    constructor(public readonly tabIdList: number[], public readonly targetIndex: number) {
+    constructor(public readonly tabIdList: string[], public readonly targetPosition: number) {
     }
 }

@@ -958,7 +958,7 @@ declare namespace browser.tabs {
         pinned: boolean;
         selected: boolean;
         sessionId?: string;
-        status?: string;
+        status?: TabStatus;
         title?: string;
         url?: string;
         width?: number;
@@ -1067,10 +1067,11 @@ declare namespace browser.tabs {
         toIndex: number;
     }
     export interface UpdateInfo {
-        status?: string;
+        status?: TabStatus;
         url?: string;
         pinned?: boolean;
         audible?: boolean;
+        discarded?: boolean;
         mutedInfo?: MutedInfo;
         favIconUrl?: string;
         title?: string;

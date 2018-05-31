@@ -22,7 +22,6 @@ import { OpenedTabBackend } from '../opened-tab-backend';
 import { GetOpenedTabById } from '../query/get-opened-tab-by-id';
 import { GetOpenedTabs } from '../query/get-opened-tabs';
 import { NativeTabIdAssociationMaintainer } from './native-tab-id-association-maintainer';
-import { OpenedTabCloser } from './opened-tab-closer';
 
 export class NativeTabEventHandler implements OpenedTabBackend {
     private isInited = false;
@@ -32,7 +31,6 @@ export class NativeTabEventHandler implements OpenedTabBackend {
         private queryBus: QueryBus,
         private nativeTabIdAssociationMaintainer: NativeTabIdAssociationMaintainer,
         private taskScheduler: TaskScheduler,
-        private tabCloser: OpenedTabCloser,
     ) {
     }
 
@@ -126,6 +124,7 @@ export class NativeTabEventHandler implements OpenedTabBackend {
             const openedTab = await this.createTab(nativeTab);
 
             if (openedTab) {
+                this.nativeTabIdAssociationMaintainer.onNativeTabOpen(nativeTab.id);
                 await this.eventBus.publish(new TabOpened(openedTab));
                 await this.notifyTabMoveFromPosition(nativeTab.index + 1);
             }
@@ -167,6 +166,7 @@ export class NativeTabEventHandler implements OpenedTabBackend {
             }
 
             await this.eventBus.publish(new OpenedTabClosed(closedTab));
+            this.nativeTabIdAssociationMaintainer.onNativeTabClose(nativeTabId);
 
             const closedTabPosition = closedTab ? closedTab.position : 0;
             await this.notifyTabMoveFromPosition(closedTabPosition);

@@ -11,6 +11,12 @@ import { BackgroundMessageSender } from '../message/sender/background-message-se
 import { SendMessageEventHandler } from '../message/sender/send-message-event-handler';
 import { SendMessageQueryHandler } from '../message/sender/send-message-query-handler';
 import { PostUpdateMigrator } from '../migration/post-update-migrator';
+import * as settingsCommands from '../settings/command';
+import * as settingsEvents from '../settings/event';
+import * as settingsQueries from '../settings/query';
+import { SettingsModifier } from '../settings/settings-modifier';
+import { SettingsRetriever } from '../settings/settings-retriever';
+import { WebStorageSettingsPersister } from '../settings/web-storage-settings-persister';
 import { NativeTabEventHandler } from '../tab/opened-tab/browser/native-tab-event-handler';
 import { NativeTabIdAssociationMaintainerFirefox } from '../tab/opened-tab/browser/native-tab-id-association-maintainer-firefox';
 import { OpenedTabCloser } from '../tab/opened-tab/browser/opened-tab-closer';
@@ -57,6 +63,10 @@ async function main() {
     const openedTabUnmuter = new OpenedTabUnmuter(nativeTabIdAssociationMaintainer);
     const openedTabUnpinner = new OpenedTabUnpinner(nativeTabIdAssociationMaintainer);
 
+    const settingsPersister = new WebStorageSettingsPersister();
+    const settingsRetriever = new SettingsRetriever(settingsPersister);
+    const settingsModifier = new SettingsModifier(eventBus, settingsPersister, new TaskScheduler());
+
     const objectUnserializer = new ObjectUnserializer();
     const messageSender = new BackgroundMessageSender();
     const sendMessageEventHandler = new SendMessageEventHandler(messageSender);
@@ -66,6 +76,9 @@ async function main() {
         objectUnserializer.addSupportedClassesFromImportObject(openedTabCommands);
         objectUnserializer.addSupportedClassesFromImportObject(openedTabEvents);
         objectUnserializer.addSupportedClassesFromImportObject(openedTabQueries);
+        objectUnserializer.addSupportedClassesFromImportObject(settingsCommands);
+        objectUnserializer.addSupportedClassesFromImportObject(settingsEvents);
+        objectUnserializer.addSupportedClassesFromImportObject(settingsQueries);
         objectUnserializer.addSupportedClasses([GetBackgroundState]);
 
         const receivedQueryMessageHandler = new ReceivedQueryMessageHandler(queryBus, objectUnserializer);
@@ -87,11 +100,19 @@ async function main() {
         commandBus.register(openedTabCommands.ReloadOpenedTab, openedTabReloader.reloadTab, openedTabReloader);
         commandBus.register(openedTabCommands.UnmuteOpenedTab, openedTabUnmuter.unmuteTab, openedTabUnmuter);
         commandBus.register(openedTabCommands.UnpinOpenedTab, openedTabUnpinner.unpinTab, openedTabUnpinner);
+
+        commandBus.register(settingsCommands.ConfigureCloseTabOnMiddleClick, settingsModifier.configureCloseTabOnMiddleClick, settingsModifier);
+        commandBus.register(settingsCommands.ConfigureShowCloseButtonOnTabHover, settingsModifier.configureShowCloseButtonButtonOnTabHover, settingsModifier);
+        commandBus.register(settingsCommands.ConfigureShowTabTitleOnSeveralLines, settingsModifier.configureShowTabTitleOnSeveralLines, settingsModifier);
+        commandBus.register(settingsCommands.ConfigureShowTabUrlOnSeveralLines, settingsModifier.configureShowTabUrlOnSeveralLines, settingsModifier);
+        commandBus.register(settingsCommands.ConfigureTabAddressToShow, settingsModifier.configureTabAddressToShow, settingsModifier);
     }
 
     function initQueryBus() {
         queryBus.register(openedTabQueries.GetOpenedTabById, openedTabRetriever.queryById, openedTabRetriever);
         queryBus.register(openedTabQueries.GetOpenedTabs, openedTabRetriever.queryAll, openedTabRetriever);
+
+        queryBus.register(settingsQueries.GetSettings, settingsRetriever.querySettings, settingsRetriever);
     }
 
     function initEventBus() {
@@ -121,6 +142,12 @@ async function main() {
         eventBus.subscribe(openedTabEvents.OpenedTabUrlUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(openedTabEvents.TabOpened, openedTabRetriever.onTabOpen, openedTabRetriever);
         eventBus.subscribe(openedTabEvents.TabOpened, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+
+        eventBus.subscribe(settingsEvents.CloseTabOnMiddleClickConfigured, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(settingsEvents.ShowCloseButtonOnTabHoverConfigured, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(settingsEvents.ShowTabTitleOnSeveralLinesConfigured, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(settingsEvents.ShowTabUrlOnSeveralLinesConfigured, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(settingsEvents.TabAddressToShowConfigured, sendMessageEventHandler.onEvent, sendMessageEventHandler);
     }
 
     async function initTabHandling() {

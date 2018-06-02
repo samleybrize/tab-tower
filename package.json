@@ -3,7 +3,7 @@
   "title": "Tab Tower",
   "description": "Advanced browser tabs manager.",
   "author": "Stephen Berquet",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "main": "dist/src/main.js",
   "license": "MIT",
   "devDependencies": {
@@ -11,7 +11,6 @@
     "@types/chai": "^4.0.10",
     "@types/detect-browser": "^2.0.0",
     "@types/fs-extra": "^5.0.0",
-    "@types/materialize-css": "^1.0.0",
     "@types/mocha": "^2.2.45",
     "@types/selenium-webdriver": "^3.0.8",
     "@types/semver": "^5.5.0",
@@ -42,10 +41,10 @@
     "prebuild-extension:firefox": "node bin/clean.js && npm run build && tsc -p tsconfig.bin.json",
     "build-extension:firefox": "node ./dist/bin/build-extension.js",
     "build": "npm run build:ts && npm run build:sass",
-    "build:ts": "node bin/patch-materialize-css.js && webpack",
+    "build:ts": "webpack",
     "build:sass": "node-sass src/scss/main.scss dist/css/style.css --source-map true",
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Sass\" \"npm run watch:ts\" \"npm run watch:sass\"",
-    "watch:ts": "node bin/patch-materialize-css.js && webpack --watch",
+    "watch:ts": "webpack --watch",
     "watch:sass": "npm run build:sass && node-sass -w src/scss/main.scss dist/css/style.css --source-map true",
     "lint": "npm run lint:ts && npm run lint:sass",
     "lint:ts": "tslint -p tsconfig.json",
@@ -56,7 +55,6 @@
   "dependencies": {
     "detect-browser": "^2.1.0",
     "material-design-icons": "^3.0.1",
-    "materialize-css": "^0.100.2",
     "moment": "^2.20.1",
     "uuid": "^3.1.0"
   }

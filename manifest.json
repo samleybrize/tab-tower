@@ -18,7 +18,6 @@
     },
     "browser_action": {
         "browser_style": false,
-        "default_popup": "ui/browser-action.html",
         "default_title": "Tab Tower",
         "default_icon": {
             "16": "icons/tab-tower.svg",

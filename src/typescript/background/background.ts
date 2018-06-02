@@ -30,6 +30,7 @@ import { OpenedTabUnmuter } from '../tab/opened-tab/browser/opened-tab-unmuter';
 import { OpenedTabUnpinner } from '../tab/opened-tab/browser/opened-tab-unpinner';
 import * as openedTabCommands from '../tab/opened-tab/command';
 import * as openedTabEvents from '../tab/opened-tab/event';
+import { OpenedTabFilterer } from '../tab/opened-tab/opened-tab-filterer';
 import { OpenedTabRetriever } from '../tab/opened-tab/opened-tab-retriever';
 import * as openedTabQueries from '../tab/opened-tab/query';
 import { ObjectUnserializer } from '../utils/object-unserializer';
@@ -51,7 +52,8 @@ async function main() {
 
     const nativeTabIdAssociationMaintainer = new NativeTabIdAssociationMaintainerFirefox();
     const nativeTabEventHandler = new NativeTabEventHandler(eventBus, queryBus, nativeTabIdAssociationMaintainer, new TaskScheduler());
-    const openedTabRetriever = new OpenedTabRetriever(nativeTabEventHandler, new TaskScheduler());
+    const openedTabFilterer = new OpenedTabFilterer();
+    const openedTabRetriever = new OpenedTabRetriever(nativeTabEventHandler, openedTabFilterer, new TaskScheduler());
 
     const openedTabCloser = new OpenedTabCloser(queryBus, nativeTabIdAssociationMaintainer);
     const openedTabDuplicator = new OpenedTabDuplicator(nativeTabIdAssociationMaintainer);

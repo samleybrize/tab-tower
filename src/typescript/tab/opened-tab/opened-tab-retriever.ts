@@ -16,6 +16,7 @@ import { OpenedTabUrlUpdated } from './event/opened-tab-url-updated';
 import { TabOpened } from './event/tab-opened';
 import { OpenedTab } from './opened-tab';
 import { OpenedTabBackend } from './opened-tab-backend';
+import { OpenedTabFilterer } from './opened-tab-filterer';
 import { GetOpenedTabById } from './query/get-opened-tab-by-id';
 import { GetOpenedTabs } from './query/get-opened-tabs';
 
@@ -25,7 +26,7 @@ export class OpenedTabRetriever {
     private tabList: OpenedTab[] = null;
     private focusedTab: OpenedTab = null;
 
-    constructor(private openedTabBackend: OpenedTabBackend, private taskScheduler: TaskScheduler) {
+    constructor(private openedTabBackend: OpenedTabBackend, private openedTabFilterer: OpenedTabFilterer, private taskScheduler: TaskScheduler) {
     }
 
     async init() {
@@ -47,7 +48,11 @@ export class OpenedTabRetriever {
     }
 
     async queryAll(query: GetOpenedTabs): Promise<OpenedTab[]> {
-        return this.tabList;
+        if (query.filter) {
+            return this.openedTabFilterer.getMatchingTabs(this.tabList, query.filter);
+        } else {
+            return this.tabList;
+        }
     }
 
     async queryById(query: GetOpenedTabById): Promise<OpenedTab> {

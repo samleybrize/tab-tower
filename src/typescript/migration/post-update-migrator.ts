@@ -1,5 +1,5 @@
 import * as semver from 'semver';
-import { VersionMigrator0_3_0 } from './version-migrator-0-3-0';
+import { VersionMigrator0_7_0 } from './version-migrator-0-7-0';
 
 export interface VersionMigrator {
     readonly targetVersion: string;
@@ -10,7 +10,7 @@ export class PostUpdateMigrator {
     private versionMigratorList: VersionMigrator[] = [];
 
     constructor() {
-        this.versionMigratorList.push(new VersionMigrator0_3_0());
+        this.versionMigratorList.push(new VersionMigrator0_7_0());
     }
 
     async migrate() {

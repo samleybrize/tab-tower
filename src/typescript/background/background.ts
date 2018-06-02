@@ -53,7 +53,7 @@ async function main() {
     const nativeTabEventHandler = new NativeTabEventHandler(eventBus, queryBus, nativeTabIdAssociationMaintainer, new TaskScheduler());
     const openedTabRetriever = new OpenedTabRetriever(nativeTabEventHandler, new TaskScheduler());
 
-    const openedTabCloser = new OpenedTabCloser(nativeTabIdAssociationMaintainer);
+    const openedTabCloser = new OpenedTabCloser(queryBus, nativeTabIdAssociationMaintainer);
     const openedTabDuplicator = new OpenedTabDuplicator(nativeTabIdAssociationMaintainer);
     const openedTabFocuser = new OpenedTabFocuser(nativeTabIdAssociationMaintainer);
     const openedTabMover = new OpenedTabMover(nativeTabIdAssociationMaintainer);
@@ -92,6 +92,8 @@ async function main() {
 
     function initCommandBus() {
         commandBus.register(openedTabCommands.CloseOpenedTab, openedTabCloser.closeTab, openedTabCloser);
+        commandBus.register(openedTabCommands.CloseOpenedTabsToTheRight, openedTabCloser.closeTabsToTheRight, openedTabCloser);
+        commandBus.register(openedTabCommands.CloseOtherOpenedTabs, openedTabCloser.closeOtherTabs, openedTabCloser);
         commandBus.register(openedTabCommands.DuplicateOpenedTab, openedTabDuplicator.duplicateTab, openedTabDuplicator);
         commandBus.register(openedTabCommands.FocusOpenedTab, openedTabFocuser.focusTab, openedTabFocuser);
         commandBus.register(openedTabCommands.MoveOpenedTabs, openedTabMover.moveOpenedTabs, openedTabMover);

@@ -1,0 +1,106 @@
+@keyframes tab-loading {
+    0% {
+        top: 0;
+    }
+
+    50% {
+        top: calc(#{$tab-padding} + #{$tab-padding} + 16px - #{$tab-loading-icon-height});
+    }
+
+    100% {
+        top: 0;
+    }
+}
+
+.ui-small {
+    .tab-list {
+        .tab {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            flex-wrap: nowrap;
+            padding: $tab-padding;
+            overflow-x: hidden;
+            white-space: nowrap;
+            background: $tab-background-color;
+            border-bottom: 1px solid $tab-border-bottom-color;
+            border-left: $tab-border-left-width solid $tab-border-left-color;
+            transition: background-color 0.2s ease, border-left-color 0.2s ease;
+
+            &::before {
+                position: absolute;
+                top: 0;
+                left: 0;
+                display: block;
+                width: 4px;
+                height: $tab-loading-icon-height;
+                pointer-events: none;
+                background: red;
+                border-radius: $tab-loading-icon-height;
+                content: '';
+                opacity: 0;
+                transition: opacity 0.2s ease;
+            }
+
+            &.loading {
+                &::before {
+                    opacity: 1;
+                    animation-duration: 1s;
+                    animation-iteration-count: infinite;
+                    animation-name: tab-loading;
+                }
+            }
+
+            &::after {
+                position: absolute;
+                top: 0;
+                right: 0;
+                display: block;
+                width: 30px;
+                height: 100%;
+                pointer-events: none;
+                background-color: $tab-background-color;
+                content: '';
+                transition: background-color 0.2s ease;
+                mask-image: linear-gradient(to right, transparent, black 75%);
+            }
+
+            &:hover {
+                background-color: $tab-hover-background-color;
+
+                &::after {
+                    background-color: $tab-hover-background-color;
+                }
+            }
+
+            &.active {
+                background-color: $active-tab-background-color;
+                border-left-color: $active-tab-border-left-color;
+
+                &::after {
+                    background-color: $active-tab-background-color;
+                }
+            }
+
+            &.discarded {
+                border-left-color: $discarded-tab-border-left-color;
+            }
+
+            &.selected {
+                background-color: $selected-tab-background-color;
+
+                &::after {
+                    background-color: $selected-tab-background-color;
+                }
+            }
+
+            &.highlighted {
+                background-color: $highlighted-tab-background-color;
+
+                &::after {
+                    background-color: $highlighted-tab-background-color;
+                }
+            }
+        }
+    }
+}

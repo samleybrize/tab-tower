@@ -1,0 +1,51 @@
+.ui-small .tab-list {
+    .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        height: $toolbar-height;
+        background: $toolbar-background-color;
+
+        .general-tab-selector,
+        .new-tab-button,
+        .general-more-button {
+            display: block;
+        }
+
+        .general-tab-selector {
+            margin-left: calc(#{$tab-padding} + #{$tab-border-left-width});
+
+            .checkbox-icon  {
+                .unchecked {
+                    color: $toolbar-font-color;
+                }
+
+                .checked {
+                    color: $toolbar-font-color;
+                }
+            }
+        }
+
+        .new-tab-button,
+        .general-more-button {
+            height: 22px;
+
+            i {
+                font-size: 22px;
+                color: $toolbar-font-color;
+                cursor: pointer;
+                border-radius: 22px;
+                transition: background-color 0.3s ease;
+
+                &:hover {
+                    background: $toolbar-font-hover-background;
+                }
+            }
+        }
+
+        .general-more-button {
+            margin-right: $tab-padding;
+        }
+    }
+}

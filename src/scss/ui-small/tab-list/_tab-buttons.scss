@@ -1,0 +1,163 @@
+.ui-small {
+    .tab-list {
+        .tab {
+            .close-button,
+            .audible-icon,
+            .muted-icon,
+            .pin-icon {
+                position: absolute;
+                top: 0;
+                right: 0;
+                z-index: 2;
+                display: block;
+                height: 100%;
+                padding: 5px;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                padding-left: 12px;
+                pointer-events: none;
+                background-color: $tab-hover-background-color;
+                opacity: 0;
+                transform: translateX(20px);
+                box-sizing: border-box;
+                transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease;
+                mask-image: linear-gradient(to right, transparent, black 12px);
+
+                i {
+                    display: inline-block;
+                    padding: 1px;
+                    font-size: 16px;
+                    color: $close-tab-button-color;
+                    cursor: pointer;
+                    border-radius: 3px;
+                    transition: background-color 0.3s ease;
+
+                    &:hover {
+                        background-color: $tab-button-hover-background;
+                    }
+                }
+            }
+
+            .audible-icon,
+            .muted-icon,
+            .pin-icon {
+                background-color: $tab-background-color;
+
+                i {
+                    color: $tab-title-color;
+                }
+
+                img {
+                    height: 14px;
+                }
+            }
+
+            &:hover {
+                .audible-icon,
+                .muted-icon,
+                .pin-icon {
+                    background-color: $tab-hover-background-color;
+                }
+            }
+
+            &.active {
+                .close-button,
+                .audible-icon,
+                .muted-icon,
+                .pin-icon {
+                    background-color: $active-tab-background-color;
+                }
+            }
+
+            &.selected {
+                .close-button,
+                .audible-icon,
+                .muted-icon,
+                .pin-icon {
+                    background-color: $selected-tab-background-color;
+                }
+            }
+
+            &.highlighted {
+                .close-button,
+                .audible-icon,
+                .muted-icon,
+                .pin-icon {
+                    background-color: $highlighted-tab-background-color;
+                }
+            }
+
+            &.audible:not(.muted) {
+                .audible-icon {
+                    padding-right: 23px;
+                    pointer-events: all;
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            &.muted {
+                .muted-icon {
+                    padding-right: 23px;
+                    pointer-events: all;
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            &.audible,
+            &.muted {
+                .close-button,
+                .pin-icon {
+                    padding-left: 0;
+                    mask-image: none;
+                }
+            }
+        }
+
+        &.no-close-button .unpinned-tabs .tab {
+            &.audible:not(.muted) {
+                .audible-icon {
+                    padding-right: 5px;
+                }
+            }
+
+            &.muted {
+                .muted-icon {
+                    padding-right: 5px;
+                }
+            }
+        }
+
+        &:not(.no-close-button):not(.move-mode) .tab:hover {
+            .close-button {
+                pointer-events: all;
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .pinned-tabs .tab:hover {
+            .close-button {
+                display: none;
+            }
+        }
+
+        .pinned-tabs .tab {
+            .pin-icon {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        &.move-mode {
+            .audible.tab .audible-icon,
+            .muted.tab .muted-icon,
+            .pinned-tabs .tab .pin-icon {
+                pointer-events: none;
+                opacity: 0;
+                transform: translateX(20px);
+            }
+        }
+    }
+}

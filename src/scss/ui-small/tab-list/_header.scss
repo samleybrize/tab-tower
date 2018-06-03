@@ -1,0 +1,55 @@
+.ui-small .tab-list {
+    .header {
+        position: relative;
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        padding: 8px;
+        color: $header-font-color;
+        background-color: $header-background-color;
+
+        .menu-button {
+            margin-right: 5px;
+            cursor: pointer;
+
+            i {
+                font-size: 24px;
+                vertical-align: middle;
+            }
+        }
+
+        .current-workspace {
+            overflow-x: hidden;
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+
+            .number-of-tabs {
+                display: inline-block;
+                padding: 2px;
+                font-size: 10px;
+                color: #666;
+                vertical-align: middle;
+                background: rgba(255, 255, 255, 0.85);
+                border-radius: 2px;
+            }
+
+            .name {
+                vertical-align: middle;
+            }
+        }
+
+        &::after {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: block;
+            width: 30px;
+            height: 100%;
+            pointer-events: none;
+            background-color: $header-background-color;
+            content: '';
+            mask-image: linear-gradient(to right, transparent, black 75%);
+        }
+    }
+}

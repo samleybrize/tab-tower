@@ -25,6 +25,16 @@
             "64": "icons/tab-tower.svg"
         }
     },
+    "sidebar_action": {
+        "browser_style": false,
+        "default_panel": "ui/ui-small.html",
+        "default_title": "Tab Tower",
+        "default_icon": {
+            "16": "icons/tab-tower.svg",
+            "32": "icons/tab-tower.svg",
+            "64": "icons/tab-tower.svg"
+        }
+    },
     "background": {
         "scripts": [
             "dist/js/background.js"

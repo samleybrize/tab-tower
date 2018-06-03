@@ -1,0 +1,80 @@
+.ui-small {
+    .tab-list {
+        .tab {
+            .title-container {
+                display: inline-block;
+                vertical-align: top;
+
+                .title {
+                    display: block;
+                    font-size: 13px;
+                    color: $tab-title-color;
+                    transition: color 0.2s ease;
+                }
+
+                .url,
+                .domain {
+                    display: none;
+                    font-size: 11px;
+                    font-style: italic;
+                    color: $tab-url-color;
+                }
+            }
+
+            &.discarded {
+                .title-container {
+                    opacity: 0.5;
+
+                    .title {
+                        font-style: italic;
+                    }
+                }
+            }
+
+            &.highlighted {
+                .title {
+                    color: $highlighted-tab-font-color;
+                }
+            }
+        }
+
+        &.show-tab-url {
+            .url {
+                display: block;
+            }
+        }
+
+        &.show-tab-domain {
+            .domain {
+                display: block;
+            }
+        }
+
+        &.multiline-tab-title {
+            .title {
+                word-break: break-all;
+                white-space: normal;
+            }
+        }
+
+        &.multiline-tab-url {
+            .url,
+            .domain {
+                word-break: break-all;
+                white-space: normal;
+            }
+        }
+
+        .pinned-tabs .tab {
+            .title {
+                word-break: normal;
+                white-space: nowrap;
+            }
+
+            .domain,
+            .url {
+                display: none;
+            }
+        }
+    }
+}

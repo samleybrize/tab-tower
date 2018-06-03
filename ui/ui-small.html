@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Tab Tower - Sidebar</title>
+    <link rel="icon" type="image/png" href="/icons/tab-tower.svg" />
+    <link rel="stylesheet" type="text/css" href="/dist/css/ui-small.css" />
+</head>
+
+<body class="ui-small">
+    <div class="workspace-list-overlay"></div>
+
+    <div class="tab-list show-tab-domain multiline-tab-title">
+        <div class="sticky-top">
+            <div class="header">
+                <span class="menu-button"><i class="material-icons">menu</i></span>
+                <span class="current-workspace">
+                    <span class="number-of-tabs">23</span>
+                    <span class="name">All opened tabs</span>
+                </span>
+            </div>
+
+            <div class="filter">
+                <span class="search-icon" title="Filter options">
+                    <i class="material-icons">search</i>
+                    <span class="arrow">&dtrif;</span>
+                </span>
+                <input type="text" placeholder="Filter tabs" />
+            </div>
+
+            <div class="pinned-tabs"></div>
+        </div>
+
+        <div class="unpinned-tabs"></div>
+        <div class="tab-placeholder">
+            <span class="move-below-all-button" title="Move bellow other tabs"><i class="material-icons">keyboard_arrow_down</i></span>
+            <span></span>
+        </div>
+
+        <div class="sticky-bottom toolbar">
+            <span class="tab-selector general-tab-selector">
+                <input type="checkbox" class="general-tab-selector" id="159487" title="Select all tab" />
+                <span class="checkbox-icon">
+                    <label class="material-icons checked" for="159487" title="Unselect all">check_box</label>
+                    <label class="material-icons unchecked" for="159487" title="Select all">check_box_outline_blank</label>
+                </span>
+            </span>
+            <span class="new-tab-button" title="Open a new tab"><i class="material-icons">add</i></span>
+            <span class="general-more-button" title="More..."><i class="material-icons">more_vert</i></span>
+        </div>
+    </div>
+
+    <div class="workspace-list">
+        <div class="filter2">
+            <span class="search-icon" title="Filter options">
+                <img src="/ui/images/search.svg" alt="" />
+                <span class="arrow">&dtrif;</span>
+            </span>
+            <input type="text" placeholder="Filter workspaces" />
+        </div>
+
+        <div class="workspace current" title="All opened tabs">
+            <span class="counter">21</span>
+            <span class="name">All opened tabs</span>
+        </div>
+        <div class="new-workspace-button">+ Create workspace</div>
+        <div class="workspace" title="Custom workspace 1">
+            <span class="counter">1</span>
+            <span class="name">Custom workspace 1</span>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="test.js"></script>
+</body>
+
+</html>

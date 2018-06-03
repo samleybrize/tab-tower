@@ -1,0 +1,63 @@
+.ui-small {
+    .tab-list {
+        .move-below-all-button,
+        .move-above-button {
+            display: block;
+            width: 25px;
+            height: 18px;
+            padding: 5px;
+            pointer-events: none;
+            cursor: pointer;
+            background-color: $move-above-button-background-color;
+            border-bottom-right-radius: 20px;
+            border-bottom-left-radius: 20px;
+            opacity: 0;
+            transform: scale(0);
+            box-sizing: border-box;
+            transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease;
+
+            i {
+                position: relative;
+                top: -5px;
+                display: block;
+                font-size: 16px;
+                color: $move-above-button-font-color;
+                transition: background-color 0.3s ease;
+            }
+
+            &:hover {
+                background-color: $move-above-button-hover-background-color;
+            }
+        }
+
+        .move-above-button {
+            position: absolute;
+            top: 0;
+            right: 0;
+            z-index: 2;
+        }
+
+        .move-below-all-button {
+            float: right;
+            margin-bottom: 10px;
+
+            & + span {
+                display: block;
+                clear: both;
+            }
+        }
+
+        .tab-placeholder {
+            position: relative;
+        }
+
+        &.move-mode {
+            .move-below-all-button,
+            .move-above-button {
+                pointer-events: all;
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    }
+}

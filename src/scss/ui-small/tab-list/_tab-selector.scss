@@ -1,0 +1,68 @@
+.ui-small .tab-list {
+    .tab-selector {
+        position: relative;
+
+        input {
+            margin: 0;
+            pointer-events: none;
+            opacity: 0;
+
+            & + .checkbox-icon {
+                position: absolute;
+                top: 0;
+                left: 0;
+                margin: 0;
+                transition: opacity 0.2s ease;
+
+                label {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    margin-top: -2px;
+                    margin-left: -2px;
+                    font-size: 20px;
+                    color: $tab-checkbox-unchecked-color;
+                    cursor: pointer;
+                    transition: opacity 0.2s ease;
+
+                    &.checked {
+                        color: $tab-checkbox-checked-color;
+                    }
+                }
+            }
+
+            &:checked + .checkbox-icon {
+                .unchecked {
+                    pointer-events: none;
+                    opacity: 0;
+                }
+            }
+
+            &:not(:checked) + .checkbox-icon {
+                .checked {
+                    pointer-events: none;
+                    opacity: 0;
+                }
+            }
+        }
+    }
+
+    .tab {
+        .favicon {
+            input {
+                & + .checkbox-icon {
+                    pointer-events: none;
+                    opacity: 0;
+                }
+            }
+        }
+
+        &:hover,
+        &.selected {
+            .favicon input + .checkbox-icon {
+                pointer-events: all;
+                opacity: 1;
+            }
+        }
+    }
+}

@@ -11,7 +11,9 @@ import { OpenedTabIsLoading } from './event/opened-tab-is-loading';
 import { OpenedTabLoadingIsComplete } from './event/opened-tab-loading-is-complete';
 import { OpenedTabMoved } from './event/opened-tab-moved';
 import { OpenedTabPinStateUpdated } from './event/opened-tab-pin-state-updated';
+import { OpenedTabPositionUpdated } from './event/opened-tab-position-updated';
 import { OpenedTabTitleUpdated } from './event/opened-tab-title-updated';
+import { OpenedTabUnfocused } from './event/opened-tab-unfocused';
 import { OpenedTabUrlUpdated } from './event/opened-tab-url-updated';
 import { TabOpened } from './event/tab-opened';
 import { OpenedTab } from './opened-tab';
@@ -24,7 +26,6 @@ import { GetOpenedTabs } from './query/get-opened-tabs';
 export class OpenedTabRetriever {
     private tabMap = new Map<string, OpenedTab>();
     private tabList: OpenedTab[] = null;
-    private focusedTab: OpenedTab = null;
 
     constructor(private openedTabBackend: OpenedTabBackend, private openedTabFilterer: OpenedTabFilterer, private taskScheduler: TaskScheduler) {
     }
@@ -38,10 +39,6 @@ export class OpenedTabRetriever {
 
         for (const tab of tabList) {
             this.tabMap.set(tab.id, tab);
-
-            if (tab.isFocused) {
-                this.focusedTab = tab;
-            }
         }
 
         this.tabList = tabList;
@@ -72,7 +69,7 @@ export class OpenedTabRetriever {
     }
 
     private insertTabOnTabList(tabToInsert: OpenedTab) {
-        const insertAt = this.tabList.findIndex((tab) => tab.position > tabToInsert.position);
+        const insertAt = this.tabList.findIndex((tab) => tab.id !== tabToInsert.id && tab.position > tabToInsert.position);
 
         if (insertAt >= 0) {
             this.tabList.splice(insertAt, 0, tabToInsert);
@@ -86,7 +83,7 @@ export class OpenedTabRetriever {
             const closedTabId = event.closedTab.id;
             const closedTab = this.tabMap.get(closedTabId);
 
-            if (null === closedTab) {
+            if (null == closedTab) {
                 return;
             }
 
@@ -165,12 +162,18 @@ export class OpenedTabRetriever {
             const tab = this.tabMap.get(event.tabId);
 
             if (tab) {
-                if (this.focusedTab) {
-                    this.focusedTab.isFocused = false;
-                }
-
                 tab.isFocused = true;
                 tab.lastAccess = new Date();
+            }
+        }).executeAll();
+    }
+
+    async onTabUnfocus(event: OpenedTabUnfocused) {
+        await this.taskScheduler.add(async () => {
+            const tab = this.tabMap.get(event.tabId);
+
+            if (tab) {
+                tab.isFocused = false;
             }
         }).executeAll();
     }
@@ -179,13 +182,23 @@ export class OpenedTabRetriever {
         await this.taskScheduler.add(async () => {
             const movedTab = this.tabMap.get(event.tabId);
 
-            if (null === movedTab) {
+            if (null == movedTab) {
                 return;
             }
 
             movedTab.position = event.position;
             this.removeTabFromTabList(movedTab);
             this.insertTabOnTabList(movedTab);
+        }).executeAll();
+    }
+
+    async onTabPositionUpdate(event: OpenedTabPositionUpdated) {
+        await this.taskScheduler.add(async () => {
+            const tab = this.tabMap.get(event.tabId);
+
+            if (tab) {
+                tab.position = event.position;
+            }
         }).executeAll();
     }
 

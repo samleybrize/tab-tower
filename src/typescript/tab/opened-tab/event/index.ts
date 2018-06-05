@@ -8,6 +8,8 @@ export * from './opened-tab-is-loading';
 export * from './opened-tab-loading-is-complete';
 export * from './opened-tab-moved';
 export * from './opened-tab-pin-state-updated';
+export * from './opened-tab-position-updated';
 export * from './opened-tab-title-updated';
+export * from './opened-tab-unfocused';
 export * from './opened-tab-url-updated';
 export * from './tab-opened';

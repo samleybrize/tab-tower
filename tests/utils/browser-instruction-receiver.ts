@@ -1,4 +1,4 @@
-import { TabFollowState } from '../../src/typescript/tab/followed-tab/tab-follow-state';
+// import { TabFollowState } from '../../src/typescript/tab/followed-tab/tab-follow-state';
 import { TestsConfig } from '../tests-config';
 
 const testsConfig = TestsConfig.getInstance();
@@ -96,12 +96,12 @@ client.onmessage = async (event) => {
             await browser.tabs.update(targetTabId, {muted: false});
             break;
 
-        case 'set-followed-tab-reader-mode-status-as-disabled':
-            const objectId = `followState.${message.data.followId}`;
-            const storageObject = await browser.storage.local.get(objectId);
-            (storageObject[objectId] as TabFollowState).isInReaderMode = false;
-            await browser.storage.local.set(storageObject);
-            break;
+        // case 'set-followed-tab-reader-mode-status-as-disabled':
+        //     const objectId = `followState.${message.data.followId}`;
+        //     const storageObject = await browser.storage.local.get(objectId);
+        //     (storageObject[objectId] as TabFollowState).isInReaderMode = false;
+        //     await browser.storage.local.set(storageObject);
+        //     break;
 
         case 'create-window':
             await browser.windows.create({incognito: !!message.data.isIncognito, url: message.data.url});

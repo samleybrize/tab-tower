@@ -31,7 +31,7 @@ module.exports = [
         },
     },
     {
-        entry: './src/typescript/view/ui-small.ts',
+        entry: './src/typescript/view/ui-small-main.ts',
         output: {
             filename: 'ui-small.js',
             path: path.resolve(__dirname, 'dist/js'),

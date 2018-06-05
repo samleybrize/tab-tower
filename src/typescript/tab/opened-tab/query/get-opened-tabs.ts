@@ -3,9 +3,9 @@ import { OpenedTab } from '../opened-tab';
 
 export interface OpenedTabsFilter {
     readonly filterText: string;
-    readonly matchOnTitle: boolean;
-    readonly matchOnUrl: boolean;
-    readonly matchOnUrlDomain: boolean;
+    readonly matchOnTitle?: boolean;
+    readonly matchOnUrl?: boolean;
+    readonly matchOnUrlDomain?: boolean;
 }
 
 export class GetOpenedTabs implements Query<OpenedTab[]> {

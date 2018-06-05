@@ -101,6 +101,16 @@
                     background-color: $highlighted-tab-background-color;
                 }
             }
+
+            &.hide {
+                display: none;
+            }
+        }
+
+        .unpinned-tabs .tab {
+            &.pinned {
+                display: none;
+            }
         }
     }
 }

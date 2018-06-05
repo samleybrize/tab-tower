@@ -140,8 +140,12 @@ async function main() {
         eventBus.subscribe(openedTabEvents.OpenedTabMoved, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(openedTabEvents.OpenedTabPinStateUpdated, openedTabRetriever.onTabPinStateUpdate, openedTabRetriever);
         eventBus.subscribe(openedTabEvents.OpenedTabPinStateUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(openedTabEvents.OpenedTabPositionUpdated, openedTabRetriever.onTabPositionUpdate, openedTabRetriever);
+        eventBus.subscribe(openedTabEvents.OpenedTabPositionUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(openedTabEvents.OpenedTabTitleUpdated, openedTabRetriever.onTabTitleUpdate, openedTabRetriever);
         eventBus.subscribe(openedTabEvents.OpenedTabTitleUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(openedTabEvents.OpenedTabUnfocused, openedTabRetriever.onTabUnfocus, openedTabRetriever);
+        eventBus.subscribe(openedTabEvents.OpenedTabUnfocused, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(openedTabEvents.OpenedTabUrlUpdated, openedTabRetriever.onTabUrlUpdate, openedTabRetriever);
         eventBus.subscribe(openedTabEvents.OpenedTabUrlUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(openedTabEvents.TabOpened, openedTabRetriever.onTabOpen, openedTabRetriever);
@@ -162,7 +166,7 @@ async function main() {
 
     async function initBrowserAction() {
         browser.browserAction.onClicked.addListener(async () => {
-            commandBus.handle(new tabCommands.GoToControlCenter()); // TODO open small-ui
+            // commandBus.handle(new tabCommands.GoToControlCenter()); // TODO open small-ui
         });
     }
 

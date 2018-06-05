@@ -25,6 +25,8 @@ export class CommandBus {
     }
 
     async handle<T>(command: T) {
+        console.debug(`Handling command "${command.constructor.name}"`, command);
+
         const commandIdentifier = (command.constructor as CommandType<T>).commandIdentifier;
         const commandHandler = this.handlerList.get(commandIdentifier);
 

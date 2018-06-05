@@ -17,9 +17,13 @@ export class TaskScheduler {
 
         this.isExecutingTasks = true;
 
-        while (this.pendingTasks.length) {
-            const task = this.pendingTasks.shift();
-            await task();
+        try {
+            while (this.pendingTasks.length) {
+                const task = this.pendingTasks.shift();
+                await task();
+            }
+        } catch (error) {
+            console.error(error);
         }
 
         this.isExecutingTasks = false;

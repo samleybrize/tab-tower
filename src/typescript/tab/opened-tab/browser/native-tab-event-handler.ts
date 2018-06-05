@@ -14,17 +14,19 @@ import { OpenedTabIsLoading } from '../event/opened-tab-is-loading';
 import { OpenedTabLoadingIsComplete } from '../event/opened-tab-loading-is-complete';
 import { OpenedTabMoved } from '../event/opened-tab-moved';
 import { OpenedTabPinStateUpdated } from '../event/opened-tab-pin-state-updated';
+import { OpenedTabPositionUpdated } from '../event/opened-tab-position-updated';
 import { OpenedTabTitleUpdated } from '../event/opened-tab-title-updated';
+import { OpenedTabUnfocused } from '../event/opened-tab-unfocused';
 import { OpenedTabUrlUpdated } from '../event/opened-tab-url-updated';
 import { TabOpened } from '../event/tab-opened';
 import { OpenedTab } from '../opened-tab';
 import { OpenedTabBackend } from '../opened-tab-backend';
 import { GetOpenedTabById } from '../query/get-opened-tab-by-id';
-import { GetOpenedTabs } from '../query/get-opened-tabs';
 import { NativeTabIdAssociationMaintainer } from './native-tab-id-association-maintainer';
 
 export class NativeTabEventHandler implements OpenedTabBackend {
     private isInited = false;
+    private focusedTabMap = new Map<number, string>();
 
     constructor(
         private eventBus: EventBus,
@@ -48,14 +50,16 @@ export class NativeTabEventHandler implements OpenedTabBackend {
     }
 
     async getAll(): Promise<OpenedTab[]> {
-        const rawTabs = await browser.tabs.query({});
+        const nativeTabList = await browser.tabs.query({});
         const tabList: OpenedTab[] = [];
 
-        for (const rawTab of rawTabs) {
-            const tab = await this.createTab(rawTab);
+        for (const nativeTab of nativeTabList) {
+            const tab = await this.createTab(nativeTab);
 
             if (null == tab) {
                 continue;
+            } else if (tab.isFocused) {
+                this.focusedTabMap.set(nativeTab.windowId, tab.id);
             }
 
             tabList.push(tab);
@@ -121,38 +125,58 @@ export class NativeTabEventHandler implements OpenedTabBackend {
 
     async onNativeTabCreate(nativeTab: browser.tabs.Tab) {
         this.taskScheduler.add(async () => {
+            console.debug(`Received a "created" browser tab event for tab "${nativeTab.id}"`, nativeTab);
             const openedTab = await this.createTab(nativeTab);
 
             if (openedTab) {
                 this.nativeTabIdAssociationMaintainer.onNativeTabOpen(nativeTab.id);
                 await this.eventBus.publish(new TabOpened(openedTab));
-                await this.notifyTabMoveFromPosition(nativeTab.index + 1);
+                await this.notifyTabsPositionsUpdate();
+
+                if (openedTab.isFocused) {
+                    await this.notifyTabFocused(openedTab.id, nativeTab.windowId);
+                }
             }
         }).executeAll();
     }
 
-    private async notifyTabMoveFromPosition(fromPosition: number) {
-        const tabOpenStateList = await this.queryBus.query(new GetOpenedTabs());
+    private async notifyTabFocused(focusedTabId: string, focusedTabNativeWindowId: number) {
+        await this.eventBus.publish(new OpenedTabFocused(focusedTabId));
+        const previousFocusedTabId = this.focusedTabMap.get(focusedTabNativeWindowId);
 
-        for (const tabOpenState of tabOpenStateList) {
-            if (tabOpenState.position >= fromPosition) {
-                await this.eventBus.publish(new OpenedTabMoved(tabOpenState.id, fromPosition));
-            }
+        if (previousFocusedTabId && previousFocusedTabId !== focusedTabId) {
+            await this.eventBus.publish(new OpenedTabUnfocused(previousFocusedTabId));
+        }
+
+        this.focusedTabMap.set(focusedTabNativeWindowId, focusedTabId);
+    }
+
+    private async notifyTabsPositionsUpdate() {
+        const rawTabList = await browser.tabs.query({});
+
+        for (const rawTab of rawTabList) {
+            const tabId = await this.nativeTabIdAssociationMaintainer.getAssociatedOpenedTabId(rawTab.id);
+            await this.eventBus.publish(new OpenedTabPositionUpdated(tabId, rawTab.index));
         }
     }
 
     private async onTabActivated(activatedInfo: browser.tabs.ActivatedInfo) {
         this.taskScheduler.add(async () => {
-            const tabId = await this.nativeTabIdAssociationMaintainer.getAssociatedOpenedTabId(activatedInfo.tabId);
+            console.debug(`Received an "activated" browser tab event for tab "${activatedInfo.tabId}"`, activatedInfo);
+            const nativeTabId = activatedInfo.tabId;
+            const tabId = await this.nativeTabIdAssociationMaintainer.getAssociatedOpenedTabId(nativeTabId);
 
-            if (tabId) {
-                await this.eventBus.publish(new OpenedTabFocused(tabId));
+            if (null == tabId) {
+                return;
             }
+
+            await this.notifyTabFocused(tabId, activatedInfo.windowId);
         }).executeAll();
     }
 
     async onNativeTabClose(nativeTabId: number, removeInfo: browser.tabs.RemoveInfo) {
         this.taskScheduler.add(async () => {
+            console.debug(`Received a "closed" browser tab event for tab "${nativeTabId}"`, removeInfo);
             const tabId = await this.nativeTabIdAssociationMaintainer.getAssociatedOpenedTabId(nativeTabId);
 
             if (null === tabId) {
@@ -168,20 +192,27 @@ export class NativeTabEventHandler implements OpenedTabBackend {
             await this.eventBus.publish(new OpenedTabClosed(closedTab));
             this.nativeTabIdAssociationMaintainer.onNativeTabClose(nativeTabId);
 
-            const closedTabPosition = closedTab ? closedTab.position : 0;
-            await this.notifyTabMoveFromPosition(closedTabPosition);
+            await this.notifyTabsPositionsUpdate();
         }).executeAll();
     }
 
-    async onNativeTabMove(tabId: number, moveInfo: browser.tabs.MoveInfo) {
+    async onNativeTabMove(nativeTabId: number, moveInfo: browser.tabs.MoveInfo) {
         this.taskScheduler.add(async () => {
-            const minPosition = Math.min(moveInfo.fromIndex, moveInfo.toIndex);
-            await this.notifyTabMoveFromPosition(minPosition);
+            console.debug(`Received a "move" browser tab event for tab "${nativeTabId}"`, moveInfo);
+            const tabId = await this.nativeTabIdAssociationMaintainer.getAssociatedOpenedTabId(nativeTabId);
+
+            if (null == tabId) {
+                return;
+            }
+
+            await this.notifyTabsPositionsUpdate();
+            await this.eventBus.publish(new OpenedTabMoved(tabId, moveInfo.toIndex));
         }).executeAll();
     }
 
     async onNativeTabUpdate(nativeTabId: number, updateInfo: browser.tabs.UpdateInfo) {
         this.taskScheduler.add(async () => {
+            console.debug(`Received an "update" browser tab event for tab "${nativeTabId}"`, updateInfo);
             const tabId = await this.nativeTabIdAssociationMaintainer.getAssociatedOpenedTabId(nativeTabId);
 
             if (null == tabId) {

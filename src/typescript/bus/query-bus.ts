@@ -29,6 +29,8 @@ export class QueryBus {
     }
 
     async query<TResult>(query: Query<TResult>): Promise<TResult> {
+        console.debug(`Handling query "${query.constructor.name}"`, query);
+
         const queryIdentifier = (query.constructor as QueryType<any>).queryIdentifier;
         const queryHandler = this.handlerList.get(queryIdentifier);
 
@@ -38,6 +40,9 @@ export class QueryBus {
             return;
         }
 
-        return await queryHandler(query);
+        const queryResult = await queryHandler(query);
+        console.debug(`Query "${query.constructor.name}" done`, queryResult);
+
+        return queryResult;
     }
 }

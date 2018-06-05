@@ -31,7 +31,25 @@ export class EventBus {
         return Math.random();
     }
 
+    // TODO to test
+    unsubscribe<T>(eventType: EventType<T>, handlerToRemove: EventHandler<T>) {
+        const eventIdentifier = (event.constructor as EventType<T>).eventIdentifier;
+        const eventHandlerList = this.handlerList.get(eventIdentifier);
+
+        if (null == eventHandlerList || 0 == eventHandlerList.length) {
+            return;
+        }
+
+        let eventHandlerIndex: number;
+
+        while (eventHandlerIndex = eventHandlerList.indexOf(handlerToRemove)) {
+            eventHandlerList.splice(eventHandlerIndex, 1);
+        }
+    }
+
     async publish<T>(event: T) {
+        console.debug(`Publishing event "${event.constructor.name}"`, event);
+
         const eventIdentifier = (event.constructor as EventType<T>).eventIdentifier;
         const eventHandlerList = this.handlerList.get(eventIdentifier);
 

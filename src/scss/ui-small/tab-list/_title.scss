@@ -14,7 +14,6 @@
 
                 .url,
                 .domain {
-                    display: none;
                     font-size: 11px;
                     font-style: italic;
                     color: $tab-url-color;
@@ -38,15 +37,15 @@
             }
         }
 
-        &.show-tab-url {
+        &:not(.show-tab-url) {
             .url {
-                display: block;
+                display: none;
             }
         }
 
-        &.show-tab-domain {
+        &:not(.show-tab-domain) {
             .domain {
-                display: block;
+                display: none;
             }
         }
 

@@ -69,15 +69,22 @@ export class TabsView {
         if (!workspaceContainerElement) {
             const random = Math.random();
             workspaceContainerElement = document.createElement('div');
+<<<<<<< HEAD
             workspaceContainerElement.id = `tabs-view-workspace-container-${workspaceId}-${random}`;
+=======
+            workspaceContainerElement.id = `tabs-view-workspace-container-${workspaceId}-random`;
+>>>>>>> ui small
         }
 
         const workspace = this.tabListFactory.create(workspaceId, workspaceContainerElement, this.taskScheduler);
         this.workspaceMap.set(workspaceId, workspace);
         this.workspaceList.push(workspace);
 
+<<<<<<< HEAD
         workspaceContainerElement.setAttribute('data-workspace-id', workspaceId);
 
+=======
+>>>>>>> ui small
         return workspace;
     }
 

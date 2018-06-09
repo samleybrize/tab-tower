@@ -69,7 +69,7 @@ export class OpenedTabRetriever {
     }
 
     private insertTabOnTabList(tabToInsert: OpenedTab) {
-        const insertAt = this.tabList.findIndex((tab) => tab.id !== tabToInsert.id && tab.position > tabToInsert.position);
+        const insertAt = this.tabList.findIndex((tab) => tab.id !== tabToInsert.id && tab.position >= tabToInsert.position);
 
         if (insertAt >= 0) {
             this.tabList.splice(insertAt, 0, tabToInsert);

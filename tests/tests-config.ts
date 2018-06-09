@@ -5,6 +5,7 @@ export class TestsConfig {
     public readonly isBrowserConsoleEnabled: boolean = true;
     public readonly keepBrowserOpened: boolean = false;
     public readonly browserInstructionPort: number = 8888;
+    public readonly urlDelayerPort: number = 8889;
 
     static getInstance() {
         if (null == this.instance) {
@@ -27,6 +28,10 @@ export class TestsConfig {
 
         if (+process.env.BROWSER_INSTRUCTION_PORT > 0) {
             this.browserInstructionPort = +process.env.BROWSER_INSTRUCTION_PORT;
+        }
+
+        if (+process.env.URL_DELAYER_PORT > 0) {
+            this.urlDelayerPort = +process.env.URL_DELAYER_PORT;
         }
     }
 }

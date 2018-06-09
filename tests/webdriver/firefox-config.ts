@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import { Binary, Options, Profile } from 'selenium-webdriver/firefox';
 import * as which from 'which';
@@ -5,10 +6,27 @@ import * as which from 'which';
 import { TestsConfig } from '../tests-config';
 
 export class FirefoxConfig {
+    private rootProjectPath: string;
+
+    constructor() {
+        this.findRootProjectPath();
+    }
+
+    private findRootProjectPath() {
+        let rootPath = __dirname;
+
+        while (!fs.existsSync(path.join(rootPath, 'package.json'))) {
+            rootPath = path.dirname(rootPath);
+        }
+
+        this.rootProjectPath = rootPath;
+    }
+
     getWebdriverOptions() {
         const firefoxProfile = new Profile();
         firefoxProfile.addExtension(this.getExtensionPath());
         firefoxProfile.setPreference('xpinstall.signatures.required', false);
+        firefoxProfile.setPreference('security.csp.enable', false);
 
         // used to fix the random uuid assigned by firefox to the extension
         const extensionId = this.getExtensionId();
@@ -32,12 +50,8 @@ export class FirefoxConfig {
         return firefoxOptions;
     }
 
-    private getRootProjectPath() {
-        return path.join(__dirname, '../../../..');
-    }
-
     private getExtensionPath() {
-        return path.join(this.getRootProjectPath(), 'dist', 'tab-tower-test.xpi');
+        return path.join(this.rootProjectPath, 'dist', 'tab-tower-test.xpi');
     }
 
     private getFirefoxBinaryPath() {
@@ -63,6 +77,7 @@ export class FirefoxConfig {
         return `moz-extension://${extensionInternalId}${relativeUrl}`;
     }
 
+    // TODO todel
     getReaderModeTestPageUrl() {
         return 'https://www.mozilla.org/en-US/mission/';
     }

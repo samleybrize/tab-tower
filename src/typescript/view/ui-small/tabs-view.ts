@@ -51,40 +51,30 @@ export class TabsView {
 
         const openedTabList = await this.queryBus.query(new GetOpenedTabs());
         const pinnedTabList: OpenedTab[] = [];
-        const unpinnedTabList: OpenedTab[] = [];
 
         for (const openedTab of openedTabList) {
             if (openedTab.isPinned) {
                 pinnedTabList.push(openedTab);
-            } else {
-                unpinnedTabList.push(openedTab);
             }
         }
 
         await this.pinnedTabList.init(pinnedTabList);
-        await openedTabWorkspace.init(unpinnedTabList);
+        await openedTabWorkspace.init(openedTabList);
     }
 
     private createWorkspace(workspaceId: string, workspaceContainerElement?: HTMLElement) {
         if (!workspaceContainerElement) {
             const random = Math.random();
             workspaceContainerElement = document.createElement('div');
-<<<<<<< HEAD
             workspaceContainerElement.id = `tabs-view-workspace-container-${workspaceId}-${random}`;
-=======
-            workspaceContainerElement.id = `tabs-view-workspace-container-${workspaceId}-random`;
->>>>>>> ui small
         }
 
         const workspace = this.tabListFactory.create(workspaceId, workspaceContainerElement, this.taskScheduler);
         this.workspaceMap.set(workspaceId, workspace);
         this.workspaceList.push(workspace);
 
-<<<<<<< HEAD
         workspaceContainerElement.setAttribute('data-workspace-id', workspaceId);
 
-=======
->>>>>>> ui small
         return workspace;
     }
 

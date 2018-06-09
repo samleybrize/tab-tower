@@ -107,7 +107,7 @@ export class TabList {
         let insertAtTheEnd = true;
 
         const insertAtIndex = this.sortedTabList.findIndex((tab) => {
-            return tab.id !== tabToInsert.id && tab.getPosition() > targetPosition;
+            return tab.id !== tabToInsert.id && tab.getPosition() >= targetPosition;
         });
 
         if (insertAtIndex >= 0) {

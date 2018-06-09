@@ -192,8 +192,18 @@ export class NativeTabEventHandler implements OpenedTabBackend {
             await this.eventBus.publish(new OpenedTabClosed(closedTab));
             this.nativeTabIdAssociationMaintainer.onNativeTabClose(nativeTabId);
 
+            await this.notifyFocusedTabUpdated(removeInfo.windowId);
             await this.notifyTabsPositionsUpdate();
         }).executeAll();
+    }
+
+    private async notifyFocusedTabUpdated(nativeWindowId: number) {
+        const focusedTabs = await browser.tabs.query({active: true, windowId: nativeWindowId});
+
+        if (focusedTabs) {
+            const focusedTabId = await this.getTabIdFromNativeId(focusedTabs[0].id);
+            await this.notifyTabFocused(focusedTabId, nativeWindowId);
+        }
     }
 
     async onNativeTabMove(nativeTabId: number, moveInfo: browser.tabs.MoveInfo) {

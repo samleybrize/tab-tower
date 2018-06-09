@@ -67,11 +67,14 @@ export class Tab {
         this.urlDomainElement = this.htmlElement.querySelector('.domain');
         this.initFavicon();
 
-        const random = Math.random();
+        const random = ('' + Math.random()).substr(2);
         const tabSelectorId = `tab-selector-${openedTabId}-${random}`;
         this.htmlElement.querySelector('.tab-selector input').id = tabSelectorId;
         this.htmlElement.querySelector('.tab-selector .checked').setAttribute('for', tabSelectorId);
         this.htmlElement.querySelector('.tab-selector .unchecked').setAttribute('for', tabSelectorId);
+
+        const tabHtmlId = `tab-${openedTabId}-${random}`;
+        this.htmlElement.id = tabHtmlId;
 
         this.closeButton = new CloseButton(this.htmlElement.querySelector('.close-button'), openedTabId, this.commandBus);
         this.muteButton = new MuteButton(this.htmlElement.querySelector('.audible-icon'), openedTabId, this.commandBus);

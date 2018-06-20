@@ -21,7 +21,6 @@
         "no-console": [
             true,
             "log",
-            "warn",
             "dir",
             "assert",
             "time",

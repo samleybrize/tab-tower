@@ -1,3 +1,5 @@
+import { Logger } from '../logger/logger';
+
 export interface Query<T> {
     readonly resultType: T;
 }
@@ -11,6 +13,9 @@ type QueryHandler<T extends Query<K>, K> = (query: T) => Promise<K>;
 
 export class QueryBus {
     private handlerList = new Map<number, QueryHandler<any, any>>();
+
+    constructor(private logger: Logger) {
+    }
 
     register<T extends Query<K>, K>(queryType: QueryType<T>, handler: QueryHandler<T, K>, bindToHandler?: object) {
         if (null == queryType.queryIdentifier) {
@@ -29,19 +34,19 @@ export class QueryBus {
     }
 
     async query<TResult>(query: Query<TResult>): Promise<TResult> {
-        console.debug(`Handling query "${query.constructor.name}"`, query);
+        this.logger.debug({message: `Handling query "${query.constructor.name}"`, context: query});
 
         const queryIdentifier = (query.constructor as QueryType<any>).queryIdentifier;
         const queryHandler = this.handlerList.get(queryIdentifier);
 
         if (null == queryHandler) {
-            console.debug(`No query handler found for "${query.constructor.name}" query`);
+            this.logger.debug({message: `No query handler found for "${query.constructor.name}" query`});
 
             return;
         }
 
         const queryResult = await queryHandler(query);
-        console.debug(`Query "${query.constructor.name}" done`, queryResult);
+        this.logger.debug({message: `Query "${query.constructor.name}" done`, context: queryResult});
 
         return queryResult;
     }

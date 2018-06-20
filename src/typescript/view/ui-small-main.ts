@@ -3,6 +3,7 @@ import { DetectedBrowser } from '../browser/detected-browser';
 import { CommandBus } from '../bus/command-bus';
 import { EventBus } from '../bus/event-bus';
 import { QueryBus } from '../bus/query-bus';
+import { BrowserConsoleLogger } from '../logger/browser-console-logger';
 import { BidirectionalQueryMessageHandler } from '../message/bidirectional-query-message-handler';
 import { BackgroundMessageReceiver } from '../message/receiver/background-message-receiver';
 import { ReceivedCommandMessageHandler } from '../message/receiver/received-command-message-handler';
@@ -17,6 +18,7 @@ import * as tabEvents from '../tab/opened-tab/event';
 import * as tabQueries from '../tab/opened-tab/query';
 import { ObjectUnserializer } from '../utils/object-unserializer';
 import { sleep } from '../utils/sleep';
+import { TaskSchedulerFactory } from '../utils/task-scheduler';
 import { TabsViewFactory } from './ui-small/tabs-view';
 import { TabFactory } from './ui-small/tabs-view/tab';
 import { TabFilterfactory } from './ui-small/tabs-view/tab-filter';
@@ -26,9 +28,10 @@ import { UiSmall } from './ui-small/ui-small';
 const defaultFaviconUrl = '/ui/images/default-favicon.svg';
 
 async function main() {
-    const commandBus = new CommandBus();
-    const eventBus = new EventBus();
-    const queryBus = new QueryBus();
+    const logger = new BrowserConsoleLogger();
+    const commandBus = new CommandBus(logger);
+    const eventBus = new EventBus(logger);
+    const queryBus = new QueryBus(logger);
 
     let sendMessageCommandHandler: SendMessageCommandHandler;
     let bidirectionalQueryMessageHandler: BidirectionalQueryMessageHandler;
@@ -69,7 +72,8 @@ async function main() {
         const tabFactory = new TabFactory(detectedBrowser, commandBus, defaultFaviconUrl);
         const tabFilterFactory = new TabFilterfactory(eventBus, queryBus);
         const tabListFactory = new TabListFactory(eventBus, tabFactory);
-        const tabsViewFactory = new TabsViewFactory(tabListFactory, tabFilterFactory, eventBus, queryBus);
+        const taskSchedulerFactory = new TaskSchedulerFactory(logger);
+        const tabsViewFactory = new TabsViewFactory(tabListFactory, tabFilterFactory, taskSchedulerFactory, eventBus, queryBus);
         const uiSmall = new UiSmall(tabsViewFactory);
     }
 

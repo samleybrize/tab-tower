@@ -4,7 +4,7 @@ import { OpenedTabPinStateUpdated } from '../../tab/opened-tab/event/opened-tab-
 import { TabOpened } from '../../tab/opened-tab/event/tab-opened';
 import { OpenedTab } from '../../tab/opened-tab/opened-tab';
 import { GetOpenedTabs } from '../../tab/opened-tab/query';
-import { TaskScheduler } from '../../utils/task-scheduler';
+import { TaskScheduler, TaskSchedulerFactory } from '../../utils/task-scheduler';
 import { CurrentWorkspace } from './tabs-view/current-workspace';
 import { TabFilter, TabFilterfactory } from './tabs-view/tab-filter';
 import { TabList, TabListFactory } from './tabs-view/tab-list';
@@ -136,10 +136,16 @@ export class TabsView {
 }
 
 export class TabsViewFactory {
-    constructor(private tabListFactory: TabListFactory, private tabFilterFactory: TabFilterfactory, private eventBus: EventBus, private queryBus: QueryBus) {
+    constructor(
+        private tabListFactory: TabListFactory,
+        private tabFilterFactory: TabFilterfactory,
+        private taskSchedulerFactory: TaskSchedulerFactory,
+        private eventBus: EventBus,
+        private queryBus: QueryBus,
+    ) {
     }
 
     create(containerElement: HTMLElement) {
-        return new TabsView(containerElement, this.tabListFactory, this.tabFilterFactory, this.eventBus, this.queryBus, new TaskScheduler());
+        return new TabsView(containerElement, this.tabListFactory, this.tabFilterFactory, this.eventBus, this.queryBus, this.taskSchedulerFactory.create());
     }
 }

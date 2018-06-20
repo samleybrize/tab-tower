@@ -1,6 +1,7 @@
 import { CommandBus } from '../bus/command-bus';
 import { EventBus } from '../bus/event-bus';
 import { QueryBus } from '../bus/query-bus';
+import { BrowserConsoleLogger } from '../logger/browser-console-logger';
 import { BidirectionalQueryMessageHandler } from '../message/bidirectional-query-message-handler';
 import { ContentMessageReceiver } from '../message/receiver/content-message-receiver';
 import { ReceivedCommandMessageHandler } from '../message/receiver/received-command-message-handler';
@@ -40,9 +41,10 @@ import { GetBackgroundState } from './get-background-state';
 
 // TODO rename nativeTabEventHandler
 async function main() {
-    const commandBus = new CommandBus();
-    const eventBus = new EventBus();
-    const queryBus = new QueryBus();
+    const logger = new BrowserConsoleLogger();
+    const commandBus = new CommandBus(logger);
+    const eventBus = new EventBus(logger);
+    const queryBus = new QueryBus(logger);
 
     const backgroundStateRetriever = new BackgroundStateRetriever();
     queryBus.register(GetBackgroundState, backgroundStateRetriever.queryBackgroundState, backgroundStateRetriever);
@@ -51,9 +53,9 @@ async function main() {
     await postUpdateMigrator.migrate();
 
     const nativeTabIdAssociationMaintainer = new NativeTabIdAssociationMaintainerFirefox();
-    const nativeTabEventHandler = new NativeTabEventHandler(eventBus, queryBus, nativeTabIdAssociationMaintainer, new TaskScheduler());
+    const nativeTabEventHandler = new NativeTabEventHandler(eventBus, queryBus, nativeTabIdAssociationMaintainer, new TaskScheduler(logger), logger);
     const openedTabFilterer = new OpenedTabFilterer();
-    const openedTabRetriever = new OpenedTabRetriever(nativeTabEventHandler, openedTabFilterer, new TaskScheduler());
+    const openedTabRetriever = new OpenedTabRetriever(nativeTabEventHandler, openedTabFilterer, new TaskScheduler(logger));
 
     const openedTabCloser = new OpenedTabCloser(queryBus, nativeTabIdAssociationMaintainer);
     const openedTabDuplicator = new OpenedTabDuplicator(nativeTabIdAssociationMaintainer);
@@ -67,7 +69,7 @@ async function main() {
 
     const settingsPersister = new WebStorageSettingsPersister();
     const settingsRetriever = new SettingsRetriever(settingsPersister);
-    const settingsModifier = new SettingsModifier(eventBus, settingsPersister, new TaskScheduler());
+    const settingsModifier = new SettingsModifier(eventBus, settingsPersister, new TaskScheduler(logger));
 
     const objectUnserializer = new ObjectUnserializer();
     const messageSender = new BackgroundMessageSender();

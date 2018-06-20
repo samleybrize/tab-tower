@@ -1,8 +1,13 @@
+import { Logger } from '../logger/logger';
+
 type Task = () => void;
 
 export class TaskScheduler {
     private pendingTasks: Task[] = [];
     private isExecutingTasks = false;
+
+    constructor(private logger: Logger) {
+    }
 
     add(task: Task): TaskScheduler {
         this.pendingTasks.push(task);
@@ -23,9 +28,18 @@ export class TaskScheduler {
                 await task();
             }
         } catch (error) {
-            console.error(error);
+            this.logger.error({message: 'Error detected in a task', context: error});
         }
 
         this.isExecutingTasks = false;
+    }
+}
+
+export class TaskSchedulerFactory {
+    constructor(private logger: Logger) {
+    }
+
+    create() {
+        return new TaskScheduler(this.logger);
     }
 }

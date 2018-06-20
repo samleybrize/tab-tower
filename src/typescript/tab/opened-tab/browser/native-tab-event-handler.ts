@@ -2,6 +2,7 @@ import * as uuid from 'uuid';
 
 import { EventBus } from '../../../bus/event-bus';
 import { QueryBus } from '../../../bus/query-bus';
+import { Logger } from '../../../logger/logger';
 import { sleep } from '../../../utils/sleep';
 import { TaskScheduler } from '../../../utils/task-scheduler';
 import { OpenedTabAudibleStateUpdated } from '../event/opened-tab-audible-state-updated';
@@ -33,6 +34,7 @@ export class NativeTabEventHandler implements OpenedTabBackend {
         private queryBus: QueryBus,
         private nativeTabIdAssociationMaintainer: NativeTabIdAssociationMaintainer,
         private taskScheduler: TaskScheduler,
+        private logger: Logger,
     ) {
     }
 
@@ -125,7 +127,7 @@ export class NativeTabEventHandler implements OpenedTabBackend {
 
     async onNativeTabCreate(nativeTab: browser.tabs.Tab) {
         this.taskScheduler.add(async () => {
-            console.debug(`Received a "created" browser tab event for tab "${nativeTab.id}"`, nativeTab);
+            this.logger.debug({message: `Received a "created" browser tab event for tab "${nativeTab.id}"`, context: nativeTab});
             const openedTab = await this.createTab(nativeTab);
 
             if (openedTab) {
@@ -162,7 +164,7 @@ export class NativeTabEventHandler implements OpenedTabBackend {
 
     private async onTabActivated(activatedInfo: browser.tabs.ActivatedInfo) {
         this.taskScheduler.add(async () => {
-            console.debug(`Received an "activated" browser tab event for tab "${activatedInfo.tabId}"`, activatedInfo);
+            this.logger.debug({message: `Received an "activated" browser tab event for tab "${activatedInfo.tabId}"`, context: activatedInfo});
             const nativeTabId = activatedInfo.tabId;
             const tabId = await this.nativeTabIdAssociationMaintainer.getAssociatedOpenedTabId(nativeTabId);
 
@@ -176,7 +178,7 @@ export class NativeTabEventHandler implements OpenedTabBackend {
 
     async onNativeTabClose(nativeTabId: number, removeInfo: browser.tabs.RemoveInfo) {
         this.taskScheduler.add(async () => {
-            console.debug(`Received a "closed" browser tab event for tab "${nativeTabId}"`, removeInfo);
+            this.logger.debug({message: `Received a "closed" browser tab event for tab "${nativeTabId}"`, context: removeInfo});
             const tabId = await this.nativeTabIdAssociationMaintainer.getAssociatedOpenedTabId(nativeTabId);
 
             if (null === tabId) {
@@ -208,7 +210,7 @@ export class NativeTabEventHandler implements OpenedTabBackend {
 
     async onNativeTabMove(nativeTabId: number, moveInfo: browser.tabs.MoveInfo) {
         this.taskScheduler.add(async () => {
-            console.debug(`Received a "move" browser tab event for tab "${nativeTabId}"`, moveInfo);
+            this.logger.debug({message: `Received a "move" browser tab event for tab "${nativeTabId}"`, context: moveInfo});
             const tabId = await this.nativeTabIdAssociationMaintainer.getAssociatedOpenedTabId(nativeTabId);
 
             if (null == tabId) {
@@ -222,7 +224,7 @@ export class NativeTabEventHandler implements OpenedTabBackend {
 
     async onNativeTabUpdate(nativeTabId: number, updateInfo: browser.tabs.UpdateInfo) {
         this.taskScheduler.add(async () => {
-            console.debug(`Received an "update" browser tab event for tab "${nativeTabId}"`, updateInfo);
+            this.logger.debug({message: `Received an "update" browser tab event for tab "${nativeTabId}"`, context: updateInfo});
             const tabId = await this.nativeTabIdAssociationMaintainer.getAssociatedOpenedTabId(nativeTabId);
 
             if (null == tabId) {

@@ -1,3 +1,5 @@
+import { Logger } from '../logger/logger';
+
 interface EventType<T> {
     new(...args: any[]): T;
     eventIdentifier?: number;
@@ -7,6 +9,9 @@ type EventHandler<T> = (event: T) => Promise<void>;
 
 export class EventBus {
     private handlerList = new Map<number, Array<EventHandler<any>>>();
+
+    constructor(private logger: Logger) {
+    }
 
     subscribe<T>(eventType: EventType<T>, handler: EventHandler<T>, bindToHandler?: object) {
         if (null == eventType.eventIdentifier) {
@@ -48,7 +53,7 @@ export class EventBus {
     }
 
     async publish<T>(event: T) {
-        console.debug(`Publishing event "${event.constructor.name}"`, event);
+        this.logger.debug({message: `Publishing event "${event.constructor.name}"`, context: event});
 
         const eventIdentifier = (event.constructor as EventType<T>).eventIdentifier;
         const eventHandlerList = this.handlerList.get(eventIdentifier);

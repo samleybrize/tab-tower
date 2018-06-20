@@ -1,3 +1,4 @@
+@trackTabClosing
 Feature: Track tab closing
 
     Background:

@@ -13,7 +13,6 @@ import { OpenedTabPositionUpdated } from '../../../tab/opened-tab/event/opened-t
 import { OpenedTabTitleUpdated } from '../../../tab/opened-tab/event/opened-tab-title-updated';
 import { OpenedTabUnfocused } from '../../../tab/opened-tab/event/opened-tab-unfocused';
 import { OpenedTabUrlUpdated } from '../../../tab/opened-tab/event/opened-tab-url-updated';
-import { TabOpened } from '../../../tab/opened-tab/event/tab-opened';
 import { OpenedTab } from '../../../tab/opened-tab/opened-tab';
 import { TaskScheduler } from '../../../utils/task-scheduler';
 import { Tab, TabFactory } from './tab';
@@ -21,6 +20,7 @@ import { Tab, TabFactory } from './tab';
 export class TabList {
     private tabMap = new Map<string, Tab>();
     private sortedTabList: Tab[] = [];
+    private noTabMatchesSearchElement: HTMLElement;
 
     constructor(
         public readonly workspaceId: string,
@@ -65,6 +65,9 @@ export class TabList {
 
     async init(openTabList: OpenedTab[]) {
         await this.taskScheduler.add(async () => {
+            this.noTabMatchesSearchElement = this.createNoTabMatchesSearchElement();
+            this.containerElement.appendChild(this.noTabMatchesSearchElement);
+
             for (const openedTab of openTabList) {
                 const tab = this.createTab(openedTab);
                 this.insertTab(tab, false);
@@ -72,6 +75,15 @@ export class TabList {
 
             this.reorderSortedTabList();
         }).executeAll();
+    }
+
+    private createNoTabMatchesSearchElement() {
+        const element = document.createElement('div');
+        element.classList.add('no-tab-matches-search');
+        element.classList.add('hide');
+        element.textContent = 'No tab matches your search';
+
+        return element;
     }
 
     private createTab(openedTab: OpenedTab) {
@@ -179,9 +191,17 @@ export class TabList {
                 tab.hide();
             }
         }
+
+        if (showableTabIdList.length > 0) {
+            this.noTabMatchesSearchElement.classList.remove('hide');
+        } else {
+            this.noTabMatchesSearchElement.classList.add('hide');
+        }
     }
 
     unfilterAllTabs() {
+        this.noTabMatchesSearchElement.classList.add('hide');
+
         for (const tab of this.sortedTabList) {
             tab.unhide();
         }

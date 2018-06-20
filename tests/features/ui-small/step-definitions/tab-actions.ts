@@ -1,4 +1,5 @@
 import { Given, When } from 'cucumber';
+import { By, WebDriver } from 'selenium-webdriver';
 import { TestPageNames } from '../../../webdriver/test-page-descriptor';
 import { World } from '../support/world';
 
@@ -186,3 +187,42 @@ When('I restore the last recently closed tab', async function() {
         }
     });
 });
+
+When('I type {string} in the tab filter input', async function(filterText: string) {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+
+    const inputElement = webdriver.findElement(By.css('.tab-list .filter input.filter-input'));
+    await inputElement.sendKeys(filterText);
+});
+
+When('I delete all characters in the tab filter input', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+
+    const inputElement = webdriver.findElement(By.css('.tab-list .filter input.filter-input'));
+    await inputElement.clear();
+});
+
+When('I click on the close button of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+
+    // TODO trigger hover to show the close button
+    const tab = await getTabAtPosition(webdriver, workspaceId, tabPosition);
+    const closeButton = tab.findElement(By.css('.close-button'));
+    await closeButton.click();
+});
+
+// TODO
+async function getTabAtPosition(webdriver: WebDriver, workspaceId: string, tabPosition: number) {
+    let excludePinnedSelector = '';
+
+    if ('pinned-tabs' != workspaceId) {
+        excludePinnedSelector = ':not(.pinned)';
+    }
+
+    const tabList = await webdriver.findElements(By.css(`.tab-list [data-workspace-id="${workspaceId}"] .tab:not(.hide)${excludePinnedSelector}`));
+
+    return tabList[tabPosition];
+}

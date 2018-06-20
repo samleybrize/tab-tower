@@ -38,4 +38,15 @@
             }
         }
     }
+
+    .no-tab-matches-search {
+        padding: $tab-padding;
+        font-size: $tab-title-font-size;
+        color: $tab-title-color;
+        text-align: center;
+
+        .hide {
+            display: none;
+        }
+    }
 }

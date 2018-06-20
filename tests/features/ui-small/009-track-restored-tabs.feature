@@ -1,3 +1,4 @@
+@trackRestoredTabs
 Feature: Track restored tabs
 
     Background:

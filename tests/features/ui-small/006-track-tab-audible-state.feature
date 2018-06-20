@@ -1,3 +1,4 @@
+@trackTabAudibleState
 Feature: Track tab audible state
 
     Background:

@@ -1,3 +1,4 @@
+@trackTabOpening
 Feature: Track tab opening
 
     Background:

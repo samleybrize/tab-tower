@@ -11,6 +11,18 @@ Then('I should see {int} visible tab(s) on the workspace {string}', async functi
     await TabAssertions.assertNumberOfVisibleTabs(webdriver, webdriverHelper, workspaceId, expectedNumberOfTabs);
 });
 
+Then('I should see that no tab matches tab search on the workspace {string}', async function(workspaceId: string) {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    await TabAssertions.assertNoTabMatchesTabSearchIsVisible(webdriver, workspaceId);
+});
+
+Then('I should not see that no tab matches tab search on the workspace {string}', async function(workspaceId: string) {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    await TabAssertions.assertNoTabMatchesTabSearchIsVisible(webdriver, workspaceId);
+});
+
 Then('I should see the small UI as tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
     const world = this as World;
     await TabAssertions.assertTab(world, workspaceId, tabPosition, TestPageNames.UI_SMALL);
@@ -84,6 +96,20 @@ class TabAssertions {
         }, 10000, () => `Number of visible tabs on workspace "${workspaceId}" is "${actualNumberOfTabs}" but "${expectedNumberOfTabs}" were expected`);
     }
 
+    static async assertNoTabMatchesTabSearchIsVisible(webdriver: WebDriver, workspaceId: string) {
+        const noTabMatchesSearchElement = webdriver.findElement(By.css(`.tab-list [data-workspace-id="${workspaceId}"] .no-tab-matches-search`));
+        await webdriver.wait(async () => {
+            return await noTabMatchesSearchElement.isDisplayed();
+        }, 10000);
+    }
+
+    static async assertNoTabMatchesTabSearchIsNotVisible(webdriver: WebDriver, workspaceId: string) {
+        const noTabMatchesSearchElement = webdriver.findElement(By.css(`.tab-list [data-workspace-id="${workspaceId}"] .no-tab-matches-search`));
+        await webdriver.wait(async () => {
+            return !await noTabMatchesSearchElement.isDisplayed();
+        }, 10000);
+    }
+
     static async assertTab(world: World, workspaceId: string, tabPosition: number, expectedTestPageName: string) {
         const webdriver = world.webdriverRetriever.getDriver();
         const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
@@ -95,8 +121,8 @@ class TabAssertions {
             tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
 
             return this.isTabTitleEqualTo(tab, expectedTitle);
-        }, 10000, () => {
-            const actualTitle = this.getTabTitle(tab);
+        }, 10000, async () => {
+            const actualTitle = await this.getTabTitle(tab);
 
             return `Tab title "${actualTitle}" is different than expected "${expectedTitle}"`;
         });
@@ -113,7 +139,7 @@ class TabAssertions {
             excludePinnedSelector = ':not(.pinned)';
         }
 
-        const tabList = await webdriver.findElements(By.css(`.tab-list [data-workspace-id="${workspaceId}"] .tab${excludePinnedSelector}`));
+        const tabList = await webdriver.findElements(By.css(`.tab-list [data-workspace-id="${workspaceId}"] .tab:not(.hide)${excludePinnedSelector}`));
 
         return tabList[tabPosition];
     }

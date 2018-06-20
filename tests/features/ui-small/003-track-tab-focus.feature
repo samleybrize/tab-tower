@@ -1,3 +1,4 @@
+@trackTabFocus
 Feature: Track tab focus
 
     Background:

@@ -1,3 +1,4 @@
+@trackTabMove
 Feature: Track tab move
 
     Background:
@@ -222,3 +223,23 @@ Feature: Track tab move
         And I should see the tab 2 as focused on the workspace "pinned-tabs"
         And I should not see the tab 3 as focused on the workspace "pinned-tabs"
         And I should not see the tab 4 as focused on the workspace "pinned-tabs"
+
+    Scenario: A moved tab should appear at its new position after a tab was closed
+        When I open the test page "test-page1"
+        And I open the test page "test-page2"
+        And I open the test page "test-filter-with-some-text"
+        And I open the test page "test-filter-with-other-text"
+
+        Then I should see 5 visible tabs on the workspace "opened-tabs"
+
+        When I close the tab 2
+
+        Then I should see 4 visible tab on the workspace "opened-tabs"
+
+        And I move the tab 3 to position 1
+
+        Then I should see 4 visible tab on the workspace "opened-tabs"
+        And I should see the small UI as tab 0 on the workspace "opened-tabs"
+        And I should see the test page "test-filter-with-other-text" as tab 1 on the workspace "opened-tabs"
+        And I should see the test page "test-page1" as tab 2 on the workspace "opened-tabs"
+        And I should see the test page "test-filter-with-some-text" as tab 3 on the workspace "opened-tabs"

@@ -1,3 +1,4 @@
+@trackTabLoadingState
 Feature: Track tab loading state
 
     Background:

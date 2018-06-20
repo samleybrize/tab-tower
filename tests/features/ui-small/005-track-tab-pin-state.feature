@@ -1,3 +1,4 @@
+@trackTabPinState
 Feature: Track tab pin state
 
     Background:

@@ -7,7 +7,7 @@
 
                 .title {
                     display: block;
-                    font-size: 13px;
+                    font-size: $tab-title-font-size;
                     color: $tab-title-color;
                     transition: color 0.2s ease;
                 }

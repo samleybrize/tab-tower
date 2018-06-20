@@ -5,9 +5,9 @@ import { StringMatchingRule } from '../../matching/matching-rule/string-matching
 import { WordBreaker } from '../../utils/string-list-getter/word-breaker';
 import { OpenedTab } from './opened-tab';
 import { OpenedTabsFilter } from './query/get-opened-tabs';
+import { OpenedTabNoprotocolUrlExtractor } from './string-extractor/opened-tab-noprotocol-url-extractor';
 import { OpenedTabTitleExtractor } from './string-extractor/opened-tab-title-extractor';
 import { OpenedTabUrlDomainExtractor } from './string-extractor/opened-tab-url-domain-extractor';
-import { OpenedTabUrlExtractor } from './string-extractor/opened-tab-url-extractor';
 
 export class OpenedTabFilterer {
     private matchingRuleMap = new Map<string, MatchingRule<OpenedTab>>();
@@ -18,7 +18,7 @@ export class OpenedTabFilterer {
         const containsStringMatcher = new Contains();
 
         const titleMatchingRule = new StringMatchingRule(new OpenedTabTitleExtractor(), containsStringMatcher, this.wordBreaker);
-        const urlMatchingRule = new StringMatchingRule(new OpenedTabUrlExtractor(), containsStringMatcher, this.wordBreaker);
+        const urlMatchingRule = new StringMatchingRule(new OpenedTabNoprotocolUrlExtractor(), containsStringMatcher, this.wordBreaker);
         const urlDomainMatchingRule = new StringMatchingRule(new OpenedTabUrlDomainExtractor(), containsStringMatcher, this.wordBreaker);
 
         this.matchingRuleMap.set('title', new MatchWhenAnyRuleMatch<OpenedTab>([titleMatchingRule]));

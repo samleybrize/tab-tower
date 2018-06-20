@@ -1,3 +1,4 @@
+@trackTabDuplicate
 Feature: Track tab duplicate
 
     Background:

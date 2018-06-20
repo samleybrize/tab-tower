@@ -7,14 +7,14 @@ export class WebdriverHelper {
     }
 
     // TODO explain why (allow to pass a function as message)
-    async wait(condition: any, timeout?: number, errorMessage?: () => string|string) {
+    async wait(condition: any, timeout?: number, errorMessage?: (() => string|Promise<string>)|string) {
         const errorMessageString: string = ('string' == typeof errorMessage) ? errorMessage : null;
 
         try {
             return await this.webdriver.wait(condition, timeout, errorMessageString);
         } catch (error) {
             if (error instanceof WebDriverError.TimeoutError && errorMessage instanceof Function) {
-                const newError = new WebDriverError.TimeoutError(errorMessage());
+                const newError = new WebDriverError.TimeoutError(await errorMessage());
                 newError.stack = error.stack;
 
                 throw newError;

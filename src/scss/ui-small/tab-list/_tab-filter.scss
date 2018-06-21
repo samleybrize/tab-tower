@@ -45,8 +45,12 @@
         color: $tab-title-color;
         text-align: center;
 
-        .hide {
+        &.hide {
             display: none;
         }
+    }
+
+    .pinned-tabs .no-tab-matches-search {
+        display: none;
     }
 }

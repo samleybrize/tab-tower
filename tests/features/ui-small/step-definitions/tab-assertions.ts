@@ -20,7 +20,7 @@ Then('I should see that no tab matches tab search on the workspace {string}', as
 Then('I should not see that no tab matches tab search on the workspace {string}', async function(workspaceId: string) {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
-    await TabAssertions.assertNoTabMatchesTabSearchIsVisible(webdriver, workspaceId);
+    await TabAssertions.assertNoTabMatchesTabSearchIsNotVisible(webdriver, workspaceId);
 });
 
 Then('I should see the small UI as tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
@@ -100,14 +100,14 @@ class TabAssertions {
         const noTabMatchesSearchElement = webdriver.findElement(By.css(`.tab-list [data-workspace-id="${workspaceId}"] .no-tab-matches-search`));
         await webdriver.wait(async () => {
             return await noTabMatchesSearchElement.isDisplayed();
-        }, 10000);
+        }, 10000, 'The no tab matches tab search message is not visible');
     }
 
     static async assertNoTabMatchesTabSearchIsNotVisible(webdriver: WebDriver, workspaceId: string) {
         const noTabMatchesSearchElement = webdriver.findElement(By.css(`.tab-list [data-workspace-id="${workspaceId}"] .no-tab-matches-search`));
         await webdriver.wait(async () => {
             return !await noTabMatchesSearchElement.isDisplayed();
-        }, 10000);
+        }, 10000, 'The no tab matches tab search message is visible');
     }
 
     static async assertTab(world: World, workspaceId: string, tabPosition: number, expectedTestPageName: string) {

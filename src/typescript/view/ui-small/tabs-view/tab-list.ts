@@ -193,9 +193,9 @@ export class TabList {
         }
 
         if (showableTabIdList.length > 0) {
-            this.noTabMatchesSearchElement.classList.remove('hide');
-        } else {
             this.noTabMatchesSearchElement.classList.add('hide');
+        } else {
+            this.noTabMatchesSearchElement.classList.remove('hide');
         }
     }
 

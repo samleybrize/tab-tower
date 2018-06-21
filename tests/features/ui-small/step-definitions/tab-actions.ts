@@ -1,5 +1,5 @@
 import { Given, When } from 'cucumber';
-import { By, WebDriver } from 'selenium-webdriver';
+import { By, error as WebDriverError, WebDriver, WebElement } from 'selenium-webdriver';
 import { TestPageNames } from '../../../webdriver/test-page-descriptor';
 import { World } from '../support/world';
 
@@ -208,14 +208,45 @@ When('I click on the close button of the tab {int} on the workspace {string}', a
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
 
-    // TODO trigger hover to show the close button
     const tab = await getTabAtPosition(webdriver, workspaceId, tabPosition);
-    const a: any = await webdriver.actions();
-    await a.move({origin: tab}).perform();
-    // console.log(a.mouse_); console.log(Object.getOwnPropertyNames(a.mouse_)); // TODO
+    await webdriver.actions().move({origin: tab}).perform();
 
     const closeButton = tab.findElement(By.css('.close-button'));
-    await closeButton.click();
+    await clickElementOnceAvailable(
+        webdriver,
+        closeButton,
+        `Close button of tab at position ${tabPosition} of workspace "${workspaceId}" is not clickable`,
+    );
+});
+
+When('I click on the mute button of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+
+    const tab = await getTabAtPosition(webdriver, workspaceId, tabPosition);
+    await webdriver.actions().move({origin: tab}).perform();
+
+    const muteButton = tab.findElement(By.css('.audible-icon'));
+    await clickElementOnceAvailable(
+        webdriver,
+        muteButton,
+        `Mute button of tab at position ${tabPosition} of workspace "${workspaceId}" is not clickable`,
+    );
+});
+
+When('I click on the unmute button of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+
+    const tab = await getTabAtPosition(webdriver, workspaceId, tabPosition);
+    await webdriver.actions().move({origin: tab}).perform();
+
+    const unmuteButton = tab.findElement(By.css('.muted-icon'));
+    await clickElementOnceAvailable(
+        webdriver,
+        unmuteButton,
+        `Unmute button of tab at position ${tabPosition} of workspace "${workspaceId}" is not clickable`,
+    );
 });
 
 // TODO
@@ -229,4 +260,18 @@ async function getTabAtPosition(webdriver: WebDriver, workspaceId: string, tabPo
     const tabList = await webdriver.findElements(By.css(`.tab-list [data-workspace-id="${workspaceId}"] .tab:not(.hide)${excludePinnedSelector}`));
 
     return tabList[tabPosition];
+}
+
+async function clickElementOnceAvailable(webdriver: WebDriver, element: WebElement, failMessage: string) {
+    webdriver.wait(async () => {
+        try {
+            await element.click();
+
+            return true;
+        } catch (error) {
+            if (error instanceof WebDriverError.ElementClickInterceptedError) {
+                return false;
+            }
+        }
+    }, 10000, failMessage);
 }

@@ -23,29 +23,26 @@ export class FirefoxConfig {
     }
 
     getWebdriverOptions() {
-        const firefoxProfile = new Profile();
-        firefoxProfile.addExtension(this.getExtensionPath());
-        firefoxProfile.setPreference('xpinstall.signatures.required', false);
-        firefoxProfile.setPreference('security.csp.enable', false);
+        const testsConfig = TestsConfig.getInstance();
+        const firefoxOptions = new Options();
 
         // used to fix the random uuid assigned by firefox to the extension
         const extensionId = this.getExtensionId();
         const extensionInternalId = this.getExtensionInternalId();
-        firefoxProfile.setPreference('extensions.webextensions.uuids', `{"${extensionId}":"${extensionInternalId}"}`);
-
-        const firefoxPath = this.getFirefoxBinaryPath();
-        const firefoxBinary = new Binary(firefoxPath);
-        const testsConfig = TestsConfig.getInstance();
 
         if (testsConfig.isHeadlessModeEnabled) {
-            firefoxBinary.addArguments('-headless');
+            firefoxOptions.addArguments('-headless');
         }
 
         if (testsConfig.isBrowserConsoleEnabled) {
-            firefoxBinary.addArguments('-jsconsole');
+            firefoxOptions.addArguments('-jsconsole');
         }
 
-        const firefoxOptions = new Options().setProfile(firefoxProfile).setBinary(firefoxBinary);
+        firefoxOptions.addExtensions(this.getExtensionPath());
+        firefoxOptions.setPreference('xpinstall.signatures.required', false);
+        firefoxOptions.setPreference('security.csp.enable', false);
+        firefoxOptions.setPreference('extensions.webextensions.uuids', `{"${extensionId}":"${extensionInternalId}"}`);
+        firefoxOptions.setBinary(this.getFirefoxBinaryPath());
 
         return firefoxOptions;
     }

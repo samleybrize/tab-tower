@@ -210,6 +210,10 @@ When('I click on the close button of the tab {int} on the workspace {string}', a
 
     // TODO trigger hover to show the close button
     const tab = await getTabAtPosition(webdriver, workspaceId, tabPosition);
+    const a: any = await webdriver.actions();
+    await a.move({origin: tab}).perform();
+    // console.log(a.mouse_); console.log(Object.getOwnPropertyNames(a.mouse_)); // TODO
+
     const closeButton = tab.findElement(By.css('.close-button'));
     await closeButton.click();
 });

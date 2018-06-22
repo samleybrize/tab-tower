@@ -15,6 +15,7 @@ Feature: Track tab closing
         Then I should see 2 visible tabs on the workspace "opened-tabs"
         And I should see the small UI as tab 0 on the workspace "opened-tabs"
         And I should see the test page "test-page2" as tab 1 on the workspace "opened-tabs"
+        And I should see the current workspace with label "All opened tabs" and 2 tabs indicated
 
     Scenario: Closed tabs should not appear in the opened tabs list after a reload
         When I open the test page "test-page1"
@@ -31,6 +32,7 @@ Feature: Track tab closing
         Then I should see 2 visible tabs on the workspace "opened-tabs"
         And I should see the small UI as tab 0 on the workspace "opened-tabs"
         And I should see the test page "test-page2" as tab 1 on the workspace "opened-tabs"
+        And I should see the current workspace with label "All opened tabs" and 2 tabs indicated
 
     Scenario: Closing a tab should update the focused tab
         When I open the test page "test-page1"
@@ -65,6 +67,7 @@ Feature: Track tab closing
         Then I should see 2 visible tabs on the workspace "opened-tabs"
         And I should not see the tab 0 as focused on the workspace "opened-tabs"
         And I should see the tab 1 as focused on the workspace "opened-tabs"
+        And I should see the current workspace with label "All opened tabs" and 2 tabs indicated
 
     Scenario: Closed pinned tabs should not appear in the opened tabs list or in the pinned tabs list
         When I open the test page "test-page1"
@@ -83,3 +86,4 @@ Feature: Track tab closing
         And I should see 2 visible tabs on the workspace "opened-tabs"
         And I should see the tab 0 as focused on the workspace "opened-tabs"
         And I should not see the tab 1 as focused on the workspace "opened-tabs"
+        And I should see the current workspace with label "All opened tabs" and 2 tabs indicated

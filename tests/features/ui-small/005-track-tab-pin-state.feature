@@ -20,6 +20,7 @@ Feature: Track tab pin state
         And I should see the tab 0 as focused on the workspace "opened-tabs"
         And I should not see the tab 1 as focused on the workspace "opened-tabs"
         And I should not see the tab 0 as focused on the workspace "pinned-tabs"
+        And I should see the current workspace with label "All opened tabs" and 3 tabs indicated
 
         When I reload the tab 0
 
@@ -31,6 +32,7 @@ Feature: Track tab pin state
         And I should see the tab 0 as focused on the workspace "opened-tabs"
         And I should not see the tab 1 as focused on the workspace "opened-tabs"
         And I should not see the tab 0 as focused on the workspace "pinned-tabs"
+        And I should see the current workspace with label "All opened tabs" and 3 tabs indicated
 
     Scenario: Unpinned tabs should not appear in the pinned tabs list
         When I open the test page "test-page1"
@@ -53,6 +55,7 @@ Feature: Track tab pin state
         And I should not see the tab 0 as focused on the workspace "opened-tabs"
         And I should see the tab 1 as focused on the workspace "opened-tabs"
         And I should not see the tab 2 as focused on the workspace "opened-tabs"
+        And I should see the current workspace with label "All opened tabs" and 3 tabs indicated
 
         When I reload the tab 1
 
@@ -64,6 +67,7 @@ Feature: Track tab pin state
         And I should not see the tab 0 as focused on the workspace "opened-tabs"
         And I should see the tab 1 as focused on the workspace "opened-tabs"
         And I should not see the tab 2 as focused on the workspace "opened-tabs"
+        And I should see the current workspace with label "All opened tabs" and 3 tabs indicated
 
     Scenario: Unpinned tabs should not appear in the pinned tabs list after a reload
         When I open the test page "test-page1"
@@ -90,3 +94,4 @@ Feature: Track tab pin state
         And I should not see the tab 0 as focused on the workspace "opened-tabs"
         And I should see the tab 1 as focused on the workspace "opened-tabs"
         And I should not see the tab 2 as focused on the workspace "opened-tabs"
+        And I should see the current workspace with label "All opened tabs" and 3 tabs indicated

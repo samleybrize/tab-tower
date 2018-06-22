@@ -14,6 +14,7 @@ Feature: Tab close button
         Then I should see 2 visible tabs on the workspace "opened-tabs"
         And I should see the small UI as tab 0 on the workspace "opened-tabs"
         And I should see the test page "test-page2" as tab 1 on the workspace "opened-tabs"
+        And I should see the current workspace with label "All opened tabs" and 2 tabs indicated
 
     Scenario: Clicking on several tab close buttons should close their associated tabs
         Given I use the small UI
@@ -30,3 +31,4 @@ Feature: Tab close button
         Then I should see 2 visible tabs on the workspace "opened-tabs"
         And I should see the small UI as tab 0 on the workspace "opened-tabs"
         And I should see the test page "test-filter1" as tab 1 on the workspace "opened-tabs"
+        And I should see the current workspace with label "All opened tabs" and 2 tabs indicated

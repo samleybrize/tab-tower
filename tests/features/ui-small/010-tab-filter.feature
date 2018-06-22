@@ -19,6 +19,7 @@ Feature: Tab filter
         Then I should see 1 visible tab on the workspace "opened-tabs"
         And I should see the test page "test-filter-with-some-text" as tab 0 on the workspace "opened-tabs"
         And I should not see that no tab matches tab search on the workspace "opened-tabs"
+        And I should see the current workspace with label "All opened tabs" and 5 tabs indicated
 
     Scenario: Should filter pinned tabs by title on input with one word
         When I pin the tab 1
@@ -33,6 +34,7 @@ Feature: Tab filter
         Then I should see 1 visible tab on the workspace "pinned-tabs"
         And I should see the test page "test-filter-with-some-text" as tab 0 on the workspace "pinned-tabs"
         And I should not see that no tab matches tab search on the workspace "pinned-tabs"
+        And I should see the current workspace with label "All opened tabs" and 5 tabs indicated
 
     Scenario: Should filter opened tabs by title on input with two word
         When I type "azerty qwerty" in the tab filter input
@@ -41,6 +43,7 @@ Feature: Tab filter
         And I should see the test page "test-filter-with-some-text" as tab 0 on the workspace "opened-tabs"
         And I should see the test page "test-filter-with-other-text" as tab 1 on the workspace "opened-tabs"
         And I should not see that no tab matches tab search on the workspace "opened-tabs"
+        And I should see the current workspace with label "All opened tabs" and 5 tabs indicated
 
     Scenario: Should filter pinned tabs by title on input with two word
         When I pin the tab 1
@@ -56,6 +59,7 @@ Feature: Tab filter
         And I should see the test page "test-filter-with-some-text" as tab 0 on the workspace "pinned-tabs"
         And I should see the test page "test-filter-with-other-text" as tab 1 on the workspace "pinned-tabs"
         And I should not see that no tab matches tab search on the workspace "pinned-tabs"
+        And I should see the current workspace with label "All opened tabs" and 5 tabs indicated
 
     Scenario: Should filter opened tabs by url on input with one word
         When I type "some" in the tab filter input
@@ -63,6 +67,7 @@ Feature: Tab filter
         Then I should see 1 visible tab on the workspace "opened-tabs"
         And I should see the test page "test-filter-with-some-text" as tab 0 on the workspace "opened-tabs"
         And I should not see that no tab matches tab search on the workspace "opened-tabs"
+        And I should see the current workspace with label "All opened tabs" and 5 tabs indicated
 
     Scenario: Should filter pinned tabs by url on input with one word
         When I pin the tab 1
@@ -77,6 +82,7 @@ Feature: Tab filter
         Then I should see 1 visible tab on the workspace "pinned-tabs"
         And I should see the test page "test-filter-with-some-text" as tab 0 on the workspace "pinned-tabs"
         And I should not see that no tab matches tab search on the workspace "pinned-tabs"
+        And I should see the current workspace with label "All opened tabs" and 5 tabs indicated
 
     Scenario: Should filter opened tabs by url on input with two word
         When I type "some other" in the tab filter input
@@ -85,6 +91,7 @@ Feature: Tab filter
         And I should see the test page "test-filter-with-some-text" as tab 0 on the workspace "opened-tabs"
         And I should see the test page "test-filter-with-other-text" as tab 1 on the workspace "opened-tabs"
         And I should not see that no tab matches tab search on the workspace "opened-tabs"
+        And I should see the current workspace with label "All opened tabs" and 5 tabs indicated
 
     Scenario: Should filter pinned tabs by url on input with two word
         When I pin the tab 1
@@ -100,6 +107,7 @@ Feature: Tab filter
         And I should see the test page "test-filter-with-some-text" as tab 0 on the workspace "pinned-tabs"
         And I should see the test page "test-filter-with-other-text" as tab 1 on the workspace "pinned-tabs"
         And I should not see that no tab matches tab search on the workspace "pinned-tabs"
+        And I should see the current workspace with label "All opened tabs" and 5 tabs indicated
 
     Scenario: Should filter opened tabs by url with protocol ignored
         When I type "moz-extension" in the tab filter input
@@ -127,6 +135,7 @@ Feature: Tab filter
         Then I should see 0 visible tab on the workspace "opened-tabs"
         And I should see that no tab matches tab search on the workspace "opened-tabs"
         And I should not see that no tab matches tab search on the workspace "pinned-tabs"
+        And I should see the current workspace with label "All opened tabs" and 5 tabs indicated
 
     Scenario: Should show all opened tabs when clearing the input
         When I type "some" in the tab filter input
@@ -142,6 +151,7 @@ Feature: Tab filter
         And I should see the test page "test-filter-with-other-text" as tab 3 on the workspace "opened-tabs"
         And I should see the test page "test-page1" as tab 4 on the workspace "opened-tabs"
         And I should not see that no tab matches tab search on the workspace "opened-tabs"
+        And I should see the current workspace with label "All opened tabs" and 5 tabs indicated
 
     Scenario: Should show all pinned tabs when clearing the input
         When I pin the tab 1
@@ -163,6 +173,7 @@ Feature: Tab filter
         And I should see the test page "test-filter-with-other-text" as tab 2 on the workspace "pinned-tabs"
         And I should see the test page "test-page1" as tab 3 on the workspace "pinned-tabs"
         And I should not see that no tab matches tab search on the workspace "pinned-tabs"
+        And I should see the current workspace with label "All opened tabs" and 5 tabs indicated
 
     Scenario: Should filter opened tabs at startup when the input is not empty
         When I type "some" in the tab filter input
@@ -174,6 +185,7 @@ Feature: Tab filter
         Then I should see 1 visible tab on the workspace "opened-tabs"
         And I should see the test page "test-filter-with-some-text" as tab 0 on the workspace "opened-tabs"
         And I should not see that no tab matches tab search on the workspace "opened-tabs"
+        And I should see the current workspace with label "All opened tabs" and 5 tabs indicated
 
     Scenario: Should filter pinned tabs at startup when the input is not empty
         When I pin the tab 1
@@ -192,6 +204,7 @@ Feature: Tab filter
         Then I should see 1 visible tab on the workspace "pinned-tabs"
         And I should see the test page "test-filter-with-some-text" as tab 0 on the workspace "pinned-tabs"
         And I should not see that no tab matches tab search on the workspace "pinned-tabs"
+        And I should see the current workspace with label "All opened tabs" and 5 tabs indicated
 
     Scenario: Should update shown tabs when their url change
         When I type "some favicon" in the tab filter input
@@ -203,6 +216,7 @@ Feature: Tab filter
 
         Then I should see 1 visible tab on the workspace "opened-tabs"
         And I should see the test page "test-page-without-favicon" as tab 0 on the workspace "opened-tabs"
+        And I should see the current workspace with label "All opened tabs" and 5 tabs indicated
 
     Scenario: Should update shown tabs when their title change
         When I type "azerty favicon" in the tab filter input
@@ -214,6 +228,7 @@ Feature: Tab filter
 
         Then I should see 1 visible tab on the workspace "opened-tabs"
         And I should see the test page "test-page-without-favicon" as tab 0 on the workspace "opened-tabs"
+        And I should see the current workspace with label "All opened tabs" and 5 tabs indicated
 
     Scenario: Should apply filter on new tabs
         When I type "azerty favicon" in the tab filter input
@@ -225,4 +240,5 @@ Feature: Tab filter
         Then I should see 2 visible tabs on the workspace "opened-tabs"
         And I should see the test page "test-filter-with-some-text" as tab 0 on the workspace "opened-tabs"
         And I should see the test page "test-page-without-favicon" as tab 1 on the workspace "opened-tabs"
+        And I should see the current workspace with label "All opened tabs" and 6 tabs indicated
  

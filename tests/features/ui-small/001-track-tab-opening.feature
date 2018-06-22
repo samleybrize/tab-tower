@@ -16,3 +16,4 @@ Feature: Track tab opening
         And I should see the test page "test-page-with-not-found-favicon" as tab 2 on the workspace "opened-tabs"
         And I should see the test page "test-page-without-favicon" as tab 3 on the workspace "opened-tabs"
         And I should see the test page "test-page-with-favicon-401" as tab 4 on the workspace "opened-tabs"
+        And I should see the current workspace with label "All opened tabs" and 5 tabs indicated

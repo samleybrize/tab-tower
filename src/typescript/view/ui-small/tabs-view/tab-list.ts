@@ -14,6 +14,7 @@ import { OpenedTabTitleUpdated } from '../../../tab/opened-tab/event/opened-tab-
 import { OpenedTabUnfocused } from '../../../tab/opened-tab/event/opened-tab-unfocused';
 import { OpenedTabUrlUpdated } from '../../../tab/opened-tab/event/opened-tab-url-updated';
 import { OpenedTab } from '../../../tab/opened-tab/opened-tab';
+import { Counter } from '../../../utils/counter';
 import { TaskScheduler } from '../../../utils/task-scheduler';
 import { Tab, TabFactory } from './tab';
 
@@ -28,6 +29,7 @@ export class TabList {
         private eventBus: EventBus,
         private tabFactory: TabFactory,
         private taskScheduler: TaskScheduler,
+        private tabCounter: Counter,
     ) {
         eventBus.subscribe(OpenedTabClosed, this.onTabClose, this);
         eventBus.subscribe(OpenedTabIsLoading, this.onTabLoading, this);
@@ -112,6 +114,8 @@ export class TabList {
         } else {
             this.insertTabAsLastTab(tabToInsert);
         }
+
+        this.tabCounter.increment();
     }
 
     private insertTabAtPosition(tabToInsert: Tab, targetPosition: number) {
@@ -165,6 +169,7 @@ export class TabList {
         const tabToRemove = this.tabMap.get(openedTabId);
         tabToRemove.htmlElement.remove();
         this.tabMap.delete(openedTabId);
+        this.tabCounter.decrement();
 
         this.removeTabFromSortedTabList(tabToRemove);
     }
@@ -379,7 +384,7 @@ export class TabListFactory {
     constructor(private eventBus: EventBus, private tabFactory: TabFactory) {
     }
 
-    create(workspaceId: string, containerElement: HTMLElement, taskScheduler: TaskScheduler) {
-        return new TabList(workspaceId, containerElement, this.eventBus, this.tabFactory, taskScheduler);
+    create(workspaceId: string, containerElement: HTMLElement, taskScheduler: TaskScheduler, tabCounter: Counter) {
+        return new TabList(workspaceId, containerElement, this.eventBus, this.tabFactory, taskScheduler, tabCounter);
     }
 }

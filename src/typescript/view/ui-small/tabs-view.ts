@@ -6,6 +6,7 @@ import { OpenedTabUrlUpdated } from '../../tab/opened-tab/event/opened-tab-url-u
 import { TabOpened } from '../../tab/opened-tab/event/tab-opened';
 import { OpenedTab } from '../../tab/opened-tab/opened-tab';
 import { GetOpenedTabs } from '../../tab/opened-tab/query';
+import { Counter } from '../../utils/counter';
 import { TaskScheduler, TaskSchedulerFactory } from '../../utils/task-scheduler';
 import { CurrentWorkspace } from './tabs-view/current-workspace';
 import { TabFilter, TabFilterfactory } from './tabs-view/tab-filter';
@@ -17,12 +18,14 @@ enum BuiltinWorkspaces {
 }
 
 export class TabsView {
-    private currentWorkspace: CurrentWorkspace;
     private tabFilter: TabFilter;
     private pinnedTabList: TabList;
     private workspaceMap = new Map<string, TabList>();
     private workspaceList: TabList[] = [];
     private workspaceContainerElement: HTMLElement;
+    private currentWorkspaceMap = new Map<string, CurrentWorkspace>();
+    private enabledCurrentWorkspace: CurrentWorkspace;
+    private currentWorkspaceContainerElement: HTMLElement;
 
     constructor(
         private containerElement: HTMLElement,
@@ -34,9 +37,10 @@ export class TabsView {
     ) {
         this.tabFilter = this.tabFilterFactory.create(containerElement.querySelector('.filter'));
         this.workspaceContainerElement = containerElement.querySelector('.unpinned-tabs');
-        this.currentWorkspace = new CurrentWorkspace(containerElement.querySelector('.current-workspace'));
+        this.currentWorkspaceContainerElement = containerElement.querySelector('.current-workspace');
 
         this.createOpenedTabWorkspace();
+        this.enableWorkspace(BuiltinWorkspaces.OPENED_TABS);
 
         eventBus.subscribe(TabOpened, this.onTabOpen, this);
         eventBus.subscribe(OpenedTabTitleUpdated, this.onTabTitleUpdate, this);
@@ -48,10 +52,10 @@ export class TabsView {
     }
 
     private async createOpenedTabWorkspace() {
-        const openedTabWorkspace = this.createWorkspace(BuiltinWorkspaces.OPENED_TABS);
+        const openedTabWorkspace = this.createWorkspace(BuiltinWorkspaces.OPENED_TABS, 'All opened tabs');
         this.insertWorkspace(openedTabWorkspace);
 
-        this.pinnedTabList = this.createWorkspace(BuiltinWorkspaces.PINNED_TABS, this.containerElement.querySelector('.pinned-tabs'));
+        this.pinnedTabList = this.createWorkspace(BuiltinWorkspaces.PINNED_TABS, null, this.containerElement.querySelector('.pinned-tabs'));
 
         const openedTabList = await this.queryBus.query(new GetOpenedTabs());
         const pinnedTabList: OpenedTab[] = [];
@@ -66,24 +70,42 @@ export class TabsView {
         await openedTabWorkspace.init(openedTabList);
     }
 
-    private createWorkspace(workspaceId: string, workspaceContainerElement?: HTMLElement) {
+    private createWorkspace(workspaceId: string, workspaceLabel?: string, workspaceContainerElement?: HTMLElement) {
         if (!workspaceContainerElement) {
             const random = Math.random();
             workspaceContainerElement = document.createElement('div');
             workspaceContainerElement.id = `tabs-view-workspace-container-${workspaceId}-${random}`;
         }
 
-        const workspace = this.tabListFactory.create(workspaceId, workspaceContainerElement, this.taskScheduler);
+        const tabCounter = new Counter();
+        const workspace = this.tabListFactory.create(workspaceId, workspaceContainerElement, this.taskScheduler, tabCounter);
         this.workspaceMap.set(workspaceId, workspace);
         this.workspaceList.push(workspace);
 
         workspaceContainerElement.setAttribute('data-workspace-id', workspaceId);
+
+        if (workspaceLabel) {
+            const currentWorkspace = new CurrentWorkspace(this.currentWorkspaceContainerElement, workspaceLabel);
+            this.currentWorkspaceMap.set(workspaceId, currentWorkspace);
+
+            tabCounter.observe(currentWorkspace.setNumberOfTabs.bind(currentWorkspace));
+        }
 
         return workspace;
     }
 
     private insertWorkspace(workspace: TabList) {
         this.workspaceContainerElement.insertAdjacentElement('beforeend', workspace.containerElement);
+    }
+
+    private enableWorkspace(workspaceId: string) {
+        if (this.enabledCurrentWorkspace) {
+            this.enabledCurrentWorkspace.disable();
+        }
+
+        const currentWorkspace = this.currentWorkspaceMap.get(workspaceId);
+        currentWorkspace.enable();
+        this.enabledCurrentWorkspace = currentWorkspace;
     }
 
     async onTabOpen(event: TabOpened) {

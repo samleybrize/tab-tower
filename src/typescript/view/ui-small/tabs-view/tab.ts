@@ -1,6 +1,6 @@
 import { DetectedBrowser } from '../../../browser/detected-browser';
 import { CommandBus } from '../../../bus/command-bus';
-import { OpenedTab } from '../../../tab/opened-tab/opened-tab';
+import { FocusOpenedTab } from '../../../tab/opened-tab/command';
 import { CloseButton } from './tab/close-button';
 import { MuteButton } from './tab/mute-button';
 import { UnmuteButton } from './tab/unmute-button';
@@ -20,7 +20,7 @@ export class Tab {
 
     constructor(private detectedBrowser: DetectedBrowser, private commandBus: CommandBus, private defaultFaviconUrl: string, openedTabId: string, fromExistingTab?: Tab) {
         if (!fromExistingTab) {
-            this.htmlElement = this.createElement(openedTabId);
+            this.htmlElement = this.createElement();
         } else {
             this.htmlElement = fromExistingTab.htmlElement.cloneNode(true) as HTMLElement;
             this.position = fromExistingTab.getPosition();
@@ -28,11 +28,9 @@ export class Tab {
 
         this.id = openedTabId;
         this.initElement(openedTabId);
-
-        // TODO user events (eg: click)
     }
 
-    private createElement(openedTabId: string) {
+    private createElement() {
         const htmlElement = document.createElement('div');
         htmlElement.classList.add('tab');
         htmlElement.innerHTML = `
@@ -62,6 +60,7 @@ export class Tab {
     }
 
     private initElement(openedTabId: string) {
+        const titleContainerElement = this.htmlElement.querySelector('.title-container');
         this.titleElement = this.htmlElement.querySelector('.title');
         this.urlElement = this.htmlElement.querySelector('.url');
         this.urlDomainElement = this.htmlElement.querySelector('.domain');
@@ -76,9 +75,13 @@ export class Tab {
         const tabHtmlId = `tab-${openedTabId}-${random}`;
         this.htmlElement.id = tabHtmlId;
 
-        this.closeButton = new CloseButton(this.htmlElement.querySelector('.close-button'), openedTabId, this.commandBus);
-        this.muteButton = new MuteButton(this.htmlElement.querySelector('.audible-icon'), openedTabId, this.commandBus);
-        this.unmuteButton = new UnmuteButton(this.htmlElement.querySelector('.muted-icon'), openedTabId, this.commandBus);
+        this.closeButton = new CloseButton(this.htmlElement.querySelector('.close-button'), openedTabId, this.commandBus); // TODO still needed?
+        this.muteButton = new MuteButton(this.htmlElement.querySelector('.audible-icon'), openedTabId, this.commandBus); // TODO still needed?
+        this.unmuteButton = new UnmuteButton(this.htmlElement.querySelector('.muted-icon'), openedTabId, this.commandBus); // TODO still needed?
+
+        titleContainerElement.addEventListener('click', () => {
+            this.commandBus.handle(new FocusOpenedTab(openedTabId));
+        });
     }
 
     private initFavicon() {

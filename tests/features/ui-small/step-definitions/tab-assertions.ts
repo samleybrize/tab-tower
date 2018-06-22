@@ -4,6 +4,22 @@ import { TestPageNames } from '../../../webdriver/test-page-descriptor';
 import { WebdriverHelper } from '../../../webdriver/webdriver-helper';
 import { World } from '../support/world';
 
+Then("I should see the browser's tab {int} as focused", async function(expectedFocusedTabPosition: number) {
+    const world = this as World;
+    const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
+
+    let actualFocusedTabPosition: number;
+    await webdriverHelper.wait(async () => {
+        actualFocusedTabPosition = await webdriverHelper.executeScript(async () => {
+            const activeTabList = await browser.tabs.query({active: true});
+
+            return activeTabList ? activeTabList[0].index : null;
+        });
+
+        return actualFocusedTabPosition === expectedFocusedTabPosition;
+    }, 10000, () => `Actual focused tab position "${actualFocusedTabPosition}" is different than expected "${expectedFocusedTabPosition}"`);
+});
+
 Then('I should see {int} visible tab(s) on the workspace {string}', async function(expectedNumberOfTabs: number, workspaceId: string) {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();

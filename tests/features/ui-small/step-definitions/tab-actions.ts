@@ -265,6 +265,21 @@ When('I click on the unmute button of the tab {int} on the workspace {string}', 
     );
 });
 
+When('I click on the title of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+
+    const tab = await getTabAtPosition(webdriver, workspaceId, tabPosition);
+    await webdriver.actions().move({origin: tab}).perform();
+
+    const titleContainer = tab.findElement(By.css('.title-container'));
+    await clickElementOnceAvailable(
+        webdriver,
+        titleContainer,
+        `Title of tab at position ${tabPosition} of workspace "${workspaceId}" is not clickable`,
+    );
+});
+
 // TODO
 async function getTabAtPosition(webdriver: WebDriver, workspaceId: string, tabPosition: number) {
     let excludePinnedSelector = '';

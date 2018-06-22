@@ -65,6 +65,7 @@ async function main() {
 
     function initCommandBus() {
         commandBus.register(tabCommands.CloseOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
+        commandBus.register(tabCommands.FocusOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
         commandBus.register(tabCommands.MuteOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
         commandBus.register(tabCommands.UnmuteOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     }

@@ -192,3 +192,37 @@ Feature: Tab filter
         Then I should see 1 visible tab on the workspace "pinned-tabs"
         And I should see the test page "test-filter-with-some-text" as tab 0 on the workspace "pinned-tabs"
         And I should not see that no tab matches tab search on the workspace "pinned-tabs"
+
+    Scenario: Should update shown tabs when their url change
+        When I type "some favicon" in the tab filter input
+
+        Then I should see 1 visible tab on the workspace "opened-tabs"
+
+        When the tab 4 navigates to the test page "test-page-without-favicon"
+        And the tab 2 navigates to the test page "test-page1"
+
+        Then I should see 1 visible tab on the workspace "opened-tabs"
+        And I should see the test page "test-page-without-favicon" as tab 0 on the workspace "opened-tabs"
+
+    Scenario: Should update shown tabs when their title change
+        When I type "azerty favicon" in the tab filter input
+
+        Then I should see 1 visible tab on the workspace "opened-tabs"
+
+        When the tab 4 navigates to the test page "test-page-without-favicon"
+        And the tab 2 navigates to the test page "test-page1"
+
+        Then I should see 1 visible tab on the workspace "opened-tabs"
+        And I should see the test page "test-page-without-favicon" as tab 0 on the workspace "opened-tabs"
+
+    Scenario: Should apply filter on new tabs
+        When I type "azerty favicon" in the tab filter input
+
+        Then I should see 1 visible tab on the workspace "opened-tabs"
+
+        When I open the test page "test-page-without-favicon"
+
+        Then I should see 2 visible tabs on the workspace "opened-tabs"
+        And I should see the test page "test-filter-with-some-text" as tab 0 on the workspace "opened-tabs"
+        And I should see the test page "test-page-without-favicon" as tab 1 on the workspace "opened-tabs"
+ 

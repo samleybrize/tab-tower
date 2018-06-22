@@ -54,7 +54,7 @@ async function main() {
 
     const nativeTabIdAssociationMaintainer = new NativeTabIdAssociationMaintainerFirefox();
     const nativeTabEventHandler = new NativeTabEventHandler(eventBus, queryBus, nativeTabIdAssociationMaintainer, new TaskScheduler(logger), logger);
-    const openedTabFilterer = new OpenedTabFilterer();
+    const openedTabFilterer = new OpenedTabFilterer(queryBus);
     const openedTabRetriever = new OpenedTabRetriever(nativeTabEventHandler, openedTabFilterer, new TaskScheduler(logger));
 
     const openedTabCloser = new OpenedTabCloser(queryBus, nativeTabIdAssociationMaintainer);
@@ -117,6 +117,7 @@ async function main() {
     function initQueryBus() {
         queryBus.register(openedTabQueries.GetOpenedTabById, openedTabRetriever.queryById, openedTabRetriever);
         queryBus.register(openedTabQueries.GetOpenedTabs, openedTabRetriever.queryAll, openedTabRetriever);
+        queryBus.register(openedTabQueries.GetOpenedTabIdsThatMatchFilter, openedTabFilterer.queryOpenedTabIdsThatMatchFilter, openedTabFilterer);
 
         queryBus.register(settingsQueries.GetSettings, settingsRetriever.querySettings, settingsRetriever);
     }

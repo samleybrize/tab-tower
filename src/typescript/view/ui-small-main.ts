@@ -56,6 +56,8 @@ async function main() {
     }
 
     function initQueryBus() {
+        queryBus.register(tabQueries.GetOpenedTabById, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
+        queryBus.register(tabQueries.GetOpenedTabIdsThatMatchFilter, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
         queryBus.register(tabQueries.GetOpenedTabs, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
 
         queryBus.register(GetBackgroundState, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);

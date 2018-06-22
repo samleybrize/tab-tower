@@ -23,6 +23,22 @@ When('I open the test page {string}', async function(testPageName: string) {
     }, [testPageUrl]);
 });
 
+When('the tab {int} navigates to the test page {string}', async function(tabPosition: number, newTestPageName: string) {
+    const world = this as World;
+    const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
+    const testPageDescriptorRetriever = world.testPageDescriptorRetriever;
+    const newTestPageDescriptor = testPageDescriptorRetriever.getDescriptor(newTestPageName as TestPageNames);
+    const newTestPageUrl = newTestPageDescriptor.url;
+
+    await webdriverHelper.executeScript(async (index: number, url: string) => {
+        const tabToUpdate = await browser.tabs.query({index});
+
+        if (tabToUpdate) {
+            await browser.tabs.update(tabToUpdate[0].id, {url, active: false});
+        }
+    }, [tabPosition, newTestPageUrl]);
+});
+
 When('I reload the tab {int}', async function(tabPositionToReload: number) {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();

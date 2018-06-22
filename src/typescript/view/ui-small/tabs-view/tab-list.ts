@@ -207,6 +207,22 @@ export class TabList {
         }
     }
 
+    filterTab(tabId: string) {
+        const tab = this.tabMap.get(tabId);
+
+        if (tab) {
+            tab.hide();
+        }
+    }
+
+    unfilterTab(tabId: string) {
+        const tab = this.tabMap.get(tabId);
+
+        if (tab) {
+            tab.unhide();
+        }
+    }
+
     async onTabClose(event: OpenedTabClosed) {
         await this.taskScheduler.add(async () => {
             this.removeTab(event.closedTab.id);

@@ -80,21 +80,21 @@ export class TestPageDescriptorRetriever {
             title: 'Test page with not found favicon',
             url: firefoxConfig.getExtensionUrl('/tests/resources/test-page-with-not-found-favicon.html'),
             domain: firefoxConfig.getExtensionInternalId(),
-            faviconUrl: null,
+            faviconUrl: firefoxConfig.getExtensionUrl('/ui/images/default-favicon.svg'),
         });
         this.addDescriptor({
             name: TestPageNames.TEST_PAGE_WITHOUT_FAVICON,
             title: 'Test page without favicon',
             url: firefoxConfig.getExtensionUrl('/tests/resources/test-page-without-favicon.html'),
             domain: firefoxConfig.getExtensionInternalId(),
-            faviconUrl: null,
+            faviconUrl: firefoxConfig.getExtensionUrl('/ui/images/default-favicon.svg'),
         });
         this.addDescriptor({
             name: TestPageNames.TEST_PAGE_WITH_FAVICON_401,
             title: 'Test page with favicon 401',
             url: firefoxConfig.getExtensionUrl('/tests/resources/test-page-with-favicon-401.html'),
             domain: firefoxConfig.getExtensionInternalId(),
-            faviconUrl: null,
+            faviconUrl: firefoxConfig.getExtensionUrl('/ui/images/default-favicon.svg'),
         });
         this.addDescriptor({
             name: TestPageNames.TEST_DELAYED1,

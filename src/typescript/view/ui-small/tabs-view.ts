@@ -1,6 +1,8 @@
 import { EventBus } from '../../bus/event-bus';
 import { QueryBus } from '../../bus/query-bus';
 import { OpenedTabPinStateUpdated } from '../../tab/opened-tab/event/opened-tab-pin-state-updated';
+import { OpenedTabTitleUpdated } from '../../tab/opened-tab/event/opened-tab-title-updated';
+import { OpenedTabUrlUpdated } from '../../tab/opened-tab/event/opened-tab-url-updated';
 import { TabOpened } from '../../tab/opened-tab/event/tab-opened';
 import { OpenedTab } from '../../tab/opened-tab/opened-tab';
 import { GetOpenedTabs } from '../../tab/opened-tab/query';
@@ -37,6 +39,8 @@ export class TabsView {
         this.createOpenedTabWorkspace();
 
         eventBus.subscribe(TabOpened, this.onTabOpen, this);
+        eventBus.subscribe(OpenedTabTitleUpdated, this.onTabTitleUpdate, this);
+        eventBus.subscribe(OpenedTabUrlUpdated, this.onTabUrlUpdate, this);
         eventBus.subscribe(OpenedTabPinStateUpdated, this.onTabPinStateUpdate, this);
 
         this.tabFilter.observeFilterResultRetrieval(this.onTabFilterResultRetrieve.bind(this));
@@ -86,10 +90,28 @@ export class TabsView {
         await this.taskScheduler.add(async () => {
             if (event.tab.isPinned) {
                 this.workspaceMap.get(BuiltinWorkspaces.PINNED_TABS).addTab(event.tab);
+            }
+
+            this.workspaceMap.get(BuiltinWorkspaces.OPENED_TABS).addTab(event.tab);
+
+            if (await this.tabFilter.isTabSatisfiesFilter(event.tab.id)) {
+                this.unfilterTabOnAllWorkspaces(event.tab.id);
             } else {
-                this.workspaceMap.get(BuiltinWorkspaces.OPENED_TABS).addTab(event.tab);
+                this.filterTabOnAllWorkspaces(event.tab.id);
             }
         }).executeAll();
+    }
+
+    private filterTabOnAllWorkspaces(tabId: string) {
+        for (const workspace of this.workspaceList) {
+            workspace.filterTab(tabId);
+        }
+    }
+
+    private unfilterTabOnAllWorkspaces(tabId: string) {
+        for (const workspace of this.workspaceList) {
+            workspace.unfilterTab(tabId);
+        }
     }
 
     async onTabPinStateUpdate(event: OpenedTabPinStateUpdated) {
@@ -98,6 +120,26 @@ export class TabsView {
                 this.addToPinnedTabs(event.tabId);
             } else {
                 this.removeFromPinnedTabs(event.tabId);
+            }
+        }).executeAll();
+    }
+
+    async onTabTitleUpdate(event: OpenedTabTitleUpdated) {
+        await this.taskScheduler.add(async () => {
+            if (await this.tabFilter.isTabSatisfiesFilter(event.tabId)) {
+                this.unfilterTabOnAllWorkspaces(event.tabId);
+            } else {
+                this.filterTabOnAllWorkspaces(event.tabId);
+            }
+        }).executeAll();
+    }
+
+    async onTabUrlUpdate(event: OpenedTabUrlUpdated) {
+        await this.taskScheduler.add(async () => {
+            if (await this.tabFilter.isTabSatisfiesFilter(event.tabId)) {
+                this.unfilterTabOnAllWorkspaces(event.tabId);
+            } else {
+                this.filterTabOnAllWorkspaces(event.tabId);
             }
         }).executeAll();
     }

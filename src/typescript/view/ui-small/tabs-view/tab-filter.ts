@@ -1,7 +1,8 @@
 import { EventBus } from '../../../bus/event-bus';
 import { QueryBus } from '../../../bus/query-bus';
 import { OpenedTab } from '../../../tab/opened-tab/opened-tab';
-import { GetOpenedTabs } from '../../../tab/opened-tab/query';
+import { GetOpenedTabIdsThatMatchFilter } from '../../../tab/opened-tab/query/get-opened-tab-ids-that-match-filter';
+import { GetOpenedTabs } from '../../../tab/opened-tab/query/get-opened-tabs';
 import { sleep } from '../../../utils/sleep';
 
 type TabFilterResultObserver = (matchingTabs: OpenedTab[]) => void;
@@ -53,6 +54,7 @@ export class TabFilter {
             return;
         }
 
+        // TODO use GetOpenedTabIdsThatMatchFilter
         const matchingTabs = await this.queryBus.query(new GetOpenedTabs({
             filterText,
             matchOnTitle: true,
@@ -71,6 +73,23 @@ export class TabFilter {
         for (const notifyObserver of this.filterResultObserverList) {
             notifyObserver(matchingTabs);
         }
+    }
+
+    async isTabSatisfiesFilter(tabId: string): Promise<boolean> {
+        const filterText = '' + this.filterInputElement.value;
+
+        if ('' == filterText) {
+            return true;
+        }
+
+        const filter = {
+            filterText,
+            matchOnTitle: true,
+            matchOnUrl: true,
+        };
+        const matchingTabIdList = await this.queryBus.query(new GetOpenedTabIdsThatMatchFilter(filter, [tabId]));
+
+        return matchingTabIdList.length > 0;
     }
 
     observeFilterClear(observer: TabFilterClearObserver) {

@@ -1,10 +1,13 @@
+import { QueryBus } from '../../bus/query-bus';
 import { Contains } from '../../matching/matcher/string-matcher/contains';
 import { MatchWhenAnyRuleMatch } from '../../matching/matching-rule/match-when-any-rule-match';
 import { MatchingRule } from '../../matching/matching-rule/matching-rule';
 import { StringMatchingRule } from '../../matching/matching-rule/string-matching-rule';
 import { WordBreaker } from '../../utils/string-list-getter/word-breaker';
 import { OpenedTab } from './opened-tab';
-import { OpenedTabsFilter } from './query/get-opened-tabs';
+import { GetOpenedTabById } from './query/get-opened-tab-by-id';
+import { GetOpenedTabIdsThatMatchFilter, OpenedTabsFilter } from './query/get-opened-tab-ids-that-match-filter';
+import { GetOpenedTabs } from './query/get-opened-tabs';
 import { OpenedTabNoprotocolUrlExtractor } from './string-extractor/opened-tab-noprotocol-url-extractor';
 import { OpenedTabTitleExtractor } from './string-extractor/opened-tab-title-extractor';
 import { OpenedTabUrlDomainExtractor } from './string-extractor/opened-tab-url-domain-extractor';
@@ -13,7 +16,7 @@ export class OpenedTabFilterer {
     private matchingRuleMap = new Map<string, MatchingRule<OpenedTab>>();
     private wordBreaker: WordBreaker;
 
-    constructor() {
+    constructor(private queryBus: QueryBus) {
         this.wordBreaker = new WordBreaker('');
         const containsStringMatcher = new Contains();
 
@@ -28,6 +31,7 @@ export class OpenedTabFilterer {
         this.matchingRuleMap.set('title,urlDomain', new MatchWhenAnyRuleMatch<OpenedTab>([titleMatchingRule, urlDomainMatchingRule]));
     }
 
+    // TODO remove ???
     getMatchingTabs(openedTabsToFilter: OpenedTab[], filterDescriptor: OpenedTabsFilter): OpenedTab[] {
         if (!this.isFilteringNeeded(filterDescriptor)) {
             return openedTabsToFilter;
@@ -77,5 +81,38 @@ export class OpenedTabFilterer {
         }
 
         return filteredTabList;
+    }
+
+    async queryOpenedTabIdsThatMatchFilter(query: GetOpenedTabIdsThatMatchFilter): Promise<string[]> {
+        const tabList = query.tabIdListToMatch ? await this.getTabsFromIdList(query.tabIdListToMatch) : await this.getAllTabs();
+        const matchingRule = this.getCorrespondingMatchingRule(query.filter);
+        let matchingTabList = tabList;
+
+        if (this.isFilteringNeeded(query.filter)) {
+            matchingTabList = this.getFilteredTabList(tabList, matchingRule);
+        }
+
+        const matchingTabIdList: string[] = [];
+
+        for (const tab of matchingTabList) {
+            matchingTabIdList.push(tab.id);
+        }
+
+        return matchingTabIdList;
+    }
+
+    private async getTabsFromIdList(tabIdList: string[]) {
+        const tabList: OpenedTab[] = [];
+
+        for (const tabId of tabIdList) {
+            const tab = await this.queryBus.query(new GetOpenedTabById(tabId));
+            tabList.push(tab);
+        }
+
+        return tabList;
+    }
+
+    private async getAllTabs() {
+        return this.queryBus.query(new GetOpenedTabs());
     }
 }

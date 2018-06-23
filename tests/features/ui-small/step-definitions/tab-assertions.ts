@@ -1,5 +1,6 @@
 import { Then } from 'cucumber';
 import { By, error as WebDriverError, WebDriver, WebElement } from 'selenium-webdriver';
+import { sleep } from '../../../../src/typescript/utils/sleep';
 import { TestPageNames } from '../../../webdriver/test-page-descriptor';
 import { WebdriverHelper } from '../../../webdriver/webdriver-helper';
 import { World } from '../support/world';
@@ -87,6 +88,11 @@ Then('I should not see the tab {int} as loading on the workspace {string}', asyn
 Then('I should see the tab {int} as loading on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
     const world = this as World;
     await TabAssertions.assertTabIsMarkedAsLoading(world, workspaceId, tabPosition);
+});
+
+Then('there should not be a visible close button on the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertCloseButtonIsNotVisible(world, workspaceId, tabPosition);
 });
 
 class TabAssertions {
@@ -291,5 +297,19 @@ class TabAssertions {
         await webdriver.wait(async () => {
             return !await this.hasCssClass(tab, 'loading');
         }, 10000, 'Tab is marked as focused');
+    }
+
+    static async assertCloseButtonIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+
+        await webdriver.actions().move({origin: tab}).perform();
+        await sleep(200);
+
+        const closeButton = tab.findElement(By.css('.close-button'));
+
+        if (await closeButton.isDisplayed()) {
+            throw new Error(`Close button of tab at position ${tabPosition} of workspace "${workspaceId}" is visible`);
+        }
     }
 }

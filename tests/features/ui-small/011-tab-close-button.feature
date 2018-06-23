@@ -1,9 +1,10 @@
 @tabCloseButton
 Feature: Tab close button
 
-    Scenario: Clicking on a tab close button should close its associated tab
+    Background:
         Given I use the small UI
 
+    Scenario: Clicking on a tab close button should close its associated tab
         When I open the test page "test-page1"
         And I open the test page "test-page2"
 
@@ -17,8 +18,6 @@ Feature: Tab close button
         And I should see the current workspace with label "All opened tabs" and 2 tabs indicated
 
     Scenario: Clicking on several tab close buttons should close their associated tabs
-        Given I use the small UI
-
         When I open the test page "test-page1"
         And I open the test page "test-page2"
         And I open the test page "test-filter1"
@@ -32,3 +31,11 @@ Feature: Tab close button
         And I should see the small UI as tab 0 on the workspace "opened-tabs"
         And I should see the test page "test-filter1" as tab 1 on the workspace "opened-tabs"
         And I should see the current workspace with label "All opened tabs" and 2 tabs indicated
+
+    Scenario: Pinned tabs should not have a close button
+        When I open the test page "test-page1"
+        And I pin the tab 1
+
+        Then I should see 1 visible tab on the workspace "opened-tabs"
+        And I should see 1 visible tab on the workspace "pinned-tabs"
+        And there should not be a visible close button on the tab 0 on the workspace "pinned-tabs"

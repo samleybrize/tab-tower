@@ -22,6 +22,7 @@ export class TabList {
     private tabMap = new Map<string, Tab>();
     private sortedTabList: Tab[] = [];
     private noTabMatchesSearchElement: HTMLElement;
+    private isScrollAnimationEnabled = true;
 
     constructor(
         public readonly workspaceId: string,
@@ -30,7 +31,10 @@ export class TabList {
         private tabFactory: TabFactory,
         private taskScheduler: TaskScheduler,
         private tabCounter: Counter,
+        disableScrollAnimation: boolean,
     ) {
+        this.isScrollAnimationEnabled = !disableScrollAnimation;
+
         eventBus.subscribe(OpenedTabClosed, this.onTabClose, this);
         eventBus.subscribe(OpenedTabIsLoading, this.onTabLoading, this);
         eventBus.subscribe(OpenedTabLoadingIsComplete, this.onTabLoadingComplete, this);
@@ -69,10 +73,19 @@ export class TabList {
         await this.taskScheduler.add(async () => {
             this.noTabMatchesSearchElement = this.createNoTabMatchesSearchElement();
             this.containerElement.appendChild(this.noTabMatchesSearchElement);
+            let focusedTab: Tab;
 
             for (const openedTab of openTabList) {
                 const tab = this.createTab(openedTab);
                 this.insertTab(tab, false);
+
+                if (tab.isFocused()) {
+                    focusedTab = tab;
+                }
+            }
+
+            if (focusedTab) {
+                this.scrollToTab(focusedTab);
             }
 
             this.reorderSortedTabList();
@@ -141,6 +154,13 @@ export class TabList {
         this.containerElement.insertAdjacentElement('beforeend', tabToInsert.htmlElement);
         this.tabMap.set(tabToInsert.id, tabToInsert);
         this.sortedTabList.push(tabToInsert);
+    }
+
+    private scrollToTab(tab: Tab) {
+        tab.htmlElement.scrollIntoView({
+            behavior: this.isScrollAnimationEnabled ? 'smooth' : 'instant',
+            block: 'nearest',
+        });
     }
 
     private reorderSortedTabList() {
@@ -308,6 +328,8 @@ export class TabList {
 
             const tab = this.tabMap.get(event.tabId);
             tab.markAsFocused();
+
+            this.scrollToTab(tab);
         }).executeAll();
     }
 
@@ -381,10 +403,10 @@ export class TabList {
 }
 
 export class TabListFactory {
-    constructor(private eventBus: EventBus, private tabFactory: TabFactory) {
+    constructor(private eventBus: EventBus, private tabFactory: TabFactory, private disableScrollAnimation: boolean) {
     }
 
     create(workspaceId: string, containerElement: HTMLElement, taskScheduler: TaskScheduler, tabCounter: Counter) {
-        return new TabList(workspaceId, containerElement, this.eventBus, this.tabFactory, taskScheduler, tabCounter);
+        return new TabList(workspaceId, containerElement, this.eventBus, this.tabFactory, taskScheduler, tabCounter, this.disableScrollAnimation);
     }
 }

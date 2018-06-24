@@ -15,3 +15,14 @@ Feature: Tab focus
         And I should not see the tab 0 as focused on the workspace "opened-tabs"
         And I should see the tab 1 as focused on the workspace "opened-tabs"
         And I should not see the tab 2 as focused on the workspace "opened-tabs"
+
+    Scenario: Clicking on a tab title should scroll it in the viewport
+        Given window height is 300
+
+        When I open the test page "test-filter1"
+
+        Then I should see 4 visible tabs on the workspace "opened-tabs"
+
+        When I click on the title of the tab 2 on the workspace "opened-tabs"
+
+        Then the tab 2 on the workspace "opened-tabs" should be visible in the viewport

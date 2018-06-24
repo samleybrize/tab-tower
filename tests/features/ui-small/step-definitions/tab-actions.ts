@@ -11,6 +11,16 @@ Given('I use the small UI', {timeout: 20000}, async function() {
     await webdriverHelper.resetBrowserState(uiSmallDescriptor.url);
 });
 
+Given('window height is {int}', async function(height: number) {
+    const world = this as World;
+    const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
+
+    await webdriverHelper.executeScript(async (h: number) => {
+        const window = await browser.windows.getCurrent();
+        await browser.windows.update(window.id, {height: h});
+    }, [height]);
+});
+
 When('I open the test page {string}', async function(testPageName: string) {
     const world = this as World;
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();

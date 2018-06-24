@@ -1,10 +1,13 @@
 const path = require('path');
 
 const backgroundEntries = ['./src/typescript/background/background.ts'];
+const uiSmallEntries = ['./src/typescript/view/ui-small-main.ts'];
 
 if ('test' == process.env.NODE_ENV) {
     backgroundEntries.unshift('./tests/utils/declare-test-environment.ts');
     backgroundEntries.push('./tests/utils/browser-instruction-receiver.ts');
+
+    uiSmallEntries.unshift('./tests/utils/declare-test-environment.ts');
 }
 
 module.exports = [
@@ -31,7 +34,7 @@ module.exports = [
         },
     },
     {
-        entry: './src/typescript/view/ui-small-main.ts',
+        entry: uiSmallEntries,
         output: {
             filename: 'ui-small.js',
             path: path.resolve(__dirname, 'dist/js'),

@@ -74,7 +74,7 @@ async function main() {
         const detectedBrowser = new DetectedBrowser();
         const tabFactory = new TabFactory(detectedBrowser, commandBus, defaultFaviconUrl);
         const tabFilterFactory = new TabFilterfactory(eventBus, queryBus);
-        const tabListFactory = new TabListFactory(eventBus, tabFactory);
+        const tabListFactory = new TabListFactory(eventBus, tabFactory, !!window.isTestEnvironment);
         const taskSchedulerFactory = new TaskSchedulerFactory(logger);
         const tabsViewFactory = new TabsViewFactory(tabListFactory, tabFilterFactory, taskSchedulerFactory, eventBus, queryBus);
         const uiSmall = new UiSmall(tabsViewFactory);

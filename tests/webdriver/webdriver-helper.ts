@@ -2,6 +2,9 @@ import { error as WebDriverError, WebDriver } from 'selenium-webdriver';
 import { sleep } from '../../src/typescript/utils/sleep';
 import { BrowserInstructionSender } from '../utils/browser-instruction-sender';
 
+const defaultWindowWidth = 500;
+const defaultWindowHeight = 600;
+
 export class WebdriverHelper {
     constructor(private webdriver: WebDriver, private browserInstructionSender: BrowserInstructionSender) {
     }
@@ -43,6 +46,7 @@ export class WebdriverHelper {
         await this.reloadExtension();
         await this.switchToWindowHandle(0);
         await this.webdriver.get(firstPageUrl);
+        await this.setDefaultWindowSize();
     }
 
     private async closeAllTabs() {
@@ -76,6 +80,14 @@ export class WebdriverHelper {
         await this.executeScript(async () => {
             await browser.storage.local.clear();
         });
+    }
+
+    private async setDefaultWindowSize() {
+        await this.executeScript(async (width, height) => {
+            const window = await browser.windows.getCurrent();
+            await browser.windows.update(window.id, {state: 'normal'});
+            await browser.windows.update(window.id, {width, height});
+        }, [defaultWindowWidth, defaultWindowHeight]);
     }
 
     private async reloadExtension() {

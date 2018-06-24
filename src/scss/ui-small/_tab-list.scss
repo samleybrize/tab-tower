@@ -48,17 +48,22 @@ $toolbar-height: 30px;
 @import 'tab-list/tab-selector';
 
 .ui-small .tab-list {
-    padding-bottom: $toolbar-height;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+    height: 100%;
 
     .sticky-top {
-        position: sticky;
-        top: 0;
-        z-index: 3;
+        flex-shrink: 0;
+    }
+
+    .unpinned-tabs {
+        flex-grow: 999999;
+        overflow-y: scroll;
     }
 
     .sticky-bottom {
-        position: fixed;
-        bottom: 0;
-        z-index: 3;
+        flex-shrink: 0;
     }
 }

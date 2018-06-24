@@ -95,6 +95,11 @@ Then('there should not be a visible close button on the tab {int} on the workspa
     await TabAssertions.assertCloseButtonIsNotVisible(world, workspaceId, tabPosition);
 });
 
+Then('the tab {int} on the workspace {string} should be visible in the viewport', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertUnpinnedTabFullyVisibleInViewport(world, workspaceId, tabPosition);
+});
+
 class TabAssertions {
     static async assertNumberOfVisibleTabs(webdriver: WebDriver, webdriverHelper: WebdriverHelper, workspaceId: string, expectedNumberOfTabs: number) {
         let actualNumberOfTabs = 0;
@@ -311,5 +316,39 @@ class TabAssertions {
         if (await closeButton.isDisplayed()) {
             throw new Error(`Close button of tab at position ${tabPosition} of workspace "${workspaceId}" is visible`);
         }
+    }
+
+    static async assertUnpinnedTabFullyVisibleInViewport(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+
+        await webdriver.wait(async () => {
+            return this.isUnpinnedTabFullyVisibleInViewport(webdriver, tab);
+        }, 10000, `Unpinned tab at position ${tabPosition} on workspace "${workspaceId}" is not fully visible in the viewport`);
+    }
+
+    private static async isUnpinnedTabFullyVisibleInViewport(webdriver: WebDriver, tab: WebElement) {
+        if (!await tab.isDisplayed()) {
+            return false;
+        }
+
+        const unpinnedTabListCoordinates = await this.getUnpinnedTabListViewportCoordinates(webdriver);
+        const tabCoordinates = await this.getElementViewportCoordinates(webdriver, tab);
+
+        if (tabCoordinates.top < unpinnedTabListCoordinates.top || tabCoordinates.bottom > unpinnedTabListCoordinates.bottom) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static async getUnpinnedTabListViewportCoordinates(webdriver: WebDriver): Promise<ClientRect> {
+        return this.getElementViewportCoordinates(webdriver, webdriver.findElement(By.css('.unpinned-tabs')));
+    }
+
+    private static async getElementViewportCoordinates(webdriver: WebDriver, element: WebElement) {
+        return webdriver.executeScript((e: HTMLElement) => {
+            return e.getBoundingClientRect();
+        }, element) as Promise<ClientRect>;
     }
 }

@@ -95,7 +95,7 @@ export class TabsView {
     }
 
     private insertWorkspace(workspace: TabList) {
-        this.workspaceContainerElement.insertAdjacentElement('beforeend', workspace.containerElement);
+        this.workspaceContainerElement.insertAdjacentElement('afterbegin', workspace.containerElement);
     }
 
     private enableWorkspace(workspaceId: string) {

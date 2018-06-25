@@ -90,6 +90,16 @@ Then('I should see the tab {int} as loading on the workspace {string}', async fu
     await TabAssertions.assertTabIsMarkedAsLoading(world, workspaceId, tabPosition);
 });
 
+Then('I should not see the tab {int} as selected on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabIsNotMarkedAsSelected(world, workspaceId, tabPosition);
+});
+
+Then('I should see the tab {int} as selected on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabIsMarkedAsSelected(world, workspaceId, tabPosition);
+});
+
 Then('there should not be a visible close button on the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
     const world = this as World;
     await TabAssertions.assertCloseButtonIsNotVisible(world, workspaceId, tabPosition);
@@ -302,6 +312,34 @@ class TabAssertions {
         await webdriver.wait(async () => {
             return !await this.hasCssClass(tab, 'loading');
         }, 10000, 'Tab is marked as focused');
+    }
+
+    static async assertTabIsMarkedAsSelected(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const checkboxElement = tab.findElement(By.css('.tab-selector input'));
+        const checkedIconElement = tab.findElement(By.css('.tab-selector .checked'));
+        const uncheckedIconElement = tab.findElement(By.css('.tab-selector .unchecked'));
+        const faviconElement = tab.findElement(By.css('.favicon > img'));
+
+        await webdriver.actions().move({x: 0, y: 0}).perform();
+
+        await webdriver.wait(async () => {
+            return await checkedIconElement.isDisplayed() && !await uncheckedIconElement.isDisplayed() && !await faviconElement.isDisplayed() && await checkboxElement.isSelected();
+        }, 10000, 'Tab is not marked as selected');
+    }
+
+    static async assertTabIsNotMarkedAsSelected(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const checkboxElement = tab.findElement(By.css('.tab-selector input'));
+        const tabSelectorContainerElement = tab.findElement(By.css('.tab-selector .checkbox-icon'));
+
+        await webdriver.actions().move({x: 0, y: 0}).perform();
+
+        await webdriver.wait(async () => {
+            return !await tabSelectorContainerElement.isDisplayed() && !await checkboxElement.isSelected();
+        }, 10000, 'Tab is marked as selected');
     }
 
     static async assertCloseButtonIsNotVisible(world: World, workspaceId: string, tabPosition: number) {

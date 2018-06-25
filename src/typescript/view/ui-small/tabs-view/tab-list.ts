@@ -22,6 +22,7 @@ export class TabList {
     private tabMap = new Map<string, Tab>();
     private sortedTabList: Tab[] = [];
     private noTabMatchesSearchElement: HTMLElement;
+    private lastSelectorClicked: Tab = null;
     private isScrollAnimationEnabled = true;
 
     constructor(
@@ -129,6 +130,8 @@ export class TabList {
         }
 
         this.tabCounter.increment();
+        tabToInsert.observeSelectStateChange(this.onTabSelectStateChange.bind(this));
+        tabToInsert.observeShiftClick(this.onTabSelectorShiftClick.bind(this));
     }
 
     private insertTabAtPosition(tabToInsert: Tab, targetPosition: number) {
@@ -399,6 +402,54 @@ export class TabList {
             const tab = this.tabMap.get(event.tabId);
             tab.setTabUrl(event.url);
         }).executeAll();
+    }
+
+    onTabSelectStateChange(openedTabId: string, isSelected: boolean) {
+        const tab = this.tabMap.get(openedTabId);
+
+        if (tab) {
+            this.lastSelectorClicked = tab;
+        }
+    }
+
+    onTabSelectorShiftClick(openedTabId: string) {
+        if (null == this.lastSelectorClicked) {
+            return;
+        }
+
+        const clickedTab = this.tabMap.get(openedTabId);
+        const isClickedTabSelected = clickedTab.isSelected();
+        const tabList = this.getTabsBetweenTwoId(openedTabId, this.lastSelectorClicked.id);
+
+        for (const tab of tabList) {
+            if (isClickedTabSelected) {
+                tab.markAsSelected();
+            } else {
+                tab.markAsUnselected();
+            }
+        }
+
+        this.lastSelectorClicked = clickedTab;
+    }
+
+    private getTabsBetweenTwoId(fromTabId: string, toTabId: string): Tab[] {
+        const fromTab = this.tabMap.get(fromTabId);
+        const toTab = this.tabMap.get(toTabId);
+        let fromIndex = this.sortedTabList.indexOf(fromTab);
+        let toIndex = this.sortedTabList.indexOf(toTab);
+        const tabList: Tab[] = [];
+
+        if (fromIndex > toIndex) {
+            const tmpToIndex = toIndex;
+            toIndex = fromIndex;
+            fromIndex = tmpToIndex;
+        }
+
+        for (let i = fromIndex; i <= toIndex; i++) {
+            tabList.push(this.sortedTabList[i]);
+        }
+
+        return tabList;
     }
 }
 

@@ -1,5 +1,5 @@
 import { Given, When } from 'cucumber';
-import { By, error as WebDriverError, WebDriver, WebElement } from 'selenium-webdriver';
+import { By, error as WebDriverError, Key, WebDriver, WebElement } from 'selenium-webdriver';
 import { TestPageNames } from '../../../webdriver/test-page-descriptor';
 import { World } from '../support/world';
 
@@ -290,6 +290,29 @@ When('I click on the title of the tab {int} on the workspace {string}', async fu
     );
 });
 
+When('I click on the tab selector of the tab {int} on workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const tab = await getTabAtPosition(webdriver, workspaceId, tabPosition);
+
+    await webdriver.actions().move({origin: tab}).perform();
+
+    await clickElementOnceAvailable(
+        webdriver,
+        tab.findElement(By.css('.tab-selector')),
+        `Tab selector of tab at position ${tabPosition} of workspace "${workspaceId}" is not clickable`,
+    );
+});
+
+When('I shift click on the tab selector of the tab {int} on workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const tab = await getTabAtPosition(webdriver, workspaceId, tabPosition);
+    const tabSelector = tab.findElement(By.css('.tab-selector'));
+
+    await webdriver.actions().keyDown(Key.SHIFT).click(tabSelector).keyUp(Key.SHIFT).perform();
+});
+
 // TODO
 async function getTabAtPosition(webdriver: WebDriver, workspaceId: string, tabPosition: number) {
     let excludePinnedSelector = '';
@@ -304,7 +327,7 @@ async function getTabAtPosition(webdriver: WebDriver, workspaceId: string, tabPo
 }
 
 async function clickElementOnceAvailable(webdriver: WebDriver, element: WebElement, failMessage: string) {
-    webdriver.wait(async () => {
+    await webdriver.wait(async () => {
         try {
             await element.click();
 

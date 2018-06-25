@@ -1,6 +1,8 @@
 .ui-small .tab-list {
     .tab-selector {
         position: relative;
+        user-select: none;
+        -moz-user-select: none;
 
         input {
             margin: 0;

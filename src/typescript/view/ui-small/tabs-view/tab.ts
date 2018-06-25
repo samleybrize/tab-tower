@@ -3,7 +3,10 @@ import { CommandBus } from '../../../bus/command-bus';
 import { FocusOpenedTab } from '../../../tab/opened-tab/command';
 import { CloseButton } from './tab/close-button';
 import { MuteButton } from './tab/mute-button';
+import { TabSelector, TabSelectorShiftClickObserver, TabSelectStateChangeObserver } from './tab/tab-selector';
 import { UnmuteButton } from './tab/unmute-button';
+
+export { TabSelectorShiftClickObserver, TabSelectStateChangeObserver };
 
 export class Tab {
     readonly htmlElement: HTMLElement;
@@ -14,6 +17,7 @@ export class Tab {
     private closeButton: CloseButton;
     private muteButton: MuteButton;
     private unmuteButton: UnmuteButton;
+    private tabSelector: TabSelector;
     private position: number;
     private focused: boolean;
     readonly id: string;
@@ -78,6 +82,7 @@ export class Tab {
         this.closeButton = new CloseButton(this.htmlElement.querySelector('.close-button'), openedTabId, this.commandBus); // TODO still needed?
         this.muteButton = new MuteButton(this.htmlElement.querySelector('.audible-icon'), openedTabId, this.commandBus); // TODO still needed?
         this.unmuteButton = new UnmuteButton(this.htmlElement.querySelector('.muted-icon'), openedTabId, this.commandBus); // TODO still needed?
+        this.tabSelector = new TabSelector(this.htmlElement, this.htmlElement.querySelector('.tab-selector'), openedTabId);
 
         titleContainerElement.addEventListener('click', () => {
             this.commandBus.handle(new FocusOpenedTab(openedTabId));
@@ -188,6 +193,26 @@ export class Tab {
 
     clone(openedTabId: string): Tab {
         return new Tab(this.detectedBrowser, this.commandBus, this.defaultFaviconUrl, openedTabId, this);
+    }
+
+    markAsSelected() {
+        this.tabSelector.markAsSelected();
+    }
+
+    markAsUnselected() {
+        this.tabSelector.markAsUnselected();
+    }
+
+    isSelected() {
+        return this.tabSelector.isSelected();
+    }
+
+    observeSelectStateChange(observer: TabSelectStateChangeObserver) {
+        this.tabSelector.observeSelectStateChange(observer);
+    }
+
+    observeShiftClick(observer: TabSelectorShiftClickObserver) {
+        this.tabSelector.observeShiftClick(observer);
     }
 }
 

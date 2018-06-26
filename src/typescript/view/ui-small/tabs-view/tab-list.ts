@@ -18,12 +18,15 @@ import { Counter } from '../../../utils/counter';
 import { TaskScheduler } from '../../../utils/task-scheduler';
 import { Tab, TabFactory } from './tab';
 
+export type NumberOfSelectedTabsChangeObserver = (workspaceId: string) => void;
+
 export class TabList {
     private tabMap = new Map<string, Tab>();
     private sortedTabList: Tab[] = [];
     private noTabMatchesSearchElement: HTMLElement;
     private lastSelectorClicked: Tab = null;
     private isScrollAnimationEnabled = true;
+    private numberOfSelectedTabsChangeObserverList: NumberOfSelectedTabsChangeObserver[] = [];
 
     constructor(
         public readonly workspaceId: string,
@@ -195,6 +198,8 @@ export class TabList {
         this.tabCounter.decrement();
 
         this.removeTabFromSortedTabList(tabToRemove);
+
+        this.onTabSelectStateChange(openedTabId, false);
     }
 
     private removeTabFromSortedTabList(tabToRemove: Tab) {
@@ -249,6 +254,36 @@ export class TabList {
         if (tab) {
             tab.unhide();
         }
+    }
+
+    selectAllTabs() {
+        for (const tab of this.sortedTabList) {
+            tab.markAsSelected();
+        }
+    }
+
+    unselectAllTabs() {
+        for (const tab of this.sortedTabList) {
+            tab.markAsUnselected();
+        }
+    }
+
+    getNumberOfSelectedTabs() {
+        // TODO cache
+        let numberOfSelectedTabs = 0;
+
+        for (const tab of this.sortedTabList) {
+            if (tab.isSelected()) {
+                numberOfSelectedTabs++;
+            }
+        }
+
+        console.log('AAA: getNumberOfSelectedTabs', numberOfSelectedTabs); // TODO
+        return numberOfSelectedTabs;
+    }
+
+    observeNumberOfSelectedTabsChange(observer: NumberOfSelectedTabsChangeObserver) {
+        this.numberOfSelectedTabsChangeObserverList.push(observer);
     }
 
     async onTabClose(event: OpenedTabClosed) {
@@ -409,6 +444,10 @@ export class TabList {
 
         if (tab) {
             this.lastSelectorClicked = tab;
+        }
+
+        for (const observer of this.numberOfSelectedTabsChangeObserverList) {
+            observer(this.workspaceId);
         }
     }
 

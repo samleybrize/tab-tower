@@ -24,3 +24,29 @@ Then('I should see the current workspace with label {string} and {int} tab(s) in
         return actualNumberOfTabs === '' + expectedNumberOfTabs;
     }, 10000, () => `Current workspace number of tabs "${actualNumberOfTabs}" is different than expected "${expectedNumberOfTabs}"`);
 });
+
+Then('the general tab selector should not be checked', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const checkboxElement = webdriver.findElement(By.css('.tab-list .general-tab-selector input'));
+    const checkedIconElement = webdriver.findElement(By.css('.tab-list .general-tab-selector .checked'));
+    const uncheckedIconElement = webdriver.findElement(By.css('.tab-list .general-tab-selector .unchecked'));
+
+    await webdriver.wait(async () => {
+        return !await checkedIconElement.isDisplayed() && await uncheckedIconElement.isDisplayed() && !await checkboxElement.isSelected();
+    }, 10000, 'The general tab selector is marked as selected');
+});
+
+Then('the general tab selector should be checked', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const checkboxElement = webdriver.findElement(By.css('.tab-list .general-tab-selector input'));
+    const checkedIconElement = webdriver.findElement(By.css('.tab-list .general-tab-selector .checked'));
+    const uncheckedIconElement = webdriver.findElement(By.css('.tab-list .general-tab-selector .unchecked'));
+
+    await webdriver.actions().move({x: 0, y: 0}).perform();
+
+    await webdriver.wait(async () => {
+        return await checkedIconElement.isDisplayed() && !await uncheckedIconElement.isDisplayed() && await checkboxElement.isSelected();
+    }, 10000, 'The general tab selector is not marked as selected');
+});

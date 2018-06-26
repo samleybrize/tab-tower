@@ -70,13 +70,124 @@ Feature: Tab selecting
         And I should not see the tab 0 as selected on the workspace "opened-tabs"
         And I should not see the tab 1 as selected on the workspace "opened-tabs"
 
-# Clicking on the general opened tab selector when it is off should check all opened tab selectors
-# Clicking on the general opened tab selector when it is on should uncheck all opened tab selectors
-# Unchecking all opened tab selectors when the general opened tab selector is on should uncheck the general opened tab selector
+    Scenario: Clicking on the general tab selector when it is off should select all tabs
+        When I open the test page "test-page1"
+        And I open the test page "test-page2"
+        And I pin the tab 2
 
-# Checking an opened tab selector should reveal the selection more button
-# Unchecking all opened tab selectors should unreveal the selection more button
-# Unchecking an opened tab selector and leaving one on should not unreveal the selection more button
-# Checking the general opened tab selector should reveal the selection more button
-# Unchecking the general opened tab selector should unreveal the selection more button
-# The selection more button should be unrevealed when a selected opened tab is removed and there is no remaining selected opened tab
+        Then I should see 2 visible tabs on the workspace "opened-tabs"
+        Then I should see 1 visible tab on the workspace "pinned-tabs"
+
+        When I click on the general tab selector
+
+        Then the general tab selector should be checked
+        And I should see the tab 0 as selected on the workspace "opened-tabs"
+        And I should see the tab 1 as selected on the workspace "opened-tabs"
+        And I should see the tab 0 as selected on the workspace "pinned-tabs"
+
+    Scenario: Clicking on the general tab selector when it is on should unselect all tabs
+        When I open the test page "test-page1"
+        And I open the test page "test-page2"
+        And I pin the tab 2
+
+        Then I should see 2 visible tabs on the workspace "opened-tabs"
+        Then I should see 1 visible tab on the workspace "pinned-tabs"
+
+        When I click on the general tab selector
+        And I click on the general tab selector
+
+        Then the general tab selector should not be checked
+        And I should not see the tab 0 as selected on the workspace "opened-tabs"
+        And I should not see the tab 1 as selected on the workspace "opened-tabs"
+        And I should not see the tab 0 as selected on the workspace "pinned-tabs"
+
+    Scenario: Unselecting all tabs when the general tab selector is on should uncheck the general tab selector
+        When I open the test page "test-page1"
+        And I open the test page "test-page2"
+        And I pin the tab 2
+
+        Then I should see 2 visible tabs on the workspace "opened-tabs"
+        Then I should see 1 visible tab on the workspace "pinned-tabs"
+
+        When I click on the general tab selector
+        And I click on the tab selector of the tab 0 on workspace "opened-tabs"
+        And I click on the tab selector of the tab 1 on workspace "opened-tabs"
+        And I click on the tab selector of the tab 0 on workspace "pinned-tabs"
+
+        Then the general tab selector should not be checked
+
+    Scenario: Selecting a tab when the general tab selector is off should check the general tab selector
+        When I open the test page "test-page1"
+        And I open the test page "test-page2"
+        And I pin the tab 2
+
+        Then I should see 2 visible tabs on the workspace "opened-tabs"
+        Then I should see 1 visible tab on the workspace "pinned-tabs"
+
+        When I click on the tab selector of the tab 1 on workspace "opened-tabs"
+
+        Then the general tab selector should be checked
+
+    Scenario: Selecting a pinned tab when the general tab selector is off should check the general tab selector
+        When I open the test page "test-page1"
+        And I open the test page "test-page2"
+        And I pin the tab 2
+
+        Then I should see 2 visible tabs on the workspace "opened-tabs"
+        Then I should see 1 visible tab on the workspace "pinned-tabs"
+
+        When I click on the tab selector of the tab 0 on workspace "pinned-tabs"
+
+        Then the general tab selector should be checked
+
+    Scenario: Pinning a selected tab then unselecting it should uncheck the general tab selector
+        When I open the test page "test-page1"
+
+        Then I should see 2 visible tabs on the workspace "opened-tabs"
+
+        When I click on the tab selector of the tab 1 on workspace "opened-tabs"
+        And I pin the tab 1
+
+        Then I should see 1 visible tab on the workspace "pinned-tabs"
+        And I should see the tab 0 as selected on the workspace "pinned-tabs"
+
+        When I click on the tab selector of the tab 0 on workspace "pinned-tabs"
+
+        Then the general tab selector should not be checked
+
+    Scenario: Unpinning a selected pinned tab then unselecting it should uncheck the general tab selector
+        When I open the test page "test-page1"
+        And I pin the tab 1
+
+        Then I should see 1 visible tab on the workspace "pinned-tabs"
+
+        When I click on the tab selector of the tab 0 on workspace "pinned-tabs"
+        And I unpin the tab 0
+
+        Then I should see 2 visible tabs on the workspace "opened-tabs"
+        And I should see the tab 0 as selected on the workspace "opened-tabs"
+
+        When I click on the tab selector of the tab 0 on workspace "opened-tabs"
+
+        Then the general tab selector should not be checked
+
+    Scenario: Closing all selected tabs should uncheck the general tab selector
+        When I open the test page "test-page1"
+
+        Then I should see 2 visible tabs on the workspace "opened-tabs"
+
+        When I click on the tab selector of the tab 1 on workspace "opened-tabs"
+        And I close the tab 1
+
+        Then the general tab selector should not be checked
+
+    Scenario: Closing all selected pinned tabs should uncheck the general tab selector
+        When I open the test page "test-page1"
+        And I pin the tab 1
+
+        Then I should see 1 visible tab on the workspace "pinned-tabs"
+
+        When I click on the tab selector of the tab 0 on workspace "pinned-tabs"
+        And I close the tab 0
+
+        Then the general tab selector should not be checked

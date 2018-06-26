@@ -1,3 +1,4 @@
+// TODO rename to CurrentWorkspaceIndicator
 export class CurrentWorkspace {
     private isEnabled = false;
     private numberOfTabs = 0;

@@ -8,6 +8,7 @@ import { OpenedTab } from '../../tab/opened-tab/opened-tab';
 import { GetOpenedTabs } from '../../tab/opened-tab/query';
 import { Counter } from '../../utils/counter';
 import { TaskScheduler, TaskSchedulerFactory } from '../../utils/task-scheduler';
+import { Checkbox } from '../components/checkbox';
 import { CurrentWorkspace } from './tabs-view/current-workspace';
 import { TabFilter, TabFilterfactory } from './tabs-view/tab-filter';
 import { TabList, TabListFactory } from './tabs-view/tab-list';
@@ -19,13 +20,15 @@ enum BuiltinWorkspaces {
 
 export class TabsView {
     private tabFilter: TabFilter;
+    private generalTabSelector: Checkbox;
     private pinnedTabList: TabList;
     private workspaceMap = new Map<string, TabList>();
     private workspaceList: TabList[] = [];
-    private workspaceContainerElement: HTMLElement;
-    private currentWorkspaceMap = new Map<string, CurrentWorkspace>();
-    private enabledCurrentWorkspace: CurrentWorkspace;
-    private currentWorkspaceContainerElement: HTMLElement;
+    private workspaceInUse: TabList;
+    private unpinnedWorkspacesContainerElement: HTMLElement;
+    private currentWorkspaceIndicatorMap = new Map<string, CurrentWorkspace>();
+    private enabledCurrentWorkspaceIndicator: CurrentWorkspace;
+    private currentWorkspaceIndicatorContainerElement: HTMLElement;
 
     constructor(
         private containerElement: HTMLElement,
@@ -36,85 +39,99 @@ export class TabsView {
         private taskScheduler: TaskScheduler,
     ) {
         this.tabFilter = this.tabFilterFactory.create(containerElement.querySelector('.filter'));
-        this.workspaceContainerElement = containerElement.querySelector('.unpinned-tabs');
-        this.currentWorkspaceContainerElement = containerElement.querySelector('.current-workspace');
+        this.generalTabSelector = new Checkbox(containerElement.querySelector('.general-tab-selector'), 'general-tab-selector');
+        this.unpinnedWorkspacesContainerElement = containerElement.querySelector('.unpinned-tabs');
+        this.currentWorkspaceIndicatorContainerElement = containerElement.querySelector('.current-workspace');
 
-        this.createOpenedTabWorkspace();
-        this.enableWorkspace(BuiltinWorkspaces.OPENED_TABS);
+        this.createOpenedTabWorkspace().then(() => {
+            this.enableWorkspace(BuiltinWorkspaces.OPENED_TABS);
 
-        eventBus.subscribe(TabOpened, this.onTabOpen, this);
-        eventBus.subscribe(OpenedTabTitleUpdated, this.onTabTitleUpdate, this);
-        eventBus.subscribe(OpenedTabUrlUpdated, this.onTabUrlUpdate, this);
-        eventBus.subscribe(OpenedTabPinStateUpdated, this.onTabPinStateUpdate, this);
+            eventBus.subscribe(TabOpened, this.onTabOpen, this);
+            eventBus.subscribe(OpenedTabTitleUpdated, this.onTabTitleUpdate, this);
+            eventBus.subscribe(OpenedTabUrlUpdated, this.onTabUrlUpdate, this);
+            eventBus.subscribe(OpenedTabPinStateUpdated, this.onTabPinStateUpdate, this);
 
-        this.tabFilter.observeFilterResultRetrieval(this.onTabFilterResultRetrieve.bind(this));
-        this.tabFilter.observeFilterClear(this.onTabFilterClear.bind(this));
+            this.tabFilter.observeFilterResultRetrieval(this.onTabFilterResultRetrieve.bind(this));
+            this.tabFilter.observeFilterClear(this.onTabFilterClear.bind(this));
+            this.generalTabSelector.observeStateChange(this.onGeneralTabSelectorStateChange.bind(this));
+        });
     }
 
     private async createOpenedTabWorkspace() {
-        const openedTabWorkspace = this.createWorkspace(BuiltinWorkspaces.OPENED_TABS, 'All opened tabs');
-        this.insertWorkspace(openedTabWorkspace);
+        const tabCounter = new Counter();
+        const openedTabsContainerElement = this.createUnpinnedTabsWorkspaceContainerElement(BuiltinWorkspaces.OPENED_TABS);
+        const openedTabsWorkspace = this.tabListFactory.create(BuiltinWorkspaces.OPENED_TABS, openedTabsContainerElement, this.taskScheduler, tabCounter);
+        this.insertUnpinnedTabsWorkspace(openedTabsWorkspace);
 
-        this.pinnedTabList = this.createWorkspace(BuiltinWorkspaces.PINNED_TABS, null, this.containerElement.querySelector('.pinned-tabs'));
+        const pinnedTabsContainerElement = this.containerElement.querySelector('.pinned-tabs') as HTMLElement;
+        this.pinnedTabList = this.tabListFactory.create(BuiltinWorkspaces.PINNED_TABS, pinnedTabsContainerElement, this.taskScheduler, tabCounter);
+
+        const currentWorkspaceIndicator = this.createCurrentWorkspaceIndicator(BuiltinWorkspaces.OPENED_TABS, 'All opened tabs');
+        tabCounter.observe(currentWorkspaceIndicator.setNumberOfTabs.bind(currentWorkspaceIndicator));
 
         const openedTabList = await this.queryBus.query(new GetOpenedTabs());
+        const unpinnedTabList: OpenedTab[] = [];
         const pinnedTabList: OpenedTab[] = [];
 
         for (const openedTab of openedTabList) {
             if (openedTab.isPinned) {
                 pinnedTabList.push(openedTab);
+            } else {
+                unpinnedTabList.push(openedTab);
             }
         }
 
-        await this.pinnedTabList.init(pinnedTabList);
-        await openedTabWorkspace.init(openedTabList);
+        await this.initWorkspace(openedTabsWorkspace, unpinnedTabList);
+        await this.initWorkspace(this.pinnedTabList, pinnedTabList);
     }
 
-    private createWorkspace(workspaceId: string, workspaceLabel?: string, workspaceContainerElement?: HTMLElement) {
-        if (!workspaceContainerElement) {
-            const random = Math.random();
-            workspaceContainerElement = document.createElement('div');
-            workspaceContainerElement.id = `tabs-view-workspace-container-${workspaceId}-${random}`;
-        }
+    private createUnpinnedTabsWorkspaceContainerElement(workspaceId: string) {
+        const random = Math.random();
+        const workspaceContainerElement = document.createElement('div');
+        workspaceContainerElement.id = `tabs-view-workspace-container-${workspaceId}-${random}`;
 
-        const tabCounter = new Counter();
-        const workspace = this.tabListFactory.create(workspaceId, workspaceContainerElement, this.taskScheduler, tabCounter);
-        this.workspaceMap.set(workspaceId, workspace);
+        return workspaceContainerElement;
+    }
+
+    private createCurrentWorkspaceIndicator(workspaceId: string, workspaceLabel: string) {
+        const currentWorkspaceIndicator = new CurrentWorkspace(this.currentWorkspaceIndicatorContainerElement, workspaceLabel);
+        this.currentWorkspaceIndicatorMap.set(workspaceId, currentWorkspaceIndicator);
+
+        return currentWorkspaceIndicator;
+    }
+
+    private async initWorkspace(workspace: TabList, tabList: OpenedTab[]) {
+        this.workspaceMap.set(workspace.workspaceId, workspace);
         this.workspaceList.push(workspace);
 
-        workspaceContainerElement.setAttribute('data-workspace-id', workspaceId);
+        workspace.containerElement.setAttribute('data-workspace-id', workspace.workspaceId);
+        workspace.observeNumberOfSelectedTabsChange(this.onNumberOfSelectedTabsChange.bind(this));
 
-        if (workspaceLabel) {
-            const currentWorkspace = new CurrentWorkspace(this.currentWorkspaceContainerElement, workspaceLabel);
-            this.currentWorkspaceMap.set(workspaceId, currentWorkspace);
-
-            tabCounter.observe(currentWorkspace.setNumberOfTabs.bind(currentWorkspace));
-        }
-
-        return workspace;
+        await workspace.init(tabList);
     }
 
-    private insertWorkspace(workspace: TabList) {
-        this.workspaceContainerElement.insertAdjacentElement('afterbegin', workspace.containerElement);
+    private insertUnpinnedTabsWorkspace(workspace: TabList) {
+        this.unpinnedWorkspacesContainerElement.insertAdjacentElement('afterbegin', workspace.containerElement);
     }
 
     private enableWorkspace(workspaceId: string) {
-        if (this.enabledCurrentWorkspace) {
-            this.enabledCurrentWorkspace.disable();
+        if (this.enabledCurrentWorkspaceIndicator) {
+            this.enabledCurrentWorkspaceIndicator.disable();
         }
 
-        const currentWorkspace = this.currentWorkspaceMap.get(workspaceId);
-        currentWorkspace.enable();
-        this.enabledCurrentWorkspace = currentWorkspace;
+        const currentWorkspaceIndicator = this.currentWorkspaceIndicatorMap.get(workspaceId);
+        currentWorkspaceIndicator.enable();
+        this.enabledCurrentWorkspaceIndicator = currentWorkspaceIndicator;
+        this.workspaceInUse = this.workspaceMap.get(workspaceId);
     }
 
     async onTabOpen(event: TabOpened) {
         await this.taskScheduler.add(async () => {
             if (event.tab.isPinned) {
                 this.workspaceMap.get(BuiltinWorkspaces.PINNED_TABS).addTab(event.tab);
+            } else {
+                this.workspaceMap.get(BuiltinWorkspaces.OPENED_TABS).addTab(event.tab);
             }
-
-            this.workspaceMap.get(BuiltinWorkspaces.OPENED_TABS).addTab(event.tab);
 
             if (await this.tabFilter.isTabSatisfiesFilter(event.tab.id)) {
                 this.unfilterTabOnAllWorkspaces(event.tab.id);
@@ -172,16 +189,24 @@ export class TabsView {
 
         if (existingTab) {
             const pinnedTabsWorkspace = this.workspaceMap.get(BuiltinWorkspaces.PINNED_TABS);
-            const newTab = existingTab.clone(openedTabId);
-            newTab.markAsPinned();
+            existingTab.markAsPinned();
 
-            pinnedTabsWorkspace.addTab(newTab);
+            openedTabsWorkspace.removeTab(openedTabId);
+            pinnedTabsWorkspace.addTab(existingTab);
         }
     }
 
     private removeFromPinnedTabs(openedTabId: string) {
         const pinnedTabsWorkspace = this.workspaceMap.get(BuiltinWorkspaces.PINNED_TABS);
-        pinnedTabsWorkspace.removeTab(openedTabId);
+        const existingTab = pinnedTabsWorkspace.getTab(openedTabId);
+
+        if (existingTab) {
+            const openedTabsWorkspace = this.workspaceMap.get(BuiltinWorkspaces.OPENED_TABS);
+            existingTab.markAsNotPinned();
+
+            pinnedTabsWorkspace.removeTab(openedTabId);
+            openedTabsWorkspace.addTab(existingTab);
+        }
     }
 
     private onTabFilterResultRetrieve(matchingTabs: OpenedTab[]) {
@@ -193,6 +218,30 @@ export class TabsView {
     private onTabFilterClear() {
         for (const workspace of this.workspaceList) {
             workspace.unfilterAllTabs();
+        }
+    }
+
+    private onGeneralTabSelectorStateChange(selectorId: string, isChecked: boolean) {
+        if (isChecked) {
+            this.workspaceInUse.selectAllTabs();
+            this.pinnedTabList.selectAllTabs();
+        } else {
+            this.workspaceInUse.unselectAllTabs();
+            this.pinnedTabList.unselectAllTabs();
+        }
+    }
+
+    private onNumberOfSelectedTabsChange(workspaceId: string) {
+        if (BuiltinWorkspaces.PINNED_TABS !== workspaceId && this.workspaceInUse.workspaceId !== workspaceId) {
+            return;
+        }
+
+        const totalNumberOfSelectedTabs = this.pinnedTabList.getNumberOfSelectedTabs() + this.workspaceInUse.getNumberOfSelectedTabs();
+
+        if (0 === totalNumberOfSelectedTabs) {
+            this.generalTabSelector.markAsUnchecked();
+        } else {
+            this.generalTabSelector.markAsChecked();
         }
     }
 

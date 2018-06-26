@@ -3,10 +3,8 @@ import { CommandBus } from '../../../bus/command-bus';
 import { FocusOpenedTab } from '../../../tab/opened-tab/command';
 import { CloseButton } from './tab/close-button';
 import { MuteButton } from './tab/mute-button';
-import { TabSelector, TabSelectorShiftClickObserver, TabSelectStateChangeObserver } from './tab/tab-selector';
+import { CheckboxShiftClickObserver, CheckboxStateChangeObserver, TabSelector } from './tab/tab-selector';
 import { UnmuteButton } from './tab/unmute-button';
-
-export { TabSelectorShiftClickObserver, TabSelectStateChangeObserver };
 
 export class Tab {
     readonly htmlElement: HTMLElement;
@@ -196,22 +194,22 @@ export class Tab {
     }
 
     markAsSelected() {
-        this.tabSelector.markAsSelected();
+        this.tabSelector.markAsChecked();
     }
 
     markAsUnselected() {
-        this.tabSelector.markAsUnselected();
+        this.tabSelector.markAsUnchecked();
     }
 
     isSelected() {
-        return this.tabSelector.isSelected();
+        return this.tabSelector.isChecked();
     }
 
-    observeSelectStateChange(observer: TabSelectStateChangeObserver) {
-        this.tabSelector.observeSelectStateChange(observer);
+    observeSelectStateChange(observer: CheckboxStateChangeObserver) {
+        this.tabSelector.observeStateChange(observer);
     }
 
-    observeShiftClick(observer: TabSelectorShiftClickObserver) {
+    observeShiftClick(observer: CheckboxShiftClickObserver) {
         this.tabSelector.observeShiftClick(observer);
     }
 }

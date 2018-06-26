@@ -239,7 +239,7 @@ When('I click on the close button of the tab {int} on the workspace {string}', a
     await webdriver.actions().move({origin: tab}).perform();
 
     const closeButton = tab.findElement(By.css('.close-button'));
-    await clickElementOnceAvailable(
+    await TabSupport.clickElementOnceAvailable(
         webdriver,
         closeButton,
         `Close button of tab at position ${tabPosition} of workspace "${workspaceId}" is not clickable`,
@@ -254,7 +254,7 @@ When('I click on the mute button of the tab {int} on the workspace {string}', as
     await webdriver.actions().move({origin: tab}).perform();
 
     const muteButton = tab.findElement(By.css('.audible-icon'));
-    await clickElementOnceAvailable(
+    await TabSupport.clickElementOnceAvailable(
         webdriver,
         muteButton,
         `Mute button of tab at position ${tabPosition} of workspace "${workspaceId}" is not clickable`,
@@ -269,7 +269,7 @@ When('I click on the unmute button of the tab {int} on the workspace {string}', 
     await webdriver.actions().move({origin: tab}).perform();
 
     const unmuteButton = tab.findElement(By.css('.muted-icon'));
-    await clickElementOnceAvailable(
+    await TabSupport.clickElementOnceAvailable(
         webdriver,
         unmuteButton,
         `Unmute button of tab at position ${tabPosition} of workspace "${workspaceId}" is not clickable`,
@@ -284,7 +284,7 @@ When('I click on the title of the tab {int} on the workspace {string}', async fu
     await webdriver.actions().move({origin: tab}).perform();
 
     const titleContainer = tab.findElement(By.css('.title-container'));
-    await clickElementOnceAvailable(
+    await TabSupport.clickElementOnceAvailable(
         webdriver,
         titleContainer,
         `Title of tab at position ${tabPosition} of workspace "${workspaceId}" is not clickable`,
@@ -298,7 +298,7 @@ When('I click on the tab selector of the tab {int} on workspace {string}', async
 
     await webdriver.actions().move({origin: tab}).perform();
 
-    await clickElementOnceAvailable(
+    await TabSupport.clickElementOnceAvailable(
         webdriver,
         tab.findElement(By.css('.tab-selector')),
         `Tab selector of tab at position ${tabPosition} of workspace "${workspaceId}" is not clickable`,
@@ -313,17 +313,3 @@ When('I shift click on the tab selector of the tab {int} on workspace {string}',
 
     await webdriver.actions().keyDown(Key.SHIFT).click(tabSelector).keyUp(Key.SHIFT).perform();
 });
-
-async function clickElementOnceAvailable(webdriver: WebDriver, element: WebElement, failMessage: string) {
-    await webdriver.wait(async () => {
-        try {
-            await element.click();
-
-            return true;
-        } catch (error) {
-            if (error instanceof WebDriverError.ElementClickInterceptedError) {
-                return false;
-            }
-        }
-    }, 10000, failMessage);
-}

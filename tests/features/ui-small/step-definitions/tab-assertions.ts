@@ -4,6 +4,7 @@ import { sleep } from '../../../../src/typescript/utils/sleep';
 import { TestPageNames } from '../../../webdriver/test-page-descriptor';
 import { WebdriverHelper } from '../../../webdriver/webdriver-helper';
 import { World } from '../support/world';
+import { TabSupport } from '../support/tab-support';
 
 Then("I should see the browser's tab {int} as focused", async function(expectedFocusedTabPosition: number) {
     const world = this as World;
@@ -170,15 +171,7 @@ class TabAssertions {
     }
 
     private static async getTabAtPosition(webdriver: WebDriver, workspaceId: string, tabPosition: number) {
-        let excludePinnedSelector = '';
-
-        if ('pinned-tabs' != workspaceId) {
-            excludePinnedSelector = ':not(.pinned)';
-        }
-
-        const tabList = await webdriver.findElements(By.css(`.tab-list [data-workspace-id="${workspaceId}"] .tab:not(.hide)${excludePinnedSelector}`));
-
-        return tabList[tabPosition];
+        return TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition);
     }
 
     private static async isTabTitleEqualTo(tab: WebElement, expectedTitle: string) {

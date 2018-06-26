@@ -2,8 +2,6 @@ import { Then } from 'cucumber';
 import { By } from 'selenium-webdriver';
 import { World } from '../support/world';
 
-// TODO rename file
-
 Then('I should see the current workspace with label {string} and {int} tab(s) indicated', async function(expectedLabel: string, expectedNumberOfTabs: number) {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();

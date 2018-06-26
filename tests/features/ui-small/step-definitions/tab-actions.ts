@@ -1,6 +1,7 @@
 import { Given, When } from 'cucumber';
 import { By, error as WebDriverError, Key, WebDriver, WebElement } from 'selenium-webdriver';
 import { TestPageNames } from '../../../webdriver/test-page-descriptor';
+import { TabSupport } from '../support/tab-support';
 import { World } from '../support/world';
 
 Given('I use the small UI', {timeout: 20000}, async function() {
@@ -234,7 +235,7 @@ When('I click on the close button of the tab {int} on the workspace {string}', a
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
 
-    const tab = await getTabAtPosition(webdriver, workspaceId, tabPosition);
+    const tab = await TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition);
     await webdriver.actions().move({origin: tab}).perform();
 
     const closeButton = tab.findElement(By.css('.close-button'));
@@ -249,7 +250,7 @@ When('I click on the mute button of the tab {int} on the workspace {string}', as
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
 
-    const tab = await getTabAtPosition(webdriver, workspaceId, tabPosition);
+    const tab = await TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition);
     await webdriver.actions().move({origin: tab}).perform();
 
     const muteButton = tab.findElement(By.css('.audible-icon'));
@@ -264,7 +265,7 @@ When('I click on the unmute button of the tab {int} on the workspace {string}', 
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
 
-    const tab = await getTabAtPosition(webdriver, workspaceId, tabPosition);
+    const tab = await TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition);
     await webdriver.actions().move({origin: tab}).perform();
 
     const unmuteButton = tab.findElement(By.css('.muted-icon'));
@@ -279,7 +280,7 @@ When('I click on the title of the tab {int} on the workspace {string}', async fu
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
 
-    const tab = await getTabAtPosition(webdriver, workspaceId, tabPosition);
+    const tab = await TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition);
     await webdriver.actions().move({origin: tab}).perform();
 
     const titleContainer = tab.findElement(By.css('.title-container'));
@@ -293,7 +294,7 @@ When('I click on the title of the tab {int} on the workspace {string}', async fu
 When('I click on the tab selector of the tab {int} on workspace {string}', async function(tabPosition: number, workspaceId: string) {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
-    const tab = await getTabAtPosition(webdriver, workspaceId, tabPosition);
+    const tab = await TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition);
 
     await webdriver.actions().move({origin: tab}).perform();
 
@@ -307,24 +308,11 @@ When('I click on the tab selector of the tab {int} on workspace {string}', async
 When('I shift click on the tab selector of the tab {int} on workspace {string}', async function(tabPosition: number, workspaceId: string) {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
-    const tab = await getTabAtPosition(webdriver, workspaceId, tabPosition);
+    const tab = await TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition);
     const tabSelector = tab.findElement(By.css('.tab-selector'));
 
     await webdriver.actions().keyDown(Key.SHIFT).click(tabSelector).keyUp(Key.SHIFT).perform();
 });
-
-// TODO
-async function getTabAtPosition(webdriver: WebDriver, workspaceId: string, tabPosition: number) {
-    let excludePinnedSelector = '';
-
-    if ('pinned-tabs' != workspaceId) {
-        excludePinnedSelector = ':not(.pinned)';
-    }
-
-    const tabList = await webdriver.findElements(By.css(`.tab-list [data-workspace-id="${workspaceId}"] .tab:not(.hide)${excludePinnedSelector}`));
-
-    return tabList[tabPosition];
-}
 
 async function clickElementOnceAvailable(webdriver: WebDriver, element: WebElement, failMessage: string) {
     await webdriver.wait(async () => {

@@ -1,7 +1,7 @@
 import { Query } from '../../../bus/query-bus';
 import { OpenedTab } from '../opened-tab';
 
-// TODO remove ???
+// TODO remove
 interface OpenedTabsFilter {
     readonly filterText: string;
     readonly matchOnTitle?: boolean;
@@ -12,7 +12,7 @@ interface OpenedTabsFilter {
 export class GetOpenedTabs implements Query<OpenedTab[]> {
     readonly resultType: OpenedTab[];
 
-    // TODO remove ???
+    // TODO remove
     constructor(public readonly filter?: OpenedTabsFilter) {
     }
 }

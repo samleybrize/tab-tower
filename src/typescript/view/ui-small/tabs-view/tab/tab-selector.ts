@@ -25,8 +25,6 @@ export class TabSelector {
                 this.notifyShiftClick();
             }
         });
-
-        // TODO check tab selector at startup
     }
 
     private notifySelectStateChange(isSelected: boolean) {

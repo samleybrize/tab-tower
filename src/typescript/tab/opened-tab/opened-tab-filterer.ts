@@ -31,7 +31,7 @@ export class OpenedTabFilterer {
         this.matchingRuleMap.set('title,urlDomain', new MatchWhenAnyRuleMatch<OpenedTab>([titleMatchingRule, urlDomainMatchingRule]));
     }
 
-    // TODO remove ???
+    // TODO remove
     getMatchingTabs(openedTabsToFilter: OpenedTab[], filterDescriptor: OpenedTabsFilter): OpenedTab[] {
         if (!this.isFilteringNeeded(filterDescriptor)) {
             return openedTabsToFilter;

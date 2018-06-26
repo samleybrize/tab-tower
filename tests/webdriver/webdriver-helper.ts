@@ -9,7 +9,7 @@ export class WebdriverHelper {
     constructor(private webdriver: WebDriver, private browserInstructionSender: BrowserInstructionSender) {
     }
 
-    // TODO explain why (allow to pass a function as message)
+    // allow to use a function that constructs the fail message, this is needed to include some values retrieved from within the wait function
     async wait(condition: any, timeout?: number, errorMessage?: (() => string|Promise<string>)|string) {
         const errorMessageString: string = ('string' == typeof errorMessage) ? errorMessage : null;
 
@@ -27,7 +27,7 @@ export class WebdriverHelper {
         }
     }
 
-    // TODO explain why (execute in the context of the extension, to access to web extension api)
+    // execute a script in the context of the extension, usefull to access the web extension api
     async executeScript<T>(script: ((...args: any[]) => T)|string, args?: any[]) {
         if ('function' === typeof script) {
             script = '' + script;

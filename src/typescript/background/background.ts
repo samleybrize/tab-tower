@@ -39,7 +39,6 @@ import { TaskScheduler } from '../utils/task-scheduler';
 import { BackgroundStateRetriever } from './background-state-retriever';
 import { GetBackgroundState } from './get-background-state';
 
-// TODO rename nativeTabEventHandler
 async function main() {
     const logger = new BrowserConsoleLogger();
     const commandBus = new CommandBus(logger);

@@ -3,8 +3,8 @@ import { By, error as WebDriverError, WebDriver, WebElement } from 'selenium-web
 import { sleep } from '../../../../src/typescript/utils/sleep';
 import { TestPageNames } from '../../../webdriver/test-page-descriptor';
 import { WebdriverHelper } from '../../../webdriver/webdriver-helper';
-import { World } from '../support/world';
 import { TabSupport } from '../support/tab-support';
+import { World } from '../support/world';
 
 Then("I should see the browser's tab {int} as focused", async function(expectedFocusedTabPosition: number) {
     const world = this as World;
@@ -49,6 +49,24 @@ Then('I should see the small UI as tab {int} on the workspace {string}', async f
 Then('I should see the test page {string} as tab {int} on the workspace {string}', async function(expectedTestPageName: string, tabPosition: number, workspaceId: string) {
     const world = this as World;
     await TabAssertions.assertTab(world, workspaceId, tabPosition, expectedTestPageName);
+});
+
+Then('I should see the url {string} on the tab {int} of the workspace {string}', async function(expectedUrl: string, tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
+    const tab = await TabAssertions.getTabAtPosition(webdriver, workspaceId, tabPosition);
+
+    await TabAssertions.assertTabUrl(webdriver, webdriverHelper, tab, expectedUrl);
+});
+
+Then('I should see the url domain {string} on the tab {int} of the workspace {string}', async function(expectedDomain: string, tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
+    const tab = await TabAssertions.getTabAtPosition(webdriver, workspaceId, tabPosition);
+
+    await TabAssertions.assertTabDomain(webdriver, webdriverHelper, tab, expectedDomain);
 });
 
 Then('I should not see the tab {int} as audible on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
@@ -170,7 +188,7 @@ class TabAssertions {
         await this.assertTabFavicon(webdriverHelper, tab, testPageDescriptor.faviconUrl);
     }
 
-    private static async getTabAtPosition(webdriver: WebDriver, workspaceId: string, tabPosition: number) {
+    static async getTabAtPosition(webdriver: WebDriver, workspaceId: string, tabPosition: number) {
         return TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition);
     }
 
@@ -187,7 +205,7 @@ class TabAssertions {
         return tabTitle;
     }
 
-    private static async assertTabUrl(webdriver: WebDriver, webdriverHelper: WebdriverHelper, tab: WebElement, expectedUrl: string) {
+    static async assertTabUrl(webdriver: WebDriver, webdriverHelper: WebdriverHelper, tab: WebElement, expectedUrl: string) {
         const tabElementId = await tab.getAttribute('id');
         let actualUrl: string;
         await webdriverHelper.wait(async () => {
@@ -199,7 +217,7 @@ class TabAssertions {
         }, 10000, () => `Tab url "${actualUrl}" is different than expected "${expectedUrl}"`);
     }
 
-    private static async assertTabDomain(webdriver: WebDriver, webdriverHelper: WebdriverHelper, tab: WebElement, expectedDomain: string) {
+    static async assertTabDomain(webdriver: WebDriver, webdriverHelper: WebdriverHelper, tab: WebElement, expectedDomain: string) {
         const tabElementId = await tab.getAttribute('id');
         let actualDomain: string;
         await webdriverHelper.wait(async () => {
@@ -211,7 +229,7 @@ class TabAssertions {
         }, 10000, () => `Tab domain "${actualDomain}" is different than expected "${expectedDomain}"`);
     }
 
-    private static async assertTabFavicon(webdriverHelper: WebdriverHelper, tab: WebElement, expectedFaviconUrl: string) {
+    static async assertTabFavicon(webdriverHelper: WebdriverHelper, tab: WebElement, expectedFaviconUrl: string) {
         let actualFaviconUrl: string;
         const faviconElement = tab.findElement(By.css('.favicon img'));
         await webdriverHelper.wait(async () => {

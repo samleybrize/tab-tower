@@ -3,8 +3,8 @@ import { OpenedTab } from '../opened-tab';
 
 export class OpenedTabUrlDomainExtractor implements StringExtractor<OpenedTab> {
     getFrom(fromObject: OpenedTab): string {
-        const urlObect = new URL(fromObject.url);
+        const urlObject = new URL(fromObject.url);
 
-        return urlObect.hostname;
+        return urlObject.hostname ? urlObject.hostname : urlObject.pathname;
     }
 }

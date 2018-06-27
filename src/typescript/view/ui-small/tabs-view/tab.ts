@@ -120,7 +120,7 @@ export class Tab {
         const urlObject = new URL(url);
 
         this.urlElement.textContent = url;
-        this.urlDomainElement.textContent = urlObject.hostname;
+        this.urlDomainElement.textContent = urlObject.hostname ? urlObject.hostname : url;
     }
 
     setTitle(title: string) {

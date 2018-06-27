@@ -34,6 +34,15 @@ When('I open the test page {string}', async function(testPageName: string) {
     }, [testPageUrl]);
 });
 
+When('I open an empty tab', async function() {
+    const world = this as World;
+    const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
+
+    await webdriverHelper.executeScript(() => {
+        browser.tabs.create({active: false});
+    });
+});
+
 When('the tab {int} navigates to the test page {string}', async function(tabPosition: number, newTestPageName: string) {
     const world = this as World;
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();

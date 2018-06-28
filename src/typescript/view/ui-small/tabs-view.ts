@@ -10,6 +10,7 @@ import { Counter } from '../../utils/counter';
 import { TaskScheduler, TaskSchedulerFactory } from '../../utils/task-scheduler';
 import { Checkbox } from '../components/checkbox';
 import { CurrentWorkspace } from './tabs-view/current-workspace';
+import { NewTabButton, NewTabButtonFactory } from './tabs-view/new-tab-button';
 import { TabFilter, TabFilterfactory } from './tabs-view/tab-filter';
 import { TabList, TabListFactory } from './tabs-view/tab-list';
 
@@ -21,6 +22,7 @@ enum BuiltinWorkspaces {
 export class TabsView {
     private tabFilter: TabFilter;
     private generalTabSelector: Checkbox;
+    private newTabButton: NewTabButton;
     private pinnedTabList: TabList;
     private workspaceMap = new Map<string, TabList>();
     private workspaceList: TabList[] = [];
@@ -33,13 +35,15 @@ export class TabsView {
     constructor(
         private containerElement: HTMLElement,
         private tabListFactory: TabListFactory,
-        private tabFilterFactory: TabFilterfactory,
+        tabFilterFactory: TabFilterfactory,
+        newTabButtonFactory: NewTabButtonFactory,
         eventBus: EventBus,
         private queryBus: QueryBus,
         private taskScheduler: TaskScheduler,
     ) {
-        this.tabFilter = this.tabFilterFactory.create(containerElement.querySelector('.filter'));
+        this.tabFilter = tabFilterFactory.create(containerElement.querySelector('.filter'));
         this.generalTabSelector = new Checkbox(containerElement.querySelector('.general-tab-selector'), 'general-tab-selector');
+        this.newTabButton = newTabButtonFactory.create(containerElement.querySelector('.new-tab-button'));
         this.unpinnedWorkspacesContainerElement = containerElement.querySelector('.unpinned-tabs');
         this.currentWorkspaceIndicatorContainerElement = containerElement.querySelector('.current-workspace');
 
@@ -252,6 +256,7 @@ export class TabsViewFactory {
     constructor(
         private tabListFactory: TabListFactory,
         private tabFilterFactory: TabFilterfactory,
+        private newTabButtonFactory: NewTabButtonFactory,
         private taskSchedulerFactory: TaskSchedulerFactory,
         private eventBus: EventBus,
         private queryBus: QueryBus,
@@ -259,6 +264,14 @@ export class TabsViewFactory {
     }
 
     create(containerElement: HTMLElement) {
-        return new TabsView(containerElement, this.tabListFactory, this.tabFilterFactory, this.eventBus, this.queryBus, this.taskSchedulerFactory.create());
+        return new TabsView(
+            containerElement,
+            this.tabListFactory,
+            this.tabFilterFactory,
+            this.newTabButtonFactory,
+            this.eventBus,
+            this.queryBus,
+            this.taskSchedulerFactory.create(),
+        );
     }
 }

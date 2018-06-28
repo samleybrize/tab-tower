@@ -20,6 +20,7 @@ import { ObjectUnserializer } from '../utils/object-unserializer';
 import { sleep } from '../utils/sleep';
 import { TaskSchedulerFactory } from '../utils/task-scheduler';
 import { TabsViewFactory } from './ui-small/tabs-view';
+import { NewTabButtonFactory } from './ui-small/tabs-view/new-tab-button';
 import { TabFactory } from './ui-small/tabs-view/tab';
 import { TabFilterfactory } from './ui-small/tabs-view/tab-filter';
 import { TabListFactory } from './ui-small/tabs-view/tab-list';
@@ -67,6 +68,7 @@ async function main() {
         commandBus.register(tabCommands.CloseOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
         commandBus.register(tabCommands.FocusOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
         commandBus.register(tabCommands.MuteOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
+        commandBus.register(tabCommands.OpenTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
         commandBus.register(tabCommands.UnmuteOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     }
 
@@ -75,8 +77,9 @@ async function main() {
         const tabFactory = new TabFactory(detectedBrowser, commandBus, defaultFaviconUrl);
         const tabFilterFactory = new TabFilterfactory(eventBus, queryBus);
         const tabListFactory = new TabListFactory(eventBus, tabFactory, !!window.isTestEnvironment);
+        const newTabButtonFactory = new NewTabButtonFactory(commandBus);
         const taskSchedulerFactory = new TaskSchedulerFactory(logger);
-        const tabsViewFactory = new TabsViewFactory(tabListFactory, tabFilterFactory, taskSchedulerFactory, eventBus, queryBus);
+        const tabsViewFactory = new TabsViewFactory(tabListFactory, tabFilterFactory, newTabButtonFactory, taskSchedulerFactory, eventBus, queryBus);
         const uiSmall = new UiSmall(tabsViewFactory);
     }
 

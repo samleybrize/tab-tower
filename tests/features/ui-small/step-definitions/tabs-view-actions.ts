@@ -14,3 +14,11 @@ When('I click on the general tab selector', async function() {
         'General tab selector is not clickable',
     );
 });
+
+When('I click on the new tab button', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const newTabButtonElement = webdriver.findElement(By.css('.tab-list .new-tab-button'));
+
+    await newTabButtonElement.click();
+});

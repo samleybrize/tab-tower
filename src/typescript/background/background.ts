@@ -29,6 +29,7 @@ import { OpenedTabPinner } from '../tab/opened-tab/browser/opened-tab-pinner';
 import { OpenedTabReloader } from '../tab/opened-tab/browser/opened-tab-reloader';
 import { OpenedTabUnmuter } from '../tab/opened-tab/browser/opened-tab-unmuter';
 import { OpenedTabUnpinner } from '../tab/opened-tab/browser/opened-tab-unpinner';
+import { TabOpener } from '../tab/opened-tab/browser/tab-opener';
 import * as openedTabCommands from '../tab/opened-tab/command';
 import * as openedTabEvents from '../tab/opened-tab/event';
 import { OpenedTabFilterer } from '../tab/opened-tab/opened-tab-filterer';
@@ -65,6 +66,7 @@ async function main() {
     const openedTabReloader = new OpenedTabReloader(nativeTabIdAssociationMaintainer);
     const openedTabUnmuter = new OpenedTabUnmuter(nativeTabIdAssociationMaintainer);
     const openedTabUnpinner = new OpenedTabUnpinner(nativeTabIdAssociationMaintainer);
+    const tabOpener = new TabOpener();
 
     const settingsPersister = new WebStorageSettingsPersister();
     const settingsRetriever = new SettingsRetriever(settingsPersister);
@@ -101,6 +103,7 @@ async function main() {
         commandBus.register(openedTabCommands.FocusOpenedTab, openedTabFocuser.focusTab, openedTabFocuser);
         commandBus.register(openedTabCommands.MoveOpenedTabs, openedTabMover.moveOpenedTabs, openedTabMover);
         commandBus.register(openedTabCommands.MuteOpenedTab, openedTabMuter.muteTab, openedTabMuter);
+        commandBus.register(openedTabCommands.OpenTab, tabOpener.openTab, tabOpener);
         commandBus.register(openedTabCommands.PinOpenedTab, openedTabPinner.pinTab, openedTabPinner);
         commandBus.register(openedTabCommands.ReloadOpenedTab, openedTabReloader.reloadTab, openedTabReloader);
         commandBus.register(openedTabCommands.UnmuteOpenedTab, openedTabUnmuter.unmuteTab, openedTabUnmuter);

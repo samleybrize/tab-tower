@@ -5,6 +5,7 @@ export * from './duplicate-opened-tab';
 export * from './focus-opened-tab';
 export * from './move-opened-tabs';
 export * from './mute-opened-tab';
+export * from './open-tab';
 export * from './pin-opened-tab';
 export * from './reload-opened-tab';
 export * from './unmute-opened-tab';

@@ -183,6 +183,7 @@ class TabAssertions {
             return `Tab title "${actualTitle}" is different than expected "${expectedTitle}"`;
         });
 
+        await this.assertTabTitleTooltip(webdriver, webdriverHelper, tab, testPageDescriptor.title);
         await this.assertTabUrl(webdriver, webdriverHelper, tab, testPageDescriptor.url);
         await this.assertTabDomain(webdriver, webdriverHelper, tab, testPageDescriptor.domain);
         await this.assertTabFavicon(webdriverHelper, tab, testPageDescriptor.faviconUrl);
@@ -203,6 +204,18 @@ class TabAssertions {
         const tabTitle = await titleElement.getText();
 
         return tabTitle;
+    }
+
+    static async assertTabTitleTooltip(webdriver: WebDriver, webdriverHelper: WebdriverHelper, tab: WebElement, expectedTitle: string) {
+        const tabElementId = await tab.getAttribute('id');
+        let actualTitle: string;
+        await webdriverHelper.wait(async () => {
+            actualTitle = await webdriver.executeScript((elementId: string) => {
+                return document.querySelector(`#${elementId} .title`).getAttribute('title');
+            }, tabElementId) as string;
+
+            return expectedTitle == actualTitle;
+        }, 10000, () => `Tab title tooltip "${actualTitle}" is different than expected "${expectedTitle}"`);
     }
 
     static async assertTabUrl(webdriver: WebDriver, webdriverHelper: WebdriverHelper, tab: WebElement, expectedUrl: string) {

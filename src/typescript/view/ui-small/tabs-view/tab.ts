@@ -125,6 +125,7 @@ export class Tab {
 
     setTitle(title: string) {
         this.titleElement.textContent = title;
+        this.titleElement.setAttribute('title', title);
     }
 
     setPosition(position: number) {

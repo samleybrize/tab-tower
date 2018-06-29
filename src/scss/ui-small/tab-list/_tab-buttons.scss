@@ -1,10 +1,10 @@
 .ui-small {
     .tab-list {
         .tab {
-            .close-button,
-            .audible-icon,
-            .muted-icon,
-            .pin-icon {
+            > .close-button,
+            > .audible-icon,
+            > .muted-icon,
+            > .pin-icon {
                 position: absolute;
                 top: 0;
                 right: 0;
@@ -38,9 +38,9 @@
                 }
             }
 
-            .audible-icon,
-            .muted-icon,
-            .pin-icon {
+            > .audible-icon,
+            > .muted-icon,
+            > .pin-icon {
                 background-color: $tab-background-color;
 
                 i {
@@ -53,42 +53,42 @@
             }
 
             &:hover {
-                .audible-icon,
-                .muted-icon,
-                .pin-icon {
+                > .audible-icon,
+                > .muted-icon,
+                > .pin-icon {
                     background-color: $tab-hover-background-color;
                 }
             }
 
             &.active {
-                .close-button,
-                .audible-icon,
-                .muted-icon,
-                .pin-icon {
+                > .close-button,
+                > .audible-icon,
+                > .muted-icon,
+                > .pin-icon {
                     background-color: $active-tab-background-color;
                 }
             }
 
             &.selected {
-                .close-button,
-                .audible-icon,
-                .muted-icon,
-                .pin-icon {
+                > .close-button,
+                > .audible-icon,
+                > .muted-icon,
+                > .pin-icon {
                     background-color: $selected-tab-background-color;
                 }
             }
 
             &.highlighted {
-                .close-button,
-                .audible-icon,
-                .muted-icon,
-                .pin-icon {
+                > .close-button,
+                > .audible-icon,
+                > .muted-icon,
+                > .pin-icon {
                     background-color: $highlighted-tab-background-color;
                 }
             }
 
             &.audible:not(.muted) {
-                .audible-icon {
+                > .audible-icon {
                     padding-right: 23px;
                     pointer-events: all;
                     opacity: 1;
@@ -97,7 +97,7 @@
             }
 
             &.muted {
-                .muted-icon {
+                > .muted-icon {
                     padding-right: 23px;
                     pointer-events: all;
                     opacity: 1;
@@ -107,8 +107,8 @@
 
             &.audible,
             &.muted {
-                .close-button,
-                .pin-icon {
+                > .close-button,
+                > .pin-icon {
                     padding-left: 0;
                     mask-image: none;
                 }
@@ -117,20 +117,20 @@
 
         &.no-close-button .unpinned-tabs .tab {
             &.audible:not(.muted) {
-                .audible-icon {
+                > .audible-icon {
                     padding-right: 5px;
                 }
             }
 
             &.muted {
-                .muted-icon {
+                > .muted-icon {
                     padding-right: 5px;
                 }
             }
         }
 
-        &:not(.no-close-button):not(.move-mode) .tab:hover {
-            .close-button {
+        &:not(.no-close-button):not(.move-mode) .tab:not(.context-menu-visible):hover {
+            > .close-button {
                 pointer-events: all;
                 opacity: 1;
                 transform: translateX(0);
@@ -138,22 +138,22 @@
         }
 
         .pinned-tabs .tab:hover {
-            .close-button {
+            > .close-button {
                 display: none;
             }
         }
 
         .pinned-tabs .tab {
-            .pin-icon {
+            > .pin-icon {
                 opacity: 1;
                 transform: translateX(0);
             }
         }
 
         &.move-mode {
-            .audible.tab .audible-icon,
-            .muted.tab .muted-icon,
-            .pinned-tabs .tab .pin-icon {
+            .audible.tab > .audible-icon,
+            .muted.tab > .muted-icon,
+            .pinned-tabs .tab > .pin-icon {
                 pointer-events: none;
                 opacity: 0;
                 transform: translateX(20px);

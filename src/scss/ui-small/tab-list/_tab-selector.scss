@@ -59,7 +59,7 @@
             }
         }
 
-        &:hover,
+        &:not(.context-menu-visible):hover,
         &.selected {
             .favicon input + .checkbox-icon {
                 pointer-events: all;

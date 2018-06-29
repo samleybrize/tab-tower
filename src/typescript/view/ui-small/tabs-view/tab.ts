@@ -3,6 +3,7 @@ import { CommandBus } from '../../../bus/command-bus';
 import { FocusOpenedTab } from '../../../tab/opened-tab/command';
 import { CloseButton } from './tab/close-button';
 import { MuteButton } from './tab/mute-button';
+import { TabContextMenu } from './tab/tab-context-menu';
 import { CheckboxShiftClickObserver, CheckboxStateChangeObserver, TabSelector } from './tab/tab-selector';
 import { UnmuteButton } from './tab/unmute-button';
 
@@ -16,6 +17,7 @@ export class Tab {
     private muteButton: MuteButton;
     private unmuteButton: UnmuteButton;
     private tabSelector: TabSelector;
+    private contextMenu: TabContextMenu;
     private position: number;
     private focused: boolean;
     readonly id: string;
@@ -81,9 +83,15 @@ export class Tab {
         this.muteButton = new MuteButton(this.htmlElement.querySelector('.audible-icon'), openedTabId, this.commandBus); // TODO still needed?
         this.unmuteButton = new UnmuteButton(this.htmlElement.querySelector('.muted-icon'), openedTabId, this.commandBus); // TODO still needed?
         this.tabSelector = new TabSelector(this.htmlElement, this.htmlElement.querySelector('.tab-selector'), openedTabId);
+        this.contextMenu = new TabContextMenu(this.htmlElement, openedTabId, this.commandBus);
+        this.htmlElement.appendChild(this.contextMenu.htmlElement);
 
-        titleContainerElement.addEventListener('click', () => {
+        titleContainerElement.addEventListener('click', (event: MouseEvent) => {
             this.commandBus.handle(new FocusOpenedTab(openedTabId));
+        });
+        titleContainerElement.addEventListener('contextmenu', (event: MouseEvent) => {
+            event.preventDefault();
+            this.contextMenu.show({x: event.clientX, y: event.clientY});
         });
     }
 
@@ -146,10 +154,12 @@ export class Tab {
 
     markAsAudioMuted() {
         this.htmlElement.classList.add('muted');
+        this.contextMenu.showUnmuteButton();
     }
 
     markAsNotAudioMuted() {
         this.htmlElement.classList.remove('muted');
+        this.contextMenu.showMuteButton();
     }
 
     markAsFocused() {
@@ -184,10 +194,12 @@ export class Tab {
 
     markAsPinned() {
         this.htmlElement.classList.add('pinned');
+        this.contextMenu.showUnpinButton();
     }
 
     markAsNotPinned() {
         this.htmlElement.classList.remove('pinned');
+        this.contextMenu.showPinButton();
     }
 
     clone(openedTabId: string): Tab {

@@ -65,7 +65,8 @@
                 mask-image: linear-gradient(to right, transparent, black 75%);
             }
 
-            &:hover {
+            &:hover,
+            &.context-menu-visible {
                 background-color: $tab-hover-background-color;
 
                 &::after {

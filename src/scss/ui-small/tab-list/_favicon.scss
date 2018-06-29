@@ -24,7 +24,7 @@
         }
     }
 
-    &:hover,
+    &:not(.context-menu-visible):hover,
     &.selected {
         .favicon img {
             opacity: 0;

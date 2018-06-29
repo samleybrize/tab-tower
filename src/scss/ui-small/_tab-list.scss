@@ -37,6 +37,12 @@ $toolbar-font-color: white;
 $toolbar-font-hover-background: darken($toolbar-background-color, 10%);
 $toolbar-height: 30px;
 
+$context-menu-background-color: white;
+$context-menu-font-color: #444;
+$context-menu-font-size: 15px;
+$context-menu-li-hover-font-color: white;
+$context-menu-li-hover-background-color: #5a98e2;
+
 @import 'tab-list/header';
 @import 'tab-list/toolbar';
 @import 'tab-list/tab-filter';
@@ -46,6 +52,7 @@ $toolbar-height: 30px;
 @import 'tab-list/tab-buttons';
 @import 'tab-list/tab-move-buttons';
 @import 'tab-list/tab-selector';
+@import 'tab-list/tab-context-menu';
 
 .ui-small .tab-list {
     display: flex;

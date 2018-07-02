@@ -2,7 +2,6 @@ import { Builder, WebDriver } from 'selenium-webdriver';
 
 import { BrowserInstructionSender } from '../utils/browser-instruction-sender';
 import { FirefoxConfig } from './firefox-config';
-import { TestPageDescriptorRetriever } from './test-page-descriptor';
 import { WebdriverHelper } from './webdriver-helper';
 
 export class WebDriverRetriever {

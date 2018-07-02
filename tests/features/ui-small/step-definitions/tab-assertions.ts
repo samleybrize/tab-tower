@@ -326,7 +326,7 @@ class TabAssertions {
 
         await webdriver.wait(async () => {
             return await this.hasCssClass(tab, 'loading');
-        }, 10000, 'Tab is not marked as focused');
+        }, 10000, 'Tab is not marked as loading');
     }
 
     static async assertTabIsNotMarkedAsLoading(world: World, workspaceId: string, tabPosition: number) {
@@ -335,7 +335,7 @@ class TabAssertions {
 
         await webdriver.wait(async () => {
             return !await this.hasCssClass(tab, 'loading');
-        }, 10000, 'Tab is marked as focused');
+        }, 10000, 'Tab is marked as loading');
     }
 
     static async assertTabIsMarkedAsSelected(world: World, workspaceId: string, tabPosition: number) {

@@ -5,7 +5,7 @@ export class TestsConfig {
     public readonly isBrowserConsoleEnabled: boolean = true;
     public readonly keepBrowserOpened: boolean = false;
     public readonly browserInstructionPort: number = 8888;
-    public readonly urlDelayerPort: number = 8889;
+    public readonly urlDelayerPort: number = 9999;
 
     static getInstance() {
         if (null == this.instance) {
@@ -16,6 +16,8 @@ export class TestsConfig {
     }
 
     private constructor() {
+        const slaveId = +process.env.CUCUMBER_SLAVE_ID || 0;
+
         if ('0' === process.env.HEADLESS) {
             this.isHeadlessModeEnabled = false;
         }
@@ -33,5 +35,8 @@ export class TestsConfig {
         if (+process.env.URL_DELAYER_PORT > 0) {
             this.urlDelayerPort = +process.env.URL_DELAYER_PORT;
         }
+
+        this.browserInstructionPort += slaveId;
+        this.urlDelayerPort += slaveId;
     }
 }

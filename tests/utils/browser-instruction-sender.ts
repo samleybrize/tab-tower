@@ -1,5 +1,6 @@
 import * as http from 'http';
 import { IMessage, server as WebSocketServer } from 'websocket';
+import { sleep } from '../../src/typescript/utils/sleep';
 import { TestsConfig } from '../tests-config';
 
 export class BrowserInstructionSender {
@@ -66,6 +67,8 @@ export class BrowserInstructionSender {
             args = [];
         }
 
+        await this.waitAtLeastOneClientConnected();
+
         const messageId = Math.random();
         const message = JSON.stringify({messageId, script, args});
 
@@ -79,5 +82,15 @@ export class BrowserInstructionSender {
             });
             this.websocketServer.broadcastUTF(message);
         });
+    }
+
+    private async waitAtLeastOneClientConnected() {
+        while (!this.hasConnectedClients()) {
+            await sleep(50);
+        }
+    }
+
+    hasConnectedClients() {
+        return this.websocketServer.connections.length > 0;
     }
 }

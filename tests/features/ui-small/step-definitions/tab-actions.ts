@@ -82,7 +82,7 @@ When('I reload the tab {int}', async function(tabPositionToReload: number) {
         if (tab && 'complete' == tab.status) {
             return true;
         }
-    }, 3000, `Tab at position "${tabPositionToReload}" is still loading`);
+    }, 10000, `Tab at position "${tabPositionToReload}" is still loading`);
 });
 
 When('the tab {int} is not loading anymore', async function(tabPosition: number) {
@@ -103,7 +103,7 @@ When('the tab {int} is not loading anymore', async function(tabPosition: number)
         if (tab && 'complete' == tab.status) {
             return true;
         }
-    }, 3000, () => `Tab at position "${tabPosition}" is still loading`);
+    }, 10000, () => `Tab at position "${tabPosition}" is still loading`);
 });
 
 When('I focus the tab {int}', async function(tabPositionToFocus: number) {

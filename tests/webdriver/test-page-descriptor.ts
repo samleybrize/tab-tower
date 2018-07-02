@@ -1,3 +1,4 @@
+import { UrlDelayer } from '../utils/url-delayer';
 import { FirefoxConfig } from './firefox-config';
 
 export enum TestPageNames {
@@ -25,7 +26,7 @@ interface TestPageDescriptor {
 export class TestPageDescriptorRetriever {
     private descriptorMap = new Map<string, TestPageDescriptor>();
 
-    constructor(firefoxConfig: FirefoxConfig) {
+    constructor(firefoxConfig: FirefoxConfig, urlDelayer: UrlDelayer) {
         this.addDescriptor({
             name: TestPageNames.UI_SMALL,
             title: 'Tab Tower - Sidebar',
@@ -96,10 +97,12 @@ export class TestPageDescriptorRetriever {
             domain: firefoxConfig.getExtensionInternalId(),
             faviconUrl: firefoxConfig.getExtensionUrl('/ui/images/default-favicon.svg'),
         });
+
+        const delayedImageUrl = urlDelayer.getDelayedUrl('', 1000);
         this.addDescriptor({
             name: TestPageNames.TEST_DELAYED1,
             title: 'Test delayed 1',
-            url: firefoxConfig.getExtensionUrl('/tests/resources/test-delayed1.html'),
+            url: firefoxConfig.getExtensionUrl('/tests/resources/test-delayed1.html?' + encodeURI(delayedImageUrl)),
             domain: firefoxConfig.getExtensionInternalId(),
             faviconUrl: firefoxConfig.getExtensionUrl('/tests/resources/favicon2.png'),
         });

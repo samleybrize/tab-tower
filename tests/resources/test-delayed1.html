@@ -8,6 +8,11 @@
     <body>
         <h1>Test delayed 1</h1>
 
-        <img src="http://localhost:8889/1000" alt="" />
+        <img src="" alt="" />
+
+        <script>
+        const imageUrl = window.location.search.substr(1);
+        document.querySelector('img').src = imageUrl;
+        </script>
     </body>
 </html>

@@ -1,5 +1,6 @@
 import { error as WebDriverError, WebDriver } from 'selenium-webdriver';
 import { sleep } from '../../src/typescript/utils/sleep';
+import { TestsConfig } from '../tests-config';
 import { BrowserInstructionSender } from '../utils/browser-instruction-sender';
 
 const defaultWindowWidth = 500;
@@ -39,14 +40,18 @@ export class WebdriverHelper {
     async resetBrowserState(firstPageUrl: string) {
         await this.webdriver; // ensure the browser is running to avoid errors
 
-        await this.closeAllTabs();
-        await this.clearRecentlyClosedTabs();
-        await this.clearBrowserStorage();
+        if (this.browserInstructionSender.hasConnectedClients()) {
+            await this.closeAllTabs();
+            await this.clearRecentlyClosedTabs();
+            await this.clearBrowserStorage();
+            await this.reloadExtension();
+        }
 
-        await this.reloadExtension();
         await this.switchToWindowHandle(0);
         await this.webdriver.get(firstPageUrl);
+        await this.sendTestConfigToBrowser();
         await this.setDefaultWindowSize();
+        await this.webdriver.get(firstPageUrl); // TODO dirty workaround (GetBackgroundState query is sometimes rejected)
     }
 
     private async closeAllTabs() {
@@ -98,5 +103,12 @@ export class WebdriverHelper {
     async switchToWindowHandle(windowIndex: number) {
         const windowHandles = await this.webdriver.getAllWindowHandles();
         await this.webdriver.switchTo().window(windowHandles[windowIndex]);
+    }
+
+    private async sendTestConfigToBrowser() {
+        const testsConfig = TestsConfig.getInstance();
+        await this.webdriver.executeScript((browserInstructionPort: number) => {
+            return browser.storage.local.set({'_test.browserInstructionPort': browserInstructionPort});
+        }, testsConfig.browserInstructionPort);
     }
 }

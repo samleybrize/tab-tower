@@ -13,8 +13,9 @@ export class World {
     constructor() {
         this.webdriverRetriever = WebDriverRetriever.getInstance();
         this.testsConfig = TestsConfig.getInstance();
-        this.testPageDescriptorRetriever = new TestPageDescriptorRetriever(this.webdriverRetriever.getFirefoxConfig());
         this.urlDelayer = UrlDelayer.getInstance();
+        this.testPageDescriptorRetriever = new TestPageDescriptorRetriever(this.webdriverRetriever.getFirefoxConfig(), this.urlDelayer);
+
         this.urlDelayer.init();
     }
 }

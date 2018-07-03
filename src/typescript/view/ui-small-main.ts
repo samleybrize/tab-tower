@@ -19,11 +19,18 @@ import * as tabQueries from '../tab/opened-tab/query';
 import { ObjectUnserializer } from '../utils/object-unserializer';
 import { sleep } from '../utils/sleep';
 import { TaskSchedulerFactory } from '../utils/task-scheduler';
+import { CloseContextMenus } from './components/command/close-context-menus';
+import { ContextMenuFactory } from './components/context-menu';
+import { ContextMenuOverlay } from './components/context-menu-overlay';
+import { CurrentlyVisibleContextMenuCloser } from './components/currently-visible-context-menu-closer';
+import { ContextMenuClosed } from './components/event/context-menu-closed';
+import { ContextMenuOpened } from './components/event/context-menu-opened';
 import { TabsViewFactory } from './ui-small/tabs-view';
 import { NewTabButtonFactory } from './ui-small/tabs-view/new-tab-button';
 import { TabFactory } from './ui-small/tabs-view/tab';
 import { TabFilterfactory } from './ui-small/tabs-view/tab-filter';
 import { TabListFactory } from './ui-small/tabs-view/tab-list';
+import { TabContextMenuFactory } from './ui-small/tabs-view/tab/tab-context-menu';
 import { UiSmall } from './ui-small/ui-small';
 
 const defaultFaviconUrl = '/ui/images/default-favicon.svg';
@@ -77,13 +84,25 @@ async function main() {
     }
 
     function initView() {
+        const currentlyVisibleContextMenuCloser = new CurrentlyVisibleContextMenuCloser();
+        const contextMenuOverlay = new ContextMenuOverlay(commandBus);
+
+        eventBus.subscribe(ContextMenuClosed, currentlyVisibleContextMenuCloser.onContextMenuClose, currentlyVisibleContextMenuCloser);
+        eventBus.subscribe(ContextMenuClosed, contextMenuOverlay.onContextMenuClose, contextMenuOverlay);
+        eventBus.subscribe(ContextMenuOpened, currentlyVisibleContextMenuCloser.onContextMenuOpen, currentlyVisibleContextMenuCloser);
+        eventBus.subscribe(ContextMenuOpened, contextMenuOverlay.onContextMenuOpen, contextMenuOverlay);
+
+        commandBus.register(CloseContextMenus, currentlyVisibleContextMenuCloser.close, currentlyVisibleContextMenuCloser);
+
         const detectedBrowser = new DetectedBrowser();
-        const tabFactory = new TabFactory(detectedBrowser, commandBus, defaultFaviconUrl);
+        const contextMenuFactory = new ContextMenuFactory(eventBus);
+        const tabContextMenuFactory = new TabContextMenuFactory(commandBus, contextMenuFactory);
+        const tabFactory = new TabFactory(detectedBrowser, commandBus, tabContextMenuFactory, defaultFaviconUrl);
         const tabFilterFactory = new TabFilterfactory(eventBus, queryBus);
         const tabListFactory = new TabListFactory(eventBus, tabFactory, !!window.isTestEnvironment);
         const newTabButtonFactory = new NewTabButtonFactory(commandBus);
         const taskSchedulerFactory = new TaskSchedulerFactory(logger);
-        const tabsViewFactory = new TabsViewFactory(tabListFactory, tabFilterFactory, newTabButtonFactory, taskSchedulerFactory, eventBus, queryBus);
+        const tabsViewFactory = new TabsViewFactory(tabListFactory, tabFilterFactory, newTabButtonFactory, taskSchedulerFactory, commandBus, eventBus, queryBus);
         const uiSmall = new UiSmall(tabsViewFactory);
     }
 

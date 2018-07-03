@@ -8,9 +8,15 @@ export class TabSupport {
             excludePinnedSelector = ':not(.pinned)';
         }
 
-        const tabList = await webdriver.findElements(By.css(`.tab-list [data-workspace-id="${workspaceId}"] .tab:not(.hide)${excludePinnedSelector}`));
+        let tab: WebElement;
+        await webdriver.wait(async () => {
+            const tabList = await webdriver.findElements(By.css(`.tab-list [data-workspace-id="${workspaceId}"] .tab:not(.hide)${excludePinnedSelector}`));
+            tab = tabList[tabPosition];
 
-        return tabList[tabPosition];
+            return !!tab;
+        }, 10000, `Tab at position ${tabPosition} on workspace "${workspaceId}" does not exists`);
+
+        return tab;
     }
 
     static async clickElementOnceAvailable(webdriver: WebDriver, element: WebElement, failMessage: string) {

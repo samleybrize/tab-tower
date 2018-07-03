@@ -6,7 +6,7 @@ import { PinOpenedTab } from '../../../../tab/opened-tab/command/pin-opened-tab'
 import { ReloadOpenedTab } from '../../../../tab/opened-tab/command/reload-opened-tab';
 import { UnmuteOpenedTab } from '../../../../tab/opened-tab/command/unmute-opened-tab';
 import { UnpinOpenedTab } from '../../../../tab/opened-tab/command/unpin-opened-tab';
-import { BoundingRectangle, ContextMenu, ContextMenuDimensions, ContextMenuPosition, ContextMenuPositionArrowEdge, ContextMenuPositionCalculator } from '../../../components/context-menu';
+import { BoundingRectangle, ContextMenu, ContextMenuDimensions, ContextMenuFactory, ContextMenuPosition, ContextMenuPositionArrowEdge, ContextMenuPositionCalculator } from '../../../components/context-menu';
 
 interface Position {
     x: number;
@@ -22,11 +22,11 @@ export class TabContextMenu {
     private muteButtonElement: HTMLElement;
     private unmuteButtonElement: HTMLElement;
 
-    constructor(private tabElement: HTMLElement, private openedTabId: string, private commandBus: CommandBus) {
+    constructor(private tabElement: HTMLElement, private openedTabId: string, private commandBus: CommandBus, contextMenuFactory: ContextMenuFactory) {
         this.content = document.createElement('div');
 
         this.positionCalculator = new TabContextMenuPositionCalculator(tabElement);
-        this.contextMenu = new ContextMenu(this.content, this.positionCalculator);
+        this.contextMenu = contextMenuFactory.create(this.content, this.positionCalculator);
 
         this.content.style.overflowY = 'auto';
         this.content.innerHTML = `
@@ -62,42 +62,42 @@ export class TabContextMenu {
     private initReloadButton(buttonElement: HTMLElement) {
         buttonElement.addEventListener('click', () => {
             this.commandBus.handle(new ReloadOpenedTab(this.openedTabId));
-            this.contextMenu.hide();
+            this.contextMenu.close();
         });
     }
 
     private initMuteButton(buttonElement: HTMLElement) {
         buttonElement.addEventListener('click', () => {
             this.commandBus.handle(new MuteOpenedTab(this.openedTabId));
-            this.contextMenu.hide();
+            this.contextMenu.close();
         });
     }
 
     private initUnmuteButton(buttonElement: HTMLElement) {
         buttonElement.addEventListener('click', () => {
             this.commandBus.handle(new UnmuteOpenedTab(this.openedTabId));
-            this.contextMenu.hide();
+            this.contextMenu.close();
         });
     }
 
     private initPinButton(buttonElement: HTMLElement) {
         buttonElement.addEventListener('click', () => {
             this.commandBus.handle(new PinOpenedTab(this.openedTabId));
-            this.contextMenu.hide();
+            this.contextMenu.close();
         });
     }
 
     private initUnpinButton(buttonElement: HTMLElement) {
         buttonElement.addEventListener('click', () => {
             this.commandBus.handle(new UnpinOpenedTab(this.openedTabId));
-            this.contextMenu.hide();
+            this.contextMenu.close();
         });
     }
 
     private initDuplicateButton(buttonElement: HTMLElement) {
         buttonElement.addEventListener('click', () => {
             this.commandBus.handle(new DuplicateOpenedTab(this.openedTabId));
-            this.contextMenu.hide();
+            this.contextMenu.close();
         });
     }
 
@@ -108,7 +108,7 @@ export class TabContextMenu {
     private initCloseButton(buttonElement: HTMLElement) {
         buttonElement.addEventListener('click', () => {
             this.commandBus.handle(new CloseOpenedTab(this.openedTabId));
-            this.contextMenu.hide();
+            this.contextMenu.close();
         });
     }
 
@@ -188,5 +188,14 @@ class TabContextMenuPositionCalculator implements ContextMenuPositionCalculator 
             y: targetY,
             arrowEdge,
         };
+    }
+}
+
+export class TabContextMenuFactory {
+    constructor(private commandBus: CommandBus, private contextMenuFactory: ContextMenuFactory) {
+    }
+
+    create(tabElement: HTMLElement, openedTabId: string) {
+        return new TabContextMenu(tabElement, openedTabId, this.commandBus, this.contextMenuFactory);
     }
 }

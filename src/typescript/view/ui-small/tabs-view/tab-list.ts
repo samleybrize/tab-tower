@@ -278,7 +278,6 @@ export class TabList {
             }
         }
 
-        console.log('AAA: getNumberOfSelectedTabs', numberOfSelectedTabs); // TODO
         return numberOfSelectedTabs;
     }
 

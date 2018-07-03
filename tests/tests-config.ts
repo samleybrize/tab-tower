@@ -22,7 +22,7 @@ export class TestsConfig {
             this.isHeadlessModeEnabled = false;
         }
 
-        if (process.env.KEEP_BROWSER) {
+        if ('1' === process.env.KEEP_BROWSER) {
             this.isHeadlessModeEnabled = false;
             this.isBrowserConsoleEnabled = true;
             this.keepBrowserOpened = true;

@@ -1,5 +1,8 @@
+import { CommandBus } from '../../bus/command-bus';
 import { EventBus } from '../../bus/event-bus';
 import { QueryBus } from '../../bus/query-bus';
+import { OpenedTabClosed } from '../../tab/opened-tab/event/opened-tab-closed';
+import { OpenedTabMoved } from '../../tab/opened-tab/event/opened-tab-moved';
 import { OpenedTabPinStateUpdated } from '../../tab/opened-tab/event/opened-tab-pin-state-updated';
 import { OpenedTabTitleUpdated } from '../../tab/opened-tab/event/opened-tab-title-updated';
 import { OpenedTabUrlUpdated } from '../../tab/opened-tab/event/opened-tab-url-updated';
@@ -9,6 +12,7 @@ import { GetOpenedTabs } from '../../tab/opened-tab/query';
 import { Counter } from '../../utils/counter';
 import { TaskScheduler, TaskSchedulerFactory } from '../../utils/task-scheduler';
 import { Checkbox } from '../components/checkbox';
+import { CloseContextMenus } from '../components/command/close-context-menus';
 import { CurrentWorkspace } from './tabs-view/current-workspace';
 import { NewTabButton, NewTabButtonFactory } from './tabs-view/new-tab-button';
 import { TabFilter, TabFilterfactory } from './tabs-view/tab-filter';
@@ -37,6 +41,7 @@ export class TabsView {
         private tabListFactory: TabListFactory,
         tabFilterFactory: TabFilterfactory,
         newTabButtonFactory: NewTabButtonFactory,
+        private commandBus: CommandBus,
         eventBus: EventBus,
         private queryBus: QueryBus,
         private taskScheduler: TaskScheduler,
@@ -51,9 +56,11 @@ export class TabsView {
             this.enableWorkspace(BuiltinWorkspaces.OPENED_TABS);
 
             eventBus.subscribe(TabOpened, this.onTabOpen, this);
+            eventBus.subscribe(OpenedTabClosed, this.onTabClose, this);
+            eventBus.subscribe(OpenedTabMoved, this.onTabMove, this);
+            eventBus.subscribe(OpenedTabPinStateUpdated, this.onTabPinStateUpdate, this);
             eventBus.subscribe(OpenedTabTitleUpdated, this.onTabTitleUpdate, this);
             eventBus.subscribe(OpenedTabUrlUpdated, this.onTabUrlUpdate, this);
-            eventBus.subscribe(OpenedTabPinStateUpdated, this.onTabPinStateUpdate, this);
 
             this.tabFilter.observeFilterResultRetrieval(this.onTabFilterResultRetrieve.bind(this));
             this.tabFilter.observeFilterClear(this.onTabFilterClear.bind(this));
@@ -114,6 +121,20 @@ export class TabsView {
         await workspace.init(tabList);
     }
 
+    private onNumberOfSelectedTabsChange(workspaceId: string) {
+        if (BuiltinWorkspaces.PINNED_TABS !== workspaceId && this.workspaceInUse.workspaceId !== workspaceId) {
+            return;
+        }
+
+        const totalNumberOfSelectedTabs = this.pinnedTabList.getNumberOfSelectedTabs() + this.workspaceInUse.getNumberOfSelectedTabs();
+
+        if (0 === totalNumberOfSelectedTabs) {
+            this.generalTabSelector.markAsUnchecked();
+        } else {
+            this.generalTabSelector.markAsChecked();
+        }
+    }
+
     private insertUnpinnedTabsWorkspace(workspace: TabList) {
         this.unpinnedWorkspacesContainerElement.insertAdjacentElement('afterbegin', workspace.containerElement);
     }
@@ -129,6 +150,28 @@ export class TabsView {
         this.workspaceInUse = this.workspaceMap.get(workspaceId);
     }
 
+    private onTabFilterResultRetrieve(matchingTabs: OpenedTab[]) {
+        for (const workspace of this.workspaceList) {
+            workspace.filterTabs(matchingTabs);
+        }
+    }
+
+    private onTabFilterClear() {
+        for (const workspace of this.workspaceList) {
+            workspace.unfilterAllTabs();
+        }
+    }
+
+    private onGeneralTabSelectorStateChange(selectorId: string, isChecked: boolean) {
+        if (isChecked) {
+            this.workspaceInUse.selectAllTabs();
+            this.pinnedTabList.selectAllTabs();
+        } else {
+            this.workspaceInUse.unselectAllTabs();
+            this.pinnedTabList.unselectAllTabs();
+        }
+    }
+
     async onTabOpen(event: TabOpened) {
         await this.taskScheduler.add(async () => {
             if (event.tab.isPinned) {
@@ -142,6 +185,8 @@ export class TabsView {
             } else {
                 this.filterTabOnAllWorkspaces(event.tab.id);
             }
+
+            this.closeContextMenus();
         }).executeAll();
     }
 
@@ -157,6 +202,18 @@ export class TabsView {
         }
     }
 
+    private closeContextMenus() {
+        this.commandBus.handle(new CloseContextMenus());
+    }
+
+    async onTabClose(event: OpenedTabClosed) {
+        this.closeContextMenus();
+    }
+
+    async onTabMove(event: OpenedTabMoved) {
+        this.closeContextMenus();
+    }
+
     async onTabPinStateUpdate(event: OpenedTabPinStateUpdated) {
         await this.taskScheduler.add(async () => {
             if (event.isPinned) {
@@ -164,26 +221,8 @@ export class TabsView {
             } else {
                 this.removeFromPinnedTabs(event.tabId);
             }
-        }).executeAll();
-    }
 
-    async onTabTitleUpdate(event: OpenedTabTitleUpdated) {
-        await this.taskScheduler.add(async () => {
-            if (await this.tabFilter.isTabSatisfiesFilter(event.tabId)) {
-                this.unfilterTabOnAllWorkspaces(event.tabId);
-            } else {
-                this.filterTabOnAllWorkspaces(event.tabId);
-            }
-        }).executeAll();
-    }
-
-    async onTabUrlUpdate(event: OpenedTabUrlUpdated) {
-        await this.taskScheduler.add(async () => {
-            if (await this.tabFilter.isTabSatisfiesFilter(event.tabId)) {
-                this.unfilterTabOnAllWorkspaces(event.tabId);
-            } else {
-                this.filterTabOnAllWorkspaces(event.tabId);
-            }
+            this.closeContextMenus();
         }).executeAll();
     }
 
@@ -213,40 +252,24 @@ export class TabsView {
         }
     }
 
-    private onTabFilterResultRetrieve(matchingTabs: OpenedTab[]) {
-        for (const workspace of this.workspaceList) {
-            workspace.filterTabs(matchingTabs);
-        }
+    async onTabTitleUpdate(event: OpenedTabTitleUpdated) {
+        await this.taskScheduler.add(async () => {
+            if (await this.tabFilter.isTabSatisfiesFilter(event.tabId)) {
+                this.unfilterTabOnAllWorkspaces(event.tabId);
+            } else {
+                this.filterTabOnAllWorkspaces(event.tabId);
+            }
+        }).executeAll();
     }
 
-    private onTabFilterClear() {
-        for (const workspace of this.workspaceList) {
-            workspace.unfilterAllTabs();
-        }
-    }
-
-    private onGeneralTabSelectorStateChange(selectorId: string, isChecked: boolean) {
-        if (isChecked) {
-            this.workspaceInUse.selectAllTabs();
-            this.pinnedTabList.selectAllTabs();
-        } else {
-            this.workspaceInUse.unselectAllTabs();
-            this.pinnedTabList.unselectAllTabs();
-        }
-    }
-
-    private onNumberOfSelectedTabsChange(workspaceId: string) {
-        if (BuiltinWorkspaces.PINNED_TABS !== workspaceId && this.workspaceInUse.workspaceId !== workspaceId) {
-            return;
-        }
-
-        const totalNumberOfSelectedTabs = this.pinnedTabList.getNumberOfSelectedTabs() + this.workspaceInUse.getNumberOfSelectedTabs();
-
-        if (0 === totalNumberOfSelectedTabs) {
-            this.generalTabSelector.markAsUnchecked();
-        } else {
-            this.generalTabSelector.markAsChecked();
-        }
+    async onTabUrlUpdate(event: OpenedTabUrlUpdated) {
+        await this.taskScheduler.add(async () => {
+            if (await this.tabFilter.isTabSatisfiesFilter(event.tabId)) {
+                this.unfilterTabOnAllWorkspaces(event.tabId);
+            } else {
+                this.filterTabOnAllWorkspaces(event.tabId);
+            }
+        }).executeAll();
     }
 
     // TODO onWorkspaceDelete() => call TabList.shutdown()
@@ -258,6 +281,7 @@ export class TabsViewFactory {
         private tabFilterFactory: TabFilterfactory,
         private newTabButtonFactory: NewTabButtonFactory,
         private taskSchedulerFactory: TaskSchedulerFactory,
+        private commandBus: CommandBus,
         private eventBus: EventBus,
         private queryBus: QueryBus,
     ) {
@@ -269,6 +293,7 @@ export class TabsViewFactory {
             this.tabListFactory,
             this.tabFilterFactory,
             this.newTabButtonFactory,
+            this.commandBus,
             this.eventBus,
             this.queryBus,
             this.taskSchedulerFactory.create(),

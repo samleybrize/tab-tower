@@ -14,9 +14,9 @@ export class World {
         this.webdriverRetriever = WebDriverRetriever.getInstance();
         this.testsConfig = TestsConfig.getInstance();
         this.urlDelayer = UrlDelayer.getInstance();
-        this.testPageDescriptorRetriever = new TestPageDescriptorRetriever(this.webdriverRetriever.getFirefoxConfig(), this.urlDelayer);
-
         this.urlDelayer.init();
+
+        this.testPageDescriptorRetriever = new TestPageDescriptorRetriever(this.webdriverRetriever.getFirefoxConfig(), this.urlDelayer);
     }
 }
 

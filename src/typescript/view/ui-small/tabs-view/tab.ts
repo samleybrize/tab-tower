@@ -3,7 +3,7 @@ import { CommandBus } from '../../../bus/command-bus';
 import { FocusOpenedTab } from '../../../tab/opened-tab/command';
 import { CloseButton } from './tab/close-button';
 import { MuteButton } from './tab/mute-button';
-import { TabContextMenu } from './tab/tab-context-menu';
+import { TabContextMenu, TabContextMenuFactory } from './tab/tab-context-menu';
 import { CheckboxShiftClickObserver, CheckboxStateChangeObserver, TabSelector } from './tab/tab-selector';
 import { UnmuteButton } from './tab/unmute-button';
 
@@ -22,7 +22,14 @@ export class Tab {
     private focused: boolean;
     readonly id: string;
 
-    constructor(private detectedBrowser: DetectedBrowser, private commandBus: CommandBus, private defaultFaviconUrl: string, openedTabId: string, fromExistingTab?: Tab) {
+    constructor(
+        private detectedBrowser: DetectedBrowser,
+        private commandBus: CommandBus,
+        private tabContextMenuFactory: TabContextMenuFactory,
+        private defaultFaviconUrl: string,
+        openedTabId: string,
+        fromExistingTab?: Tab,
+    ) {
         if (!fromExistingTab) {
             this.htmlElement = this.createElement();
         } else {
@@ -83,7 +90,7 @@ export class Tab {
         this.muteButton = new MuteButton(this.htmlElement.querySelector('.audible-icon'), openedTabId, this.commandBus); // TODO still needed?
         this.unmuteButton = new UnmuteButton(this.htmlElement.querySelector('.muted-icon'), openedTabId, this.commandBus); // TODO still needed?
         this.tabSelector = new TabSelector(this.htmlElement, this.htmlElement.querySelector('.tab-selector'), openedTabId);
-        this.contextMenu = new TabContextMenu(this.htmlElement, openedTabId, this.commandBus);
+        this.contextMenu = this.tabContextMenuFactory.create(this.htmlElement, openedTabId);
         this.htmlElement.appendChild(this.contextMenu.htmlElement);
 
         titleContainerElement.addEventListener('click', (event: MouseEvent) => {
@@ -203,7 +210,7 @@ export class Tab {
     }
 
     clone(openedTabId: string): Tab {
-        return new Tab(this.detectedBrowser, this.commandBus, this.defaultFaviconUrl, openedTabId, this);
+        return new Tab(this.detectedBrowser, this.commandBus, this.tabContextMenuFactory, this.defaultFaviconUrl, openedTabId, this);
     }
 
     markAsSelected() {
@@ -228,10 +235,10 @@ export class Tab {
 }
 
 export class TabFactory {
-    constructor(private detectedBrowser: DetectedBrowser, private commandBus: CommandBus, private defaultFaviconUrl: string) {
+    constructor(private detectedBrowser: DetectedBrowser, private commandBus: CommandBus, private tabContextMenuFactory: TabContextMenuFactory, private defaultFaviconUrl: string) {
     }
 
     create(openedTabId: string) {
-        return new Tab(this.detectedBrowser, this.commandBus, this.defaultFaviconUrl, openedTabId);
+        return new Tab(this.detectedBrowser, this.commandBus, this.tabContextMenuFactory, this.defaultFaviconUrl, openedTabId);
     }
 }

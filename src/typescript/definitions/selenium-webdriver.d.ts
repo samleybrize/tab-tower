@@ -16,5 +16,6 @@ declare module 'selenium-webdriver' {
 
     interface ActionSequence {
         move(options: ActionMoveOptions): ActionSequence;
+        contextClick(element?: WebElement): ActionSequence;
     }
 }

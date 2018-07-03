@@ -22,6 +22,21 @@ Then("I should see the browser's tab {int} as focused", async function(expectedF
     }, 10000, () => `Actual focused tab position "${actualFocusedTabPosition}" is different than expected "${expectedFocusedTabPosition}"`);
 });
 
+Then('I should see {int} browser tabs', async function(expectedNumberOfTabs: number) {
+    const world = this as World;
+    const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
+
+    let actualNumberOfTabs: number;
+    await webdriverHelper.wait(async () => {
+        const nativeTabList = await webdriverHelper.executeScript(async () => {
+            return browser.tabs.query({});
+        });
+        actualNumberOfTabs = nativeTabList.length;
+
+        return actualNumberOfTabs === expectedNumberOfTabs;
+    }, 10000, () => `Actual number of browser tabs "${actualNumberOfTabs}" is different than expected "${expectedNumberOfTabs}"`);
+});
+
 Then('I should see {int} visible tab(s) on the workspace {string}', async function(expectedNumberOfTabs: number, workspaceId: string) {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
@@ -122,6 +137,21 @@ Then('I should see the tab {int} as selected on the workspace {string}', async f
 Then('there should not be a visible close button on the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
     const world = this as World;
     await TabAssertions.assertCloseButtonIsNotVisible(world, workspaceId, tabPosition);
+});
+
+Then('the tab selector of the tab {int} on the workspace {string} should not be visible', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabSelectorIsNotVisible(world, workspaceId, tabPosition);
+});
+
+Then('the context menu of the tab {int} on the workspace {string} should not be visible', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabContextMenuIsNotVisible(world, workspaceId, tabPosition);
+});
+
+Then('the context menu of the tab {int} on the workspace {string} should be visible', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabContextMenuIsVisible(world, workspaceId, tabPosition);
 });
 
 Then('the tab {int} on the workspace {string} should be visible in the viewport', async function(tabPosition: number, workspaceId: string) {
@@ -380,6 +410,20 @@ class TabAssertions {
         }
     }
 
+    static async assertTabSelectorIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+
+        await webdriver.actions().move({origin: tab}).perform();
+        await sleep(200);
+
+        const tabSelector = tab.findElement(By.css('.tab-selector .checkbox-icon'));
+
+        if (await tabSelector.isDisplayed()) {
+            throw new Error(`Tab selector of tab at position ${tabPosition} of workspace "${workspaceId}" is visible`);
+        }
+    }
+
     static async assertUnpinnedTabFullyVisibleInViewport(world: World, workspaceId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
         const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
@@ -412,5 +456,25 @@ class TabAssertions {
         return webdriver.executeScript((e: HTMLElement) => {
             return e.getBoundingClientRect();
         }, element) as Promise<ClientRect>;
+    }
+
+    static async assertTabContextMenuIsVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const contextMenu = tab.findElement(By.css('.context-menu'));
+
+        await webdriver.wait(async () => {
+            return await contextMenu.isDisplayed();
+        }, 10000, `Context menu of tab at position ${tabPosition} on workspace "${workspaceId}" is not visible`);
+    }
+
+    static async assertTabContextMenuIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const contextMenu = tab.findElement(By.css('.context-menu'));
+
+        await webdriver.wait(async () => {
+            return !await contextMenu.isDisplayed();
+        }, 10000, `Context menu of tab at position ${tabPosition} on workspace "${workspaceId}" is visible`);
     }
 }

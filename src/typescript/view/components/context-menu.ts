@@ -1,3 +1,7 @@
+import { EventBus } from '../../bus/event-bus';
+import { ContextMenuClosed } from './event/context-menu-closed';
+import { ContextMenuOpened } from './event/context-menu-opened';
+
 export interface ContextMenuDimensions {
     readonly width: number;
     readonly height: number;
@@ -24,17 +28,16 @@ export interface ContextMenuPositionCalculator {
     getPosition(contextMenuDimensions: ContextMenuDimensions, boundingRectangle: BoundingRectangle): ContextMenuPosition;
 }
 
-type HideObserver = () => void;
+type PreShowObserver = (contextMenu: ContextMenu) => void;
+type ShowObserver = (contextMenu: ContextMenu) => void;
+type HideObserver = (contextMenu: ContextMenu) => void;
 
 export class ContextMenu {
-    private static currentlyShownMenu: ContextMenu = null;
-
     readonly htmlElement: HTMLElement;
-    readonly overlayElement: HTMLElement;
     private arrowElement: HTMLElement;
     private hideObserverList: HideObserver[] = [];
 
-    constructor(content: HTMLElement, private positionCalculator: ContextMenuPositionCalculator) {
+    constructor(content: HTMLElement, private positionCalculator: ContextMenuPositionCalculator, private eventBus: EventBus) {
         this.htmlElement = document.createElement('div');
         this.htmlElement.classList.add('context-menu');
         this.htmlElement.classList.add('hide');
@@ -44,35 +47,6 @@ export class ContextMenu {
         this.arrowElement = document.createElement('div');
         this.arrowElement.classList.add('arrow');
         this.htmlElement.appendChild(this.arrowElement);
-
-        this.overlayElement = this.createOrRetrieveOverlay();
-    }
-
-    private createOrRetrieveOverlay() {
-        const existingOverlay = document.querySelector('.context-menu-overlay') as HTMLElement;
-
-        if (existingOverlay) {
-            return existingOverlay;
-        } else {
-            const overlayElement = document.createElement('div');
-            overlayElement.classList.add('context-menu-overlay');
-            overlayElement.classList.add('hide');
-            document.querySelector('body').appendChild(overlayElement);
-
-            overlayElement.addEventListener('click', this.hideCurrentlyShownMenu.bind(this));
-            overlayElement.addEventListener('contextmenu', (event) => {
-                event.preventDefault();
-                this.hideCurrentlyShownMenu();
-            });
-
-            return overlayElement;
-        }
-    }
-
-    private hideCurrentlyShownMenu() {
-        if (ContextMenu.currentlyShownMenu) {
-            ContextMenu.currentlyShownMenu.hide();
-        }
     }
 
     private setArrowEdge(arrowEdge: ContextMenuPositionArrowEdge) {
@@ -80,8 +54,6 @@ export class ContextMenu {
     }
 
     show() {
-        this.hideCurrentlyShownMenu();
-
         const boundingRectangle = this.getWindowBoundingRectangle();
         const contextMenuDimensions = this.getContextMenuDimensions();
         const targetPosition = this.positionCalculator.getPosition(contextMenuDimensions, boundingRectangle);
@@ -91,9 +63,8 @@ export class ContextMenu {
         this.htmlElement.style.top = `${targetPosition.y}px`;
         this.htmlElement.style.left = `${targetPosition.x}px`;
         this.htmlElement.classList.remove('hide');
-        this.overlayElement.classList.remove('hide');
 
-        ContextMenu.currentlyShownMenu = this;
+        this.eventBus.publish(new ContextMenuOpened(this));
     }
 
     private getWindowBoundingRectangle(): BoundingRectangle {
@@ -123,20 +94,26 @@ export class ContextMenu {
         };
     }
 
-    hide() {
+    close() {
         this.htmlElement.classList.add('hide');
-        this.overlayElement.classList.add('hide');
-
-        if (ContextMenu.currentlyShownMenu === this) {
-            ContextMenu.currentlyShownMenu = null;
-        }
 
         for (const observer of this.hideObserverList) {
-            observer();
+            observer(this);
         }
+
+        this.eventBus.publish(new ContextMenuClosed(this));
     }
 
     observeHide(observer: HideObserver) {
         this.hideObserverList.push(observer);
+    }
+}
+
+export class ContextMenuFactory {
+    constructor(private eventBus: EventBus) {
+    }
+
+    create(content: HTMLElement, positionCalculator: ContextMenuPositionCalculator) {
+        return new ContextMenu(content, positionCalculator, this.eventBus);
     }
 }

@@ -68,6 +68,6 @@ Feature: Track tab duplicate
         And I should see the test page "test-page1" as tab 1 on the workspace "pinned-tabs"
         And I should not see the tab 0 as focused on the workspace "opened-tabs"
         And I should not see the tab 1 as focused on the workspace "opened-tabs"
-        And I should not see the tab 0 as focused on the workspace "opened-tabs"
+        And I should not see the tab 0 as focused on the workspace "pinned-tabs"
         And I should see the tab 1 as focused on the workspace "pinned-tabs"
         And I should see the current workspace with label "All opened tabs" and 4 tabs indicated

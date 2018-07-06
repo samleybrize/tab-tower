@@ -27,6 +27,8 @@ import { ContextMenuClosed } from './components/event/context-menu-closed';
 import { ContextMenuOpened } from './components/event/context-menu-opened';
 import { TabsViewFactory } from './ui-small/tabs-view';
 import { NewTabButtonFactory } from './ui-small/tabs-view/new-tab-button';
+import { SelectedTabsActionsFactory } from './ui-small/tabs-view/selected-tabs-actions';
+import { SelectedTabsActionsContextMenuFactory } from './ui-small/tabs-view/selected-tabs-actions-context-menu';
 import { TabFactory } from './ui-small/tabs-view/tab';
 import { TabFilterfactory } from './ui-small/tabs-view/tab-filter';
 import { TabListFactory } from './ui-small/tabs-view/tab-list';
@@ -101,8 +103,10 @@ async function main() {
         const tabFilterFactory = new TabFilterfactory(eventBus, queryBus);
         const tabListFactory = new TabListFactory(eventBus, tabFactory, !!window.isTestEnvironment);
         const newTabButtonFactory = new NewTabButtonFactory(commandBus);
+        const selectedTabsActionsContextMenuFactory = new SelectedTabsActionsContextMenuFactory(commandBus, queryBus, contextMenuFactory, document.querySelector('.selected-tabs-actions-context-menu-container'));
+        const selectedTabsActionsFactory = new SelectedTabsActionsFactory(selectedTabsActionsContextMenuFactory);
         const taskSchedulerFactory = new TaskSchedulerFactory(logger);
-        const tabsViewFactory = new TabsViewFactory(tabListFactory, tabFilterFactory, newTabButtonFactory, taskSchedulerFactory, commandBus, eventBus, queryBus);
+        const tabsViewFactory = new TabsViewFactory(tabListFactory, tabFilterFactory, newTabButtonFactory, selectedTabsActionsFactory, taskSchedulerFactory, commandBus, eventBus, queryBus);
         const uiSmall = new UiSmall(tabsViewFactory);
     }
 

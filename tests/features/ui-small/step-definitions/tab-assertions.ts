@@ -6,37 +6,6 @@ import { WebdriverHelper } from '../../../webdriver/webdriver-helper';
 import { TabSupport } from '../support/tab-support';
 import { World } from '../support/world';
 
-Then("I should see the browser's tab {int} as focused", async function(expectedFocusedTabPosition: number) {
-    const world = this as World;
-    const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
-
-    let actualFocusedTabPosition: number;
-    await webdriverHelper.wait(async () => {
-        actualFocusedTabPosition = await webdriverHelper.executeScript(async () => {
-            const activeTabList = await browser.tabs.query({active: true});
-
-            return activeTabList ? activeTabList[0].index : null;
-        });
-
-        return actualFocusedTabPosition === expectedFocusedTabPosition;
-    }, 10000, () => `Actual focused tab position "${actualFocusedTabPosition}" is different than expected "${expectedFocusedTabPosition}"`);
-});
-
-Then('I should see {int} browser tabs', async function(expectedNumberOfTabs: number) {
-    const world = this as World;
-    const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
-
-    let actualNumberOfTabs: number;
-    await webdriverHelper.wait(async () => {
-        const nativeTabList = await webdriverHelper.executeScript(async () => {
-            return browser.tabs.query({});
-        });
-        actualNumberOfTabs = nativeTabList.length;
-
-        return actualNumberOfTabs === expectedNumberOfTabs;
-    }, 10000, () => `Actual number of browser tabs "${actualNumberOfTabs}" is different than expected "${expectedNumberOfTabs}"`);
-});
-
 Then('I should see {int} visible tab(s) on the workspace {string}', async function(expectedNumberOfTabs: number, workspaceId: string) {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
@@ -331,14 +300,8 @@ class TabAssertions {
         const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
 
         await webdriver.wait(async () => {
-            return await this.hasCssClass(tab, 'active');
+            return await TabSupport.hasCssClass(tab, 'active');
         }, 10000, 'Tab is not marked as focused');
-    }
-
-    private static async hasCssClass(element: WebElement, cssClass: string) {
-        const cssClasses = ('' + await element.getAttribute('class')).split(' ');
-
-        return cssClasses.indexOf(cssClass) >= 0;
     }
 
     static async assertTabIsNotMarkedAsFocused(world: World, workspaceId: string, tabPosition: number) {
@@ -346,7 +309,7 @@ class TabAssertions {
         const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
 
         await webdriver.wait(async () => {
-            return !await this.hasCssClass(tab, 'active');
+            return !await TabSupport.hasCssClass(tab, 'active');
         }, 10000, 'Tab is marked as focused');
     }
 
@@ -355,7 +318,7 @@ class TabAssertions {
         const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
 
         await webdriver.wait(async () => {
-            return await this.hasCssClass(tab, 'loading');
+            return await TabSupport.hasCssClass(tab, 'loading');
         }, 10000, 'Tab is not marked as loading');
     }
 
@@ -364,7 +327,7 @@ class TabAssertions {
         const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
 
         await webdriver.wait(async () => {
-            return !await this.hasCssClass(tab, 'loading');
+            return !await TabSupport.hasCssClass(tab, 'loading');
         }, 10000, 'Tab is marked as loading');
     }
 

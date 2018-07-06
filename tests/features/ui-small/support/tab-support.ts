@@ -32,4 +32,10 @@ export class TabSupport {
             }
         }, 10000, failMessage);
     }
+
+    static async hasCssClass(element: WebElement, cssClass: string) {
+        const cssClasses = ('' + await element.getAttribute('class')).split(' ');
+
+        return cssClasses.indexOf(cssClass) >= 0;
+    }
 }

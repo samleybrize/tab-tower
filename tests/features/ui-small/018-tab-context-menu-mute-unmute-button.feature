@@ -38,11 +38,11 @@ Feature: Tab context menu - Mute and unmute button
         When I click on the tab context menu unmute button of the tab 1 on the workspace "opened-tabs"
 
         Then I should not see the tab 0 as muted on the workspace "opened-tabs"
-        Then I should not see the tab 0 as audible on the workspace "opened-tabs"
-        Then I should not see the tab 1 as muted on the workspace "opened-tabs"
-        Then I should see the tab 1 as audible on the workspace "opened-tabs"
-        Then I should not see the tab 2 as muted on the workspace "opened-tabs"
-        Then I should not see the tab 2 as audible on the workspace "opened-tabs"
+        And I should not see the tab 0 as audible on the workspace "opened-tabs"
+        And I should not see the tab 1 as muted on the workspace "opened-tabs"
+        And I should see the tab 1 as audible on the workspace "opened-tabs"
+        And I should not see the tab 2 as muted on the workspace "opened-tabs"
+        And I should not see the tab 2 as audible on the workspace "opened-tabs"
 
     Scenario: Clicking on a pinned tab context menu unmute button should unmute the tab
         When I pin the tab 1
@@ -57,8 +57,8 @@ Feature: Tab context menu - Mute and unmute button
         When I click on the tab context menu unmute button of the tab 0 on the workspace "pinned-tabs"
 
         Then I should not see the tab 0 as muted on the workspace "opened-tabs"
-        Then I should not see the tab 0 as audible on the workspace "opened-tabs"
-        Then I should not see the tab 0 as muted on the workspace "pinned-tabs"
-        Then I should see the tab 0 as audible on the workspace "pinned-tabs"
-        Then I should not see the tab 1 as muted on the workspace "pinned-tabs"
-        Then I should not see the tab 1 as audible on the workspace "pinned-tabs"
+        And I should not see the tab 0 as audible on the workspace "opened-tabs"
+        And I should not see the tab 0 as muted on the workspace "pinned-tabs"
+        And I should see the tab 0 as audible on the workspace "pinned-tabs"
+        And I should not see the tab 1 as muted on the workspace "pinned-tabs"
+        And I should not see the tab 1 as audible on the workspace "pinned-tabs"

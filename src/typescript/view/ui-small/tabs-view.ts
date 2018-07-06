@@ -15,6 +15,8 @@ import { Checkbox } from '../components/checkbox';
 import { CloseContextMenus } from '../components/command/close-context-menus';
 import { CurrentWorkspace } from './tabs-view/current-workspace';
 import { NewTabButton, NewTabButtonFactory } from './tabs-view/new-tab-button';
+import { GetCurrentWorkspaceSelectedTabs } from './tabs-view/query/get-current-workspace-selected-tabs';
+import { SelectedTabsActions, SelectedTabsActionsFactory } from './tabs-view/selected-tabs-actions';
 import { TabFilter, TabFilterfactory } from './tabs-view/tab-filter';
 import { TabList, TabListFactory } from './tabs-view/tab-list';
 
@@ -27,6 +29,7 @@ export class TabsView {
     private tabFilter: TabFilter;
     private generalTabSelector: Checkbox;
     private newTabButton: NewTabButton;
+    private selectedTabsActions: SelectedTabsActions;
     private pinnedTabList: TabList;
     private workspaceMap = new Map<string, TabList>();
     private workspaceList: TabList[] = [];
@@ -41,16 +44,20 @@ export class TabsView {
         private tabListFactory: TabListFactory,
         tabFilterFactory: TabFilterfactory,
         newTabButtonFactory: NewTabButtonFactory,
+        selectedTabsActionsFactory: SelectedTabsActionsFactory,
         private commandBus: CommandBus,
         eventBus: EventBus,
         private queryBus: QueryBus,
         private taskScheduler: TaskScheduler,
     ) {
         this.tabFilter = tabFilterFactory.create(containerElement.querySelector('.filter'));
-        this.generalTabSelector = new Checkbox(containerElement.querySelector('.general-tab-selector'), 'general-tab-selector');
+        this.generalTabSelector = new Checkbox(containerElement.querySelector('.general-tab-selector'), 'general-tab-selector', 'unchecked');
         this.newTabButton = newTabButtonFactory.create(containerElement.querySelector('.new-tab-button'));
+        this.selectedTabsActions = selectedTabsActionsFactory.create(containerElement.querySelector('.selected-tabs-actions-button'));
         this.unpinnedWorkspacesContainerElement = containerElement.querySelector('.unpinned-tabs');
         this.currentWorkspaceIndicatorContainerElement = containerElement.querySelector('.current-workspace');
+
+        queryBus.register(GetCurrentWorkspaceSelectedTabs, this.queryCurrentWorkspaceSelectedTabs, this);
 
         this.createOpenedTabWorkspace().then(() => {
             this.enableWorkspace(BuiltinWorkspaces.OPENED_TABS);
@@ -130,8 +137,10 @@ export class TabsView {
 
         if (0 === totalNumberOfSelectedTabs) {
             this.generalTabSelector.markAsUnchecked();
+            this.selectedTabsActions.hide();
         } else {
             this.generalTabSelector.markAsChecked();
+            this.selectedTabsActions.showContextMenuOpener();
         }
     }
 
@@ -166,9 +175,11 @@ export class TabsView {
         if (isChecked) {
             this.workspaceInUse.selectAllTabs();
             this.pinnedTabList.selectAllTabs();
+            this.selectedTabsActions.showContextMenuOpener();
         } else {
             this.workspaceInUse.unselectAllTabs();
             this.pinnedTabList.unselectAllTabs();
+            this.selectedTabsActions.hide();
         }
     }
 
@@ -231,7 +242,7 @@ export class TabsView {
         const existingTab = openedTabsWorkspace.getTab(openedTabId);
 
         if (existingTab) {
-            const pinnedTabsWorkspace = this.workspaceMap.get(BuiltinWorkspaces.PINNED_TABS);
+            const pinnedTabsWorkspace = this.pinnedTabList;
             existingTab.markAsPinned();
 
             openedTabsWorkspace.removeTab(openedTabId);
@@ -272,6 +283,10 @@ export class TabsView {
         }).executeAll();
     }
 
+    async queryCurrentWorkspaceSelectedTabs(query: GetCurrentWorkspaceSelectedTabs): Promise<string[]> {
+        return this.workspaceInUse.getSelectedTabIdList().concat(this.pinnedTabList.getSelectedTabIdList());
+    }
+
     // TODO onWorkspaceDelete() => call TabList.shutdown()
 }
 
@@ -280,6 +295,7 @@ export class TabsViewFactory {
         private tabListFactory: TabListFactory,
         private tabFilterFactory: TabFilterfactory,
         private newTabButtonFactory: NewTabButtonFactory,
+        private selectedTabsActionsFactory: SelectedTabsActionsFactory,
         private taskSchedulerFactory: TaskSchedulerFactory,
         private commandBus: CommandBus,
         private eventBus: EventBus,
@@ -293,6 +309,7 @@ export class TabsViewFactory {
             this.tabListFactory,
             this.tabFilterFactory,
             this.newTabButtonFactory,
+            this.selectedTabsActionsFactory,
             this.commandBus,
             this.eventBus,
             this.queryBus,

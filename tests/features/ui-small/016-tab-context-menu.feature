@@ -40,7 +40,10 @@ Feature: Tab context menu
 
     Scenario: The context menu of a tab should be hidden when any tab is closed
         When I open the test page "test-page2"
-        And I right click on the title of the tab 1 on the workspace "opened-tabs"
+
+        Then I should see 3 visible tabs on the workspace "opened-tabs"
+
+        Then I right click on the title of the tab 1 on the workspace "opened-tabs"
 
         Then the context menu of the tab 1 on the workspace "opened-tabs" should be visible
 
@@ -50,7 +53,10 @@ Feature: Tab context menu
 
     Scenario: The context menu of a tab should be hidden when any tab is pinned
         When I open the test page "test-page2"
-        And I right click on the title of the tab 1 on the workspace "opened-tabs"
+
+        Then I should see 3 visible tabs on the workspace "opened-tabs"
+
+        When I right click on the title of the tab 1 on the workspace "opened-tabs"
 
         Then the context menu of the tab 1 on the workspace "opened-tabs" should be visible
 
@@ -74,7 +80,10 @@ Feature: Tab context menu
 
     Scenario: The context menu of a tab should be hidden when any tab is moved
         When I open the test page "test-page2"
-        And I right click on the title of the tab 1 on the workspace "opened-tabs"
+
+        Then I should see 3 visible tabs on the workspace "opened-tabs"
+
+        When I right click on the title of the tab 1 on the workspace "opened-tabs"
 
         Then the context menu of the tab 1 on the workspace "opened-tabs" should be visible
 

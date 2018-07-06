@@ -47,7 +47,7 @@ export class TabContextMenu {
         this.muteButtonElement = this.content.querySelector('.mute-button');
         this.unmuteButtonElement = this.content.querySelector('.unmute-button');
 
-        this.contextMenu.observeHide(this.onHide.bind(this));
+        this.contextMenu.observeClose(this.onClose.bind(this));
 
         this.initReloadButton(this.content.querySelector('.reload-button'));
         this.initMuteButton(this.content.querySelector('.mute-button'));
@@ -116,14 +116,14 @@ export class TabContextMenu {
         return this.contextMenu.htmlElement;
     }
 
-    show(targetPosition: Position) {
+    open(targetPosition: Position) {
         this.content.style.maxHeight = (window.innerHeight * 0.33) + 'px';
         this.positionCalculator.setTargetPosition(targetPosition);
-        this.contextMenu.show();
+        this.contextMenu.open();
         this.tabElement.classList.add('context-menu-visible');
     }
 
-    onHide() {
+    private onClose() {
         this.tabElement.classList.remove('context-menu-visible');
     }
 

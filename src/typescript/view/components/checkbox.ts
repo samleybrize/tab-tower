@@ -7,9 +7,15 @@ export class Checkbox {
     private stateChangeObserverList: CheckboxStateChangeObserver[] = [];
     private shiftClickObserverList: CheckboxShiftClickObserver[] = [];
 
-    constructor(tabSelectorContainer: HTMLElement, private id: string) {
+    constructor(tabSelectorContainer: HTMLElement, private id: string, defaultState?: 'checked'|'unchecked') {
         this.checkboxElement = tabSelectorContainer.querySelector('input') as HTMLInputElement;
         this.checked = this.checkboxElement.checked;
+
+        if ('checked' == defaultState) {
+            this.markAsChecked();
+        } else if ('unchecked' == defaultState) {
+            this.markAsUnchecked();
+        }
 
         this.checkboxElement.addEventListener('change', () => {
             if (this.checkboxElement.checked) {

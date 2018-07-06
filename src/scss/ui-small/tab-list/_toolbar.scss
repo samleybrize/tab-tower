@@ -1,5 +1,6 @@
 .ui-small .tab-list {
     .toolbar {
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -9,14 +10,19 @@
 
         .general-tab-selector,
         .new-tab-button,
-        .general-more-button {
+        .selected-tabs-actions-button {
             display: block;
+            flex-grow: 1;
         }
 
         .general-tab-selector {
             margin-left: calc(#{$tab-padding} + #{$tab-border-left-width});
 
             .checkbox-icon  {
+                top: 2px;
+                width: 15px;
+                height: 15px;
+
                 .unchecked {
                     color: $toolbar-font-color;
                 }
@@ -28,7 +34,7 @@
         }
 
         .new-tab-button,
-        .general-more-button {
+        .selected-tabs-actions-button {
             height: 22px;
 
             i {
@@ -42,10 +48,34 @@
                     background: $toolbar-font-hover-background;
                 }
             }
+
+            &.context-menu-visible i {
+                background: $toolbar-font-hover-background;
+            }
         }
 
-        .general-more-button {
+        .new-tab-button {
+            text-align: center;
+        }
+
+        .selected-tabs-actions-button {
             margin-right: $tab-padding;
+            text-align: right;
+            transition: opacity 0.2s ease;
+
+            &.hide {
+                opacity: 0;
+            }
+        }
+
+        .context-menu {
+            position: fixed;
+            right: calc(#{$tab-padding} - 2px);
+            bottom: calc(#{$toolbar-height} + (#{$context-menu-arrow-size} / 2));
+
+            .arrow {
+                right: 5px;
+            }
         }
     }
 }

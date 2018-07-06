@@ -28,14 +28,12 @@ export interface ContextMenuPositionCalculator {
     getPosition(contextMenuDimensions: ContextMenuDimensions, boundingRectangle: BoundingRectangle): ContextMenuPosition;
 }
 
-type PreShowObserver = (contextMenu: ContextMenu) => void;
-type ShowObserver = (contextMenu: ContextMenu) => void;
-type HideObserver = (contextMenu: ContextMenu) => void;
+type CloseObserver = (contextMenu: ContextMenu) => void;
 
 export class ContextMenu {
     readonly htmlElement: HTMLElement;
     private arrowElement: HTMLElement;
-    private hideObserverList: HideObserver[] = [];
+    private closeObserverList: CloseObserver[] = [];
 
     constructor(content: HTMLElement, private positionCalculator: ContextMenuPositionCalculator, private eventBus: EventBus) {
         this.htmlElement = document.createElement('div');
@@ -49,21 +47,23 @@ export class ContextMenu {
         this.htmlElement.appendChild(this.arrowElement);
     }
 
-    private setArrowEdge(arrowEdge: ContextMenuPositionArrowEdge) {
+    setArrowEdge(arrowEdge: ContextMenuPositionArrowEdge) {
         this.htmlElement.setAttribute('data-arrow-edge', arrowEdge);
     }
 
-    show() {
+    open() {
         const boundingRectangle = this.getWindowBoundingRectangle();
         const contextMenuDimensions = this.getContextMenuDimensions();
         const targetPosition = this.positionCalculator.getPosition(contextMenuDimensions, boundingRectangle);
 
-        this.setArrowEdge(targetPosition.arrowEdge);
+        if (targetPosition) {
+            this.setArrowEdge(targetPosition.arrowEdge);
 
-        this.htmlElement.style.top = `${targetPosition.y}px`;
-        this.htmlElement.style.left = `${targetPosition.x}px`;
+            this.htmlElement.style.top = `${targetPosition.y}px`;
+            this.htmlElement.style.left = `${targetPosition.x}px`;
+        }
+
         this.htmlElement.classList.remove('hide');
-
         this.eventBus.publish(new ContextMenuOpened(this));
     }
 
@@ -86,6 +86,9 @@ export class ContextMenu {
 
         this.htmlElement.classList.remove('instant-show');
 
+        // triggers a repaint, used to not break the animation due to the 'instant-show' css class
+        this.htmlElement.getBoundingClientRect();
+
         return {
             width: boxDimensions.width,
             height: boxDimensions.height,
@@ -95,17 +98,21 @@ export class ContextMenu {
     }
 
     close() {
+        if (this.htmlElement.classList.contains('hide')) {
+            return;
+        }
+
         this.htmlElement.classList.add('hide');
 
-        for (const observer of this.hideObserverList) {
+        for (const observer of this.closeObserverList) {
             observer(this);
         }
 
         this.eventBus.publish(new ContextMenuClosed(this));
     }
 
-    observeHide(observer: HideObserver) {
-        this.hideObserverList.push(observer);
+    observeClose(observer: CloseObserver) {
+        this.closeObserverList.push(observer);
     }
 }
 

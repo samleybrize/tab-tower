@@ -135,6 +135,10 @@ export class TabList {
         this.tabCounter.increment();
         tabToInsert.observeSelectStateChange(this.onTabSelectStateChange.bind(this));
         tabToInsert.observeShiftClick(this.onTabSelectorShiftClick.bind(this));
+
+        if (tabToInsert.isSelected()) {
+            this.onTabSelectStateChange(tabToInsert.id, true);
+        }
     }
 
     private insertTabAtPosition(tabToInsert: Tab, targetPosition: number) {
@@ -266,6 +270,18 @@ export class TabList {
         for (const tab of this.sortedTabList) {
             tab.markAsUnselected();
         }
+    }
+
+    getSelectedTabIdList() {
+        const tabIdList: string[] = [];
+
+        for (const tab of this.sortedTabList) {
+            if (tab.isSelected()) {
+                tabIdList.push(tab.id);
+            }
+        }
+
+        return tabIdList;
     }
 
     getNumberOfSelectedTabs() {

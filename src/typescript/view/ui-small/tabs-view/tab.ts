@@ -98,7 +98,7 @@ export class Tab {
         });
         titleContainerElement.addEventListener('contextmenu', (event: MouseEvent) => {
             event.preventDefault();
-            this.contextMenu.show({x: event.clientX, y: event.clientY});
+            this.contextMenu.open({x: event.clientX, y: event.clientY});
         });
     }
 

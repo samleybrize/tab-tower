@@ -1,0 +1,45 @@
+$tab-padding: 8px;
+$tab-border-left-width: 4px;
+$tab-loading-icon-height: 4px;
+
+$tab-background-color: white;
+$tab-hover-background-color: #ebebeb;
+$tab-title-color: #444;
+$tab-title-font-size: 13px;
+$tab-url-color: #a2a2a2;
+$tab-border-left-color: transparent;
+$tab-border-bottom-color: #d0d0d0;
+$tab-button-hover-background: silver;
+$close-tab-button-color: red;
+$selected-tab-background-color: #e1f5fe;
+$highlighted-tab-background-color: #fff59d;
+$highlighted-tab-font-color: #ef6c00;
+$discarded-tab-border-left-color: transparent;
+$active-tab-border-left-color: #2196f3;
+$active-tab-background-color: $tab-hover-background-color;
+$tab-checkbox-unchecked-color: #5a5a5a;
+$tab-checkbox-checked-color: #2196f3;
+$move-above-button-background-color: #ff9800;
+$move-above-button-hover-background-color: #f57c00;
+$move-above-button-font-color: white;
+
+$header-background-color: #03a9f4;
+$header-font-color: white;
+
+$filter-background-color: #f8f8f8;
+$filter-border-bottom-color: #d0d0d0;
+$filter-hover-background-color: #edfaff;
+$filter-hover-border-bottom-color: #45a5f5;
+$filter-icon-color: grey;
+
+$toolbar-background-color: $header-background-color;
+$toolbar-font-color: white;
+$toolbar-font-hover-background: darken($toolbar-background-color, 10%);
+$toolbar-height: 30px;
+
+$context-menu-background-color: white;
+$context-menu-font-color: #444;
+$context-menu-font-size: 15px;
+$context-menu-li-hover-font-color: white;
+$context-menu-li-hover-background-color: #5a98e2;
+$context-menu-arrow-size: 15px;

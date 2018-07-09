@@ -1,5 +1,5 @@
 @selectedTabsActionsPinButton
-Feature: Selected tabs actions - Reload button
+Feature: Selected tabs actions - Pin and unpin button
     Background:
         Given I use the small UI
 

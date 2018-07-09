@@ -1,6 +1,7 @@
 export * from './close-opened-tab';
 export * from './close-opened-tabs-to-the-right';
 export * from './close-other-opened-tabs';
+export * from './discard-opened-tab';
 export * from './duplicate-opened-tab';
 export * from './focus-opened-tab';
 export * from './move-opened-tabs';

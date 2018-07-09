@@ -1,5 +1,6 @@
 import { CommandBus } from '../../../../bus/command-bus';
 import { CloseOpenedTab } from '../../../../tab/opened-tab/command/close-opened-tab';
+import { DiscardOpenedTab } from '../../../../tab/opened-tab/command/discard-opened-tab';
 import { DuplicateOpenedTab } from '../../../../tab/opened-tab/command/duplicate-opened-tab';
 import { MuteOpenedTab } from '../../../../tab/opened-tab/command/mute-opened-tab';
 import { PinOpenedTab } from '../../../../tab/opened-tab/command/pin-opened-tab';
@@ -13,6 +14,7 @@ interface Position {
     y: number;
 }
 
+// TODO hide discard button when already discarded, show otherwise
 export class TabContextMenu {
     private contextMenu: ContextMenu;
     private positionCalculator: TabContextMenuPositionCalculator;
@@ -21,6 +23,7 @@ export class TabContextMenu {
     private unpinButtonElement: HTMLElement;
     private muteButtonElement: HTMLElement;
     private unmuteButtonElement: HTMLElement;
+    private discardButtonElement: HTMLElement;
 
     constructor(private tabElement: HTMLElement, private openedTabId: string, private commandBus: CommandBus, contextMenuFactory: ContextMenuFactory) {
         this.content = document.createElement('div');
@@ -37,6 +40,7 @@ export class TabContextMenu {
                 <li class="clickable pin-button"><i class="material-icons">stars</i> Pin</li>
                 <li class="clickable unpin-button hide"><i class="material-icons">stars</i> Unpin</li>
                 <li class="clickable duplicate-button"><i class="material-icons">content_copy</i> Duplicate</li>
+                <li class="clickable discard-button"><i class="material-icons">power_settings_new</i> Suspend</li>
                 <li class="clickable move-button"><i class="material-icons">swap_vert</i> Move</li>
                 <li class="clickable close-button"><i class="material-icons">close</i> Close</li>
             </ul>
@@ -46,6 +50,7 @@ export class TabContextMenu {
         this.unpinButtonElement = this.content.querySelector('.unpin-button');
         this.muteButtonElement = this.content.querySelector('.mute-button');
         this.unmuteButtonElement = this.content.querySelector('.unmute-button');
+        this.discardButtonElement = this.content.querySelector('.discard-button');
 
         this.contextMenu.observeClose(this.onClose.bind(this));
 
@@ -55,6 +60,7 @@ export class TabContextMenu {
         this.initPinButton(this.content.querySelector('.pin-button'));
         this.initUnpinButton(this.content.querySelector('.unpin-button'));
         this.initDuplicateButton(this.content.querySelector('.duplicate-button'));
+        this.initDiscardButton(this.content.querySelector('.discard-button'));
         this.initMoveButton(this.content.querySelector('.move-button'));
         this.initCloseButton(this.content.querySelector('.close-button'));
     }
@@ -97,6 +103,13 @@ export class TabContextMenu {
     private initDuplicateButton(buttonElement: HTMLElement) {
         buttonElement.addEventListener('click', () => {
             this.commandBus.handle(new DuplicateOpenedTab(this.openedTabId));
+            this.contextMenu.close();
+        });
+    }
+
+    private initDiscardButton(buttonElement: HTMLElement) {
+        buttonElement.addEventListener('click', () => {
+            this.commandBus.handle(new DiscardOpenedTab(this.openedTabId));
             this.contextMenu.close();
         });
     }
@@ -145,6 +158,14 @@ export class TabContextMenu {
     showUnmuteButton() {
         this.muteButtonElement.classList.add('hide');
         this.unmuteButtonElement.classList.remove('hide');
+    }
+
+    showDiscardButton() {
+        this.discardButtonElement.classList.remove('hide');
+    }
+
+    hideDiscardButton() {
+        this.discardButtonElement.classList.add('hide');
     }
 }
 

@@ -208,6 +208,19 @@ When('I duplicate the tab {int}', async function(tabPositionToDuplicate: number)
     }, [tabPositionToDuplicate]);
 });
 
+When('I discard the tab {int}', async function(tabPositionToDuplicate: number) {
+    const world = this as World;
+    const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
+
+    await webdriverHelper.executeScript(async (index: number) => {
+        const tabToDiscard = await browser.tabs.query({index});
+
+        if (tabToDiscard) {
+            await browser.tabs.discard(tabToDiscard[0].id);
+        }
+    }, [tabPositionToDuplicate]);
+});
+
 When('I restore the last recently closed tab', async function() {
     const world = this as World;
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();

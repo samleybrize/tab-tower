@@ -1,5 +1,5 @@
 @selectedTabsActionsMuteButton
-Feature: Selected tabs actions - Reload button
+Feature: Selected tabs actions - Mute and Unmute button
     Background:
         Given I use the small UI
 

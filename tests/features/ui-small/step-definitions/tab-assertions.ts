@@ -103,6 +103,16 @@ Then('I should see the tab {int} as selected on the workspace {string}', async f
     await TabAssertions.assertTabIsMarkedAsSelected(world, workspaceId, tabPosition);
 });
 
+Then('I should not see the tab {int} as discarded on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabIsNotMarkedAsDiscarded(world, workspaceId, tabPosition);
+});
+
+Then('I should see the tab {int} as discarded on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabIsMarkedAsDiscarded(world, workspaceId, tabPosition);
+});
+
 Then('there should not be a visible close button on the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
     const world = this as World;
     await TabAssertions.assertCloseButtonIsNotVisible(world, workspaceId, tabPosition);
@@ -121,6 +131,56 @@ Then('the context menu of the tab {int} on the workspace {string} should not be 
 Then('the context menu of the tab {int} on the workspace {string} should be visible', async function(tabPosition: number, workspaceId: string) {
     const world = this as World;
     await TabAssertions.assertTabContextMenuIsVisible(world, workspaceId, tabPosition);
+});
+
+Then('I should not see the mute button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabContextMenuMuteButtonIsNotVisible(world, workspaceId, tabPosition);
+});
+
+Then('I should see the mute button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabContextMenuMuteButtonIsVisible(world, workspaceId, tabPosition);
+});
+
+Then('I should not see the unmute button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabContextMenuUnmuteButtonIsNotVisible(world, workspaceId, tabPosition);
+});
+
+Then('I should see the unmute button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabContextMenuUnmuteButtonIsVisible(world, workspaceId, tabPosition);
+});
+
+Then('I should not see the pin button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabContextMenuPinButtonIsNotVisible(world, workspaceId, tabPosition);
+});
+
+Then('I should see the pin button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabContextMenuPinButtonIsVisible(world, workspaceId, tabPosition);
+});
+
+Then('I should not see the unpin button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabContextMenuUnpinButtonIsNotVisible(world, workspaceId, tabPosition);
+});
+
+Then('I should see the unpin button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabContextMenuUnpinButtonIsVisible(world, workspaceId, tabPosition);
+});
+
+Then('I should not see the discard button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabContextMenuDiscardButtonIsNotVisible(world, workspaceId, tabPosition);
+});
+
+Then('I should see the discard button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabContextMenuDiscardButtonIsVisible(world, workspaceId, tabPosition);
 });
 
 Then('the tab {int} on the workspace {string} should be visible in the viewport', async function(tabPosition: number, workspaceId: string) {
@@ -359,6 +419,24 @@ class TabAssertions {
         }, 10000, 'Tab is marked as selected');
     }
 
+    static async assertTabIsMarkedAsDiscarded(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+
+        await webdriver.wait(async () => {
+            return await TabSupport.hasCssClass(tab, 'discarded');
+        }, 10000, 'Tab is not marked as discarded');
+    }
+
+    static async assertTabIsNotMarkedAsDiscarded(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+
+        await webdriver.wait(async () => {
+            return !await TabSupport.hasCssClass(tab, 'discarded');
+        }, 10000, 'Tab is marked as discarded');
+    }
+
     static async assertCloseButtonIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
         const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
@@ -439,5 +517,118 @@ class TabAssertions {
         await webdriver.wait(async () => {
             return !await contextMenu.isDisplayed();
         }, 10000, `Context menu of tab at position ${tabPosition} on workspace "${workspaceId}" is visible`);
+    }
+
+    static async assertTabContextMenuMuteButtonIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        await this.openTabContextMenu(webdriver, tab);
+        await this.waitThatTabContextMenuIsVisible(webdriver, tab);
+        await this.assertThatTabContextMenuButtonIsNotVisible(tab, 'mute-button', 'mute', workspaceId, tabPosition);
+    }
+
+    static async assertTabContextMenuMuteButtonIsVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        await this.openTabContextMenu(webdriver, tab);
+        await this.waitThatTabContextMenuIsVisible(webdriver, tab);
+        await this.assertThatTabContextMenuButtonIsVisible(tab, 'mute-button', 'mute', workspaceId, tabPosition);
+    }
+
+    private static async openTabContextMenu(webdriver: WebDriver, tab: WebElement) {
+        const contextMenu = tab.findElement(By.css('.context-menu'));
+        const titleElement = tab.findElement(By.css('.title'));
+
+        if (!await contextMenu.isDisplayed()) {
+            await webdriver.actions().contextClick(titleElement).perform();
+        }
+    }
+
+    private static async waitThatTabContextMenuIsVisible(webdriver: WebDriver, tab: WebElement) {
+        const contextMenu = tab.findElement(By.css('.context-menu'));
+
+        await webdriver.wait(async () => {
+            return contextMenu.isDisplayed();
+        }, 10000);
+    }
+
+    private static async assertThatTabContextMenuButtonIsNotVisible(tab: WebElement, buttonCssClass: string, buttonLabel: string, workspaceId: string, tabPosition: number) {
+        const button = tab.findElement(By.css(`.context-menu .${buttonCssClass}`));
+
+        if (await button.isDisplayed()) {
+            throw new Error(`Tab context menu ${buttonLabel} button of tab at position ${tabPosition} of workspace "${workspaceId}" is visible`);
+        }
+    }
+
+    private static async assertThatTabContextMenuButtonIsVisible(tab: WebElement, buttonCssClass: string, buttonLabel: string, workspaceId: string, tabPosition: number) {
+        const button = tab.findElement(By.css(`.context-menu .${buttonCssClass}`));
+
+        if (!await button.isDisplayed()) {
+            throw new Error(`Tab context menu ${buttonLabel} button of tab at position ${tabPosition} of workspace "${workspaceId}" is not visible`);
+        }
+    }
+
+    static async assertTabContextMenuUnmuteButtonIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        await this.openTabContextMenu(webdriver, tab);
+        await this.waitThatTabContextMenuIsVisible(webdriver, tab);
+        await this.assertThatTabContextMenuButtonIsNotVisible(tab, 'unmute-button', 'unmute', workspaceId, tabPosition);
+    }
+
+    static async assertTabContextMenuUnmuteButtonIsVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        await this.openTabContextMenu(webdriver, tab);
+        await this.waitThatTabContextMenuIsVisible(webdriver, tab);
+        await this.assertThatTabContextMenuButtonIsVisible(tab, 'unmute-button', 'unmute', workspaceId, tabPosition);
+    }
+
+    static async assertTabContextMenuPinButtonIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        await this.openTabContextMenu(webdriver, tab);
+        await this.waitThatTabContextMenuIsVisible(webdriver, tab);
+        await this.assertThatTabContextMenuButtonIsNotVisible(tab, 'pin-button', 'pin', workspaceId, tabPosition);
+    }
+
+    static async assertTabContextMenuPinButtonIsVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        await this.openTabContextMenu(webdriver, tab);
+        await this.waitThatTabContextMenuIsVisible(webdriver, tab);
+        await this.assertThatTabContextMenuButtonIsVisible(tab, 'pin-button', 'pin', workspaceId, tabPosition);
+    }
+
+    static async assertTabContextMenuUnpinButtonIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        await this.openTabContextMenu(webdriver, tab);
+        await this.waitThatTabContextMenuIsVisible(webdriver, tab);
+        await this.assertThatTabContextMenuButtonIsNotVisible(tab, 'unpin-button', 'unpin', workspaceId, tabPosition);
+    }
+
+    static async assertTabContextMenuUnpinButtonIsVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        await this.openTabContextMenu(webdriver, tab);
+        await this.waitThatTabContextMenuIsVisible(webdriver, tab);
+        await this.assertThatTabContextMenuButtonIsVisible(tab, 'unpin-button', 'unpin', workspaceId, tabPosition);
+    }
+
+    static async assertTabContextMenuDiscardButtonIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        await this.openTabContextMenu(webdriver, tab);
+        await this.waitThatTabContextMenuIsVisible(webdriver, tab);
+        await this.assertThatTabContextMenuButtonIsNotVisible(tab, 'discard-button', 'discard', workspaceId, tabPosition);
+    }
+
+    static async assertTabContextMenuDiscardButtonIsVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        await this.openTabContextMenu(webdriver, tab);
+        await this.waitThatTabContextMenuIsVisible(webdriver, tab);
+        await this.assertThatTabContextMenuButtonIsVisible(tab, 'discard-button', 'discard', workspaceId, tabPosition);
     }
 }

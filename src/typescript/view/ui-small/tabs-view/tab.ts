@@ -185,10 +185,12 @@ export class Tab {
 
     markAsDiscarded() {
         this.htmlElement.classList.add('discarded');
+        this.contextMenu.hideDiscardButton();
     }
 
     markAsNotDiscarded() {
         this.htmlElement.classList.remove('discarded');
+        this.contextMenu.showDiscardButton();
     }
 
     markAsLoading() {

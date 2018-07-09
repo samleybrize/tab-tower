@@ -107,13 +107,17 @@ When('I right click on the title of the tab {int} on the workspace {string}', as
     const webdriver = world.webdriverRetriever.getDriver();
     const tab = await TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition);
 
-    await showTabContextMenu(webdriver, tab, `The title of tab at position ${tabPosition} of workspace "${workspaceId}" is not clickable`);
+    await openTabContextMenu(webdriver, tab, `The title of tab at position ${tabPosition} of workspace "${workspaceId}" is not clickable`);
 });
 
-async function showTabContextMenu(webdriver: WebDriver, tab: WebElement, errorMessage: string) {
+async function openTabContextMenu(webdriver: WebDriver, tab: WebElement, errorMessage: string) {
     const titleElement = tab.findElement(By.css('.title'));
 
-    await webdriver.actions().contextClick(titleElement).perform();
+    try {
+        await webdriver.actions().contextClick(titleElement).perform();
+    } catch (error) {
+        throw new Error(`${errorMessage} - Error: ${error}`);
+    }
 }
 
 When('I click on the tab context menu reload button of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
@@ -126,7 +130,7 @@ When('I click on the tab context menu reload button of the tab {int} on the work
 });
 
 async function clickOnTabContextMenuButton(webdriver: WebDriver, tab: WebElement, buttonElement: WebElement, errorMessage: string) {
-    await showTabContextMenu(webdriver, tab, `${errorMessage} (context menu could not be shown)`);
+    await openTabContextMenu(webdriver, tab, `${errorMessage} (context menu could not be shown)`);
     await TabSupport.clickElementOnceAvailable(webdriver, buttonElement, errorMessage);
 }
 
@@ -173,6 +177,15 @@ When('I click on the tab context menu duplicate button of the tab {int} on the w
     const buttonElement = tab.findElement(By.css('.context-menu .duplicate-button'));
 
     await clickOnTabContextMenuButton(webdriver, tab, buttonElement, `Tab context menu duplicate button of tab at position ${tabPosition} of workspace "${workspaceId}" is not clickable`);
+});
+
+When('I click on the tab context menu discard button of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const tab = await TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition);
+    const buttonElement = tab.findElement(By.css('.context-menu .discard-button'));
+
+    await clickOnTabContextMenuButton(webdriver, tab, buttonElement, `Tab context menu discard button of tab at position ${tabPosition} of workspace "${workspaceId}" is not clickable`);
 });
 
 When('I click on the tab context menu close button of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {

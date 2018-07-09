@@ -996,6 +996,7 @@ declare namespace browser.tabs {
         options?: browser.extensionTypes.ImageDetails,
     ): Promise<string>;
     function detectLanguage(tabId?: number): Promise<string>;
+    function discard(tabIds: number|number[]): Promise<void>;
     function duplicate(tabId: number): Promise<Tab>;
     function executeScript(
         tabId: number|undefined,

@@ -1,6 +1,7 @@
 import { CommandBus } from '../../../bus/command-bus';
 import { QueryBus } from '../../../bus/query-bus';
 import { CloseOpenedTab } from '../../../tab/opened-tab/command/close-opened-tab';
+import { DiscardOpenedTab } from '../../../tab/opened-tab/command/discard-opened-tab';
 import { DuplicateOpenedTab } from '../../../tab/opened-tab/command/duplicate-opened-tab';
 import { MuteOpenedTab } from '../../../tab/opened-tab/command/mute-opened-tab';
 import { PinOpenedTab } from '../../../tab/opened-tab/command/pin-opened-tab';
@@ -36,6 +37,7 @@ export class SelectedTabsActionsContextMenu {
                 <li class="clickable pin-button"><i class="material-icons">stars</i> Pin</li>
                 <li class="clickable unpin-button"><i class="material-icons">stars</i> Unpin</li>
                 <li class="clickable duplicate-button"><i class="material-icons">content_copy</i> Duplicate</li>
+                <li class="clickable discard-button"><i class="material-icons">power_settings_new</i> Suspend</li>
                 <li class="clickable move-button"><i class="material-icons">swap_vert</i> Move</li>
                 <li class="clickable close-button"><i class="material-icons">close</i> Close</li>
             </ul>
@@ -51,6 +53,7 @@ export class SelectedTabsActionsContextMenu {
         this.initPinButton(this.content.querySelector('.pin-button'));
         this.initUnpinButton(this.content.querySelector('.unpin-button'));
         this.initDuplicateButton(this.content.querySelector('.duplicate-button'));
+        this.initDiscardButton(this.content.querySelector('.discard-button'));
         this.initMoveButton(this.content.querySelector('.move-button'));
         this.initCloseButton(this.content.querySelector('.close-button'));
     }
@@ -126,6 +129,18 @@ export class SelectedTabsActionsContextMenu {
 
             for (const tabId of tabIdList) {
                 this.commandBus.handle(new DuplicateOpenedTab(tabId));
+            }
+
+            this.contextMenu.close();
+        });
+    }
+
+    private initDiscardButton(buttonElement: HTMLElement) {
+        buttonElement.addEventListener('click', async () => {
+            const tabIdList = await this.getSelectedTabIdList();
+
+            for (const tabId of tabIdList) {
+                this.commandBus.handle(new DiscardOpenedTab(tabId));
             }
 
             this.contextMenu.close();

@@ -20,6 +20,8 @@ Feature: Tab context menu - Pin and unpin button
         And I should not see the tab 1 as focused on the workspace "opened-tabs"
         And I should not see the tab 0 as focused on the workspace "pinned-tabs"
         And I should see the current workspace with label "All opened tabs" and 3 tabs indicated
+        And I should not see the pin button on the tab context menu of the tab 0 on the workspace "pinned-tabs"
+        And I should see the unpin button on the tab context menu of the tab 0 on the workspace "pinned-tabs"
 
     Scenario: Clicking on a tab context menu unpin button should unpin the tab
         When I pin the tab 1
@@ -38,3 +40,5 @@ Feature: Tab context menu - Pin and unpin button
         And I should see the tab 1 as focused on the workspace "opened-tabs"
         And I should not see the tab 2 as focused on the workspace "opened-tabs"
         And I should see the current workspace with label "All opened tabs" and 3 tabs indicated
+        And I should see the pin button on the tab context menu of the tab 0 on the workspace "opened-tabs"
+        And I should not see the unpin button on the tab context menu of the tab 0 on the workspace "opened-tabs"

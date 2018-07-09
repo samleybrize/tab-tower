@@ -150,6 +150,15 @@ When('I click on the selected tabs actions duplicate button', async function() {
     await TabSupport.clickElementOnceAvailable(webdriver, buttonElement, 'Selected tabs actions duplicate button is not clickable');
 });
 
+When('I click on the selected tabs actions discard button', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    await clickOnSelectedTabsActionsButton(webdriver);
+
+    const buttonElement = webdriver.findElement(By.css('.selected-tabs-actions-context-menu-container .discard-button'));
+    await TabSupport.clickElementOnceAvailable(webdriver, buttonElement, 'Selected tabs actions discard button is not clickable');
+});
+
 When('I click on the selected tabs actions close button', async function() {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();

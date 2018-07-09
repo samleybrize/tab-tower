@@ -21,6 +21,7 @@ import { WebStorageSettingsPersister } from '../settings/web-storage-settings-pe
 import { NativeTabEventHandler } from '../tab/opened-tab/browser/native-tab-event-handler';
 import { NativeTabIdAssociationMaintainerFirefox } from '../tab/opened-tab/browser/native-tab-id-association-maintainer-firefox';
 import { OpenedTabCloser } from '../tab/opened-tab/browser/opened-tab-closer';
+import { OpenedTabDiscarder } from '../tab/opened-tab/browser/opened-tab-discarder';
 import { OpenedTabDuplicator } from '../tab/opened-tab/browser/opened-tab-duplicator';
 import { OpenedTabFocuser } from '../tab/opened-tab/browser/opened-tab-focuser';
 import { OpenedTabMover } from '../tab/opened-tab/browser/opened-tab-mover';
@@ -58,6 +59,7 @@ async function main() {
     const openedTabRetriever = new OpenedTabRetriever(nativeTabEventHandler, openedTabFilterer, new TaskScheduler(logger));
 
     const openedTabCloser = new OpenedTabCloser(queryBus, nativeTabIdAssociationMaintainer);
+    const openedTabDiscarder = new OpenedTabDiscarder(nativeTabIdAssociationMaintainer);
     const openedTabDuplicator = new OpenedTabDuplicator(nativeTabIdAssociationMaintainer);
     const openedTabFocuser = new OpenedTabFocuser(nativeTabIdAssociationMaintainer);
     const openedTabMover = new OpenedTabMover(nativeTabIdAssociationMaintainer);
@@ -99,6 +101,7 @@ async function main() {
         commandBus.register(openedTabCommands.CloseOpenedTab, openedTabCloser.closeTab, openedTabCloser);
         commandBus.register(openedTabCommands.CloseOpenedTabsToTheRight, openedTabCloser.closeTabsToTheRight, openedTabCloser);
         commandBus.register(openedTabCommands.CloseOtherOpenedTabs, openedTabCloser.closeOtherTabs, openedTabCloser);
+        commandBus.register(openedTabCommands.DiscardOpenedTab, openedTabDiscarder.discardTab, openedTabDiscarder);
         commandBus.register(openedTabCommands.DuplicateOpenedTab, openedTabDuplicator.duplicateTab, openedTabDuplicator);
         commandBus.register(openedTabCommands.FocusOpenedTab, openedTabFocuser.focusTab, openedTabFocuser);
         commandBus.register(openedTabCommands.MoveOpenedTabs, openedTabMover.moveOpenedTabs, openedTabMover);

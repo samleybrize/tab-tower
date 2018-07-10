@@ -52,8 +52,8 @@ export class TabsView {
     ) {
         this.tabFilter = tabFilterFactory.create(containerElement.querySelector('.filter'));
         this.generalTabSelector = new Checkbox(containerElement.querySelector('.general-tab-selector'), 'general-tab-selector', 'unchecked');
-        this.newTabButton = newTabButtonFactory.create(containerElement.querySelector('.new-tab-button'));
-        this.selectedTabsActions = selectedTabsActionsFactory.create(containerElement.querySelector('.selected-tabs-actions-button'));
+        this.newTabButton = newTabButtonFactory.create(containerElement.querySelector('.new-tab-button i'));
+        this.selectedTabsActions = selectedTabsActionsFactory.create(containerElement.querySelector('.selected-tabs-actions-button i'));
         this.unpinnedWorkspacesContainerElement = containerElement.querySelector('.unpinned-tabs');
         this.currentWorkspaceIndicatorContainerElement = containerElement.querySelector('.current-workspace');
 

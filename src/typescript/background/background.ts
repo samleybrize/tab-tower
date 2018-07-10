@@ -1,6 +1,8 @@
+import { UiSmallOpener } from '../browser/ui-small-opener';
 import { CommandBus } from '../bus/command-bus';
 import { EventBus } from '../bus/event-bus';
 import { QueryBus } from '../bus/query-bus';
+import * as generalCommands from '../command';
 import { BrowserConsoleLogger } from '../logger/browser-console-logger';
 import { BidirectionalQueryMessageHandler } from '../message/bidirectional-query-message-handler';
 import { ContentMessageReceiver } from '../message/receiver/content-message-receiver';
@@ -69,6 +71,7 @@ async function main() {
     const openedTabUnmuter = new OpenedTabUnmuter(nativeTabIdAssociationMaintainer);
     const openedTabUnpinner = new OpenedTabUnpinner(nativeTabIdAssociationMaintainer);
     const tabOpener = new TabOpener();
+    const uiSmallOpener = new UiSmallOpener();
 
     const settingsPersister = new WebStorageSettingsPersister();
     const settingsRetriever = new SettingsRetriever(settingsPersister);
@@ -98,6 +101,8 @@ async function main() {
     }
 
     function initCommandBus() {
+        commandBus.register(generalCommands.OpenUiSmall, uiSmallOpener.openUiSmall, uiSmallOpener);
+
         commandBus.register(openedTabCommands.CloseOpenedTab, openedTabCloser.closeTab, openedTabCloser);
         commandBus.register(openedTabCommands.CloseOpenedTabsToTheRight, openedTabCloser.closeTabsToTheRight, openedTabCloser);
         commandBus.register(openedTabCommands.CloseOtherOpenedTabs, openedTabCloser.closeOtherTabs, openedTabCloser);
@@ -174,7 +179,7 @@ async function main() {
 
     async function initBrowserAction() {
         browser.browserAction.onClicked.addListener(async () => {
-            // commandBus.handle(new tabCommands.GoToControlCenter()); // TODO open small-ui
+            commandBus.handle(new generalCommands.OpenUiSmall());
         });
     }
 

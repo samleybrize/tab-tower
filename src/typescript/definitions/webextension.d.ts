@@ -849,6 +849,10 @@ declare namespace browser.sidebarAction {
 
     function getTitle(details: { tabId?: number }): Promise<string>;
 
+    function open(): Promise<void>;
+
+    function close(): Promise<void>;
+
     interface IconViaPath {
         path: string | { [index: number]: string };
         tabId?: number;

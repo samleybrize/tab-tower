@@ -8,13 +8,13 @@ import { ReloadOpenedTab } from '../../../../tab/opened-tab/command/reload-opene
 import { UnmuteOpenedTab } from '../../../../tab/opened-tab/command/unmute-opened-tab';
 import { UnpinOpenedTab } from '../../../../tab/opened-tab/command/unpin-opened-tab';
 import { BoundingRectangle, ContextMenu, ContextMenuDimensions, ContextMenuFactory, ContextMenuPosition, ContextMenuPositionArrowEdge, ContextMenuPositionCalculator } from '../../../components/context-menu';
+import { MarkTabsAsBeingMoved } from '../command/mark-tabs-as-being-moved';
 
 interface Position {
     x: number;
     y: number;
 }
 
-// TODO hide discard button when already discarded, show otherwise
 export class TabContextMenu {
     private contextMenu: ContextMenu;
     private positionCalculator: TabContextMenuPositionCalculator;
@@ -115,7 +115,10 @@ export class TabContextMenu {
     }
 
     private initMoveButton(buttonElement: HTMLElement) {
-        // TODO
+        buttonElement.addEventListener('click', () => {
+            this.commandBus.handle(new MarkTabsAsBeingMoved([this.openedTabId]));
+            this.contextMenu.close();
+        });
     }
 
     private initCloseButton(buttonElement: HTMLElement) {

@@ -1,6 +1,7 @@
 import { DetectedBrowser } from '../../../browser/detected-browser';
 import { CommandBus } from '../../../bus/command-bus';
 import { FocusOpenedTab } from '../../../tab/opened-tab/command';
+import { MoveTabsMarkedAsBeingMovedAboveTab } from './command/move-tabs-marked-as-being-moved-above-tab';
 import { CloseButton } from './tab/close-button';
 import { MuteButton } from './tab/mute-button';
 import { TabContextMenu, TabContextMenuFactory } from './tab/tab-context-menu';
@@ -20,6 +21,7 @@ export class Tab {
     private contextMenu: TabContextMenu;
     private position: number;
     private focused: boolean;
+    private beingMoved = false;
     readonly id: string;
 
     constructor(
@@ -89,6 +91,7 @@ export class Tab {
         this.closeButton = new CloseButton(this.htmlElement.querySelector('.close-button'), openedTabId, this.commandBus); // TODO still needed?
         this.muteButton = new MuteButton(this.htmlElement.querySelector('.audible-icon'), openedTabId, this.commandBus); // TODO still needed?
         this.unmuteButton = new UnmuteButton(this.htmlElement.querySelector('.muted-icon'), openedTabId, this.commandBus); // TODO still needed?
+        const moveAboveButton = this.htmlElement.querySelector('.move-above-button');
         this.tabSelector = new TabSelector(this.htmlElement, this.htmlElement.querySelector('.tab-selector'), openedTabId);
         this.contextMenu = this.tabContextMenuFactory.create(this.htmlElement, openedTabId);
         this.htmlElement.appendChild(this.contextMenu.htmlElement);
@@ -99,6 +102,9 @@ export class Tab {
         titleContainerElement.addEventListener('contextmenu', (event: MouseEvent) => {
             event.preventDefault();
             this.contextMenu.open({x: event.clientX, y: event.clientY});
+        });
+        moveAboveButton.addEventListener('click', (event: MouseEvent) => {
+            this.commandBus.handle(new MoveTabsMarkedAsBeingMovedAboveTab(openedTabId));
         });
     }
 
@@ -213,6 +219,20 @@ export class Tab {
 
     clone(openedTabId: string): Tab {
         return new Tab(this.detectedBrowser, this.commandBus, this.tabContextMenuFactory, this.defaultFaviconUrl, openedTabId, this);
+    }
+
+    markAsBeingMoved() {
+        this.htmlElement.classList.add('being-moved');
+        this.beingMoved = true;
+    }
+
+    markAsNotBeingMoved() {
+        this.htmlElement.classList.remove('being-moved');
+        this.beingMoved = false;
+    }
+
+    isBeingMoved() {
+        return this.beingMoved;
     }
 
     markAsSelected() {

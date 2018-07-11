@@ -28,4 +28,12 @@
     .sticky-bottom {
         flex-shrink: 0;
     }
+
+    &.move-mode {
+        pointer-events: none;
+
+        .unpinned-tabs {
+            pointer-events: all;
+        }
+    }
 }

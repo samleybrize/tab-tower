@@ -103,6 +103,15 @@
                 }
             }
 
+            &.being-moved {
+                background-color: $being-moved-tab-background-color;
+                border-left-color: $being-moved-tab-border-left-color;
+
+                &::after {
+                    background-color: $being-moved-tab-background-color;
+                }
+            }
+
             &.hide {
                 display: none;
             }
@@ -111,6 +120,12 @@
         .unpinned-tabs .tab {
             &.pinned {
                 display: none;
+            }
+        }
+
+        &.move-mode {
+            .tab {
+                pointer-events: none;
             }
         }
     }

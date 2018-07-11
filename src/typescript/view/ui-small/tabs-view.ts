@@ -1,6 +1,7 @@
 import { CommandBus } from '../../bus/command-bus';
 import { EventBus } from '../../bus/event-bus';
 import { QueryBus } from '../../bus/query-bus';
+import { MoveOpenedTabs } from '../../tab/opened-tab/command/move-opened-tabs';
 import { OpenedTabClosed } from '../../tab/opened-tab/event/opened-tab-closed';
 import { OpenedTabMoved } from '../../tab/opened-tab/event/opened-tab-moved';
 import { OpenedTabPinStateUpdated } from '../../tab/opened-tab/event/opened-tab-pin-state-updated';
@@ -13,6 +14,10 @@ import { Counter } from '../../utils/counter';
 import { TaskScheduler, TaskSchedulerFactory } from '../../utils/task-scheduler';
 import { Checkbox } from '../components/checkbox';
 import { CloseContextMenus } from '../components/command/close-context-menus';
+import { MarkAllTabsAsNotBeingMoved } from './tabs-view/command/mark-all-tabs-as-not-being-moved';
+import { MarkTabsAsBeingMoved } from './tabs-view/command/mark-tabs-as-being-moved';
+import { MoveTabsMarkedAsBeingMovedAboveTab } from './tabs-view/command/move-tabs-marked-as-being-moved-above-tab';
+import { MoveTabsMarkedAsBeingMovedBelowAll } from './tabs-view/command/move-tabs-marked-as-being-moved-below-all';
 import { CurrentWorkspace } from './tabs-view/current-workspace';
 import { NewTabButton, NewTabButtonFactory } from './tabs-view/new-tab-button';
 import { GetCurrentWorkspaceSelectedTabs } from './tabs-view/query/get-current-workspace-selected-tabs';
@@ -59,6 +64,11 @@ export class TabsView {
 
         queryBus.register(GetCurrentWorkspaceSelectedTabs, this.queryCurrentWorkspaceSelectedTabs, this);
 
+        commandBus.register(MarkAllTabsAsNotBeingMoved, this.markAllTabsAsNotBeingMoved, this);
+        commandBus.register(MarkTabsAsBeingMoved, this.markTabsAsBeingMoved, this);
+        commandBus.register(MoveTabsMarkedAsBeingMovedAboveTab, this.moveTabsMarkedAsBeingMovedAboveTab, this);
+        commandBus.register(MoveTabsMarkedAsBeingMovedBelowAll, this.moveTabsMarkedAsBeingMovedBelowAll, this);
+
         this.createOpenedTabWorkspace().then(() => {
             this.enableWorkspace(BuiltinWorkspaces.OPENED_TABS);
 
@@ -72,6 +82,16 @@ export class TabsView {
             this.tabFilter.observeFilterResultRetrieval(this.onTabFilterResultRetrieve.bind(this));
             this.tabFilter.observeFilterClear(this.onTabFilterClear.bind(this));
             this.generalTabSelector.observeStateChange(this.onGeneralTabSelectorStateChange.bind(this));
+        });
+
+        const moveBelowAllButton = containerElement.querySelector('.move-below-all-button');
+        moveBelowAllButton.addEventListener('click', () => {
+            this.commandBus.handle(new MoveTabsMarkedAsBeingMovedBelowAll());
+        });
+
+        const cancelTabMoveButton = containerElement.querySelector('.cancel-tab-move-button i');
+        cancelTabMoveButton.addEventListener('click', () => {
+            this.commandBus.handle(new MarkAllTabsAsNotBeingMoved());
         });
     }
 
@@ -285,6 +305,42 @@ export class TabsView {
 
     async queryCurrentWorkspaceSelectedTabs(query: GetCurrentWorkspaceSelectedTabs): Promise<string[]> {
         return this.workspaceInUse.getSelectedTabIdList().concat(this.pinnedTabList.getSelectedTabIdList());
+    }
+
+    async markTabsAsBeingMoved(command: MarkTabsAsBeingMoved) {
+        this.containerElement.classList.add('move-mode');
+        this.workspaceInUse.markTabsAsBeingMoved(command.tabIdList);
+        this.pinnedTabList.markTabsAsBeingMoved(command.tabIdList);
+    }
+
+    async markAllTabsAsNotBeingMoved(command: MarkAllTabsAsNotBeingMoved) {
+        this.cancelMoveMode();
+    }
+
+    private cancelMoveMode() {
+        this.containerElement.classList.remove('move-mode');
+        this.workspaceInUse.markAllTabsAsNotBeingMoved();
+        this.pinnedTabList.markAllTabsAsNotBeingMoved();
+    }
+
+    async moveTabsMarkedAsBeingMovedAboveTab(command: MoveTabsMarkedAsBeingMovedAboveTab) {
+        await this.taskScheduler.add(async () => {
+            const tabIdListToMove = this.workspaceInUse.getBeingMovedTabIdList().concat(this.pinnedTabList.getBeingMovedTabIdList());
+            this.cancelMoveMode();
+            const targetTab = this.workspaceInUse.getTab(command.tabId) || this.pinnedTabList.getTab(command.tabId);
+
+            this.commandBus.handle(new MoveOpenedTabs(tabIdListToMove, targetTab.getPosition()));
+        }).executeAll();
+    }
+
+    async moveTabsMarkedAsBeingMovedBelowAll(command: MoveTabsMarkedAsBeingMovedBelowAll) {
+        await this.taskScheduler.add(async () => {
+            const tabIdListToMove = this.workspaceInUse.getBeingMovedTabIdList().concat(this.pinnedTabList.getBeingMovedTabIdList());
+            this.cancelMoveMode();
+            const targetPosition = -1;
+
+            this.commandBus.handle(new MoveOpenedTabs(tabIdListToMove, targetPosition));
+        }).executeAll();
     }
 
     // TODO onWorkspaceDelete() => call TabList.shutdown()

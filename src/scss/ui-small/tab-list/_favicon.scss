@@ -1,33 +1,46 @@
-.ui-small .tab-list .tab {
-    .favicon {
-        position: relative;
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        margin-right: 8px;
-        vertical-align: top;
-
-        img {
-            position: absolute;
-            top: 0;
-            left: 0;
+.ui-small .tab-list {
+    .tab {
+        .favicon {
+            position: relative;
+            display: inline-block;
             width: 16px;
             height: 16px;
-            transition: opacity 0.2s ease, filter 0.2s ease;
+            margin-right: 8px;
+            vertical-align: top;
+
+            img {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 16px;
+                height: 16px;
+                transition: opacity 0.2s ease, filter 0.2s ease;
+            }
+        }
+
+        &.discarded {
+            .favicon img  {
+                opacity: 0.5;
+                filter: grayscale(1);
+            }
+        }
+
+        &:not(.context-menu-visible):hover,
+        &.selected {
+            .favicon img {
+                opacity: 0;
+            }
         }
     }
 
-    &.discarded {
-        .favicon img  {
-            opacity: 0.5;
-            filter: grayscale(1);
-        }
-    }
-
-    &:not(.context-menu-visible):hover,
-    &.selected {
-        .favicon img {
-            opacity: 0;
+    &.move-mode {
+        .tab {
+            &,
+            &:hover {
+                .favicon img {
+                    opacity: 1;
+                }
+            }
         }
     }
 }

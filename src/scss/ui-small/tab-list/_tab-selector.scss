@@ -67,4 +67,16 @@
             }
         }
     }
+
+    &.move-mode {
+        .tab {
+            &,
+            &:hover {
+                .favicon input + .checkbox-icon {
+                    pointer-events: none;
+                    opacity: 0;
+                }
+            }
+        }
+    }
 }

@@ -89,7 +89,10 @@ export class TabList {
             }
 
             if (focusedTab) {
-                this.scrollToTab(focusedTab);
+                // avoid incomplete scroll at startup
+                setTimeout(() => {
+                    this.scrollToTab(focusedTab);
+                }, 1);
             }
 
             this.reorderSortedTabList();
@@ -299,6 +302,32 @@ export class TabList {
 
     observeNumberOfSelectedTabsChange(observer: NumberOfSelectedTabsChangeObserver) {
         this.numberOfSelectedTabsChangeObserverList.push(observer);
+    }
+
+    markTabsAsBeingMoved(tabIdList: string[]) {
+        for (const tabId of tabIdList) {
+            if (this.tabMap.has(tabId)) {
+                this.tabMap.get(tabId).markAsBeingMoved();
+            }
+        }
+    }
+
+    markAllTabsAsNotBeingMoved() {
+        for (const tab of this.sortedTabList) {
+            tab.markAsNotBeingMoved();
+        }
+    }
+
+    getBeingMovedTabIdList() {
+        const tabIdList: string[] = [];
+
+        for (const tab of this.sortedTabList) {
+            if (tab.isBeingMoved()) {
+                tabIdList.push(tab.id);
+            }
+        }
+
+        return tabIdList;
     }
 
     async onTabClose(event: OpenedTabClosed) {

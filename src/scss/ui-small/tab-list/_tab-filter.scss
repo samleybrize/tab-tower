@@ -53,4 +53,10 @@
     .pinned-tabs .no-tab-matches-search {
         display: none;
     }
+
+    &.move-mode {
+        .filter {
+            pointer-events: all;
+        }
+    }
 }

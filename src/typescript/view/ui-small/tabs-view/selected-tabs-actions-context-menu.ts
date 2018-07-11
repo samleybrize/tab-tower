@@ -9,6 +9,7 @@ import { ReloadOpenedTab } from '../../../tab/opened-tab/command/reload-opened-t
 import { UnmuteOpenedTab } from '../../../tab/opened-tab/command/unmute-opened-tab';
 import { UnpinOpenedTab } from '../../../tab/opened-tab/command/unpin-opened-tab';
 import { BoundingRectangle, ContextMenu, ContextMenuDimensions, ContextMenuFactory, ContextMenuPosition, ContextMenuPositionArrowEdge, ContextMenuPositionCalculator } from '../../components/context-menu';
+import { MarkTabsAsBeingMoved } from './command/mark-tabs-as-being-moved';
 import { GetCurrentWorkspaceSelectedTabs } from './query/get-current-workspace-selected-tabs';
 
 export class SelectedTabsActionsContextMenu {
@@ -148,7 +149,11 @@ export class SelectedTabsActionsContextMenu {
     }
 
     private initMoveButton(buttonElement: HTMLElement) {
-        // TODO
+        buttonElement.addEventListener('click', async () => {
+            const tabIdList = await this.getSelectedTabIdList();
+            this.commandBus.handle(new MarkTabsAsBeingMoved(tabIdList));
+            this.contextMenu.close();
+        });
     }
 
     private initCloseButton(buttonElement: HTMLElement) {

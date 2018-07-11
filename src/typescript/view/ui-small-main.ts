@@ -78,6 +78,7 @@ async function main() {
         commandBus.register(tabCommands.DiscardOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
         commandBus.register(tabCommands.DuplicateOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
         commandBus.register(tabCommands.FocusOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
+        commandBus.register(tabCommands.MoveOpenedTabs, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
         commandBus.register(tabCommands.MuteOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
         commandBus.register(tabCommands.OpenTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
         commandBus.register(tabCommands.PinOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);

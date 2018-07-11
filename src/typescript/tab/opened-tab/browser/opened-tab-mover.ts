@@ -18,7 +18,10 @@ export class OpenedTabMover {
 
             const tab = await browser.tabs.get(nativeTabIdToMove);
 
-            if (tab.index < targetIndex) {
+            if (-1 == targetIndex) {
+                // move the tab at the end of the tab list
+                await browser.tabs.move(nativeTabIdToMove, {index: targetIndex});
+            } else if (tab.index < targetIndex) {
                 // when a tab is moved, its index become unoccupied and higher indexes are then modified (they are lowered)
                 await browser.tabs.move(nativeTabIdToMove, {index: targetIndex - 1});
             } else {

@@ -238,11 +238,15 @@ export class TabsView {
     }
 
     async onTabClose(event: OpenedTabClosed) {
-        this.closeContextMenus();
+        await this.taskScheduler.add(async () => {
+            this.closeContextMenus();
+        }).executeAll();
     }
 
     async onTabMove(event: OpenedTabMoved) {
-        this.closeContextMenus();
+        await this.taskScheduler.add(async () => {
+            this.closeContextMenus();
+        }).executeAll();
     }
 
     async onTabPinStateUpdate(event: OpenedTabPinStateUpdated) {
@@ -314,7 +318,9 @@ export class TabsView {
     }
 
     async markAllTabsAsNotBeingMoved(command: MarkAllTabsAsNotBeingMoved) {
-        this.cancelMoveMode();
+        await this.taskScheduler.add(async () => {
+            this.cancelMoveMode();
+        }).executeAll();
     }
 
     private cancelMoveMode() {

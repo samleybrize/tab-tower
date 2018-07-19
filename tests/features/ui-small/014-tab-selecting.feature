@@ -202,3 +202,13 @@ Feature: Tab selecting
         And I should not see the tab 0 as selected on the workspace "opened-tabs"
         And I should not see the tab 1 as selected on the workspace "opened-tabs"
         And the general tab selector should not be checked
+
+    Scenario: Tab favicon should not be visible on hover when the tab is selected
+        When I open the test page "test-page1"
+
+        Then I should see 2 visible tabs on the workspace "opened-tabs"
+
+        When I click on the tab selector of the tab 0 on workspace "opened-tabs"
+        And I hover the tab 1 on the workspace "opened-tabs"
+
+        Then I should not see the favicon of the tab 1 on the workspace "opened-tabs"

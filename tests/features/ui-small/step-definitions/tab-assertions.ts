@@ -53,6 +53,16 @@ Then('I should see the url domain {string} on the tab {int} of the workspace {st
     await TabAssertions.assertTabDomain(webdriver, webdriverHelper, tab, expectedDomain);
 });
 
+Then('I should not see the favicon of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabFaviconIsNotVisible(world, workspaceId, tabPosition);
+});
+
+Then('I should see the favicon of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabFaviconIsVisible(world, workspaceId, tabPosition);
+});
+
 Then('I should not see the tab {int} as audible on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
     const world = this as World;
     await TabAssertions.assertTabAudibleIconIsNotVisible(world, workspaceId, tabPosition);
@@ -91,6 +101,16 @@ Then('I should not see the tab {int} as loading on the workspace {string}', asyn
 Then('I should see the tab {int} as loading on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
     const world = this as World;
     await TabAssertions.assertTabIsMarkedAsLoading(world, workspaceId, tabPosition);
+});
+
+Then('I should not see the tab {int} as being moved on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabIsNotMarkedAsBeingMoved(world, workspaceId, tabPosition);
+});
+
+Then('I should see the tab {int} as being moved on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabIsMarkedAsBeingMoved(world, workspaceId, tabPosition);
 });
 
 Then('I should not see the tab {int} as selected on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
@@ -183,9 +203,24 @@ Then('I should see the discard button on the tab context menu of the tab {int} o
     await TabAssertions.assertTabContextMenuDiscardButtonIsVisible(world, workspaceId, tabPosition);
 });
 
+Then('I should not see the move above button on the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabMoveAboveButtonIsNotVisible(world, workspaceId, tabPosition);
+});
+
+Then('I should see the move above button on the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabMoveAboveButtonIsVisible(world, workspaceId, tabPosition);
+});
+
 Then('the tab {int} on the workspace {string} should be visible in the viewport', async function(tabPosition: number, workspaceId: string) {
     const world = this as World;
     await TabAssertions.assertUnpinnedTabFullyVisibleInViewport(world, workspaceId, tabPosition);
+});
+
+Then('the title of the tab {int} on the workspace {string} should not be clickable', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabTitleIsNotClickable(world, workspaceId, tabPosition);
 });
 
 class TabAssertions {
@@ -311,6 +346,28 @@ class TabAssertions {
         }, 10000, () => `Tab favicon url "${actualFaviconUrl}" is different than expected "${expectedFaviconUrl}"`);
     }
 
+    static async assertTabFaviconIsVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+
+        const faviconElement = tab.findElement(By.css('.favicon > img'));
+
+        await webdriver.wait(async () => {
+            return await faviconElement.isDisplayed();
+        }, 10000, 'Tab favicon is not visible');
+    }
+
+    static async assertTabFaviconIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+
+        const faviconElement = tab.findElement(By.css('.favicon > img'));
+
+        await webdriver.wait(async () => {
+            return !await faviconElement.isDisplayed();
+        }, 10000, 'Tab favicon is visible');
+    }
+
     static async assertTabAudibleIconIsVisible(world: World, workspaceId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
         const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
@@ -389,6 +446,24 @@ class TabAssertions {
         await webdriver.wait(async () => {
             return !await TabSupport.hasCssClass(tab, 'loading');
         }, 10000, 'Tab is marked as loading');
+    }
+
+    static async assertTabIsMarkedAsBeingMoved(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+
+        await webdriver.wait(async () => {
+            return await TabSupport.hasCssClass(tab, 'being-moved');
+        }, 10000, 'Tab is not marked as being moved');
+    }
+
+    static async assertTabIsNotMarkedAsBeingMoved(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+
+        await webdriver.wait(async () => {
+            return !await TabSupport.hasCssClass(tab, 'being-moved');
+        }, 10000, 'Tab is marked as being moved');
     }
 
     static async assertTabIsMarkedAsSelected(world: World, workspaceId: string, tabPosition: number) {
@@ -630,5 +705,43 @@ class TabAssertions {
         await this.openTabContextMenu(webdriver, tab);
         await this.waitThatTabContextMenuIsVisible(webdriver, tab);
         await this.assertThatTabContextMenuButtonIsVisible(tab, 'discard-button', 'discard', workspaceId, tabPosition);
+    }
+
+    static async assertTabMoveAboveButtonIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const buttonElement = tab.findElement(By.css('.move-above-button'));
+
+        await webdriver.wait(async () => {
+            return !await buttonElement.isDisplayed();
+        }, 10000, 'Tab move above button is visible');
+    }
+
+    static async assertTabMoveAboveButtonIsVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const buttonElement = tab.findElement(By.css('.move-above-button'));
+
+        await webdriver.wait(async () => {
+            return await buttonElement.isDisplayed();
+        }, 10000, 'Tab move above button is not visible');
+    }
+
+    static async assertTabTitleIsNotClickable(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const titleContainer = tab.findElement(By.css('.title-container'));
+
+        try {
+            await titleContainer.click();
+        } catch (error) {
+            if (error instanceof WebDriverError.ElementClickInterceptedError) {
+                return;
+            }
+
+            throw error;
+        }
+
+        throw new Error('Tab title is clickable');
     }
 }

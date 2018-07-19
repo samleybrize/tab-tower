@@ -1,5 +1,5 @@
 import { When } from 'cucumber';
-import { By, WebDriver, WebElement } from 'selenium-webdriver';
+import { By, Key, WebDriver, WebElement } from 'selenium-webdriver';
 import { TabSupport } from '../support/tab-support';
 import { World } from '../support/world';
 
@@ -50,7 +50,7 @@ When('I click outside of the context menu', async function() {
 });
 
 async function getVisibleContextMenuBoundingRect(webdriver: WebDriver) {
-    const contextMenuList = await webdriver.findElements(By.css('.context-menu'));
+    const contextMenuList = await webdriver.findElements(By.css('.tab-list .context-menu'));
     let visibleContextMenu: WebElement = null;
 
     for (const contextMenu of contextMenuList) {
@@ -91,7 +91,7 @@ When('I click on the selected tabs actions button', async function() {
 });
 
 async function clickOnSelectedTabsActionsButton(webdriver: WebDriver) {
-    const selectedTabsActionsButton = webdriver.findElement(By.css('.selected-tabs-actions-button i'));
+    const selectedTabsActionsButton = webdriver.findElement(By.css('.tab-list .selected-tabs-actions-button i'));
 
     await selectedTabsActionsButton.click();
 }
@@ -101,7 +101,7 @@ When('I click on the selected tabs actions reload button', async function() {
     const webdriver = world.webdriverRetriever.getDriver();
     await clickOnSelectedTabsActionsButton(webdriver);
 
-    const buttonElement = webdriver.findElement(By.css('.selected-tabs-actions-context-menu-container .reload-button'));
+    const buttonElement = webdriver.findElement(By.css('.tab-list .selected-tabs-actions-context-menu-container .reload-button'));
     await TabSupport.clickElementOnceAvailable(webdriver, buttonElement, 'Selected tabs actions reload button is not clickable');
 });
 
@@ -110,7 +110,7 @@ When('I click on the selected tabs actions mute button', async function() {
     const webdriver = world.webdriverRetriever.getDriver();
     await clickOnSelectedTabsActionsButton(webdriver);
 
-    const buttonElement = webdriver.findElement(By.css('.selected-tabs-actions-context-menu-container .mute-button'));
+    const buttonElement = webdriver.findElement(By.css('.tab-list .selected-tabs-actions-context-menu-container .mute-button'));
     await TabSupport.clickElementOnceAvailable(webdriver, buttonElement, 'Selected tabs actions mute button is not clickable');
 });
 
@@ -119,7 +119,7 @@ When('I click on the selected tabs actions unmute button', async function() {
     const webdriver = world.webdriverRetriever.getDriver();
     await clickOnSelectedTabsActionsButton(webdriver);
 
-    const buttonElement = webdriver.findElement(By.css('.selected-tabs-actions-context-menu-container .unmute-button'));
+    const buttonElement = webdriver.findElement(By.css('.tab-list .selected-tabs-actions-context-menu-container .unmute-button'));
     await TabSupport.clickElementOnceAvailable(webdriver, buttonElement, 'Selected tabs actions unmute button is not clickable');
 });
 
@@ -128,7 +128,7 @@ When('I click on the selected tabs actions pin button', async function() {
     const webdriver = world.webdriverRetriever.getDriver();
     await clickOnSelectedTabsActionsButton(webdriver);
 
-    const buttonElement = webdriver.findElement(By.css('.selected-tabs-actions-context-menu-container .pin-button'));
+    const buttonElement = webdriver.findElement(By.css('.tab-list .selected-tabs-actions-context-menu-container .pin-button'));
     await TabSupport.clickElementOnceAvailable(webdriver, buttonElement, 'Selected tabs actions pin button is not clickable');
 });
 
@@ -137,7 +137,7 @@ When('I click on the selected tabs actions unpin button', async function() {
     const webdriver = world.webdriverRetriever.getDriver();
     await clickOnSelectedTabsActionsButton(webdriver);
 
-    const buttonElement = webdriver.findElement(By.css('.selected-tabs-actions-context-menu-container .unpin-button'));
+    const buttonElement = webdriver.findElement(By.css('.tab-list .selected-tabs-actions-context-menu-container .unpin-button'));
     await TabSupport.clickElementOnceAvailable(webdriver, buttonElement, 'Selected tabs actions unpin button is not clickable');
 });
 
@@ -146,7 +146,7 @@ When('I click on the selected tabs actions duplicate button', async function() {
     const webdriver = world.webdriverRetriever.getDriver();
     await clickOnSelectedTabsActionsButton(webdriver);
 
-    const buttonElement = webdriver.findElement(By.css('.selected-tabs-actions-context-menu-container .duplicate-button'));
+    const buttonElement = webdriver.findElement(By.css('.tab-list .selected-tabs-actions-context-menu-container .duplicate-button'));
     await TabSupport.clickElementOnceAvailable(webdriver, buttonElement, 'Selected tabs actions duplicate button is not clickable');
 });
 
@@ -155,7 +155,7 @@ When('I click on the selected tabs actions discard button', async function() {
     const webdriver = world.webdriverRetriever.getDriver();
     await clickOnSelectedTabsActionsButton(webdriver);
 
-    const buttonElement = webdriver.findElement(By.css('.selected-tabs-actions-context-menu-container .discard-button'));
+    const buttonElement = webdriver.findElement(By.css('.tab-list .selected-tabs-actions-context-menu-container .discard-button'));
     await TabSupport.clickElementOnceAvailable(webdriver, buttonElement, 'Selected tabs actions discard button is not clickable');
 });
 
@@ -164,6 +164,39 @@ When('I click on the selected tabs actions close button', async function() {
     const webdriver = world.webdriverRetriever.getDriver();
     await clickOnSelectedTabsActionsButton(webdriver);
 
-    const buttonElement = webdriver.findElement(By.css('.selected-tabs-actions-context-menu-container .close-button'));
+    const buttonElement = webdriver.findElement(By.css('.tab-list .selected-tabs-actions-context-menu-container .close-button'));
     await TabSupport.clickElementOnceAvailable(webdriver, buttonElement, 'Selected tabs actions close button is not clickable');
+});
+
+When('I click on the selected tabs actions move button', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    await clickOnSelectedTabsActionsButton(webdriver);
+
+    const buttonElement = webdriver.findElement(By.css('.tab-list .selected-tabs-actions-context-menu-container .move-button'));
+    await TabSupport.clickElementOnceAvailable(webdriver, buttonElement, 'Selected tabs actions move button is not clickable');
+});
+
+When('I click on the move below all button', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const buttonElement = webdriver.findElement(By.css('.tab-list .move-below-all-button'));
+
+    await TabSupport.clickElementOnceAvailable(webdriver, buttonElement, 'The move tab below all button is not clickable');
+});
+
+When('I click on the cancel tab move button', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const buttonElement = webdriver.findElement(By.css('.tab-list .cancel-tab-move-button i'));
+
+    await TabSupport.clickElementOnceAvailable(webdriver, buttonElement, 'The cancel tab move button is not clickable');
+});
+
+When('I scroll the unpinned tabs list down', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const unpinnedTabsElement = webdriver.findElement(By.css('.unpinned-tabs'));
+
+    await webdriver.actions().move({origin: unpinnedTabsElement}).click().sendKeys(Key.ARROW_DOWN, Key.ARROW_DOWN, Key.ARROW_DOWN, Key.ARROW_DOWN).perform();
 });

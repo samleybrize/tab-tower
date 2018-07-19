@@ -196,3 +196,21 @@ When('I click on the tab context menu close button of the tab {int} on the works
 
     await clickOnTabContextMenuButton(webdriver, tab, buttonElement, `Tab context menu close button of tab at position ${tabPosition} of workspace "${workspaceId}" is not clickable`);
 });
+
+When('I click on the tab context menu move button of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const tab = await TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition);
+    const buttonElement = tab.findElement(By.css('.context-menu .move-button'));
+
+    await clickOnTabContextMenuButton(webdriver, tab, buttonElement, `Tab context menu move button of tab at position ${tabPosition} of workspace "${workspaceId}" is not clickable`);
+});
+
+When('I click on the move above button of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const tab = await TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition);
+    const buttonElement = tab.findElement(By.css('.move-above-button'));
+
+    await TabSupport.clickElementOnceAvailable(webdriver, buttonElement, `Tab move above button of tab at position ${tabPosition} of workspace "${workspaceId}" is not clickable`);
+});

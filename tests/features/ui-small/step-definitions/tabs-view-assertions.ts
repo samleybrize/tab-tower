@@ -1,5 +1,5 @@
 import { Then } from 'cucumber';
-import { By } from 'selenium-webdriver';
+import { By, error as WebDriverError } from 'selenium-webdriver';
 import { TabSupport } from '../support/tab-support';
 import { World } from '../support/world';
 
@@ -50,10 +50,46 @@ Then('the general tab selector should be checked', async function() {
     }, 10000, 'The general tab selector is not marked as selected');
 });
 
+Then('the general tab selector should not be clickable', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const generalTabSelectorElement = webdriver.findElement(By.css('.tab-list .general-tab-selector .checkbox-icon'));
+
+    try {
+        await generalTabSelectorElement.click();
+    } catch (error) {
+        if (error instanceof WebDriverError.ElementClickInterceptedError) {
+            return;
+        }
+
+        throw error;
+    }
+
+    throw new Error('The general tab selector is clickable');
+});
+
+Then('the new tab button should not be clickable', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const newTabButtonElement = webdriver.findElement(By.css('.tab-list .new-tab-button'));
+
+    try {
+        await newTabButtonElement.click();
+    } catch (error) {
+        if (error instanceof WebDriverError.ElementClickInterceptedError) {
+            return;
+        }
+
+        throw error;
+    }
+
+    throw new Error('The new tab button is clickable');
+});
+
 Then('the selected tabs actions button should not be visible', async function() {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
-    const selectedTabsActionsButton = webdriver.findElement(By.css('.selected-tabs-actions-button'));
+    const selectedTabsActionsButton = webdriver.findElement(By.css('.tab-list .selected-tabs-actions-button i'));
 
     await webdriver.wait(async () => {
         return !await selectedTabsActionsButton.isDisplayed();
@@ -63,7 +99,7 @@ Then('the selected tabs actions button should not be visible', async function() 
 Then('the selected tabs actions button should be visible', async function() {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
-    const selectedTabsActionsButton = webdriver.findElement(By.css('.selected-tabs-actions-button'));
+    const selectedTabsActionsButton = webdriver.findElement(By.css('.tab-list .selected-tabs-actions-button i'));
 
     await webdriver.wait(async () => {
         return await selectedTabsActionsButton.isDisplayed() && !await TabSupport.hasCssClass(selectedTabsActionsButton, 'hide');
@@ -73,7 +109,7 @@ Then('the selected tabs actions button should be visible', async function() {
 Then('the selected tabs actions context menu should not be visible', async function() {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
-    const contextMenu = webdriver.findElement(By.css('.selected-tabs-actions-context-menu-container .context-menu'));
+    const contextMenu = webdriver.findElement(By.css('.tab-list .selected-tabs-actions-context-menu-container .context-menu'));
 
     await webdriver.wait(async () => {
         return !await contextMenu.isDisplayed();
@@ -83,9 +119,49 @@ Then('the selected tabs actions context menu should not be visible', async funct
 Then('the selected tabs actions context menu should be visible', async function() {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
-    const contextMenu = webdriver.findElement(By.css('.selected-tabs-actions-context-menu-container .context-menu'));
+    const contextMenu = webdriver.findElement(By.css('.tab-list .selected-tabs-actions-context-menu-container .context-menu'));
 
     await webdriver.wait(async () => {
         return await contextMenu.isDisplayed();
     }, 10000, `Selected tabs actions context menu is not visible`);
+});
+
+Then('the move below all button should not be visible', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const buttonElement = webdriver.findElement(By.css('.tab-list .move-below-all-button'));
+
+    await webdriver.wait(async () => {
+        return !await buttonElement.isDisplayed();
+    }, 10000, `The move tab below all button is visible`);
+});
+
+Then('the move below all button should be visible', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const buttonElement = webdriver.findElement(By.css('.tab-list .move-below-all-button'));
+
+    await webdriver.wait(async () => {
+        return await buttonElement.isDisplayed();
+    }, 10000, `The move tab below all button is not visible`);
+});
+
+Then('the cancel tab move button should not be visible', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const buttonElement = webdriver.findElement(By.css('.tab-list .cancel-tab-move-button'));
+
+    await webdriver.wait(async () => {
+        return !await buttonElement.isDisplayed();
+    }, 10000, `The cancel tab move button is visible`);
+});
+
+Then('the cancel tab move button should be visible', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const buttonElement = webdriver.findElement(By.css('.tab-list .cancel-tab-move-button'));
+
+    await webdriver.wait(async () => {
+        return await buttonElement.isDisplayed();
+    }, 10000, `The cancel tab move button is not visible`);
 });

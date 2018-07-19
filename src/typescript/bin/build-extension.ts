@@ -16,7 +16,7 @@ const relativePathToIncludeList = [
     'manifest.json',
 ];
 const relativePathToRemoveList = [
-    'dist/css/style.css.map',
+    'dist/css/ui-small.css.map',
     'dist/js/background.js.map',
     'dist/js/ui-small.js.map',
 ];

@@ -1,0 +1,33 @@
+$settings-title-font-size: 2rem;
+$settings-title-border-bottom-color: #c7c7c7;
+$settings-font-size: 1.25rem;
+$settings-font-color: #333;
+$settings-label-width: 250px;
+
+.ui-settings {
+    font-size: $settings-font-size;
+    color: $settings-font-color;
+
+    h2 {
+        padding-bottom: 4px;
+        margin: 0;
+        margin-bottom: 5px;
+        font-size: $settings-title-font-size;
+        font-weight: normal;
+        border-bottom: 1px solid $settings-title-border-bottom-color;
+    }
+
+    .setting-row {
+        padding: 5px;
+
+        label {
+            display: inline-block;
+            width: $settings-label-width;
+            vertical-align: middle;
+        }
+
+        input {
+            vertical-align: middle;
+        }
+    }
+}

@@ -1,6 +1,13 @@
 import { CommandBus } from '../../bus/command-bus';
 import { EventBus } from '../../bus/event-bus';
 import { QueryBus } from '../../bus/query-bus';
+import { CloseTabOnMiddleClickConfigured } from '../../settings/event/close-tab-on-middle-click-configured';
+import { ShowCloseButtonOnTabHoverConfigured } from '../../settings/event/show-close-button-on-tab-hover-configured';
+import { ShowTabTitleOnSeveralLinesConfigured } from '../../settings/event/show-tab-title-on-several-lines-configured';
+import { ShowTabUrlOnSeveralLinesConfigured } from '../../settings/event/show-tab-url-on-several-lines-configured';
+import { TabAddressToShowConfigured } from '../../settings/event/tab-address-to-show-configured';
+import { GetSettings } from '../../settings/query/get-settings';
+import { TabAddressTypes } from '../../settings/settings';
 import { MoveOpenedTabs } from '../../tab/opened-tab/command/move-opened-tabs';
 import { OpenedTabClosed } from '../../tab/opened-tab/event/opened-tab-closed';
 import { OpenedTabMoved } from '../../tab/opened-tab/event/opened-tab-moved';
@@ -77,12 +84,20 @@ export class TabsView {
             eventBus.subscribe(OpenedTabTitleUpdated, this.onTabTitleUpdate, this);
             eventBus.subscribe(OpenedTabUrlUpdated, this.onTabUrlUpdate, this);
 
+            eventBus.subscribe(CloseTabOnMiddleClickConfigured, this.onCloseTabOnMiddleClickConfigure, this);
+            eventBus.subscribe(ShowCloseButtonOnTabHoverConfigured, this.onShowCloseButtonOnTabHoverConfigure, this);
+            eventBus.subscribe(ShowTabTitleOnSeveralLinesConfigured, this.onShowTabTitleOnSeveralLinesConfigure, this);
+            eventBus.subscribe(ShowTabUrlOnSeveralLinesConfigured, this.onShowTabUrlOnSeveralLinesConfigure, this);
+            eventBus.subscribe(TabAddressToShowConfigured, this.onTabAddressToShowConfigure, this);
+
             await this.createOpenedTabWorkspace();
             this.enableWorkspace(BuiltinWorkspaces.OPENED_TABS);
 
             this.tabFilter.observeFilterResultRetrieval(this.onTabFilterResultRetrieve.bind(this));
             this.tabFilter.observeFilterClear(this.onTabFilterClear.bind(this));
             this.generalTabSelector.observeStateChange(this.onGeneralTabSelectorStateChange.bind(this));
+
+            this.applySettings();
         }).executeAll();
 
         const moveBelowAllButton = containerElement.querySelector('.move-below-all-button');
@@ -204,6 +219,62 @@ export class TabsView {
         }
     }
 
+    private async applySettings() {
+        const settings = await this.queryBus.query(new GetSettings());
+        this.setCloseTabOnMiddleStatus(settings.tabs.closeTabOnMiddleClick);
+        this.setShowCloseButtonOnHoverStatus(settings.tabs.showCloseButtonOnHover);
+        this.setShowTabTitleOnSeveralLinesStatus(settings.tabs.showTitleOnSeveralLines);
+        this.setShowTabUrlOnSeveralLinesStatus(settings.tabs.showUrlOnSeveralLines);
+        this.setTabAddressToShow(settings.tabs.addressToShow);
+    }
+
+    private setCloseTabOnMiddleStatus(closeTabOnMiddleClick: boolean) {
+        for (const workspace of this.workspaceList) {
+            if (closeTabOnMiddleClick) {
+                workspace.enableMiddleClickClose();
+            } else {
+                workspace.disableMiddleClickClose();
+            }
+        }
+    }
+
+    private setShowCloseButtonOnHoverStatus(showCloseButtonOnHover: boolean) {
+        if (showCloseButtonOnHover) {
+            this.containerElement.classList.remove('no-close-button');
+        } else {
+            this.containerElement.classList.add('no-close-button');
+        }
+    }
+
+    private setShowTabTitleOnSeveralLinesStatus(showTabTitleOnSeveralLines: boolean) {
+        if (showTabTitleOnSeveralLines) {
+            this.containerElement.classList.add('multiline-tab-title');
+        } else {
+            this.containerElement.classList.remove('multiline-tab-title');
+        }
+    }
+
+    private setShowTabUrlOnSeveralLinesStatus(showTabUrlOnSeveralLines: boolean) {
+        if (showTabUrlOnSeveralLines) {
+            this.containerElement.classList.add('multiline-tab-url');
+        } else {
+            this.containerElement.classList.remove('multiline-tab-url');
+        }
+    }
+
+    private setTabAddressToShow(tabAddressToShow: TabAddressTypes) {
+        if ('url' == tabAddressToShow) {
+            this.containerElement.classList.add('show-tab-url');
+            this.containerElement.classList.remove('show-tab-domain');
+        } else if ('domain' == tabAddressToShow) {
+            this.containerElement.classList.remove('show-tab-url');
+            this.containerElement.classList.add('show-tab-domain');
+        } else {
+            this.containerElement.classList.remove('show-tab-url');
+            this.containerElement.classList.remove('show-tab-domain');
+        }
+    }
+
     async onTabOpen(event: TabOpened) {
         await this.taskScheduler.add(async () => {
             if (event.tab.isPinned) {
@@ -305,6 +376,36 @@ export class TabsView {
             } else {
                 this.filterTabOnAllWorkspaces(event.tabId);
             }
+        }).executeAll();
+    }
+
+    async onCloseTabOnMiddleClickConfigure(event: CloseTabOnMiddleClickConfigured) {
+        await this.taskScheduler.add(async () => {
+            this.setCloseTabOnMiddleStatus(event.closeTabOnMiddleClick);
+        }).executeAll();
+    }
+
+    async onShowCloseButtonOnTabHoverConfigure(event: ShowCloseButtonOnTabHoverConfigured) {
+        await this.taskScheduler.add(async () => {
+            this.setShowCloseButtonOnHoverStatus(event.showCloseButton);
+        }).executeAll();
+    }
+
+    async onShowTabTitleOnSeveralLinesConfigure(event: ShowTabTitleOnSeveralLinesConfigured) {
+        await this.taskScheduler.add(async () => {
+            this.setShowTabTitleOnSeveralLinesStatus(event.showTabTitleOnSeveralLines);
+        }).executeAll();
+    }
+
+    async onShowTabUrlOnSeveralLinesConfigure(event: ShowTabUrlOnSeveralLinesConfigured) {
+        await this.taskScheduler.add(async () => {
+            this.setShowTabUrlOnSeveralLinesStatus(event.showTabUrlOnSeveralLines);
+        }).executeAll();
+    }
+
+    async onTabAddressToShowConfigure(event: TabAddressToShowConfigured) {
+        await this.taskScheduler.add(async () => {
+            this.setTabAddressToShow(event.tabAddressToShow);
         }).executeAll();
     }
 

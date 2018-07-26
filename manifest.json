@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Tab Tower",
-    "version": "0.7.3",
+    "version": "0.8.0",
     "description": "Enhanced tab experience",
     "applications": {
         "gecko": {
@@ -39,6 +39,9 @@
         "scripts": [
             "dist/js/background.js"
         ]
+    },
+    "options_ui": {
+        "page": "ui/ui-settings.html"
     },
     "permissions": [
         "activeTab",

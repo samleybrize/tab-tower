@@ -11,6 +11,7 @@
                     display: block;
                     font-size: $tab-title-font-size;
                     color: $tab-title-color;
+                    white-space: nowrap;
                     transition: color 0.2s ease;
                 }
 
@@ -19,6 +20,7 @@
                     font-size: 11px;
                     font-style: italic;
                     color: $tab-url-color;
+                    white-space: nowrap;
                 }
             }
 
@@ -52,17 +54,21 @@
         }
 
         &.multiline-tab-title {
-            .title {
-                word-break: break-all;
-                white-space: normal;
+            .tab .title-container {
+                .title {
+                    word-break: break-all;
+                    white-space: normal;
+                }
             }
         }
 
         &.multiline-tab-url {
-            .url,
-            .domain {
-                word-break: break-all;
-                white-space: normal;
+            .tab .title-container {
+                .url,
+                .domain {
+                    word-break: break-all;
+                    white-space: normal;
+                }
             }
         }
 

@@ -1,6 +1,6 @@
 import { DetectedBrowser } from '../../../browser/detected-browser';
 import { CommandBus } from '../../../bus/command-bus';
-import { FocusOpenedTab } from '../../../tab/opened-tab/command';
+import { CloseOpenedTab, FocusOpenedTab } from '../../../tab/opened-tab/command';
 import { MoveTabsMarkedAsBeingMovedAboveTab } from './command/move-tabs-marked-as-being-moved-above-tab';
 import { CloseButton } from './tab/close-button';
 import { MuteButton } from './tab/mute-button';
@@ -21,6 +21,7 @@ export class Tab {
     private contextMenu: TabContextMenu;
     private position: number;
     private focused: boolean;
+    private isMiddleClickAllowed = false;
     private beingMoved = false;
     readonly id: string;
 
@@ -103,6 +104,14 @@ export class Tab {
             event.preventDefault();
             this.contextMenu.open({x: event.clientX, y: event.clientY});
         });
+        titleContainerElement.addEventListener('auxclick', (event: MouseEvent) => {
+            event.preventDefault();
+
+            // middle click
+            if (2 == event.which && this.isMiddleClickAllowed) {
+                this.commandBus.handle(new CloseOpenedTab(openedTabId));
+            }
+        });
         moveAboveButton.addEventListener('click', (event: MouseEvent) => {
             this.commandBus.handle(new MoveTabsMarkedAsBeingMovedAboveTab(openedTabId));
         });
@@ -155,6 +164,14 @@ export class Tab {
 
     getPosition() {
         return this.position;
+    }
+
+    enableMiddleClick() {
+        this.isMiddleClickAllowed = true;
+    }
+
+    disableMiddleClick() {
+        this.isMiddleClickAllowed = false;
     }
 
     markAsAudible() {

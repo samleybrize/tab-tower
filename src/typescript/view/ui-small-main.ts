@@ -13,6 +13,8 @@ import { ReceivedQueryMessageHandler } from '../message/receiver/received-query-
 import { ContentMessageSender } from '../message/sender/content-message-sender';
 import { SendMessageCommandHandler } from '../message/sender/send-message-command-handler';
 import { SendMessageQueryHandler } from '../message/sender/send-message-query-handler';
+import * as settingsEvents from '../settings/event';
+import * as settingsQueries from '../settings/query';
 import * as tabCommands from '../tab/opened-tab/command';
 import * as tabEvents from '../tab/opened-tab/event';
 import * as tabQueries from '../tab/opened-tab/query';
@@ -51,6 +53,8 @@ async function main() {
         objectUnserializer.addSupportedClassesFromImportObject(tabCommands);
         objectUnserializer.addSupportedClassesFromImportObject(tabEvents);
         objectUnserializer.addSupportedClassesFromImportObject(tabQueries);
+        objectUnserializer.addSupportedClassesFromImportObject(settingsEvents);
+        objectUnserializer.addSupportedClassesFromImportObject(settingsQueries);
 
         const messageSender = new ContentMessageSender(logger);
         const sendMessageQueryHandler = new SendMessageQueryHandler(messageSender);
@@ -70,6 +74,7 @@ async function main() {
         queryBus.register(tabQueries.GetOpenedTabIdsThatMatchFilter, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
         queryBus.register(tabQueries.GetOpenedTabs, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
 
+        queryBus.register(settingsQueries.GetSettings, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
         queryBus.register(GetBackgroundState, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
     }
 

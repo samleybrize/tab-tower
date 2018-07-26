@@ -330,6 +330,18 @@ export class TabList {
         return tabIdList;
     }
 
+    enableMiddleClickClose() {
+        for (const tab of this.sortedTabList) {
+            tab.enableMiddleClick();
+        }
+    }
+
+    disableMiddleClickClose() {
+        for (const tab of this.sortedTabList) {
+            tab.disableMiddleClick();
+        }
+    }
+
     async onTabClose(event: OpenedTabClosed) {
         await this.taskScheduler.add(async () => {
             this.removeTab(event.closedTab.id);

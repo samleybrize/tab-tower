@@ -54,5 +54,27 @@ module.exports = [
                 }
             ],
         },
+    },
+    {
+        entry: './src/typescript/view/ui-settings-main.ts',
+        output: {
+            filename: 'ui-settings.js',
+            path: path.resolve(__dirname, 'dist/js'),
+        },
+        resolve: {
+            extensions: ['.ts', '.tsx', '.js', '.jsx'],
+        },
+        devtool: 'sourcemap',
+        module: {
+            loaders: [
+                {
+                    test: /\.tsx?$/,
+                    loader: 'awesome-typescript-loader',
+                    options: {
+                        configFileName: 'tsconfig.json',
+                    },
+                }
+            ],
+        },
     }
 ];

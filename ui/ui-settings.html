@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Tab Tower - Settings</title>
+    <link rel="icon" type="image/png" href="/icons/tab-tower.svg" />
+    <link rel="stylesheet" type="text/css" href="/dist/css/ui.css" />
+</head>
+
+<body class="ui-settings">
+    <h2>Settings</h2>
+
+    <div class="setting-row">
+        <label for="show-url">Show url</label>
+        <select id="show-url">
+            <option value="url">Yes</option>
+            <option value="domain">Domain only</option>
+            <option value="none">No</option>
+        </select>
+    </div>
+    <div class="setting-row">
+        <label for="show-url-on-several-lines">Show url on several lines</label>
+        <input type="checkbox" id="show-url-on-several-lines" />
+    </div>
+    <div class="setting-row">
+        <label for="show-tab-title-on-several-lines">Show tab title on several lines</label>
+        <input type="checkbox" id="show-tab-title-on-several-lines" />
+    </div>
+    <div class="setting-row">
+        <label for="show-tab-close-button-on-hover">Show tab close button on hover</label>
+        <input type="checkbox" id="show-tab-close-button-on-hover" />
+    </div>
+    <div class="setting-row">
+        <label for="close-tab-on-middle-click">Close tab on middle click</label>
+        <input type="checkbox" id="close-tab-on-middle-click" />
+    </div>
+
+    <script type="text/javascript" src="/dist/js/ui-settings.js"></script>
+</body>
+
+</html>

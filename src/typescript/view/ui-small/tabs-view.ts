@@ -69,9 +69,7 @@ export class TabsView {
         commandBus.register(MoveTabsMarkedAsBeingMovedAboveTab, this.moveTabsMarkedAsBeingMovedAboveTab, this);
         commandBus.register(MoveTabsMarkedAsBeingMovedBelowAll, this.moveTabsMarkedAsBeingMovedBelowAll, this);
 
-        this.createOpenedTabWorkspace().then(() => {
-            this.enableWorkspace(BuiltinWorkspaces.OPENED_TABS);
-
+        this.taskScheduler.add(async () => {
             eventBus.subscribe(TabOpened, this.onTabOpen, this);
             eventBus.subscribe(OpenedTabClosed, this.onTabClose, this);
             eventBus.subscribe(OpenedTabMoved, this.onTabMove, this);
@@ -79,10 +77,13 @@ export class TabsView {
             eventBus.subscribe(OpenedTabTitleUpdated, this.onTabTitleUpdate, this);
             eventBus.subscribe(OpenedTabUrlUpdated, this.onTabUrlUpdate, this);
 
+            await this.createOpenedTabWorkspace();
+            this.enableWorkspace(BuiltinWorkspaces.OPENED_TABS);
+
             this.tabFilter.observeFilterResultRetrieval(this.onTabFilterResultRetrieve.bind(this));
             this.tabFilter.observeFilterClear(this.onTabFilterClear.bind(this));
             this.generalTabSelector.observeStateChange(this.onGeneralTabSelectorStateChange.bind(this));
-        });
+        }).executeAll();
 
         const moveBelowAllButton = containerElement.querySelector('.move-below-all-button');
         moveBelowAllButton.addEventListener('click', () => {

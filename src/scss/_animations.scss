@@ -1,0 +1,13 @@
+@keyframes spin-clockwise {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(359deg);
+    }
+}
+
+.spin-clockwise {
+    animation: spin-clockwise 2s infinite linear;
+}

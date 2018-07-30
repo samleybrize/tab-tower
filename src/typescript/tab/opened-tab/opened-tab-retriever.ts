@@ -1,5 +1,4 @@
-import * as uuid from 'uuid';
-
+import { sleep } from '../../utils/sleep';
 import { TaskScheduler } from '../../utils/task-scheduler';
 import { OpenedTabAudibleStateUpdated } from './event/opened-tab-audible-state-updated';
 import { OpenedTabAudioMuteStateUpdated } from './event/opened-tab-audio-mute-state-updated';
@@ -26,6 +25,7 @@ import { GetOpenedTabs } from './query/get-opened-tabs';
 export class OpenedTabRetriever {
     private tabMap = new Map<string, OpenedTab>();
     private tabList: OpenedTab[] = null;
+    private isInitCompleted = false;
 
     constructor(private openedTabBackend: OpenedTabBackend, private openedTabFilterer: OpenedTabFilterer, private taskScheduler: TaskScheduler) {
     }
@@ -35,16 +35,22 @@ export class OpenedTabRetriever {
             return;
         }
 
-        const tabList = await this.openedTabBackend.getAll();
+        await this.taskScheduler.add(async () => {
+            const tabList = await this.openedTabBackend.getAll();
 
-        for (const tab of tabList) {
-            this.tabMap.set(tab.id, tab);
-        }
+            for (const tab of tabList) {
+                this.tabMap.set(tab.id, tab);
+            }
 
-        this.tabList = tabList;
+            this.tabList = tabList;
+        }).executeAll();
+
+        this.isInitCompleted = true;
     }
 
     async queryAll(query: GetOpenedTabs): Promise<OpenedTab[]> {
+        await this.waitInitComplete();
+
         if (query.filter) {
             return this.openedTabFilterer.getMatchingTabs(this.tabList, query.filter);
         } else {
@@ -52,7 +58,15 @@ export class OpenedTabRetriever {
         }
     }
 
+    private async waitInitComplete() {
+        while (!this.isInitCompleted) {
+            await sleep(100);
+        }
+    }
+
     async queryById(query: GetOpenedTabById): Promise<OpenedTab> {
+        await this.waitInitComplete();
+
         return this.getById(query.tabId);
     }
 

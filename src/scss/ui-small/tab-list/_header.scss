@@ -28,10 +28,18 @@
                 display: inline-block;
                 padding: 2px;
                 font-size: 10px;
-                color: #666;
-                vertical-align: middle;
                 background: rgba(255, 255, 255, 0.85);
                 border-radius: 2px;
+
+                &,
+                i {
+                    color: #666;
+                    vertical-align: middle;
+                }
+
+                i {
+                    font-size: 14px;
+                }
             }
 
             .name {

@@ -172,9 +172,9 @@ async function main() {
     }
 
     async function initTabHandling() {
-        await openedTabRetriever.init();
         await nativeTabEventHandler.init();
         await nativeTabIdAssociationMaintainer.init();
+        await openedTabRetriever.init();
     }
 
     async function initBrowserAction() {

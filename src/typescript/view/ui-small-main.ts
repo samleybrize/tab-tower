@@ -52,7 +52,7 @@ async function main() {
         objectUnserializer.addSupportedClassesFromImportObject(tabEvents);
         objectUnserializer.addSupportedClassesFromImportObject(tabQueries);
 
-        const messageSender = new ContentMessageSender();
+        const messageSender = new ContentMessageSender(logger);
         const sendMessageQueryHandler = new SendMessageQueryHandler(messageSender);
         sendMessageCommandHandler = new SendMessageCommandHandler(messageSender);
 

@@ -38,7 +38,7 @@ import { UiSmall } from './ui-small/ui-small';
 const defaultFaviconUrl = '/ui/images/default-favicon.svg';
 
 async function main() {
-    const logger = new BrowserConsoleLogger();
+    const logger = new BrowserConsoleLogger('ui-small', 'green');
     const commandBus = new CommandBus(logger);
     const eventBus = new EventBus(logger);
     const queryBus = new QueryBus(logger);

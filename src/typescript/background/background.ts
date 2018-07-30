@@ -44,7 +44,7 @@ import { BackgroundStateRetriever } from './background-state-retriever';
 import { GetBackgroundState } from './get-background-state';
 
 async function main() {
-    const logger = new BrowserConsoleLogger();
+    const logger = new BrowserConsoleLogger('background', 'magenta');
     const commandBus = new CommandBus(logger);
     const eventBus = new EventBus(logger);
     const queryBus = new QueryBus(logger);

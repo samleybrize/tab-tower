@@ -1,41 +1,37 @@
 import { Log, Logger } from './logger';
 
 export class BrowserConsoleLogger implements Logger {
+    constructor(private loggerName: string, private nameColor: string) {
+    }
+
     debug(log: Log): void {
-        if (log.context) {
-            console.debug(this.getMessage(log), log.context);
-        } else {
-            console.debug(this.getMessage(log));
-        }
+        console.debug.apply(console, this.getMessage(log));
     }
 
     private getMessage(log: Log) {
-        const date = new Date().toISOString();
+        const parts: any[] = [];
 
-        return `[${date}] ${log.message}`;
+        const date = new Date().toISOString();
+        parts.push(`%c[%s]%c[%s]%c`, 'color:silver', date, `color:${this.nameColor}`, this.loggerName, 'color:inherit');
+
+        parts.push(log.message);
+
+        if (log.context) {
+            parts.push(log.context);
+        }
+
+        return parts;
     }
 
     info(log: Log): void {
-        if (log.context) {
-            console.info(this.getMessage(log), log.context);
-        } else {
-            console.info(this.getMessage(log));
-        }
+        console.info.apply(console, this.getMessage(log));
     }
 
     warning(log: Log): void {
-        if (log.context) {
-            console.warn(this.getMessage(log), log.context);
-        } else {
-            console.warn(this.getMessage(log));
-        }
+        console.warn.apply(console, this.getMessage(log));
     }
 
     error(log: Log): void {
-        if (log.context) {
-            console.error(this.getMessage(log), log.context);
-        } else {
-            console.error(this.getMessage(log));
-        }
+        console.error.apply(console, this.getMessage(log));
     }
 }

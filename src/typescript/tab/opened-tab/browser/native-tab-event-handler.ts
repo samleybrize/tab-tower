@@ -133,7 +133,7 @@ export class NativeTabEventHandler implements OpenedTabBackend {
             if (openedTab) {
                 this.nativeTabIdAssociationMaintainer.onNativeTabOpen(nativeTab.id);
                 await this.eventBus.publish(new TabOpened(openedTab));
-                await this.notifyTabsPositionsUpdate();
+                await this.notifyTabsPositionsUpdate(openedTab.position + 1);
 
                 if (openedTab.isFocused) {
                     await this.notifyTabFocused(openedTab.id, nativeTab.windowId);
@@ -153,10 +153,15 @@ export class NativeTabEventHandler implements OpenedTabBackend {
         this.focusedTabMap.set(focusedTabNativeWindowId, focusedTabId);
     }
 
-    private async notifyTabsPositionsUpdate() {
+    private async notifyTabsPositionsUpdate(fromPosition?: number) {
         const rawTabList = await browser.tabs.query({});
+        fromPosition = fromPosition > 0 ? fromPosition : 0;
 
         for (const rawTab of rawTabList) {
+            if (rawTab.index < fromPosition) {
+                continue;
+            }
+
             const tabId = await this.nativeTabIdAssociationMaintainer.getAssociatedOpenedTabId(rawTab.id);
             await this.eventBus.publish(new OpenedTabPositionUpdated(tabId, rawTab.index));
         }
@@ -195,7 +200,7 @@ export class NativeTabEventHandler implements OpenedTabBackend {
             this.nativeTabIdAssociationMaintainer.onNativeTabClose(nativeTabId);
 
             await this.notifyFocusedTabUpdated(removeInfo.windowId);
-            await this.notifyTabsPositionsUpdate();
+            await this.notifyTabsPositionsUpdate(closedTab.position);
         }).executeAll();
     }
 
@@ -217,7 +222,14 @@ export class NativeTabEventHandler implements OpenedTabBackend {
                 return;
             }
 
-            await this.notifyTabsPositionsUpdate();
+            const movedTab = await this.queryBus.query(new GetOpenedTabById(tabId));
+
+            if (null == movedTab) {
+                return;
+            }
+
+            const lowestPosition = Math.min(movedTab.position, moveInfo.toIndex);
+            await this.notifyTabsPositionsUpdate(lowestPosition);
             await this.eventBus.publish(new OpenedTabMoved(tabId, moveInfo.toIndex));
         }).executeAll();
     }

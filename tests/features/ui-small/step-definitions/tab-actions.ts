@@ -1,5 +1,5 @@
 import { When } from 'cucumber';
-import { By, Key, WebDriver, WebElement } from 'selenium-webdriver';
+import { Button, By, Key, WebDriver, WebElement } from 'selenium-webdriver';
 import { TabSupport } from '../support/tab-support';
 import { World } from '../support/world';
 
@@ -100,6 +100,14 @@ When('I shift click on the tab selector of the tab {int} on workspace {string}',
     const tabSelector = tab.findElement(By.css('.tab-selector'));
 
     await webdriver.actions().keyDown(Key.SHIFT).click(tabSelector).keyUp(Key.SHIFT).perform();
+});
+
+When('I middle click on the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const tab = await TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition);
+
+    await webdriver.actions().move({origin: tab}).press(Button.MIDDLE).release(Button.MIDDLE).perform();
 });
 
 When('I right click on the title of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {

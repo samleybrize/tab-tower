@@ -1,4 +1,4 @@
-import { error as WebDriverError, WebDriver } from 'selenium-webdriver';
+import { By, error as WebDriverError, WebDriver, WebElement } from 'selenium-webdriver';
 import { sleep } from '../../src/typescript/utils/sleep';
 import { TestsConfig } from '../tests-config';
 import { BrowserInstructionSender } from '../utils/browser-instruction-sender';
@@ -8,6 +8,10 @@ const defaultWindowHeight = 600;
 
 export class WebdriverHelper {
     constructor(private webdriver: WebDriver, private browserInstructionSender: BrowserInstructionSender) {
+    }
+
+    getSelectedValue(webElement: WebElement) {
+        return webElement.findElement(By.css('option:checked')).getAttribute('value');
     }
 
     // allow to use a function that constructs the fail message, this is needed to include some values retrieved from within the wait function

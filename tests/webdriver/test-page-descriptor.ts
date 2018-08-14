@@ -3,6 +3,7 @@ import { FirefoxConfig } from './firefox-config';
 
 export enum TestPageNames {
     UI_SMALL = 'ui-small',
+    UI_SETTINGS = 'ui-settings',
     TEST_PAGE1 = 'test-page1',
     TEST_PAGE2 = 'test-page2',
     TEST_PAGE_WITH_SOUND = 'test-with-sound',
@@ -12,6 +13,8 @@ export enum TestPageNames {
     TEST_PAGE_WITH_NOT_FOUND_FAVICON = 'test-page-with-not-found-favicon',
     TEST_PAGE_WITHOUT_FAVICON = 'test-page-without-favicon',
     TEST_PAGE_WITH_FAVICON_401 = 'test-page-with-favicon-401',
+    TEST_PAGE_WITH_LONG_TITLE1 = 'test-page-with-long-title1',
+    TEST_PAGE_WITH_LONG_TITLE2 = 'test-page-with-long-title2',
     TEST_DELAYED1 = 'test-delayed1',
 }
 
@@ -29,8 +32,15 @@ export class TestPageDescriptorRetriever {
     constructor(firefoxConfig: FirefoxConfig, urlDelayer: UrlDelayer) {
         this.addDescriptor({
             name: TestPageNames.UI_SMALL,
-            title: 'Tab Tower - Sidebar',
+            title: 'Tab Tower',
             url: firefoxConfig.getExtensionUrl('/ui/ui-small.html'),
+            domain: firefoxConfig.getExtensionInternalId(),
+            faviconUrl: firefoxConfig.getExtensionUrl('/icons/tab-tower.svg'),
+        });
+        this.addDescriptor({
+            name: TestPageNames.UI_SETTINGS,
+            title: 'Tab Tower - Settings',
+            url: firefoxConfig.getExtensionUrl('/ui/ui-settings.html'),
             domain: firefoxConfig.getExtensionInternalId(),
             faviconUrl: firefoxConfig.getExtensionUrl('/icons/tab-tower.svg'),
         });
@@ -96,6 +106,20 @@ export class TestPageDescriptorRetriever {
             url: firefoxConfig.getExtensionUrl('/tests/resources/test-page-with-favicon-401.html'),
             domain: firefoxConfig.getExtensionInternalId(),
             faviconUrl: firefoxConfig.getExtensionUrl('/ui/images/default-favicon.svg'),
+        });
+        this.addDescriptor({
+            name: TestPageNames.TEST_PAGE_WITH_LONG_TITLE1,
+            title: 'Test page with a very very very very very very very very very very long title 1',
+            url: firefoxConfig.getExtensionUrl('/tests/resources/test-page-with-long-title1.html'),
+            domain: firefoxConfig.getExtensionInternalId(),
+            faviconUrl: firefoxConfig.getExtensionUrl('/tests/resources/favicon1.png'),
+        });
+        this.addDescriptor({
+            name: TestPageNames.TEST_PAGE_WITH_LONG_TITLE2,
+            title: 'Test page with a very very very very very very very very very very long title 2',
+            url: firefoxConfig.getExtensionUrl('/tests/resources/test-page-with-long-title2.html'),
+            domain: firefoxConfig.getExtensionInternalId(),
+            faviconUrl: firefoxConfig.getExtensionUrl('/tests/resources/favicon1.png'),
         });
 
         const delayedImageUrl = urlDelayer.getDelayedUrl('', 1000);

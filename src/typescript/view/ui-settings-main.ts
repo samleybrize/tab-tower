@@ -34,7 +34,7 @@ async function main() {
         objectUnserializer.addSupportedClassesFromImportObject(settingsEvents);
         objectUnserializer.addSupportedClassesFromImportObject(settingsQueries);
 
-        const messageSender = new ContentMessageSender();
+        const messageSender = new ContentMessageSender(logger);
         const sendMessageQueryHandler = new SendMessageQueryHandler(messageSender);
         sendMessageCommandHandler = new SendMessageCommandHandler(messageSender);
 

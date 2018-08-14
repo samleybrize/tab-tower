@@ -25,7 +25,7 @@ export class SettingsView {
         this.closeTabOnMiddleClickCheckbox = containerElement.querySelector('#close-tab-on-middle-click');
         this.showCloseButtonOnTabHoverCheckbox = containerElement.querySelector('#show-tab-close-button-on-hover');
         this.showTabTitleOnSeveralLinesCheckbox = containerElement.querySelector('#show-tab-title-on-several-lines');
-        this.showTabUrlOnSeveralLinesCheckbox = containerElement.querySelector('#show-url-on-several-lines');
+        this.showTabUrlOnSeveralLinesCheckbox = containerElement.querySelector('#show-tab-url-on-several-lines');
         this.tabAddressToShowSelect = containerElement.querySelector('#show-url');
 
         this.closeTabOnMiddleClickCheckbox.addEventListener('change', this.onCloseTabOnMiddleClickChange.bind(this));

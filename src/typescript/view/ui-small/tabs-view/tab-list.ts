@@ -330,15 +330,31 @@ export class TabList {
         return tabIdList;
     }
 
-    enableMiddleClickClose() {
-        for (const tab of this.sortedTabList) {
-            tab.enableMiddleClick();
+    enableMiddleClickClose(tabId?: string) {
+        if (tabId) {
+            const tab = this.tabMap.get(tabId);
+
+            if (tab) {
+                tab.enableMiddleClick();
+            }
+        } else {
+            for (const tab of this.sortedTabList) {
+                tab.enableMiddleClick();
+            }
         }
     }
 
-    disableMiddleClickClose() {
-        for (const tab of this.sortedTabList) {
-            tab.disableMiddleClick();
+    disableMiddleClickClose(tabId?: string) {
+        if (tabId) {
+            const tab = this.tabMap.get(tabId);
+
+            if (tab) {
+                tab.disableMiddleClick();
+            }
+        } else {
+            for (const tab of this.sortedTabList) {
+                tab.disableMiddleClick();
+            }
         }
     }
 

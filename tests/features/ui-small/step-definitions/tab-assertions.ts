@@ -53,6 +53,26 @@ Then('I should see the url domain {string} on the tab {int} of the workspace {st
     await TabAssertions.assertTabDomain(webdriver, webdriverHelper, tab, expectedDomain);
 });
 
+Then('I should not see the url domain of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabUrlDomainIsNotVisible(world, workspaceId, tabPosition);
+});
+
+Then('I should see the url domain of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabUrlDomainIsVisible(world, workspaceId, tabPosition);
+});
+
+Then('I should not see the url of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabUrlIsNotVisible(world, workspaceId, tabPosition);
+});
+
+Then('I should see the url of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabUrlIsVisible(world, workspaceId, tabPosition);
+});
+
 Then('I should not see the favicon of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
     const world = this as World;
     await TabAssertions.assertTabFaviconIsNotVisible(world, workspaceId, tabPosition);
@@ -138,6 +158,11 @@ Then('there should not be a visible close button on the tab {int} on the workspa
     await TabAssertions.assertCloseButtonIsNotVisible(world, workspaceId, tabPosition);
 });
 
+Then('there should be a visible close button on the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertCloseButtonIsVisible(world, workspaceId, tabPosition);
+});
+
 Then('the tab selector of the tab {int} on the workspace {string} should not be visible', async function(tabPosition: number, workspaceId: string) {
     const world = this as World;
     await TabAssertions.assertTabSelectorIsNotVisible(world, workspaceId, tabPosition);
@@ -221,6 +246,26 @@ Then('the tab {int} on the workspace {string} should be visible in the viewport'
 Then('the title of the tab {int} on the workspace {string} should not be clickable', async function(tabPosition: number, workspaceId: string) {
     const world = this as World;
     await TabAssertions.assertTabTitleIsNotClickable(world, workspaceId, tabPosition);
+});
+
+Then('the title of the tab {int} on the workspace {string} should be on one line', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabTitleIsOnOneLine(world, workspaceId, tabPosition);
+});
+
+Then('the title of the tab {int} on the workspace {string} should be on several lines', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabTitleIsOnSeveralLines(world, workspaceId, tabPosition);
+});
+
+Then('the url of the tab {int} on the workspace {string} should be on one line', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabUrlIsOnOneLine(world, workspaceId, tabPosition);
+});
+
+Then('the url of the tab {int} on the workspace {string} should be on several lines', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertTabUrlIsOnSeveralLines(world, workspaceId, tabPosition);
 });
 
 class TabAssertions {
@@ -324,6 +369,28 @@ class TabAssertions {
         }, 10000, () => `Tab url "${actualUrl}" is different than expected "${expectedUrl}"`);
     }
 
+    static async assertTabUrlIsVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+
+        const urlElement = tab.findElement(By.css('.url'));
+
+        await webdriver.wait(async () => {
+            return await urlElement.isDisplayed();
+        }, 10000, 'Tab url is not visible');
+    }
+
+    static async assertTabUrlIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+
+        const urlElement = tab.findElement(By.css('.url'));
+
+        await webdriver.wait(async () => {
+            return !await urlElement.isDisplayed();
+        }, 10000, 'Tab url is visible');
+    }
+
     static async assertTabDomain(webdriver: WebDriver, webdriverHelper: WebdriverHelper, tab: WebElement, expectedDomain: string) {
         const tabElementId = await tab.getAttribute('id');
         let actualDomain: string;
@@ -334,6 +401,28 @@ class TabAssertions {
 
             return expectedDomain == actualDomain;
         }, 10000, () => `Tab domain "${actualDomain}" is different than expected "${expectedDomain}"`);
+    }
+
+    static async assertTabUrlDomainIsVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+
+        const domainElement = tab.findElement(By.css('.domain'));
+
+        await webdriver.wait(async () => {
+            return await domainElement.isDisplayed();
+        }, 10000, 'Tab url domain is not visible');
+    }
+
+    static async assertTabUrlDomainIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+
+        const domainElement = tab.findElement(By.css('.domain'));
+
+        await webdriver.wait(async () => {
+            return !await domainElement.isDisplayed();
+        }, 10000, 'Tab url domain is visible');
     }
 
     static async assertTabFavicon(webdriverHelper: WebdriverHelper, tab: WebElement, expectedFaviconUrl: string) {
@@ -523,6 +612,20 @@ class TabAssertions {
 
         if (await closeButton.isDisplayed()) {
             throw new Error(`Close button of tab at position ${tabPosition} of workspace "${workspaceId}" is visible`);
+        }
+    }
+
+    static async assertCloseButtonIsVisible(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+
+        await webdriver.actions().move({origin: tab}).perform();
+        await sleep(200);
+
+        const closeButton = tab.findElement(By.css('.close-button'));
+
+        if (!await closeButton.isDisplayed()) {
+            throw new Error(`Close button of tab at position ${tabPosition} of workspace "${workspaceId}" is not visible`);
         }
     }
 
@@ -743,5 +846,57 @@ class TabAssertions {
         }
 
         throw new Error('Tab title is clickable');
+    }
+
+    static async assertTabTitleIsOnOneLine(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const titleElement = tab.findElement(By.css('.title'));
+
+        await webdriver.wait(async () => {
+            return await this.isElementTextOnOneLine(webdriver, titleElement);
+        }, 10000, 'Tab title is not on one line');
+    }
+
+    private static async isElementTextOnOneLine(webdriver: WebDriver, element: WebElement): Promise<boolean> {
+        return webdriver.executeScript<boolean>((e: HTMLElement) => {
+            const originalHeight = e.offsetHeight;
+            const originalText = e.textContent;
+            e.textContent = 'I';
+            const newHeight = e.offsetHeight;
+            e.textContent = originalText;
+
+            return originalHeight === newHeight;
+        }, element);
+    }
+
+    static async assertTabTitleIsOnSeveralLines(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const titleElement = tab.findElement(By.css('.title'));
+
+        await webdriver.wait(async () => {
+            return !await this.isElementTextOnOneLine(webdriver, titleElement);
+        }, 10000, 'Tab title is not on several lines');
+    }
+
+    static async assertTabUrlIsOnOneLine(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const urlElement = tab.findElement(By.css('.url'));
+
+        await webdriver.wait(async () => {
+            return await urlElement.isDisplayed() && await this.isElementTextOnOneLine(webdriver, urlElement);
+        }, 10000, 'Tab url is not on one line');
+    }
+
+    static async assertTabUrlIsOnSeveralLines(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const urlElement = tab.findElement(By.css('.url'));
+
+        await webdriver.wait(async () => {
+            return await urlElement.isDisplayed() && !await this.isElementTextOnOneLine(webdriver, urlElement);
+        }, 10000, 'Tab url is not on several lines');
     }
 }

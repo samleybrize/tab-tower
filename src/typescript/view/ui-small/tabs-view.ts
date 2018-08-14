@@ -219,21 +219,21 @@ export class TabsView {
         }
     }
 
-    private async applySettings() {
+    private async applySettings(tabId?: string) {
         const settings = await this.queryBus.query(new GetSettings());
-        this.setCloseTabOnMiddleStatus(settings.tabs.closeTabOnMiddleClick);
+        this.setCloseTabOnMiddleClickStatus(settings.tabs.closeTabOnMiddleClick, tabId);
         this.setShowCloseButtonOnHoverStatus(settings.tabs.showCloseButtonOnHover);
         this.setShowTabTitleOnSeveralLinesStatus(settings.tabs.showTitleOnSeveralLines);
         this.setShowTabUrlOnSeveralLinesStatus(settings.tabs.showUrlOnSeveralLines);
         this.setTabAddressToShow(settings.tabs.addressToShow);
     }
 
-    private setCloseTabOnMiddleStatus(closeTabOnMiddleClick: boolean) {
+    private setCloseTabOnMiddleClickStatus(closeTabOnMiddleClick: boolean, tabId?: string) {
         for (const workspace of this.workspaceList) {
             if (closeTabOnMiddleClick) {
-                workspace.enableMiddleClickClose();
+                workspace.enableMiddleClickClose(tabId);
             } else {
-                workspace.disableMiddleClickClose();
+                workspace.disableMiddleClickClose(tabId);
             }
         }
     }
@@ -290,6 +290,7 @@ export class TabsView {
             }
 
             this.closeContextMenus();
+            this.applySettings(event.tab.id);
         }).executeAll();
     }
 
@@ -381,7 +382,7 @@ export class TabsView {
 
     async onCloseTabOnMiddleClickConfigure(event: CloseTabOnMiddleClickConfigured) {
         await this.taskScheduler.add(async () => {
-            this.setCloseTabOnMiddleStatus(event.closeTabOnMiddleClick);
+            this.setCloseTabOnMiddleClickStatus(event.closeTabOnMiddleClick);
         }).executeAll();
     }
 

@@ -72,15 +72,18 @@
             }
         }
 
-        .pinned-tabs .tab {
-            .title {
-                word-break: normal;
-                white-space: nowrap;
-            }
+        &,
+        &.multiline-tab-title {
+            .pinned-tabs .tab {
+                .title {
+                    word-break: normal;
+                    white-space: nowrap;
+                }
 
-            .domain,
-            .url {
-                display: none;
+                .domain,
+                .url {
+                    display: none;
+                }
             }
         }
     }

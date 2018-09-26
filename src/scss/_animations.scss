@@ -8,6 +8,20 @@
     }
 }
 
+@keyframes spin-counter-clockwise {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(-359deg);
+    }
+}
+
 .spin-clockwise {
     animation: spin-clockwise 2s infinite linear;
+}
+
+.spin-counter-clockwise {
+    animation: spin-counter-clockwise 2s infinite linear;
 }

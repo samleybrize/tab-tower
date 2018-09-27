@@ -38,6 +38,13 @@ import * as openedTabEvents from '../tab/opened-tab/event';
 import { OpenedTabFilterer } from '../tab/opened-tab/opened-tab-filterer';
 import { OpenedTabRetriever } from '../tab/opened-tab/opened-tab-retriever';
 import * as openedTabQueries from '../tab/opened-tab/query';
+import * as tabTagCommands from '../tab/tab-tag/command';
+import * as tabTagEvents from '../tab/tab-tag/event';
+import * as tabTagQueries from '../tab/tab-tag/query';
+import { TabTagFilterer } from '../tab/tab-tag/tab-tag-filterer';
+import { TabTagModifier } from '../tab/tab-tag/tab-tag-modifier';
+import { TabTagRetriever } from '../tab/tab-tag/tab-tag-retriever';
+import { WebStorageTabTagPersister } from '../tab/tab-tag/web-storage-tab-tag-persister';
 import { ObjectUnserializer } from '../utils/object-unserializer';
 import { TaskScheduler } from '../utils/task-scheduler';
 import { BackgroundStateRetriever } from './background-state-retriever';
@@ -76,6 +83,11 @@ async function main() {
     const settingsPersister = new WebStorageSettingsPersister();
     const settingsRetriever = new SettingsRetriever(settingsPersister);
     const settingsModifier = new SettingsModifier(eventBus, settingsPersister, new TaskScheduler(logger));
+
+    const tabTagFilterer = new TabTagFilterer(queryBus);
+    const tabTagPersister = new WebStorageTabTagPersister();
+    const tabTagRetriever = new TabTagRetriever(tabTagPersister, new TaskScheduler(logger));
+    const tabTagModifier = new TabTagModifier(eventBus, queryBus, tabTagPersister, new TaskScheduler(logger));
 
     const objectUnserializer = new ObjectUnserializer();
     const messageSender = new BackgroundMessageSender();
@@ -122,6 +134,10 @@ async function main() {
         commandBus.register(settingsCommands.ConfigureShowTabTitleOnSeveralLines, settingsModifier.configureShowTabTitleOnSeveralLines, settingsModifier);
         commandBus.register(settingsCommands.ConfigureShowTabUrlOnSeveralLines, settingsModifier.configureShowTabUrlOnSeveralLines, settingsModifier);
         commandBus.register(settingsCommands.ConfigureTabAddressToShow, settingsModifier.configureTabAddressToShow, settingsModifier);
+
+        commandBus.register(tabTagCommands.CreateTabTag, tabTagModifier.createTabTag, tabTagModifier);
+        commandBus.register(tabTagCommands.DeleteTabTag, tabTagModifier.deleteTabTag, tabTagModifier);
+        commandBus.register(tabTagCommands.UpdateTabTag, tabTagModifier.updateTabTag, tabTagModifier);
     }
 
     function initQueryBus() {
@@ -130,6 +146,10 @@ async function main() {
         queryBus.register(openedTabQueries.GetOpenedTabIdsThatMatchFilter, openedTabFilterer.queryOpenedTabIdsThatMatchFilter, openedTabFilterer);
 
         queryBus.register(settingsQueries.GetSettings, settingsRetriever.querySettings, settingsRetriever);
+
+        queryBus.register(tabTagQueries.GetTabTagById, tabTagRetriever.queryById, tabTagRetriever);
+        queryBus.register(tabTagQueries.GetTabTagIdsThatMatchFilter, tabTagFilterer.queryTabTagIdsThatMatchFilter, tabTagFilterer);
+        queryBus.register(tabTagQueries.GetTabTags, tabTagRetriever.queryAll, tabTagRetriever);
     }
 
     function initEventBus() {
@@ -169,6 +189,17 @@ async function main() {
         eventBus.subscribe(settingsEvents.ShowTabTitleOnSeveralLinesConfigured, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(settingsEvents.ShowTabUrlOnSeveralLinesConfigured, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(settingsEvents.TabAddressToShowConfigured, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+
+        eventBus.subscribe(tabTagEvents.TabTagCreated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(tabTagEvents.TabTagCreated, tabTagRetriever.onTabTagCreate, tabTagRetriever);
+        eventBus.subscribe(tabTagEvents.TabTagDeleted, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(tabTagEvents.TabTagDeleted, tabTagRetriever.onTabTagDelete, tabTagRetriever);
+        eventBus.subscribe(tabTagEvents.TabTagUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(tabTagEvents.TabTagUpdated, tabTagRetriever.onTabTagUpdate, tabTagRetriever);
+    }
+
+    async function initTabTags() {
+        await tabTagRetriever.init();
     }
 
     async function initTabHandling() {
@@ -187,6 +218,7 @@ async function main() {
     initCommandBus();
     initQueryBus();
     initEventBus();
+    await initTabTags();
     await initTabHandling();
     await initBrowserAction();
     backgroundStateRetriever.state = 'ready';

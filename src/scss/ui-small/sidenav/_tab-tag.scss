@@ -1,0 +1,15 @@
+.sidenav {
+    .row.tab-tag {
+        .color {
+            color: $tag-default-color;
+
+            i {
+                color: inherit;
+            }
+        }
+
+        .label {
+            vertical-align: middle;
+        }
+    }
+}

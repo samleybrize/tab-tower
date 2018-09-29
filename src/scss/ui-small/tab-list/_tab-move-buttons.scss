@@ -8,7 +8,7 @@
             padding: 5px;
             pointer-events: none;
             cursor: pointer;
-            background-color: $move-above-button-background-color;
+            background-color: $tab-move-above-button-background-color;
             border-bottom-right-radius: 20px;
             border-bottom-left-radius: 20px;
             opacity: 0;
@@ -21,12 +21,12 @@
                 top: -5px;
                 display: block;
                 font-size: 16px;
-                color: $move-above-button-font-color;
+                color: $tab-move-above-button-font-color;
                 transition: background-color 0.3s ease;
             }
 
             &:hover {
-                background-color: $move-above-button-hover-background-color;
+                background-color: $tab-move-above-button-hover-background-color;
             }
         }
 

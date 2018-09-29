@@ -52,7 +52,8 @@
                 }
             }
 
-            &:hover {
+            &:hover,
+            &.context-menu-visible {
                 > .audible-icon,
                 > .muted-icon,
                 > .pin-icon {

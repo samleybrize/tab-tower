@@ -21,6 +21,7 @@ import { Counter } from '../../utils/counter';
 import { TaskScheduler, TaskSchedulerFactory } from '../../utils/task-scheduler';
 import { Checkbox } from '../components/checkbox';
 import { CloseContextMenus } from '../components/command/close-context-menus';
+import { ShowSidenav } from './sidenav/command/show-sidenav';
 import { MarkAllTabsAsNotBeingMoved } from './tabs-view/command/mark-all-tabs-as-not-being-moved';
 import { MarkTabsAsBeingMoved } from './tabs-view/command/mark-tabs-as-being-moved';
 import { MoveTabsMarkedAsBeingMovedAboveTab } from './tabs-view/command/move-tabs-marked-as-being-moved-above-tab';
@@ -29,7 +30,7 @@ import { CurrentWorkspace } from './tabs-view/current-workspace';
 import { NewTabButton, NewTabButtonFactory } from './tabs-view/new-tab-button';
 import { GetCurrentWorkspaceSelectedTabs } from './tabs-view/query/get-current-workspace-selected-tabs';
 import { SelectedTabsActions, SelectedTabsActionsFactory } from './tabs-view/selected-tabs-actions';
-import { TabFilter, TabFilterfactory } from './tabs-view/tab-filter';
+import { TabFilter, TabFilterFactory } from './tabs-view/tab-filter';
 import { TabList, TabListFactory } from './tabs-view/tab-list';
 
 enum BuiltinWorkspaces {
@@ -54,7 +55,7 @@ export class TabsView {
     constructor(
         private containerElement: HTMLElement,
         private tabListFactory: TabListFactory,
-        tabFilterFactory: TabFilterfactory,
+        tabFilterFactory: TabFilterFactory,
         newTabButtonFactory: NewTabButtonFactory,
         selectedTabsActionsFactory: SelectedTabsActionsFactory,
         private commandBus: CommandBus,
@@ -108,6 +109,11 @@ export class TabsView {
         const cancelTabMoveButton = containerElement.querySelector('.cancel-tab-move-button i');
         cancelTabMoveButton.addEventListener('click', () => {
             this.commandBus.handle(new MarkAllTabsAsNotBeingMoved());
+        });
+
+        const showSidenavButton = containerElement.querySelector('.sidenav-button');
+        showSidenavButton.addEventListener('click', () => {
+            this.commandBus.handle(new ShowSidenav());
         });
     }
 
@@ -458,7 +464,7 @@ export class TabsView {
 export class TabsViewFactory {
     constructor(
         private tabListFactory: TabListFactory,
-        private tabFilterFactory: TabFilterfactory,
+        private tabFilterFactory: TabFilterFactory,
         private newTabButtonFactory: NewTabButtonFactory,
         private selectedTabsActionsFactory: SelectedTabsActionsFactory,
         private taskSchedulerFactory: TaskSchedulerFactory,

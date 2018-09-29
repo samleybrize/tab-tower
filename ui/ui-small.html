@@ -9,12 +9,10 @@
 </head>
 
 <body class="ui-small">
-    <div class="workspace-list-overlay"></div>
-
     <div class="tab-list show-tab-domain">
         <div class="sticky-top">
             <div class="header">
-                <span class="menu-button"><i class="material-icons">menu</i></span>
+                <span class="sidenav-button"><i class="material-icons">menu</i></span>
                 <span class="current-workspace">
                     <span class="number-of-tabs"><i class="material-icons spin-counter-clockwise">cached</i></span>
                     <span class="name"></span>
@@ -55,24 +53,70 @@
         </div>
     </div>
 
-    <div class="workspace-list">
-        <div class="filter2">
-            <span class="search-icon" title="Filter options">
-                <img src="/ui/images/search.svg" alt="" />
-                <span class="arrow">&dtrif;</span>
-            </span>
-            <input type="text" placeholder="Filter workspaces" />
+    <div class="sidenav">
+        <div class="header">
+            <span class="close-sidenav-button"><i class="material-icons">arrow_back</i></span>
+            <span class="title">Tab Tower</span>
         </div>
 
-        <div class="workspace current" title="All opened tabs">
-            <span class="counter">21</span>
-            <span class="name">All opened tabs</span>
+        <div class="content">
+            <div class="row all-opened-tabs">
+                <i class="material-icons">view_list</i>
+                All opened tabs
+            </div>
+
+            <div class="separator"></div>
+
+            <div class="tab-tag-list">
+                <div class="subheader">Tags</div>
+
+                <div class="filter">
+                    <input type="text" class="filter-input" placeholder="Filter tags" />
+                    <i class="material-icons">search</i>
+                </div>
+
+                <div class="row new-tag-button">
+                    <i class="material-icons">add_circle</i>
+                    New tag
+                </div>
+            </div>
+
+            <div class="separator"></div>
+
+            <div class="row settings">
+                <i class="material-icons">settings</i>
+                Settings
+            </div>
         </div>
-        <div class="new-workspace-button">+ Create workspace</div>
-        <div class="workspace" title="Custom workspace 1">
-            <span class="counter">1</span>
-            <span class="name">Custom workspace 1</span>
+    </div>
+
+    <div class="tab-tag-edit">
+        <div class="header">
+            <span class="cancel-button" title="Cancel"><i class="material-icons">arrow_back</i></span>
+            <span class="title">
+                <span class="edit">Edit</span>
+                <span class="create">Create</span>
+                a tag
+            </span>
         </div>
+
+        <div class="content">
+            <div class="form-input label">
+                <input type="text" id="tab-tag-label" placeholder="Banana" />
+                <label for="tab-tag-label">Label</label>
+            </div>
+
+            <div class="color-selector">
+                <span>Color</span>
+                <div></div>
+            </div>
+
+        </div>
+
+        <button class="submit">
+            <i class="material-icons">done</i>
+            Save
+        </button>
     </div>
 
     <script type="text/javascript" src="/dist/js/ui-small.js"></script>

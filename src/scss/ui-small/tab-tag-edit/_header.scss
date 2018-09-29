@@ -1,0 +1,52 @@
+// TODO create a global header class
+.tab-tag-edit {
+    .header {
+        flex-shrink: 0;
+        padding: $header-padding;
+        margin-bottom: 5px;
+        font-size: $header-font-size;
+        font-weight: bold;
+        color: $header-font-color;
+        background-color: $header-background-color;
+
+        .cancel-button {
+            margin-right: $header-icon-margin-right;
+            cursor: pointer;
+
+            i {
+                position: relative;
+                z-index: 0;
+                font-size: $header-icon-size;
+                vertical-align: middle;
+
+                &::before {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    z-index: -1;
+                    width: 100%;
+                    height: 100%;
+                    background: $header-hover-background-color;
+                    border-radius: $header-icon-size;
+                    content: '';
+                    opacity: 0;
+                    transform: scale(0.5);
+                    transition: opacity 0.2s ease, transform 0.2s ease;
+                }
+
+                &:hover::before {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .title {
+            vertical-align: middle;
+        }
+    }
+}

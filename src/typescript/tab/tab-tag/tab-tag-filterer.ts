@@ -24,8 +24,9 @@ export class TabTagFilterer {
     }
 
     async queryTabTagIdsThatMatchFilter(query: GetTabTagIdsThatMatchFilter): Promise<string[]> {
-        const tagList = await this.getAllTags();
+        const tagList = query.tagIdListToMatch ? await this.getTagsFromIdList(query.tagIdListToMatch) : await this.getAllTags();
         const matchingRule = this.getCorrespondingMatchingRule(query.filter);
+        this.wordBreaker.setStringToBreak(query.filter.filterText);
         let matchingTagList = tagList;
 
         if (this.isFilteringNeeded(query.filter)) {
@@ -43,6 +44,17 @@ export class TabTagFilterer {
 
     private async getAllTags() {
         return this.queryBus.query(new GetTabTags());
+    }
+
+    private async getTagsFromIdList(tagIdList: string[]) {
+        const tagList: TabTag[] = [];
+
+        for (const tagId of tagIdList) {
+            const tag = await this.queryBus.query(new GetTabTagById(tagId));
+            tagList.push(tag);
+        }
+
+        return tagList;
     }
 
     private getCorrespondingMatchingRule(filterDescriptor: TabTagFilter): MatchingRule<TabTag> {

@@ -6,7 +6,7 @@
             position: absolute;
             bottom: 4px;
             left: 5px;
-            color: $filter-icon-color;
+            color: $tab-filter-icon-color;
             cursor: pointer;
 
             i {
@@ -26,15 +26,15 @@
             height: 35px;
             padding: 5px;
             padding-left: 40px;
-            background: $filter-background-color;
+            background: $tab-filter-background-color;
             border: none;
-            border-bottom: 1px solid $filter-border-bottom-color;
+            border-bottom: 1px solid $tab-filter-border-bottom-color;
             box-sizing: border-box;
             transition: border-color 0.3s ease, background-color 0.3s ease;
 
             &:focus {
-                background: $filter-hover-background-color;
-                border-bottom: 1px solid $filter-hover-border-bottom-color;
+                background: $tab-filter-hover-background-color;
+                border-bottom: 1px solid $tab-filter-hover-border-bottom-color;
             }
         }
     }

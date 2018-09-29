@@ -1,0 +1,17 @@
+.tab-tag-edit {
+    .submit {
+        flex-grow: 0;
+        padding: $tag-edit-submit-padding;
+        font-weight: bold;
+        color: $tag-edit-submit-text-color;
+        cursor: pointer;
+        background: $tag-edit-submit-background-color;
+        border: none;
+
+        i {
+            font-size: $tag-edit-submit-icon-size;
+            font-weight: bold;
+            vertical-align: middle;
+        }
+    }
+}

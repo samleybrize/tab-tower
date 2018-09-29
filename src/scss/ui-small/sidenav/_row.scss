@@ -1,0 +1,58 @@
+.sidenav {
+    .row {
+        position: relative;
+        padding: 10px 15px;
+        overflow-x: hidden;
+        font-weight: 500;
+        color: $tag-label-color;
+        white-space: nowrap;
+        cursor: pointer;
+        background: $tag-background-color;
+        border-left: $tag-border-left-width solid $tag-border-left-color;
+        transition: background-color 0.2s ease, border-left-color 0.2s ease;
+
+        &::after {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: block;
+            width: 30px;
+            height: 100%;
+            pointer-events: none;
+            background-color: $tag-background-color;
+            content: '';
+            transition: background-color 0.2s ease;
+            mask-image: linear-gradient(to right, transparent, black 75%);
+        }
+
+        &:hover,
+        &.context-menu-visible {
+            background-color: $tag-hover-background-color;
+
+            &::after {
+                background-color: $tab-hover-background-color;
+            }
+        }
+
+        &.active {
+            background-color: $active-tag-background-color;
+            border-left-color: $active-tag-border-left-color;
+
+            &::after {
+                background-color: $active-tab-background-color;
+            }
+        }
+
+        > span > i,
+        > i {
+            margin-right: 7px;
+            font-size: 18px;
+            color: $tag-label-color;
+            vertical-align: middle;
+        }
+
+        &.hide {
+            display: none;
+        }
+    }
+}

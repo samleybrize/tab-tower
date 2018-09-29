@@ -1,0 +1,39 @@
+.tab-tag-edit {
+    .form-input {
+        position: relative;
+        padding-top: $form-input-padding-top;
+        margin-bottom: $form-input-margin-bottom;
+
+        input {
+            width: 100%;
+            padding: 6px 0;
+            font-size: $form-input-font-size;
+            border: none;
+            border-bottom: 1px solid $form-input-border-bottom-color;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease;
+
+            &:focus {
+                border-bottom-color: $form-input-focus-border-bottom-color;
+            }
+        }
+
+        label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: block;
+            font-size: $form-label-font-size;
+            color: $form-label-color;
+            transition: color 0.3s ease;
+        }
+
+        input:focus ~ label {
+            color: $form-label-focus-color;
+        }
+
+        &.hide {
+            display: none;
+        }
+    }
+}

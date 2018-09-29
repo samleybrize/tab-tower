@@ -27,6 +27,7 @@ export class ContextMenuOverlay {
     }
 
     async onContextMenuOpen(event: ContextMenuOpened) {
+        event.contextMenu.htmlElement.insertAdjacentElement('beforebegin', this.htmlElement);
         this.htmlElement.classList.remove('hide');
         this.numberOfOpenedContextMenus++;
     }

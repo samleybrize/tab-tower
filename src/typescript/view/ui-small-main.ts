@@ -18,6 +18,10 @@ import * as settingsQueries from '../settings/query';
 import * as tabCommands from '../tab/opened-tab/command';
 import * as tabEvents from '../tab/opened-tab/event';
 import * as tabQueries from '../tab/opened-tab/query';
+import * as tabTagCommands from '../tab/tab-tag/command';
+import * as tabTagEvents from '../tab/tab-tag/event';
+import * as tabTagQueries from '../tab/tab-tag/query';
+import { ColorManipulator } from '../utils/color-maniplator';
 import { ObjectUnserializer } from '../utils/object-unserializer';
 import { sleep } from '../utils/sleep';
 import { TaskSchedulerFactory } from '../utils/task-scheduler';
@@ -27,12 +31,18 @@ import { ContextMenuOverlay } from './components/context-menu-overlay';
 import { CurrentlyVisibleContextMenuCloser } from './components/currently-visible-context-menu-closer';
 import { ContextMenuClosed } from './components/event/context-menu-closed';
 import { ContextMenuOpened } from './components/event/context-menu-opened';
+import { SidenavFactory } from './ui-small/sidenav';
+import { SidenavTabTagFilterFactory } from './ui-small/sidenav/sidenav-tab-tag-filter';
+import { SidenavTabTagListFactory } from './ui-small/sidenav/sidenav-tab-tag-list';
+import { TabTagContextMenuFactory } from './ui-small/sidenav/tab-tag-context-menu';
+import { TabTagEntryFactory } from './ui-small/sidenav/tab-tag-entry';
+import { TabTagEditFormFactory } from './ui-small/tab-tag-edit-form';
 import { TabsViewFactory } from './ui-small/tabs-view';
 import { NewTabButtonFactory } from './ui-small/tabs-view/new-tab-button';
 import { SelectedTabsActionsFactory } from './ui-small/tabs-view/selected-tabs-actions';
 import { SelectedTabsActionsContextMenuFactory } from './ui-small/tabs-view/selected-tabs-actions-context-menu';
 import { TabFactory } from './ui-small/tabs-view/tab';
-import { TabFilterfactory } from './ui-small/tabs-view/tab-filter';
+import { TabFilterFactory } from './ui-small/tabs-view/tab-filter';
 import { TabListFactory } from './ui-small/tabs-view/tab-list';
 import { TabContextMenuFactory } from './ui-small/tabs-view/tab/tab-context-menu';
 import { UiSmall } from './ui-small/ui-small';
@@ -44,6 +54,7 @@ async function main() {
     const commandBus = new CommandBus(logger);
     const eventBus = new EventBus(logger);
     const queryBus = new QueryBus(logger);
+    const colorManipulator = new ColorManipulator();
 
     let sendMessageCommandHandler: SendMessageCommandHandler;
     let bidirectionalQueryMessageHandler: BidirectionalQueryMessageHandler;
@@ -53,6 +64,9 @@ async function main() {
         objectUnserializer.addSupportedClassesFromImportObject(tabCommands);
         objectUnserializer.addSupportedClassesFromImportObject(tabEvents);
         objectUnserializer.addSupportedClassesFromImportObject(tabQueries);
+        objectUnserializer.addSupportedClassesFromImportObject(tabTagCommands);
+        objectUnserializer.addSupportedClassesFromImportObject(tabTagEvents);
+        objectUnserializer.addSupportedClassesFromImportObject(tabTagQueries);
         objectUnserializer.addSupportedClassesFromImportObject(settingsEvents);
         objectUnserializer.addSupportedClassesFromImportObject(settingsQueries);
 
@@ -74,6 +88,10 @@ async function main() {
         queryBus.register(tabQueries.GetOpenedTabIdsThatMatchFilter, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
         queryBus.register(tabQueries.GetOpenedTabs, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
 
+        queryBus.register(tabTagQueries.GetTabTagById, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
+        queryBus.register(tabTagQueries.GetTabTagIdsThatMatchFilter, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
+        queryBus.register(tabTagQueries.GetTabTags, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
+
         queryBus.register(settingsQueries.GetSettings, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
         queryBus.register(GetBackgroundState, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
     }
@@ -90,6 +108,10 @@ async function main() {
         commandBus.register(tabCommands.ReloadOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
         commandBus.register(tabCommands.UnpinOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
         commandBus.register(tabCommands.UnmuteOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
+
+        commandBus.register(tabTagCommands.CreateTabTag, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
+        commandBus.register(tabTagCommands.DeleteTabTag, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
+        commandBus.register(tabTagCommands.UpdateTabTag, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
     }
 
     function initView() {
@@ -105,16 +127,26 @@ async function main() {
 
         const detectedBrowser = new DetectedBrowser();
         const contextMenuFactory = new ContextMenuFactory(eventBus);
+        const taskSchedulerFactory = new TaskSchedulerFactory(logger);
+
         const tabContextMenuFactory = new TabContextMenuFactory(commandBus, contextMenuFactory);
         const tabFactory = new TabFactory(detectedBrowser, commandBus, tabContextMenuFactory, defaultFaviconUrl);
-        const tabFilterFactory = new TabFilterfactory(eventBus, queryBus);
+        const tabFilterFactory = new TabFilterFactory(queryBus);
         const tabListFactory = new TabListFactory(eventBus, tabFactory, !!window.isTestEnvironment);
         const newTabButtonFactory = new NewTabButtonFactory(commandBus);
         const selectedTabsActionsContextMenuFactory = new SelectedTabsActionsContextMenuFactory(commandBus, queryBus, contextMenuFactory, document.querySelector('.selected-tabs-actions-context-menu-container'));
         const selectedTabsActionsFactory = new SelectedTabsActionsFactory(selectedTabsActionsContextMenuFactory);
-        const taskSchedulerFactory = new TaskSchedulerFactory(logger);
         const tabsViewFactory = new TabsViewFactory(tabListFactory, tabFilterFactory, newTabButtonFactory, selectedTabsActionsFactory, taskSchedulerFactory, commandBus, eventBus, queryBus);
-        const uiSmall = new UiSmall(tabsViewFactory);
+
+        const tabTagContextMenuFactory = new TabTagContextMenuFactory(commandBus, contextMenuFactory);
+        const tabTagEntryFactory = new TabTagEntryFactory(tabTagContextMenuFactory, colorManipulator);
+        const sidenavTabTagFilterFactory = new SidenavTabTagFilterFactory(queryBus);
+        const sidenavTabTagListFactory = new SidenavTabTagListFactory(commandBus, eventBus, queryBus, sidenavTabTagFilterFactory, tabTagEntryFactory, taskSchedulerFactory);
+        const sidenavFactory = new SidenavFactory(commandBus, eventBus, queryBus, sidenavTabTagListFactory, taskSchedulerFactory);
+
+        const tabTagEditFormFactory = new TabTagEditFormFactory(commandBus, queryBus, colorManipulator);
+
+        const uiSmall = new UiSmall(tabsViewFactory, sidenavFactory, tabTagEditFormFactory);
     }
 
     async function waitBackgroundReady() {

@@ -55,6 +55,9 @@ export class TabTagModifier {
                 return;
             }
 
+            tag.label = command.label;
+            tag.hexColor = command.hexColor;
+
             await this.tagPersister.store(tag);
             this.eventBus.publish(new TabTagUpdated(tag));
         }).executeAll();

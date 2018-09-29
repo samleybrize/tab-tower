@@ -1,0 +1,52 @@
+.tab-tag-edit {
+    .color-selector {
+        margin-bottom: $form-input-margin-bottom;
+
+        span {
+            display: block;
+            margin-bottom: 15px;
+            font-size: $form-label-font-size;
+            color: $form-label-color;
+        }
+
+        div {
+            display: flex;
+            align-content: flex-start;
+            flex-wrap: wrap;
+            justify-content: center;
+
+            label {
+                display: inline-block;
+                width: 25px;
+                height: 25px;
+                margin-right: 7px;
+                margin-bottom: 15px;
+                margin-left: 7px;
+                text-align: center;
+                cursor: pointer;
+                background-color: $tag-default-color;
+                border: 1px solid $tag-default-color;
+                border-radius: 4px;
+
+                i {
+                    font-size: 18px;
+                    font-weight: bold;
+                    line-height: 25px;
+                    color: white;
+                    opacity: 0;
+                    transform: scale(0.2);
+                    transition: opacity 0.2s ease, transform 0.2s ease;
+                }
+            }
+
+            input:checked + label i {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            input {
+                display: none;
+            }
+        }
+    }
+}

@@ -86,6 +86,7 @@ export class OpenedTabFilterer {
     async queryOpenedTabIdsThatMatchFilter(query: GetOpenedTabIdsThatMatchFilter): Promise<string[]> {
         const tabList = query.tabIdListToMatch ? await this.getTabsFromIdList(query.tabIdListToMatch) : await this.getAllTabs();
         const matchingRule = this.getCorrespondingMatchingRule(query.filter);
+        this.wordBreaker.setStringToBreak(query.filter.filterText);
         let matchingTabList = tabList;
 
         if (this.isFilteringNeeded(query.filter)) {

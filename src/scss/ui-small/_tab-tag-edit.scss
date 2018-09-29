@@ -1,0 +1,36 @@
+@import 'tab-tag-edit/header';
+@import 'tab-tag-edit/form-input';
+@import 'tab-tag-edit/color-selector';
+@import 'tab-tag-edit/submit-button';
+
+.tab-tag-edit {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: $tag-edit-zindex;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+    overflow-y: auto;
+    pointer-events: none;
+    background: $tag-edit-background-color;
+    opacity: 0;
+    transform: translateX(-100%);
+    box-sizing: border-box;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+
+    &.show {
+        pointer-events: all;
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .content {
+        flex-grow: 999999;
+        padding: 15px;
+        overflow-y: scroll;
+    }
+}

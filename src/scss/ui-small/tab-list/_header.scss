@@ -4,17 +4,40 @@
         display: flex;
         align-items: center;
         flex-wrap: nowrap;
-        padding: 8px;
+        padding: $header-padding;
+        font-size: $header-font-size;
         color: $header-font-color;
         background-color: $header-background-color;
 
-        .menu-button {
-            margin-right: 5px;
+        .sidenav-button {
+            margin-right: $header-icon-margin-right;
             cursor: pointer;
 
             i {
-                font-size: 24px;
+                position: relative;
+                z-index: 0;
+                font-size: $header-icon-size;
                 vertical-align: middle;
+
+                &::before {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    z-index: -1;
+                    width: 100%;
+                    height: 100%;
+                    background: $header-hover-background-color;
+                    border-radius: $header-icon-size;
+                    content: '';
+                    opacity: 0;
+                    transform: scale(0.5);
+                    transition: opacity 0.2s ease, transform 0.2s ease;
+                }
+
+                &:hover::before {
+                    opacity: 1;
+                    transform: scale(1);
+                }
             }
         }
 

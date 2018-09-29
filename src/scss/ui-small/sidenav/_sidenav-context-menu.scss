@@ -1,0 +1,37 @@
+.sidenav {
+    .context-menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        max-width: 90%;
+        font-weight: normal;
+        white-space: normal;
+
+        .delete-confirmation {
+            padding: 8px;
+            text-align: center;
+            cursor: default;
+
+            span {
+                font-weight: bold;
+                line-height: 25px;
+                vertical-align: middle;
+            }
+
+            i {
+                font-size: 25px;
+                vertical-align: middle;
+                cursor: pointer;
+            }
+
+            .yes {
+                color: green;
+            }
+
+            .no {
+                margin-left: 10px;
+                color: red;
+            }
+        }
+    }
+}

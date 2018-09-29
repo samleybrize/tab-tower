@@ -98,6 +98,9 @@ async function main() {
         objectUnserializer.addSupportedClassesFromImportObject(openedTabCommands);
         objectUnserializer.addSupportedClassesFromImportObject(openedTabEvents);
         objectUnserializer.addSupportedClassesFromImportObject(openedTabQueries);
+        objectUnserializer.addSupportedClassesFromImportObject(tabTagCommands);
+        objectUnserializer.addSupportedClassesFromImportObject(tabTagEvents);
+        objectUnserializer.addSupportedClassesFromImportObject(tabTagQueries);
         objectUnserializer.addSupportedClassesFromImportObject(settingsCommands);
         objectUnserializer.addSupportedClassesFromImportObject(settingsEvents);
         objectUnserializer.addSupportedClassesFromImportObject(settingsQueries);

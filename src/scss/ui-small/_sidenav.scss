@@ -1,0 +1,50 @@
+@import 'sidenav/filter';
+@import 'sidenav/header';
+@import 'sidenav/row';
+@import 'sidenav/tab-tag';
+@import 'sidenav/sidenav-context-menu';
+
+.sidenav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: $sidenav-zindex;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+    overflow-y: auto;
+    font-size: $tag-font-size;
+    pointer-events: none;
+    background: $tag-background-color;
+    opacity: 0;
+    transform: translateX(-100%);
+    box-sizing: border-box;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+
+    &.show {
+        pointer-events: all;
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .content {
+        flex-grow: 999999;
+        overflow-y: scroll;
+    }
+
+    .separator {
+        height: 1px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        background: $tag-separator-color;
+    }
+
+    .subheader {
+        padding: 5px 15px;
+        font-weight: 500;
+        color: $tag-subheader-color;
+    }
+}

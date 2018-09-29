@@ -7,6 +7,6 @@ export interface TabTagFilter {
 export class GetTabTagIdsThatMatchFilter implements Query<string[]> {
     readonly resultType: string[];
 
-    constructor(public readonly filter: TabTagFilter) {
+    constructor(public readonly filter: TabTagFilter, public readonly tagIdListToMatch?: string[]) {
     }
 }

@@ -1,3 +1,17 @@
+// main z-index
+$sidenav-zindex: 3;
+$tag-edit-zindex: 4;
+
+// header
+$header-background-color: #03a9f4;
+$header-hover-background-color: darken($header-background-color, 10%);
+$header-font-color: white;
+$header-icon-size: 24px;
+$header-icon-margin-right: 5px;
+$header-padding: 8px;
+$header-font-size: 14px;
+
+// tab list
 $tab-padding: 8px;
 $tab-border-left-width: 4px;
 $tab-loading-icon-height: 4px;
@@ -21,27 +35,57 @@ $being-moved-tab-border-left-color: #ff9800;
 $being-moved-tab-background-color: #ffecb3;
 $tab-checkbox-unchecked-color: #5a5a5a;
 $tab-checkbox-checked-color: #2196f3;
-$move-above-button-background-color: #ff9800;
-$move-above-button-hover-background-color: #f57c00;
-$move-above-button-font-color: white;
+$tab-move-above-button-background-color: #ff9800;
+$tab-move-above-button-hover-background-color: #f57c00;
+$tab-move-above-button-font-color: white;
 
-$header-background-color: #03a9f4;
-$header-font-color: white;
+$tab-filter-background-color: #f8f8f8;
+$tab-filter-border-bottom-color: #d0d0d0;
+$tab-filter-hover-background-color: #edfaff;
+$tab-filter-hover-border-bottom-color: #45a5f5;
+$tab-filter-icon-color: grey;
 
-$filter-background-color: #f8f8f8;
-$filter-border-bottom-color: #d0d0d0;
-$filter-hover-background-color: #edfaff;
-$filter-hover-border-bottom-color: #45a5f5;
-$filter-icon-color: grey;
+$tab-toolbar-background-color: $header-background-color;
+$tab-toolbar-font-color: white;
+$tab-toolbar-font-hover-background: darken($tab-toolbar-background-color, 10%);
+$tab-toolbar-height: 30px;
 
-$toolbar-background-color: $header-background-color;
-$toolbar-font-color: white;
-$toolbar-font-hover-background: darken($toolbar-background-color, 10%);
-$toolbar-height: 30px;
+// tab tag list
+$tag-font-size: 14px;
+$tag-background-color: white;
+$tag-border-left-width: $tab-border-left-width;
+$tag-border-left-color: $tab-border-left-color;
+$tag-hover-background-color: $tab-hover-background-color;
+$tag-separator-color: $tab-border-bottom-color;
+$tag-subheader-color: #877f7f;
+$tag-label-color: #444;
+$tag-default-color: #444;
+$active-tag-background-color: $tag-hover-background-color;
+$active-tag-border-left-color: $active-tab-border-left-color;
+$tag-filter-focus-background-color: #edfaff;
 
+// tab tag edit
+$tag-edit-background-color: white;
+$tag-edit-submit-text-color: white;
+$tag-edit-submit-background-color: #64dd17;
+$tag-edit-submit-icon-size: 18px;
+$tag-edit-submit-padding: 8px;
+
+// context menu
 $context-menu-background-color: white;
 $context-menu-font-color: #444;
 $context-menu-font-size: 15px;
 $context-menu-li-hover-font-color: white;
 $context-menu-li-hover-background-color: #5a98e2;
 $context-menu-arrow-size: 15px;
+
+// form
+$form-input-margin-bottom: 20px;
+$form-input-padding-top: 15px;
+$form-input-font-size: 14px;
+$form-input-font-color: #444;
+$form-input-border-bottom-color: #888;
+$form-input-focus-border-bottom-color: #428ae0;
+$form-label-font-size: 12px;
+$form-label-color: #888;
+$form-label-focus-color: $form-input-focus-border-bottom-color;

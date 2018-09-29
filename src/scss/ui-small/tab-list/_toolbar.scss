@@ -5,8 +5,8 @@
         align-items: center;
         justify-content: space-between;
         width: 100%;
-        height: $toolbar-height;
-        background: $toolbar-background-color;
+        height: $tab-toolbar-height;
+        background: $tab-toolbar-background-color;
 
         .general-tab-selector,
         .new-tab-button,
@@ -25,11 +25,11 @@
                 height: 15px;
 
                 .unchecked {
-                    color: $toolbar-font-color;
+                    color: $tab-toolbar-font-color;
                 }
 
                 .checked {
-                    color: $toolbar-font-color;
+                    color: $tab-toolbar-font-color;
                 }
             }
         }
@@ -40,18 +40,33 @@
             height: 22px;
 
             i {
+                position: relative;
+                z-index: 0;
                 font-size: 22px;
-                color: $toolbar-font-color;
+                color: $tab-toolbar-font-color;
                 cursor: pointer;
                 border-radius: 22px;
                 transition: background-color 0.3s ease, opacity 0.2s ease;
 
-                &:hover {
-                    background: $toolbar-font-hover-background;
+                &::before {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    z-index: -1;
+                    width: 100%;
+                    height: 100%;
+                    background: $tab-toolbar-font-hover-background;
+                    border-radius: 22px;
+                    content: '';
+                    opacity: 0;
+                    transform: scale(0.2);
+                    transition: opacity 0.2s ease, transform 0.2s ease;
                 }
 
-                &.context-menu-visible {
-                    background: $toolbar-font-hover-background;
+                &:hover::before,
+                &.context-menu-visible::before {
+                    opacity: 1;
+                    transform: scale(1);
                 }
 
                 &.hide {
@@ -78,7 +93,7 @@
         .context-menu {
             position: fixed;
             right: calc(#{$tab-padding} - 2px);
-            bottom: calc(#{$toolbar-height} + (#{$context-menu-arrow-size} / 2));
+            bottom: calc(#{$tab-toolbar-height} + (#{$context-menu-arrow-size} / 2));
 
             .arrow {
                 right: 5px;

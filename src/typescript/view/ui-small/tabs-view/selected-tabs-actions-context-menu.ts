@@ -10,7 +10,7 @@ import { UnmuteOpenedTab } from '../../../tab/opened-tab/command/unmute-opened-t
 import { UnpinOpenedTab } from '../../../tab/opened-tab/command/unpin-opened-tab';
 import { BoundingRectangle, ContextMenu, ContextMenuDimensions, ContextMenuFactory, ContextMenuPosition, ContextMenuPositionArrowEdge, ContextMenuPositionCalculator } from '../../components/context-menu';
 import { MarkTabsAsBeingMoved } from './command/mark-tabs-as-being-moved';
-import { GetCurrentWorkspaceSelectedTabs } from './query/get-current-workspace-selected-tabs';
+import { GetCurrentTabListSelectedTabs } from './query/get-current-tab-list-selected-tabs';
 
 export class SelectedTabsActionsContextMenu {
     private contextMenu: ContextMenu;
@@ -72,7 +72,7 @@ export class SelectedTabsActionsContextMenu {
     }
 
     private async getSelectedTabIdList() {
-        return this.queryBus.query(new GetCurrentWorkspaceSelectedTabs());
+        return this.queryBus.query(new GetCurrentTabListSelectedTabs());
     }
 
     private initMuteButton(buttonElement: HTMLElement) {

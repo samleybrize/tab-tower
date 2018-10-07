@@ -10,9 +10,9 @@ Feature: Settings - Tab url
 
         When I open the test page "test-page1"
 
-        Then I should see 2 visible tabs on the workspace "opened-tabs"
-        And I should see the url domain of the tab 1 on the workspace "opened-tabs"
-        And I should not see the url of the tab 1 on the workspace "opened-tabs"
+        Then I should see 2 visible tabs on the tab list "opened-tabs"
+        And I should see the url domain of the tab 1 on the tab list "opened-tabs"
+        And I should not see the url of the tab 1 on the tab list "opened-tabs"
 
     Scenario: Tab url domain should be shown on pinned tabs
         Given I use the small UI
@@ -20,9 +20,9 @@ Feature: Settings - Tab url
         When I open the test page "test-page1"
         And I pin the tab 1
 
-        Then I should see 1 visible tab on the workspace "pinned-tabs"
-        And I should not see the url domain of the tab 0 on the workspace "pinned-tabs"
-        And I should not see the url of the tab 0 on the workspace "pinned-tabs"
+        Then I should see 1 visible tab on the tab list "pinned-tabs"
+        And I should not see the url domain of the tab 0 on the tab list "pinned-tabs"
+        And I should not see the url of the tab 0 on the tab list "pinned-tabs"
 
     Scenario: Tab url should be shown on unpinned tabs when the show tab url setting is set to "yes"
         Given I use the settings UI
@@ -31,14 +31,14 @@ Feature: Settings - Tab url
         And I open the small UI
         And I focus the small UI
 
-        Then I should see 3 visible tabs on the workspace "opened-tabs"
+        Then I should see 3 visible tabs on the tab list "opened-tabs"
 
         When I focus the settings UI
         And I set the show tab url setting to "yes"
         And I focus the small UI
 
-        Then I should not see the url domain of the tab 1 on the workspace "opened-tabs"
-        And I should see the url of the tab 1 on the workspace "opened-tabs"
+        Then I should not see the url domain of the tab 1 on the tab list "opened-tabs"
+        And I should see the url of the tab 1 on the tab list "opened-tabs"
 
     Scenario: Tab url should be shown on pinned tabs when the show tab url setting is set to "yes"
         Given I use the settings UI
@@ -48,14 +48,14 @@ Feature: Settings - Tab url
         And I focus the small UI
         And I pin the tab 1
 
-        Then I should see 1 visible tabs on the workspace "pinned-tabs"
+        Then I should see 1 visible tabs on the tab list "pinned-tabs"
 
         When I focus the settings UI
         And I set the show tab url setting to "yes"
         And I focus the small UI
 
-        Then I should not see the url domain of the tab 0 on the workspace "pinned-tabs"
-        And I should not see the url of the tab 0 on the workspace "pinned-tabs"
+        Then I should not see the url domain of the tab 0 on the tab list "pinned-tabs"
+        And I should not see the url of the tab 0 on the tab list "pinned-tabs"
 
     Scenario: Tab url domain should be shown on unpinned tabs when the show tab url setting is set to "domain only"
         Given I use the settings UI
@@ -64,15 +64,15 @@ Feature: Settings - Tab url
         And I open the small UI
         And I focus the small UI
 
-        Then I should see 3 visible tabs on the workspace "opened-tabs"
+        Then I should see 3 visible tabs on the tab list "opened-tabs"
 
         When I focus the settings UI
         And I set the show tab url setting to "yes"
         And I set the show tab url setting to "domain only"
         And I focus the small UI
 
-        Then I should see the url domain of the tab 1 on the workspace "opened-tabs"
-        And I should not see the url of the tab 1 on the workspace "opened-tabs"
+        Then I should see the url domain of the tab 1 on the tab list "opened-tabs"
+        And I should not see the url of the tab 1 on the tab list "opened-tabs"
 
     Scenario: Tab url domain should be shown on pinned tabs when the show tab url setting is set to "domain only"
         Given I use the settings UI
@@ -82,15 +82,15 @@ Feature: Settings - Tab url
         And I focus the small UI
         And I pin the tab 1
 
-        Then I should see 1 visible tabs on the workspace "pinned-tabs"
+        Then I should see 1 visible tabs on the tab list "pinned-tabs"
 
         When I focus the settings UI
         And I set the show tab url setting to "yes"
         And I set the show tab url setting to "domain only"
         And I focus the small UI
 
-        Then I should not see the url domain of the tab 0 on the workspace "pinned-tabs"
-        And I should not see the url of the tab 0 on the workspace "pinned-tabs"
+        Then I should not see the url domain of the tab 0 on the tab list "pinned-tabs"
+        And I should not see the url of the tab 0 on the tab list "pinned-tabs"
 
     Scenario: No tab url should be shown on unpinned tabs when the show tab url setting is set to "no"
         Given I use the settings UI
@@ -99,14 +99,14 @@ Feature: Settings - Tab url
         And I open the small UI
         And I focus the small UI
 
-        Then I should see 3 visible tabs on the workspace "opened-tabs"
+        Then I should see 3 visible tabs on the tab list "opened-tabs"
 
         When I focus the settings UI
         And I set the show tab url setting to "no"
         And I focus the small UI
 
-        Then I should not see the url domain of the tab 1 on the workspace "opened-tabs"
-        And I should not see the url of the tab 1 on the workspace "opened-tabs"
+        Then I should not see the url domain of the tab 1 on the tab list "opened-tabs"
+        And I should not see the url of the tab 1 on the tab list "opened-tabs"
 
     Scenario: No tab url should be shown on pinned tabs when the show tab url setting is set to "no"
         Given I use the settings UI
@@ -116,14 +116,14 @@ Feature: Settings - Tab url
         And I focus the small UI
         And I pin the tab 1
 
-        Then I should see 1 visible tabs on the workspace "pinned-tabs"
+        Then I should see 1 visible tabs on the tab list "pinned-tabs"
 
         When I focus the settings UI
         And I set the show tab url setting to "no"
         And I focus the small UI
 
-        Then I should not see the url domain of the tab 0 on the workspace "pinned-tabs"
-        And I should not see the url of the tab 0 on the workspace "pinned-tabs"
+        Then I should not see the url domain of the tab 0 on the tab list "pinned-tabs"
+        And I should not see the url of the tab 0 on the tab list "pinned-tabs"
 
     Scenario: Show tab url setting should be set to "yes" at startup
         Given I use the settings UI

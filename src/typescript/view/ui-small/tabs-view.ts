@@ -26,14 +26,14 @@ import { MarkAllTabsAsNotBeingMoved } from './tabs-view/command/mark-all-tabs-as
 import { MarkTabsAsBeingMoved } from './tabs-view/command/mark-tabs-as-being-moved';
 import { MoveTabsMarkedAsBeingMovedAboveTab } from './tabs-view/command/move-tabs-marked-as-being-moved-above-tab';
 import { MoveTabsMarkedAsBeingMovedBelowAll } from './tabs-view/command/move-tabs-marked-as-being-moved-below-all';
-import { CurrentWorkspace } from './tabs-view/current-workspace';
+import { CurrentTabListIndicator } from './tabs-view/current-tab-list';
 import { NewTabButton, NewTabButtonFactory } from './tabs-view/new-tab-button';
-import { GetCurrentWorkspaceSelectedTabs } from './tabs-view/query/get-current-workspace-selected-tabs';
+import { GetCurrentTabListSelectedTabs } from './tabs-view/query/get-current-tab-list-selected-tabs';
 import { SelectedTabsActions, SelectedTabsActionsFactory } from './tabs-view/selected-tabs-actions';
 import { TabFilter, TabFilterFactory } from './tabs-view/tab-filter';
 import { TabList, TabListFactory } from './tabs-view/tab-list';
 
-enum BuiltinWorkspaces {
+enum BuiltinTabLists {
     OPENED_TABS = 'opened-tabs',
     PINNED_TABS = 'pinned-tabs',
 }
@@ -43,14 +43,14 @@ export class TabsView {
     private generalTabSelector: Checkbox;
     private newTabButton: NewTabButton;
     private selectedTabsActions: SelectedTabsActions;
-    private pinnedTabList: TabList;
-    private workspaceMap = new Map<string, TabList>();
-    private workspaceList: TabList[] = [];
-    private workspaceInUse: TabList;
-    private unpinnedWorkspacesContainerElement: HTMLElement;
-    private currentWorkspaceIndicatorMap = new Map<string, CurrentWorkspace>();
-    private enabledCurrentWorkspaceIndicator: CurrentWorkspace;
-    private currentWorkspaceIndicatorContainerElement: HTMLElement;
+    private pinnedTabsTabList: TabList;
+    private tabListMap = new Map<string, TabList>();
+    private tabLists: TabList[] = [];
+    private tabListInUse: TabList;
+    private unpinnedTabListContainerElement: HTMLElement;
+    private currentTabListIndicatorMap = new Map<string, CurrentTabListIndicator>();
+    private enabledCurrentTabListIndicator: CurrentTabListIndicator;
+    private currentTabListIndicatorContainerElement: HTMLElement;
 
     constructor(
         private containerElement: HTMLElement,
@@ -67,10 +67,10 @@ export class TabsView {
         this.generalTabSelector = new Checkbox(containerElement.querySelector('.general-tab-selector'), 'general-tab-selector', 'unchecked');
         this.newTabButton = newTabButtonFactory.create(containerElement.querySelector('.new-tab-button i'));
         this.selectedTabsActions = selectedTabsActionsFactory.create(containerElement.querySelector('.selected-tabs-actions-button i'));
-        this.unpinnedWorkspacesContainerElement = containerElement.querySelector('.unpinned-tabs');
-        this.currentWorkspaceIndicatorContainerElement = containerElement.querySelector('.current-workspace');
+        this.unpinnedTabListContainerElement = containerElement.querySelector('.unpinned-tabs');
+        this.currentTabListIndicatorContainerElement = containerElement.querySelector('.current-tab-list');
 
-        queryBus.register(GetCurrentWorkspaceSelectedTabs, this.queryCurrentWorkspaceSelectedTabs, this);
+        queryBus.register(GetCurrentTabListSelectedTabs, this.queryCurrentTabListSelectedTabs, this);
 
         commandBus.register(MarkAllTabsAsNotBeingMoved, this.markAllTabsAsNotBeingMoved, this);
         commandBus.register(MarkTabsAsBeingMoved, this.markTabsAsBeingMoved, this);
@@ -91,8 +91,8 @@ export class TabsView {
             eventBus.subscribe(ShowTabUrlOnSeveralLinesConfigured, this.onShowTabUrlOnSeveralLinesConfigure, this);
             eventBus.subscribe(TabAddressToShowConfigured, this.onTabAddressToShowConfigure, this);
 
-            await this.createOpenedTabWorkspace();
-            this.enableWorkspace(BuiltinWorkspaces.OPENED_TABS);
+            await this.createOpenedTabList();
+            this.enableTabList(BuiltinTabLists.OPENED_TABS);
 
             this.tabFilter.observeFilterResultRetrieval(this.onTabFilterResultRetrieve.bind(this));
             this.tabFilter.observeFilterClear(this.onTabFilterClear.bind(this));
@@ -117,65 +117,65 @@ export class TabsView {
         });
     }
 
-    private async createOpenedTabWorkspace() {
+    private async createOpenedTabList() {
         const tabCounter = new Counter();
-        const openedTabsContainerElement = this.createUnpinnedTabsWorkspaceContainerElement(BuiltinWorkspaces.OPENED_TABS);
-        const openedTabsWorkspace = this.tabListFactory.create(BuiltinWorkspaces.OPENED_TABS, openedTabsContainerElement, this.taskScheduler, tabCounter);
-        this.insertUnpinnedTabsWorkspace(openedTabsWorkspace);
+        const openedTabsContainerElement = this.createUnpinnedTabsTabListContainerElement(BuiltinTabLists.OPENED_TABS);
+        const openedTabsTabList = this.tabListFactory.create(BuiltinTabLists.OPENED_TABS, openedTabsContainerElement, this.taskScheduler, tabCounter);
+        this.insertUnpinnedTabsTabList(openedTabsTabList);
 
         const pinnedTabsContainerElement = this.containerElement.querySelector('.pinned-tabs') as HTMLElement;
-        this.pinnedTabList = this.tabListFactory.create(BuiltinWorkspaces.PINNED_TABS, pinnedTabsContainerElement, this.taskScheduler, tabCounter);
+        this.pinnedTabsTabList = this.tabListFactory.create(BuiltinTabLists.PINNED_TABS, pinnedTabsContainerElement, this.taskScheduler, tabCounter);
 
-        const currentWorkspaceIndicator = this.createCurrentWorkspaceIndicator(BuiltinWorkspaces.OPENED_TABS, 'All opened tabs');
-        tabCounter.observe(currentWorkspaceIndicator.setNumberOfTabs.bind(currentWorkspaceIndicator));
+        const currentTabListIndicator = this.createCurrentTabListIndicator(BuiltinTabLists.OPENED_TABS, 'All opened tabs');
+        tabCounter.observe(currentTabListIndicator.setNumberOfTabs.bind(currentTabListIndicator));
 
         const openedTabList = await this.queryBus.query(new GetOpenedTabs());
-        const unpinnedTabList: OpenedTab[] = [];
-        const pinnedTabList: OpenedTab[] = [];
+        const unpinnedTabsTabList: OpenedTab[] = [];
+        const pinnedTabsTabList: OpenedTab[] = [];
 
         for (const openedTab of openedTabList) {
             if (openedTab.isPinned) {
-                pinnedTabList.push(openedTab);
+                pinnedTabsTabList.push(openedTab);
             } else {
-                unpinnedTabList.push(openedTab);
+                unpinnedTabsTabList.push(openedTab);
             }
         }
 
-        await this.initWorkspace(openedTabsWorkspace, unpinnedTabList);
-        await this.initWorkspace(this.pinnedTabList, pinnedTabList);
+        await this.initTabList(openedTabsTabList, unpinnedTabsTabList);
+        await this.initTabList(this.pinnedTabsTabList, pinnedTabsTabList);
     }
 
-    private createUnpinnedTabsWorkspaceContainerElement(workspaceId: string) {
+    private createUnpinnedTabsTabListContainerElement(tabListId: string) {
         const random = Math.random();
-        const workspaceContainerElement = document.createElement('div');
-        workspaceContainerElement.id = `tabs-view-workspace-container-${workspaceId}-${random}`;
+        const tabListContainerElement = document.createElement('div');
+        tabListContainerElement.id = `tabs-view-tab-list-container-${tabListId}-${random}`;
 
-        return workspaceContainerElement;
+        return tabListContainerElement;
     }
 
-    private createCurrentWorkspaceIndicator(workspaceId: string, workspaceLabel: string) {
-        const currentWorkspaceIndicator = new CurrentWorkspace(this.currentWorkspaceIndicatorContainerElement, workspaceLabel);
-        this.currentWorkspaceIndicatorMap.set(workspaceId, currentWorkspaceIndicator);
+    private createCurrentTabListIndicator(tabListId: string, tabListLabel: string) {
+        const currentTabListIndicator = new CurrentTabListIndicator(this.currentTabListIndicatorContainerElement, tabListLabel);
+        this.currentTabListIndicatorMap.set(tabListId, currentTabListIndicator);
 
-        return currentWorkspaceIndicator;
+        return currentTabListIndicator;
     }
 
-    private async initWorkspace(workspace: TabList, tabList: OpenedTab[]) {
-        this.workspaceMap.set(workspace.workspaceId, workspace);
-        this.workspaceList.push(workspace);
+    private async initTabList(tabList: TabList, openedTabList: OpenedTab[]) {
+        this.tabListMap.set(tabList.tabListId, tabList);
+        this.tabLists.push(tabList);
 
-        workspace.containerElement.setAttribute('data-workspace-id', workspace.workspaceId);
-        workspace.observeNumberOfSelectedTabsChange(this.onNumberOfSelectedTabsChange.bind(this));
+        tabList.containerElement.setAttribute('data-tab-list-id', tabList.tabListId);
+        tabList.observeNumberOfSelectedTabsChange(this.onNumberOfSelectedTabsChange.bind(this));
 
-        await workspace.init(tabList);
+        await tabList.init(openedTabList);
     }
 
-    private onNumberOfSelectedTabsChange(workspaceId: string) {
-        if (BuiltinWorkspaces.PINNED_TABS !== workspaceId && this.workspaceInUse.workspaceId !== workspaceId) {
+    private onNumberOfSelectedTabsChange(tabListId: string) {
+        if (BuiltinTabLists.PINNED_TABS !== tabListId && this.tabListInUse.tabListId !== tabListId) {
             return;
         }
 
-        const totalNumberOfSelectedTabs = this.pinnedTabList.getNumberOfSelectedTabs() + this.workspaceInUse.getNumberOfSelectedTabs();
+        const totalNumberOfSelectedTabs = this.pinnedTabsTabList.getNumberOfSelectedTabs() + this.tabListInUse.getNumberOfSelectedTabs();
 
         if (0 === totalNumberOfSelectedTabs) {
             this.generalTabSelector.markAsUnchecked();
@@ -186,41 +186,41 @@ export class TabsView {
         }
     }
 
-    private insertUnpinnedTabsWorkspace(workspace: TabList) {
-        this.unpinnedWorkspacesContainerElement.insertAdjacentElement('afterbegin', workspace.containerElement);
+    private insertUnpinnedTabsTabList(tabList: TabList) {
+        this.unpinnedTabListContainerElement.insertAdjacentElement('afterbegin', tabList.containerElement);
     }
 
-    private enableWorkspace(workspaceId: string) {
-        if (this.enabledCurrentWorkspaceIndicator) {
-            this.enabledCurrentWorkspaceIndicator.disable();
+    private enableTabList(tabListId: string) {
+        if (this.enabledCurrentTabListIndicator) {
+            this.enabledCurrentTabListIndicator.disable();
         }
 
-        const currentWorkspaceIndicator = this.currentWorkspaceIndicatorMap.get(workspaceId);
-        currentWorkspaceIndicator.enable();
-        this.enabledCurrentWorkspaceIndicator = currentWorkspaceIndicator;
-        this.workspaceInUse = this.workspaceMap.get(workspaceId);
+        const currentTabListIndicator = this.currentTabListIndicatorMap.get(tabListId);
+        currentTabListIndicator.enable();
+        this.enabledCurrentTabListIndicator = currentTabListIndicator;
+        this.tabListInUse = this.tabListMap.get(tabListId);
     }
 
     private onTabFilterResultRetrieve(matchingTabs: OpenedTab[]) {
-        for (const workspace of this.workspaceList) {
-            workspace.filterTabs(matchingTabs);
+        for (const tabList of this.tabLists) {
+            tabList.filterTabs(matchingTabs);
         }
     }
 
     private onTabFilterClear() {
-        for (const workspace of this.workspaceList) {
-            workspace.unfilterAllTabs();
+        for (const tabList of this.tabLists) {
+            tabList.unfilterAllTabs();
         }
     }
 
     private onGeneralTabSelectorStateChange(selectorId: string, isChecked: boolean) {
         if (isChecked) {
-            this.workspaceInUse.selectAllVisibleTabs();
-            this.pinnedTabList.selectAllVisibleTabs();
+            this.tabListInUse.selectAllVisibleTabs();
+            this.pinnedTabsTabList.selectAllVisibleTabs();
             this.selectedTabsActions.showContextMenuOpener();
         } else {
-            this.workspaceInUse.unselectAllTabs();
-            this.pinnedTabList.unselectAllTabs();
+            this.tabListInUse.unselectAllTabs();
+            this.pinnedTabsTabList.unselectAllTabs();
             this.selectedTabsActions.hide();
         }
     }
@@ -235,11 +235,11 @@ export class TabsView {
     }
 
     private setCloseTabOnMiddleClickStatus(closeTabOnMiddleClick: boolean, tabId?: string) {
-        for (const workspace of this.workspaceList) {
+        for (const tabList of this.tabLists) {
             if (closeTabOnMiddleClick) {
-                workspace.enableMiddleClickClose(tabId);
+                tabList.enableMiddleClickClose(tabId);
             } else {
-                workspace.disableMiddleClickClose(tabId);
+                tabList.disableMiddleClickClose(tabId);
             }
         }
     }
@@ -284,15 +284,15 @@ export class TabsView {
     async onTabOpen(event: TabOpened) {
         await this.taskScheduler.add(async () => {
             if (event.tab.isPinned) {
-                this.workspaceMap.get(BuiltinWorkspaces.PINNED_TABS).addTab(event.tab);
+                this.tabListMap.get(BuiltinTabLists.PINNED_TABS).addTab(event.tab);
             } else {
-                this.workspaceMap.get(BuiltinWorkspaces.OPENED_TABS).addTab(event.tab);
+                this.tabListMap.get(BuiltinTabLists.OPENED_TABS).addTab(event.tab);
             }
 
             if (await this.tabFilter.isTabSatisfiesFilter(event.tab.id)) {
-                this.unfilterTabOnAllWorkspaces(event.tab.id);
+                this.unfilterTabOnAllTabLists(event.tab.id);
             } else {
-                this.filterTabOnAllWorkspaces(event.tab.id);
+                this.filterTabOnAllTabLists(event.tab.id);
             }
 
             this.closeContextMenus();
@@ -300,15 +300,15 @@ export class TabsView {
         }).executeAll();
     }
 
-    private filterTabOnAllWorkspaces(tabId: string) {
-        for (const workspace of this.workspaceList) {
-            workspace.filterTab(tabId);
+    private filterTabOnAllTabLists(tabId: string) {
+        for (const tabList of this.tabLists) {
+            tabList.filterTab(tabId);
         }
     }
 
-    private unfilterTabOnAllWorkspaces(tabId: string) {
-        for (const workspace of this.workspaceList) {
-            workspace.unfilterTab(tabId);
+    private unfilterTabOnAllTabLists(tabId: string) {
+        for (const tabList of this.tabLists) {
+            tabList.unfilterTab(tabId);
         }
     }
 
@@ -341,37 +341,37 @@ export class TabsView {
     }
 
     private addToPinnedTabs(openedTabId: string) {
-        const openedTabsWorkspace = this.workspaceMap.get(BuiltinWorkspaces.OPENED_TABS);
-        const existingTab = openedTabsWorkspace.getTab(openedTabId);
+        const openedTabsTabList = this.tabListMap.get(BuiltinTabLists.OPENED_TABS);
+        const existingTab = openedTabsTabList.getTab(openedTabId);
 
         if (existingTab) {
-            const pinnedTabsWorkspace = this.pinnedTabList;
+            const pinnedTabsTabList = this.pinnedTabsTabList;
             existingTab.markAsPinned();
 
-            openedTabsWorkspace.removeTab(openedTabId);
-            pinnedTabsWorkspace.addTab(existingTab);
+            openedTabsTabList.removeTab(openedTabId);
+            pinnedTabsTabList.addTab(existingTab);
         }
     }
 
     private removeFromPinnedTabs(openedTabId: string) {
-        const pinnedTabsWorkspace = this.workspaceMap.get(BuiltinWorkspaces.PINNED_TABS);
-        const existingTab = pinnedTabsWorkspace.getTab(openedTabId);
+        const pinnedTabsTabList = this.tabListMap.get(BuiltinTabLists.PINNED_TABS);
+        const existingTab = pinnedTabsTabList.getTab(openedTabId);
 
         if (existingTab) {
-            const openedTabsWorkspace = this.workspaceMap.get(BuiltinWorkspaces.OPENED_TABS);
+            const openedTabsTabList = this.tabListMap.get(BuiltinTabLists.OPENED_TABS);
             existingTab.markAsNotPinned();
 
-            pinnedTabsWorkspace.removeTab(openedTabId);
-            openedTabsWorkspace.addTab(existingTab);
+            pinnedTabsTabList.removeTab(openedTabId);
+            openedTabsTabList.addTab(existingTab);
         }
     }
 
     async onTabTitleUpdate(event: OpenedTabTitleUpdated) {
         await this.taskScheduler.add(async () => {
             if (await this.tabFilter.isTabSatisfiesFilter(event.tabId)) {
-                this.unfilterTabOnAllWorkspaces(event.tabId);
+                this.unfilterTabOnAllTabLists(event.tabId);
             } else {
-                this.filterTabOnAllWorkspaces(event.tabId);
+                this.filterTabOnAllTabLists(event.tabId);
             }
         }).executeAll();
     }
@@ -379,9 +379,9 @@ export class TabsView {
     async onTabUrlUpdate(event: OpenedTabUrlUpdated) {
         await this.taskScheduler.add(async () => {
             if (await this.tabFilter.isTabSatisfiesFilter(event.tabId)) {
-                this.unfilterTabOnAllWorkspaces(event.tabId);
+                this.unfilterTabOnAllTabLists(event.tabId);
             } else {
-                this.filterTabOnAllWorkspaces(event.tabId);
+                this.filterTabOnAllTabLists(event.tabId);
             }
         }).executeAll();
     }
@@ -416,14 +416,14 @@ export class TabsView {
         }).executeAll();
     }
 
-    async queryCurrentWorkspaceSelectedTabs(query: GetCurrentWorkspaceSelectedTabs): Promise<string[]> {
-        return this.workspaceInUse.getSelectedTabIdList().concat(this.pinnedTabList.getSelectedTabIdList());
+    async queryCurrentTabListSelectedTabs(query: GetCurrentTabListSelectedTabs): Promise<string[]> {
+        return this.tabListInUse.getSelectedTabIdList().concat(this.pinnedTabsTabList.getSelectedTabIdList());
     }
 
     async markTabsAsBeingMoved(command: MarkTabsAsBeingMoved) {
         this.containerElement.classList.add('move-mode');
-        this.workspaceInUse.markTabsAsBeingMoved(command.tabIdList);
-        this.pinnedTabList.markTabsAsBeingMoved(command.tabIdList);
+        this.tabListInUse.markTabsAsBeingMoved(command.tabIdList);
+        this.pinnedTabsTabList.markTabsAsBeingMoved(command.tabIdList);
     }
 
     async markAllTabsAsNotBeingMoved(command: MarkAllTabsAsNotBeingMoved) {
@@ -434,15 +434,15 @@ export class TabsView {
 
     private cancelMoveMode() {
         this.containerElement.classList.remove('move-mode');
-        this.workspaceInUse.markAllTabsAsNotBeingMoved();
-        this.pinnedTabList.markAllTabsAsNotBeingMoved();
+        this.tabListInUse.markAllTabsAsNotBeingMoved();
+        this.pinnedTabsTabList.markAllTabsAsNotBeingMoved();
     }
 
     async moveTabsMarkedAsBeingMovedAboveTab(command: MoveTabsMarkedAsBeingMovedAboveTab) {
         await this.taskScheduler.add(async () => {
-            const tabIdListToMove = this.workspaceInUse.getBeingMovedTabIdList().concat(this.pinnedTabList.getBeingMovedTabIdList());
+            const tabIdListToMove = this.tabListInUse.getBeingMovedTabIdList().concat(this.pinnedTabsTabList.getBeingMovedTabIdList());
             this.cancelMoveMode();
-            const targetTab = this.workspaceInUse.getTab(command.tabId) || this.pinnedTabList.getTab(command.tabId);
+            const targetTab = this.tabListInUse.getTab(command.tabId) || this.pinnedTabsTabList.getTab(command.tabId);
 
             this.commandBus.handle(new MoveOpenedTabs(tabIdListToMove, targetTab.getPosition()));
         }).executeAll();
@@ -450,7 +450,7 @@ export class TabsView {
 
     async moveTabsMarkedAsBeingMovedBelowAll(command: MoveTabsMarkedAsBeingMovedBelowAll) {
         await this.taskScheduler.add(async () => {
-            const tabIdListToMove = this.workspaceInUse.getBeingMovedTabIdList().concat(this.pinnedTabList.getBeingMovedTabIdList());
+            const tabIdListToMove = this.tabListInUse.getBeingMovedTabIdList().concat(this.pinnedTabsTabList.getBeingMovedTabIdList());
             this.cancelMoveMode();
             const targetPosition = -1;
 
@@ -458,7 +458,7 @@ export class TabsView {
         }).executeAll();
     }
 
-    // TODO onWorkspaceDelete() => call TabList.shutdown()
+    // TODO onTabListDelete() => call TabList.shutdown()
 }
 
 export class TabsViewFactory {

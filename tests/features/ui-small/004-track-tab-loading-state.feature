@@ -7,25 +7,25 @@ Feature: Track tab loading state
     Scenario: Reloaded tabs should not be indicated as loading indefinitely
         When I open the test page "test-page1"
 
-        Then I should see 2 visible tabs on the workspace "opened-tabs"
-        And I should not see the tab 0 as loading on the workspace "opened-tabs"
-        And I should not see the tab 1 as loading on the workspace "opened-tabs"
+        Then I should see 2 visible tabs on the tab list "opened-tabs"
+        And I should not see the tab 0 as loading on the tab list "opened-tabs"
+        And I should not see the tab 1 as loading on the tab list "opened-tabs"
 
         When I reload the tab 1
 
-        Then I should not see the tab 0 as loading on the workspace "opened-tabs"
-        And I should not see the tab 1 as loading on the workspace "opened-tabs"
+        Then I should not see the tab 0 as loading on the tab list "opened-tabs"
+        And I should not see the tab 1 as loading on the tab list "opened-tabs"
 
     Scenario: Loading tabs should be indicated as loading
         When I open the test page "test-delayed1"
 
-        Then I should see 2 visible tabs on the workspace "opened-tabs"
-        And I should not see the tab 0 as loading on the workspace "opened-tabs"
-        And I should see the tab 1 as loading on the workspace "opened-tabs"
+        Then I should see 2 visible tabs on the tab list "opened-tabs"
+        And I should not see the tab 0 as loading on the tab list "opened-tabs"
+        And I should see the tab 1 as loading on the tab list "opened-tabs"
 
         When the tab 1 is not loading anymore
 
-        Then I should not see the tab 0 as loading on the workspace "opened-tabs"
-        And I should not see the tab 1 as loading on the workspace "opened-tabs"
-        And I should see the small UI as tab 0 on the workspace "opened-tabs"
-        And I should see the test page "test-delayed1" as tab 1 on the workspace "opened-tabs"
+        Then I should not see the tab 0 as loading on the tab list "opened-tabs"
+        And I should not see the tab 1 as loading on the tab list "opened-tabs"
+        And I should see the small UI as tab 0 on the tab list "opened-tabs"
+        And I should see the test page "test-delayed1" as tab 1 on the tab list "opened-tabs"

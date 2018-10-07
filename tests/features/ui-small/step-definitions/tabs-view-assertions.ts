@@ -3,27 +3,27 @@ import { By, error as WebDriverError } from 'selenium-webdriver';
 import { TabSupport } from '../support/tab-support';
 import { World } from '../support/world';
 
-Then('I should see the current workspace with label {string} and {int} tab(s) indicated', async function(expectedLabel: string, expectedNumberOfTabs: number) {
+Then('I should see the current tab list with label {string} and {int} tab(s) indicated', async function(expectedLabel: string, expectedNumberOfTabs: number) {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
 
-    const labelElement = webdriver.findElement(By.css('.current-workspace .name'));
-    const numberOfTabsElement = webdriver.findElement(By.css('.current-workspace .number-of-tabs'));
+    const labelElement = webdriver.findElement(By.css('.current-tab-list .name'));
+    const numberOfTabsElement = webdriver.findElement(By.css('.current-tab-list .number-of-tabs'));
 
     let actualLabel: string;
     await webdriverHelper.wait(async () => {
         actualLabel = await labelElement.getText();
 
         return actualLabel === expectedLabel;
-    }, 10000, () => `Current workspace label "${actualLabel}" is different than expected "${expectedLabel}"`);
+    }, 10000, () => `Current tab list label "${actualLabel}" is different than expected "${expectedLabel}"`);
 
     let actualNumberOfTabs: string;
     await webdriverHelper.wait(async () => {
         actualNumberOfTabs = await numberOfTabsElement.getText();
 
         return actualNumberOfTabs === '' + expectedNumberOfTabs;
-    }, 10000, () => `Current workspace number of tabs "${actualNumberOfTabs}" is different than expected "${expectedNumberOfTabs}"`);
+    }, 10000, () => `Current tab list number of tabs "${actualNumberOfTabs}" is different than expected "${expectedNumberOfTabs}"`);
 });
 
 Then('the general tab selector should not be checked', async function() {

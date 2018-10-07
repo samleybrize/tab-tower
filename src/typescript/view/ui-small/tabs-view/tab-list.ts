@@ -18,7 +18,7 @@ import { Counter } from '../../../utils/counter';
 import { TaskScheduler } from '../../../utils/task-scheduler';
 import { Tab, TabFactory } from './tab';
 
-export type NumberOfSelectedTabsChangeObserver = (workspaceId: string) => void;
+export type NumberOfSelectedTabsChangeObserver = (tabListId: string) => void;
 
 export class TabList {
     private tabMap = new Map<string, Tab>();
@@ -29,7 +29,7 @@ export class TabList {
     private numberOfSelectedTabsChangeObserverList: NumberOfSelectedTabsChangeObserver[] = [];
 
     constructor(
-        public readonly workspaceId: string,
+        public readonly tabListId: string,
         public readonly containerElement: HTMLElement,
         private eventBus: EventBus,
         private tabFactory: TabFactory,
@@ -521,7 +521,7 @@ export class TabList {
         }
 
         for (const observer of this.numberOfSelectedTabsChangeObserverList) {
-            observer(this.workspaceId);
+            observer(this.tabListId);
         }
     }
 
@@ -572,7 +572,7 @@ export class TabListFactory {
     constructor(private eventBus: EventBus, private tabFactory: TabFactory, private disableScrollAnimation: boolean) {
     }
 
-    create(workspaceId: string, containerElement: HTMLElement, taskScheduler: TaskScheduler, tabCounter: Counter) {
-        return new TabList(workspaceId, containerElement, this.eventBus, this.tabFactory, taskScheduler, tabCounter, this.disableScrollAnimation);
+    create(tabListId: string, containerElement: HTMLElement, taskScheduler: TaskScheduler, tabCounter: Counter) {
+        return new TabList(tabListId, containerElement, this.eventBus, this.tabFactory, taskScheduler, tabCounter, this.disableScrollAnimation);
     }
 }

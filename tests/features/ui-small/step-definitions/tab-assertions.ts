@@ -6,283 +6,283 @@ import { WebdriverHelper } from '../../../webdriver/webdriver-helper';
 import { TabSupport } from '../support/tab-support';
 import { World } from '../support/world';
 
-Then('I should see {int} visible tab(s) on the workspace {string}', async function(expectedNumberOfTabs: number, workspaceId: string) {
+Then('I should see {int} visible tab(s) on the tab list {string}', async function(expectedNumberOfTabs: number, tabListId: string) {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
-    await TabAssertions.assertNumberOfVisibleTabs(webdriver, webdriverHelper, workspaceId, expectedNumberOfTabs);
+    await TabAssertions.assertNumberOfVisibleTabs(webdriver, webdriverHelper, tabListId, expectedNumberOfTabs);
 });
 
-Then('I should see that no tab matches tab search on the workspace {string}', async function(workspaceId: string) {
+Then('I should see that no tab matches tab search on the tab list {string}', async function(tabListId: string) {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
-    await TabAssertions.assertNoTabMatchesTabSearchIsVisible(webdriver, workspaceId);
+    await TabAssertions.assertNoTabMatchesTabSearchIsVisible(webdriver, tabListId);
 });
 
-Then('I should not see that no tab matches tab search on the workspace {string}', async function(workspaceId: string) {
+Then('I should not see that no tab matches tab search on the tab list {string}', async function(tabListId: string) {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
-    await TabAssertions.assertNoTabMatchesTabSearchIsNotVisible(webdriver, workspaceId);
+    await TabAssertions.assertNoTabMatchesTabSearchIsNotVisible(webdriver, tabListId);
 });
 
-Then('I should see the small UI as tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should see the small UI as tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTab(world, workspaceId, tabPosition, TestPageNames.UI_SMALL);
+    await TabAssertions.assertTab(world, tabListId, tabPosition, TestPageNames.UI_SMALL);
 });
 
-Then('I should see the test page {string} as tab {int} on the workspace {string}', async function(expectedTestPageName: string, tabPosition: number, workspaceId: string) {
+Then('I should see the test page {string} as tab {int} on the tab list {string}', async function(expectedTestPageName: string, tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTab(world, workspaceId, tabPosition, expectedTestPageName);
+    await TabAssertions.assertTab(world, tabListId, tabPosition, expectedTestPageName);
 });
 
-Then('I should see the url {string} on the tab {int} of the workspace {string}', async function(expectedUrl: string, tabPosition: number, workspaceId: string) {
+Then('I should see the url {string} on the tab {int} of the tab list {string}', async function(expectedUrl: string, tabPosition: number, tabListId: string) {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
-    const tab = await TabAssertions.getTabAtPosition(webdriver, workspaceId, tabPosition);
+    const tab = await TabAssertions.getTabAtPosition(webdriver, tabListId, tabPosition);
 
     await TabAssertions.assertTabUrl(webdriver, webdriverHelper, tab, expectedUrl);
 });
 
-Then('I should see the url domain {string} on the tab {int} of the workspace {string}', async function(expectedDomain: string, tabPosition: number, workspaceId: string) {
+Then('I should see the url domain {string} on the tab {int} of the tab list {string}', async function(expectedDomain: string, tabPosition: number, tabListId: string) {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
-    const tab = await TabAssertions.getTabAtPosition(webdriver, workspaceId, tabPosition);
+    const tab = await TabAssertions.getTabAtPosition(webdriver, tabListId, tabPosition);
 
     await TabAssertions.assertTabDomain(webdriver, webdriverHelper, tab, expectedDomain);
 });
 
-Then('I should not see the url domain of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should not see the url domain of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabUrlDomainIsNotVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabUrlDomainIsNotVisible(world, tabListId, tabPosition);
 });
 
-Then('I should see the url domain of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should see the url domain of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabUrlDomainIsVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabUrlDomainIsVisible(world, tabListId, tabPosition);
 });
 
-Then('I should not see the url of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should not see the url of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabUrlIsNotVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabUrlIsNotVisible(world, tabListId, tabPosition);
 });
 
-Then('I should see the url of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should see the url of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabUrlIsVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabUrlIsVisible(world, tabListId, tabPosition);
 });
 
-Then('I should not see the favicon of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should not see the favicon of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabFaviconIsNotVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabFaviconIsNotVisible(world, tabListId, tabPosition);
 });
 
-Then('I should see the favicon of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should see the favicon of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabFaviconIsVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabFaviconIsVisible(world, tabListId, tabPosition);
 });
 
-Then('I should not see the tab {int} as audible on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should not see the tab {int} as audible on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabAudibleIconIsNotVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabAudibleIconIsNotVisible(world, tabListId, tabPosition);
 });
 
-Then('I should see the tab {int} as audible on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should see the tab {int} as audible on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabAudibleIconIsVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabAudibleIconIsVisible(world, tabListId, tabPosition);
 });
 
-Then('I should not see the tab {int} as muted on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should not see the tab {int} as muted on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabMutedIconIsNotVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabMutedIconIsNotVisible(world, tabListId, tabPosition);
 });
 
-Then('I should see the tab {int} as muted on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should see the tab {int} as muted on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabMutedIconIsVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabMutedIconIsVisible(world, tabListId, tabPosition);
 });
 
-Then('I should not see the tab {int} as focused on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should not see the tab {int} as focused on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabIsNotMarkedAsFocused(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabIsNotMarkedAsFocused(world, tabListId, tabPosition);
 });
 
-Then('I should see the tab {int} as focused on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should see the tab {int} as focused on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabIsMarkedAsFocused(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabIsMarkedAsFocused(world, tabListId, tabPosition);
 });
 
-Then('I should not see the tab {int} as loading on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should not see the tab {int} as loading on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabIsNotMarkedAsLoading(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabIsNotMarkedAsLoading(world, tabListId, tabPosition);
 });
 
-Then('I should see the tab {int} as loading on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should see the tab {int} as loading on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabIsMarkedAsLoading(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabIsMarkedAsLoading(world, tabListId, tabPosition);
 });
 
-Then('I should not see the tab {int} as being moved on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should not see the tab {int} as being moved on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabIsNotMarkedAsBeingMoved(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabIsNotMarkedAsBeingMoved(world, tabListId, tabPosition);
 });
 
-Then('I should see the tab {int} as being moved on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should see the tab {int} as being moved on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabIsMarkedAsBeingMoved(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabIsMarkedAsBeingMoved(world, tabListId, tabPosition);
 });
 
-Then('I should not see the tab {int} as selected on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should not see the tab {int} as selected on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabIsNotMarkedAsSelected(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabIsNotMarkedAsSelected(world, tabListId, tabPosition);
 });
 
-Then('I should see the tab {int} as selected on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should see the tab {int} as selected on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabIsMarkedAsSelected(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabIsMarkedAsSelected(world, tabListId, tabPosition);
 });
 
-Then('I should not see the filtered tab {int} as selected on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should not see the filtered tab {int} as selected on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertFilteredTabIsNotMarkedAsSelected(world, workspaceId, tabPosition);
+    await TabAssertions.assertFilteredTabIsNotMarkedAsSelected(world, tabListId, tabPosition);
 });
 
-Then('I should see the filtered tab {int} as selected on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should see the filtered tab {int} as selected on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertFilteredTabIsMarkedAsSelected(world, workspaceId, tabPosition);
+    await TabAssertions.assertFilteredTabIsMarkedAsSelected(world, tabListId, tabPosition);
 });
 
-Then('I should not see the tab {int} as discarded on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should not see the tab {int} as discarded on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabIsNotMarkedAsDiscarded(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabIsNotMarkedAsDiscarded(world, tabListId, tabPosition);
 });
 
-Then('I should see the tab {int} as discarded on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should see the tab {int} as discarded on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabIsMarkedAsDiscarded(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabIsMarkedAsDiscarded(world, tabListId, tabPosition);
 });
 
-Then('there should not be a visible close button on the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('there should not be a visible close button on the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertCloseButtonIsNotVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertCloseButtonIsNotVisible(world, tabListId, tabPosition);
 });
 
-Then('there should be a visible close button on the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('there should be a visible close button on the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertCloseButtonIsVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertCloseButtonIsVisible(world, tabListId, tabPosition);
 });
 
-Then('the tab selector of the tab {int} on the workspace {string} should not be visible', async function(tabPosition: number, workspaceId: string) {
+Then('the tab selector of the tab {int} on the tab list {string} should not be visible', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabSelectorIsNotVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabSelectorIsNotVisible(world, tabListId, tabPosition);
 });
 
-Then('the context menu of the tab {int} on the workspace {string} should not be visible', async function(tabPosition: number, workspaceId: string) {
+Then('the context menu of the tab {int} on the tab list {string} should not be visible', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabContextMenuIsNotVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabContextMenuIsNotVisible(world, tabListId, tabPosition);
 });
 
-Then('the context menu of the tab {int} on the workspace {string} should be visible', async function(tabPosition: number, workspaceId: string) {
+Then('the context menu of the tab {int} on the tab list {string} should be visible', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabContextMenuIsVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabContextMenuIsVisible(world, tabListId, tabPosition);
 });
 
-Then('I should not see the mute button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should not see the mute button on the tab context menu of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabContextMenuMuteButtonIsNotVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabContextMenuMuteButtonIsNotVisible(world, tabListId, tabPosition);
 });
 
-Then('I should see the mute button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should see the mute button on the tab context menu of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabContextMenuMuteButtonIsVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabContextMenuMuteButtonIsVisible(world, tabListId, tabPosition);
 });
 
-Then('I should not see the unmute button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should not see the unmute button on the tab context menu of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabContextMenuUnmuteButtonIsNotVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabContextMenuUnmuteButtonIsNotVisible(world, tabListId, tabPosition);
 });
 
-Then('I should see the unmute button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should see the unmute button on the tab context menu of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabContextMenuUnmuteButtonIsVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabContextMenuUnmuteButtonIsVisible(world, tabListId, tabPosition);
 });
 
-Then('I should not see the pin button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should not see the pin button on the tab context menu of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabContextMenuPinButtonIsNotVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabContextMenuPinButtonIsNotVisible(world, tabListId, tabPosition);
 });
 
-Then('I should see the pin button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should see the pin button on the tab context menu of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabContextMenuPinButtonIsVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabContextMenuPinButtonIsVisible(world, tabListId, tabPosition);
 });
 
-Then('I should not see the unpin button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should not see the unpin button on the tab context menu of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabContextMenuUnpinButtonIsNotVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabContextMenuUnpinButtonIsNotVisible(world, tabListId, tabPosition);
 });
 
-Then('I should see the unpin button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should see the unpin button on the tab context menu of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabContextMenuUnpinButtonIsVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabContextMenuUnpinButtonIsVisible(world, tabListId, tabPosition);
 });
 
-Then('I should not see the discard button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should not see the discard button on the tab context menu of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabContextMenuDiscardButtonIsNotVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabContextMenuDiscardButtonIsNotVisible(world, tabListId, tabPosition);
 });
 
-Then('I should see the discard button on the tab context menu of the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should see the discard button on the tab context menu of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabContextMenuDiscardButtonIsVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabContextMenuDiscardButtonIsVisible(world, tabListId, tabPosition);
 });
 
-Then('I should not see the move above button on the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should not see the move above button on the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabMoveAboveButtonIsNotVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabMoveAboveButtonIsNotVisible(world, tabListId, tabPosition);
 });
 
-Then('I should see the move above button on the tab {int} on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+Then('I should see the move above button on the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabMoveAboveButtonIsVisible(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabMoveAboveButtonIsVisible(world, tabListId, tabPosition);
 });
 
-Then('the tab {int} on the workspace {string} should be visible in the viewport', async function(tabPosition: number, workspaceId: string) {
+Then('the tab {int} on the tab list {string} should be visible in the viewport', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertUnpinnedTabFullyVisibleInViewport(world, workspaceId, tabPosition);
+    await TabAssertions.assertUnpinnedTabFullyVisibleInViewport(world, tabListId, tabPosition);
 });
 
-Then('the title of the tab {int} on the workspace {string} should not be clickable', async function(tabPosition: number, workspaceId: string) {
+Then('the title of the tab {int} on the tab list {string} should not be clickable', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabTitleIsNotClickable(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabTitleIsNotClickable(world, tabListId, tabPosition);
 });
 
-Then('the title of the tab {int} on the workspace {string} should be on one line', async function(tabPosition: number, workspaceId: string) {
+Then('the title of the tab {int} on the tab list {string} should be on one line', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabTitleIsOnOneLine(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabTitleIsOnOneLine(world, tabListId, tabPosition);
 });
 
-Then('the title of the tab {int} on the workspace {string} should be on several lines', async function(tabPosition: number, workspaceId: string) {
+Then('the title of the tab {int} on the tab list {string} should be on several lines', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabTitleIsOnSeveralLines(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabTitleIsOnSeveralLines(world, tabListId, tabPosition);
 });
 
-Then('the url of the tab {int} on the workspace {string} should be on one line', async function(tabPosition: number, workspaceId: string) {
+Then('the url of the tab {int} on the tab list {string} should be on one line', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabUrlIsOnOneLine(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabUrlIsOnOneLine(world, tabListId, tabPosition);
 });
 
-Then('the url of the tab {int} on the workspace {string} should be on several lines', async function(tabPosition: number, workspaceId: string) {
+Then('the url of the tab {int} on the tab list {string} should be on several lines', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
-    await TabAssertions.assertTabUrlIsOnSeveralLines(world, workspaceId, tabPosition);
+    await TabAssertions.assertTabUrlIsOnSeveralLines(world, tabListId, tabPosition);
 });
 
 class TabAssertions {
-    static async assertNumberOfVisibleTabs(webdriver: WebDriver, webdriverHelper: WebdriverHelper, workspaceId: string, expectedNumberOfTabs: number) {
+    static async assertNumberOfVisibleTabs(webdriver: WebDriver, webdriverHelper: WebdriverHelper, tabListId: string, expectedNumberOfTabs: number) {
         let actualNumberOfTabs = 0;
         await webdriverHelper.wait(async () => {
-            const tabList = await webdriver.findElements(By.css(`.tab-list [data-workspace-id="${workspaceId}"] .tab`));
+            const tabList = await webdriver.findElements(By.css(`.tab-list [data-tab-list-id="${tabListId}"] .tab`));
             actualNumberOfTabs = 0;
 
             for (const tab of tabList) {
@@ -298,24 +298,24 @@ class TabAssertions {
             }
 
             return expectedNumberOfTabs == actualNumberOfTabs;
-        }, 10000, () => `Number of visible tabs on workspace "${workspaceId}" is "${actualNumberOfTabs}" but "${expectedNumberOfTabs}" were expected`);
+        }, 10000, () => `Number of visible tabs on tab list "${tabListId}" is "${actualNumberOfTabs}" but "${expectedNumberOfTabs}" were expected`);
     }
 
-    static async assertNoTabMatchesTabSearchIsVisible(webdriver: WebDriver, workspaceId: string) {
-        const noTabMatchesSearchElement = webdriver.findElement(By.css(`.tab-list [data-workspace-id="${workspaceId}"] .no-tab-matches-search`));
+    static async assertNoTabMatchesTabSearchIsVisible(webdriver: WebDriver, tabListId: string) {
+        const noTabMatchesSearchElement = webdriver.findElement(By.css(`.tab-list [data-tab-list-id="${tabListId}"] .no-tab-matches-search`));
         await webdriver.wait(async () => {
             return await noTabMatchesSearchElement.isDisplayed();
         }, 10000, 'The no tab matches tab search message is not visible');
     }
 
-    static async assertNoTabMatchesTabSearchIsNotVisible(webdriver: WebDriver, workspaceId: string) {
-        const noTabMatchesSearchElement = webdriver.findElement(By.css(`.tab-list [data-workspace-id="${workspaceId}"] .no-tab-matches-search`));
+    static async assertNoTabMatchesTabSearchIsNotVisible(webdriver: WebDriver, tabListId: string) {
+        const noTabMatchesSearchElement = webdriver.findElement(By.css(`.tab-list [data-tab-list-id="${tabListId}"] .no-tab-matches-search`));
         await webdriver.wait(async () => {
             return !await noTabMatchesSearchElement.isDisplayed();
         }, 10000, 'The no tab matches tab search message is visible');
     }
 
-    static async assertTab(world: World, workspaceId: string, tabPosition: number, expectedTestPageName: string) {
+    static async assertTab(world: World, tabListId: string, tabPosition: number, expectedTestPageName: string) {
         const webdriver = world.webdriverRetriever.getDriver();
         const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
         const testPageDescriptor = world.testPageDescriptorRetriever.getDescriptor(expectedTestPageName as TestPageNames);
@@ -323,7 +323,7 @@ class TabAssertions {
         let tab: WebElement;
         const expectedTitle = testPageDescriptor.title;
         await webdriverHelper.wait(async () => {
-            tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+            tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
             return this.isTabTitleEqualTo(tab, expectedTitle);
         }, 10000, async () => {
@@ -339,8 +339,8 @@ class TabAssertions {
     }
 
     // TODO remove
-    static async getTabAtPosition(webdriver: WebDriver, workspaceId: string, tabPosition: number) {
-        return TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition, 'visible');
+    static async getTabAtPosition(webdriver: WebDriver, tabListId: string, tabPosition: number) {
+        return TabSupport.getTabAtPosition(webdriver, tabListId, tabPosition, 'visible');
     }
 
     private static async isTabTitleEqualTo(tab: WebElement, expectedTitle: string) {
@@ -380,9 +380,9 @@ class TabAssertions {
         }, 10000, () => `Tab url "${actualUrl}" is different than expected "${expectedUrl}"`);
     }
 
-    static async assertTabUrlIsVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabUrlIsVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         const urlElement = tab.findElement(By.css('.url'));
 
@@ -391,9 +391,9 @@ class TabAssertions {
         }, 10000, 'Tab url is not visible');
     }
 
-    static async assertTabUrlIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabUrlIsNotVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         const urlElement = tab.findElement(By.css('.url'));
 
@@ -414,9 +414,9 @@ class TabAssertions {
         }, 10000, () => `Tab domain "${actualDomain}" is different than expected "${expectedDomain}"`);
     }
 
-    static async assertTabUrlDomainIsVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabUrlDomainIsVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         const domainElement = tab.findElement(By.css('.domain'));
 
@@ -425,9 +425,9 @@ class TabAssertions {
         }, 10000, 'Tab url domain is not visible');
     }
 
-    static async assertTabUrlDomainIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabUrlDomainIsNotVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         const domainElement = tab.findElement(By.css('.domain'));
 
@@ -446,9 +446,9 @@ class TabAssertions {
         }, 10000, () => `Tab favicon url "${actualFaviconUrl}" is different than expected "${expectedFaviconUrl}"`);
     }
 
-    static async assertTabFaviconIsVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabFaviconIsVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         const faviconElement = tab.findElement(By.css('.favicon > img'));
 
@@ -457,9 +457,9 @@ class TabAssertions {
         }, 10000, 'Tab favicon is not visible');
     }
 
-    static async assertTabFaviconIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabFaviconIsNotVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         const faviconElement = tab.findElement(By.css('.favicon > img'));
 
@@ -468,9 +468,9 @@ class TabAssertions {
         }, 10000, 'Tab favicon is visible');
     }
 
-    static async assertTabAudibleIconIsVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabAudibleIconIsVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         const audibleElement = tab.findElement(By.css('.audible-icon'));
 
@@ -479,9 +479,9 @@ class TabAssertions {
         }, 10000, 'Tab audible icon is not visible');
     }
 
-    static async assertTabAudibleIconIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabAudibleIconIsNotVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         const audibleElement = tab.findElement(By.css('.audible-icon'));
 
@@ -490,9 +490,9 @@ class TabAssertions {
         }, 10000, 'Tab audible icon is visible');
     }
 
-    static async assertTabMutedIconIsVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabMutedIconIsVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         const mutedElement = tab.findElement(By.css('.muted-icon'));
 
@@ -501,9 +501,9 @@ class TabAssertions {
         }, 10000, 'Tab muted icon is not visible');
     }
 
-    static async assertTabMutedIconIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabMutedIconIsNotVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         const mutedElement = tab.findElement(By.css('.muted-icon'));
 
@@ -512,63 +512,63 @@ class TabAssertions {
         }, 10000, 'Tab muted icon is visible');
     }
 
-    static async assertTabIsMarkedAsFocused(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabIsMarkedAsFocused(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         await webdriver.wait(async () => {
             return await TabSupport.hasCssClass(tab, 'active');
         }, 10000, 'Tab is not marked as focused');
     }
 
-    static async assertTabIsNotMarkedAsFocused(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabIsNotMarkedAsFocused(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         await webdriver.wait(async () => {
             return !await TabSupport.hasCssClass(tab, 'active');
         }, 10000, 'Tab is marked as focused');
     }
 
-    static async assertTabIsMarkedAsLoading(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabIsMarkedAsLoading(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         await webdriver.wait(async () => {
             return await TabSupport.hasCssClass(tab, 'loading');
         }, 10000, 'Tab is not marked as loading');
     }
 
-    static async assertTabIsNotMarkedAsLoading(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabIsNotMarkedAsLoading(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         await webdriver.wait(async () => {
             return !await TabSupport.hasCssClass(tab, 'loading');
         }, 10000, 'Tab is marked as loading');
     }
 
-    static async assertTabIsMarkedAsBeingMoved(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabIsMarkedAsBeingMoved(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         await webdriver.wait(async () => {
             return await TabSupport.hasCssClass(tab, 'being-moved');
         }, 10000, 'Tab is not marked as being moved');
     }
 
-    static async assertTabIsNotMarkedAsBeingMoved(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabIsNotMarkedAsBeingMoved(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         await webdriver.wait(async () => {
             return !await TabSupport.hasCssClass(tab, 'being-moved');
         }, 10000, 'Tab is marked as being moved');
     }
 
-    static async assertTabIsMarkedAsSelected(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabIsMarkedAsSelected(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         const checkboxElement = tab.findElement(By.css('.tab-selector input'));
         const checkedIconElement = tab.findElement(By.css('.tab-selector .checked'));
         const uncheckedIconElement = tab.findElement(By.css('.tab-selector .unchecked'));
@@ -581,9 +581,9 @@ class TabAssertions {
         }, 10000, 'Tab is not marked as selected');
     }
 
-    static async assertTabIsNotMarkedAsSelected(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabIsNotMarkedAsSelected(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         const checkboxElement = tab.findElement(By.css('.tab-selector input'));
         const tabSelectorContainerElement = tab.findElement(By.css('.tab-selector .checkbox-icon'));
 
@@ -594,9 +594,9 @@ class TabAssertions {
         }, 10000, 'Tab is marked as selected');
     }
 
-    static async assertFilteredTabIsMarkedAsSelected(world: World, workspaceId: string, tabPosition: number) {
+    static async assertFilteredTabIsMarkedAsSelected(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition, 'filtered');
+        const tab = await TabSupport.getTabAtPosition(webdriver, tabListId, tabPosition, 'filtered');
         const checkboxElement = tab.findElement(By.css('.tab-selector input'));
 
         await webdriver.wait(async () => {
@@ -604,9 +604,9 @@ class TabAssertions {
         }, 10000, 'Tab is not marked as selected');
     }
 
-    static async assertFilteredTabIsNotMarkedAsSelected(world: World, workspaceId: string, tabPosition: number) {
+    static async assertFilteredTabIsNotMarkedAsSelected(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition, 'filtered');
+        const tab = await TabSupport.getTabAtPosition(webdriver, tabListId, tabPosition, 'filtered');
         const checkboxElement = tab.findElement(By.css('.tab-selector input'));
 
         await webdriver.wait(async () => {
@@ -614,27 +614,27 @@ class TabAssertions {
         }, 10000, 'Tab is marked as selected');
     }
 
-    static async assertTabIsMarkedAsDiscarded(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabIsMarkedAsDiscarded(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         await webdriver.wait(async () => {
             return await TabSupport.hasCssClass(tab, 'discarded');
         }, 10000, 'Tab is not marked as discarded');
     }
 
-    static async assertTabIsNotMarkedAsDiscarded(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabIsNotMarkedAsDiscarded(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         await webdriver.wait(async () => {
             return !await TabSupport.hasCssClass(tab, 'discarded');
         }, 10000, 'Tab is marked as discarded');
     }
 
-    static async assertCloseButtonIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertCloseButtonIsNotVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         await webdriver.actions().move({origin: tab}).perform();
         await sleep(200);
@@ -642,13 +642,13 @@ class TabAssertions {
         const closeButton = tab.findElement(By.css('.close-button'));
 
         if (await closeButton.isDisplayed()) {
-            throw new Error(`Close button of tab at position ${tabPosition} of workspace "${workspaceId}" is visible`);
+            throw new Error(`Close button of tab at position ${tabPosition} of tab list "${tabListId}" is visible`);
         }
     }
 
-    static async assertCloseButtonIsVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertCloseButtonIsVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         await webdriver.actions().move({origin: tab}).perform();
         await sleep(200);
@@ -656,13 +656,13 @@ class TabAssertions {
         const closeButton = tab.findElement(By.css('.close-button'));
 
         if (!await closeButton.isDisplayed()) {
-            throw new Error(`Close button of tab at position ${tabPosition} of workspace "${workspaceId}" is not visible`);
+            throw new Error(`Close button of tab at position ${tabPosition} of tab list "${tabListId}" is not visible`);
         }
     }
 
-    static async assertTabSelectorIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabSelectorIsNotVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         await webdriver.actions().move({origin: tab}).perform();
         await sleep(200);
@@ -670,17 +670,17 @@ class TabAssertions {
         const tabSelector = tab.findElement(By.css('.tab-selector .checkbox-icon'));
 
         if (await tabSelector.isDisplayed()) {
-            throw new Error(`Tab selector of tab at position ${tabPosition} of workspace "${workspaceId}" is visible`);
+            throw new Error(`Tab selector of tab at position ${tabPosition} of tab list "${tabListId}" is visible`);
         }
     }
 
-    static async assertUnpinnedTabFullyVisibleInViewport(world: World, workspaceId: string, tabPosition: number) {
+    static async assertUnpinnedTabFullyVisibleInViewport(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
         await webdriver.wait(async () => {
             return this.isUnpinnedTabFullyVisibleInViewport(webdriver, tab);
-        }, 10000, `Unpinned tab at position ${tabPosition} on workspace "${workspaceId}" is not fully visible in the viewport`);
+        }, 10000, `Unpinned tab at position ${tabPosition} on tab list "${tabListId}" is not fully visible in the viewport`);
     }
 
     private static async isUnpinnedTabFullyVisibleInViewport(webdriver: WebDriver, tab: WebElement) {
@@ -708,40 +708,40 @@ class TabAssertions {
         }, element) as Promise<ClientRect>;
     }
 
-    static async assertTabContextMenuIsVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabContextMenuIsVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         const contextMenu = tab.findElement(By.css('.context-menu'));
 
         await webdriver.wait(async () => {
             return await contextMenu.isDisplayed();
-        }, 10000, `Context menu of tab at position ${tabPosition} on workspace "${workspaceId}" is not visible`);
+        }, 10000, `Context menu of tab at position ${tabPosition} on tab list "${tabListId}" is not visible`);
     }
 
-    static async assertTabContextMenuIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabContextMenuIsNotVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         const contextMenu = tab.findElement(By.css('.context-menu'));
 
         await webdriver.wait(async () => {
             return !await contextMenu.isDisplayed();
-        }, 10000, `Context menu of tab at position ${tabPosition} on workspace "${workspaceId}" is visible`);
+        }, 10000, `Context menu of tab at position ${tabPosition} on tab list "${tabListId}" is visible`);
     }
 
-    static async assertTabContextMenuMuteButtonIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabContextMenuMuteButtonIsNotVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         await this.openTabContextMenu(webdriver, tab);
         await this.waitThatTabContextMenuIsVisible(webdriver, tab);
-        await this.assertThatTabContextMenuButtonIsNotVisible(tab, 'mute-button', 'mute', workspaceId, tabPosition);
+        await this.assertThatTabContextMenuButtonIsNotVisible(tab, 'mute-button', 'mute', tabListId, tabPosition);
     }
 
-    static async assertTabContextMenuMuteButtonIsVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabContextMenuMuteButtonIsVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         await this.openTabContextMenu(webdriver, tab);
         await this.waitThatTabContextMenuIsVisible(webdriver, tab);
-        await this.assertThatTabContextMenuButtonIsVisible(tab, 'mute-button', 'mute', workspaceId, tabPosition);
+        await this.assertThatTabContextMenuButtonIsVisible(tab, 'mute-button', 'mute', tabListId, tabPosition);
     }
 
     private static async openTabContextMenu(webdriver: WebDriver, tab: WebElement) {
@@ -761,89 +761,89 @@ class TabAssertions {
         }, 10000);
     }
 
-    private static async assertThatTabContextMenuButtonIsNotVisible(tab: WebElement, buttonCssClass: string, buttonLabel: string, workspaceId: string, tabPosition: number) {
+    private static async assertThatTabContextMenuButtonIsNotVisible(tab: WebElement, buttonCssClass: string, buttonLabel: string, tabListId: string, tabPosition: number) {
         const button = tab.findElement(By.css(`.context-menu .${buttonCssClass}`));
 
         if (await button.isDisplayed()) {
-            throw new Error(`Tab context menu ${buttonLabel} button of tab at position ${tabPosition} of workspace "${workspaceId}" is visible`);
+            throw new Error(`Tab context menu ${buttonLabel} button of tab at position ${tabPosition} of tab list "${tabListId}" is visible`);
         }
     }
 
-    private static async assertThatTabContextMenuButtonIsVisible(tab: WebElement, buttonCssClass: string, buttonLabel: string, workspaceId: string, tabPosition: number) {
+    private static async assertThatTabContextMenuButtonIsVisible(tab: WebElement, buttonCssClass: string, buttonLabel: string, tabListId: string, tabPosition: number) {
         const button = tab.findElement(By.css(`.context-menu .${buttonCssClass}`));
 
         if (!await button.isDisplayed()) {
-            throw new Error(`Tab context menu ${buttonLabel} button of tab at position ${tabPosition} of workspace "${workspaceId}" is not visible`);
+            throw new Error(`Tab context menu ${buttonLabel} button of tab at position ${tabPosition} of tab list "${tabListId}" is not visible`);
         }
     }
 
-    static async assertTabContextMenuUnmuteButtonIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabContextMenuUnmuteButtonIsNotVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         await this.openTabContextMenu(webdriver, tab);
         await this.waitThatTabContextMenuIsVisible(webdriver, tab);
-        await this.assertThatTabContextMenuButtonIsNotVisible(tab, 'unmute-button', 'unmute', workspaceId, tabPosition);
+        await this.assertThatTabContextMenuButtonIsNotVisible(tab, 'unmute-button', 'unmute', tabListId, tabPosition);
     }
 
-    static async assertTabContextMenuUnmuteButtonIsVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabContextMenuUnmuteButtonIsVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         await this.openTabContextMenu(webdriver, tab);
         await this.waitThatTabContextMenuIsVisible(webdriver, tab);
-        await this.assertThatTabContextMenuButtonIsVisible(tab, 'unmute-button', 'unmute', workspaceId, tabPosition);
+        await this.assertThatTabContextMenuButtonIsVisible(tab, 'unmute-button', 'unmute', tabListId, tabPosition);
     }
 
-    static async assertTabContextMenuPinButtonIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabContextMenuPinButtonIsNotVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         await this.openTabContextMenu(webdriver, tab);
         await this.waitThatTabContextMenuIsVisible(webdriver, tab);
-        await this.assertThatTabContextMenuButtonIsNotVisible(tab, 'pin-button', 'pin', workspaceId, tabPosition);
+        await this.assertThatTabContextMenuButtonIsNotVisible(tab, 'pin-button', 'pin', tabListId, tabPosition);
     }
 
-    static async assertTabContextMenuPinButtonIsVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabContextMenuPinButtonIsVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         await this.openTabContextMenu(webdriver, tab);
         await this.waitThatTabContextMenuIsVisible(webdriver, tab);
-        await this.assertThatTabContextMenuButtonIsVisible(tab, 'pin-button', 'pin', workspaceId, tabPosition);
+        await this.assertThatTabContextMenuButtonIsVisible(tab, 'pin-button', 'pin', tabListId, tabPosition);
     }
 
-    static async assertTabContextMenuUnpinButtonIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabContextMenuUnpinButtonIsNotVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         await this.openTabContextMenu(webdriver, tab);
         await this.waitThatTabContextMenuIsVisible(webdriver, tab);
-        await this.assertThatTabContextMenuButtonIsNotVisible(tab, 'unpin-button', 'unpin', workspaceId, tabPosition);
+        await this.assertThatTabContextMenuButtonIsNotVisible(tab, 'unpin-button', 'unpin', tabListId, tabPosition);
     }
 
-    static async assertTabContextMenuUnpinButtonIsVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabContextMenuUnpinButtonIsVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         await this.openTabContextMenu(webdriver, tab);
         await this.waitThatTabContextMenuIsVisible(webdriver, tab);
-        await this.assertThatTabContextMenuButtonIsVisible(tab, 'unpin-button', 'unpin', workspaceId, tabPosition);
+        await this.assertThatTabContextMenuButtonIsVisible(tab, 'unpin-button', 'unpin', tabListId, tabPosition);
     }
 
-    static async assertTabContextMenuDiscardButtonIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabContextMenuDiscardButtonIsNotVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         await this.openTabContextMenu(webdriver, tab);
         await this.waitThatTabContextMenuIsVisible(webdriver, tab);
-        await this.assertThatTabContextMenuButtonIsNotVisible(tab, 'discard-button', 'discard', workspaceId, tabPosition);
+        await this.assertThatTabContextMenuButtonIsNotVisible(tab, 'discard-button', 'discard', tabListId, tabPosition);
     }
 
-    static async assertTabContextMenuDiscardButtonIsVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabContextMenuDiscardButtonIsVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         await this.openTabContextMenu(webdriver, tab);
         await this.waitThatTabContextMenuIsVisible(webdriver, tab);
-        await this.assertThatTabContextMenuButtonIsVisible(tab, 'discard-button', 'discard', workspaceId, tabPosition);
+        await this.assertThatTabContextMenuButtonIsVisible(tab, 'discard-button', 'discard', tabListId, tabPosition);
     }
 
-    static async assertTabMoveAboveButtonIsNotVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabMoveAboveButtonIsNotVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         const buttonElement = tab.findElement(By.css('.move-above-button'));
 
         await webdriver.wait(async () => {
@@ -851,9 +851,9 @@ class TabAssertions {
         }, 10000, 'Tab move above button is visible');
     }
 
-    static async assertTabMoveAboveButtonIsVisible(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabMoveAboveButtonIsVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         const buttonElement = tab.findElement(By.css('.move-above-button'));
 
         await webdriver.wait(async () => {
@@ -861,9 +861,9 @@ class TabAssertions {
         }, 10000, 'Tab move above button is not visible');
     }
 
-    static async assertTabTitleIsNotClickable(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabTitleIsNotClickable(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         const titleContainer = tab.findElement(By.css('.title-container'));
 
         try {
@@ -879,9 +879,9 @@ class TabAssertions {
         throw new Error('Tab title is clickable');
     }
 
-    static async assertTabTitleIsOnOneLine(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabTitleIsOnOneLine(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         const titleElement = tab.findElement(By.css('.title'));
 
         await webdriver.wait(async () => {
@@ -901,9 +901,9 @@ class TabAssertions {
         }, element);
     }
 
-    static async assertTabTitleIsOnSeveralLines(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabTitleIsOnSeveralLines(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         const titleElement = tab.findElement(By.css('.title'));
 
         await webdriver.wait(async () => {
@@ -911,9 +911,9 @@ class TabAssertions {
         }, 10000, 'Tab title is not on several lines');
     }
 
-    static async assertTabUrlIsOnOneLine(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabUrlIsOnOneLine(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         const urlElement = tab.findElement(By.css('.url'));
 
         await webdriver.wait(async () => {
@@ -921,9 +921,9 @@ class TabAssertions {
         }, 10000, 'Tab url is not on one line');
     }
 
-    static async assertTabUrlIsOnSeveralLines(world: World, workspaceId: string, tabPosition: number) {
+    static async assertTabUrlIsOnSeveralLines(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
-        const tab = await this.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
         const urlElement = tab.findElement(By.css('.url'));
 
         await webdriver.wait(async () => {

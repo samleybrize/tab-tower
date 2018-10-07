@@ -10,8 +10,8 @@ Feature: Settings - Multiline title
 
         When I open the test page "test-page-with-long-title1"
 
-        Then I should see 2 visible tabs on the workspace "opened-tabs"
-        And the title of the tab 1 on the workspace "opened-tabs" should be on one line
+        Then I should see 2 visible tabs on the tab list "opened-tabs"
+        And the title of the tab 1 on the tab list "opened-tabs" should be on one line
 
     Scenario: Pinned tab title should be on one line
         Given I use the small UI
@@ -19,8 +19,8 @@ Feature: Settings - Multiline title
         When I open the test page "test-page-with-long-title1"
         And I pin the tab 1
 
-        Then I should see 1 visible tab on the workspace "pinned-tabs"
-        And the title of the tab 0 on the workspace "pinned-tabs" should be on one line
+        Then I should see 1 visible tab on the tab list "pinned-tabs"
+        And the title of the tab 0 on the tab list "pinned-tabs" should be on one line
 
     Scenario: Tab title should be on several lines when the show tab title on several lines setting is checked
         Given I use the settings UI
@@ -29,18 +29,18 @@ Feature: Settings - Multiline title
         And I open the small UI
         And I focus the small UI
 
-        Then I should see 3 visible tabs on the workspace "opened-tabs"
+        Then I should see 3 visible tabs on the tab list "opened-tabs"
 
         When I focus the settings UI
         And I click on the checkbox of the show tab title on several lines setting
 
         When I focus the small UI
 
-        Then the title of the tab 1 on the workspace "opened-tabs" should be on several lines
+        Then the title of the tab 1 on the tab list "opened-tabs" should be on several lines
 
         When I open the test page "test-page-with-long-title2"
 
-        Then the title of the tab 3 on the workspace "opened-tabs" should be on several lines
+        Then the title of the tab 3 on the tab list "opened-tabs" should be on several lines
 
     Scenario: Pinned tab title should be on one line when the show tab title on several lines setting is checked
         Given I use the settings UI
@@ -50,19 +50,19 @@ Feature: Settings - Multiline title
         And I focus the small UI
         And I pin the tab 1
 
-        Then I should see 1 visible tab on the workspace "pinned-tabs"
+        Then I should see 1 visible tab on the tab list "pinned-tabs"
 
         When I focus the settings UI
         And I click on the checkbox of the show tab title on several lines setting
 
         When I focus the small UI
 
-        Then the title of the tab 0 on the workspace "pinned-tabs" should be on one line
+        Then the title of the tab 0 on the tab list "pinned-tabs" should be on one line
 
         When I open the test page "test-page-with-long-title2"
         And I pin the tab 3
 
-        Then the title of the tab 1 on the workspace "pinned-tabs" should be on one line
+        Then the title of the tab 1 on the tab list "pinned-tabs" should be on one line
 
     Scenario: Tab title should be on one line when the show tab title on several lines setting is unchecked
         Given I use the settings UI
@@ -71,7 +71,7 @@ Feature: Settings - Multiline title
         And I open the small UI
         And I focus the small UI
 
-        Then I should see 3 visible tabs on the workspace "opened-tabs"
+        Then I should see 3 visible tabs on the tab list "opened-tabs"
 
         When I focus the settings UI
         And I click on the checkbox of the show tab title on several lines setting
@@ -79,11 +79,11 @@ Feature: Settings - Multiline title
 
         When I focus the small UI
 
-        Then the title of the tab 1 on the workspace "opened-tabs" should be on one line
+        Then the title of the tab 1 on the tab list "opened-tabs" should be on one line
 
         When I open the test page "test-page-with-long-title2"
 
-        Then the title of the tab 3 on the workspace "opened-tabs" should be on one line
+        Then the title of the tab 3 on the tab list "opened-tabs" should be on one line
 
     Scenario: Pinned tab title should be on one line when the show tab title on several lines setting is unchecked
         Given I use the settings UI
@@ -93,7 +93,7 @@ Feature: Settings - Multiline title
         And I focus the small UI
         And I pin the tab 1
 
-        Then I should see 1 visible tab on the workspace "pinned-tabs"
+        Then I should see 1 visible tab on the tab list "pinned-tabs"
 
         When I focus the settings UI
         And I click on the checkbox of the show tab title on several lines setting
@@ -101,12 +101,12 @@ Feature: Settings - Multiline title
 
         When I focus the small UI
 
-        Then the title of the tab 0 on the workspace "pinned-tabs" should be on one line
+        Then the title of the tab 0 on the tab list "pinned-tabs" should be on one line
 
         When I open the test page "test-page-with-long-title2"
         And I pin the tab 3
 
-        Then the title of the tab 1 on the workspace "pinned-tabs" should be on one line
+        Then the title of the tab 1 on the tab list "pinned-tabs" should be on one line
 
     Scenario: Show tab title on several lines should be checked at startup
         Given I use the settings UI

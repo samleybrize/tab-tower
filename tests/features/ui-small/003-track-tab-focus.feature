@@ -8,19 +8,19 @@ Feature: Track tab focus
         When I open the test page "test-page1"
         And I focus the tab 1
 
-        Then I should see 2 visible tabs on the workspace "opened-tabs"
-        And I should not see the tab 0 as focused on the workspace "opened-tabs"
-        And I should see the tab 1 as focused on the workspace "opened-tabs"
+        Then I should see 2 visible tabs on the tab list "opened-tabs"
+        And I should not see the tab 0 as focused on the tab list "opened-tabs"
+        And I should see the tab 1 as focused on the tab list "opened-tabs"
 
         When I reload the tab 0
 
-        Then I should not see the tab 0 as focused on the workspace "opened-tabs"
-        And I should see the tab 1 as focused on the workspace "opened-tabs"
+        Then I should not see the tab 0 as focused on the tab list "opened-tabs"
+        And I should see the tab 1 as focused on the tab list "opened-tabs"
 
         When I focus the tab 0
 
-        Then I should see the tab 0 as focused on the workspace "opened-tabs"
-        And I should not see the tab 1 as focused on the workspace "opened-tabs"
+        Then I should see the tab 0 as focused on the tab list "opened-tabs"
+        And I should not see the tab 1 as focused on the tab list "opened-tabs"
 
     Scenario: Focused tab should be visible in the viewport
         Given window height is 300
@@ -29,11 +29,11 @@ Feature: Track tab focus
         And I open the test page "test-page2"
         And I open the test page "test-filter1"
 
-        Then I should see 4 visible tabs on the workspace "opened-tabs"
+        Then I should see 4 visible tabs on the tab list "opened-tabs"
 
         When I focus the tab 3
 
-        Then the tab 3 on the workspace "opened-tabs" should be visible in the viewport
+        Then the tab 3 on the tab list "opened-tabs" should be visible in the viewport
 
     Scenario: Focused tab should be visible in the viewport at startup
         Given window height is 300
@@ -42,10 +42,10 @@ Feature: Track tab focus
         And I open the test page "test-page2"
         And I open the test page "test-filter1"
 
-        Then I should see 4 visible tabs on the workspace "opened-tabs"
+        Then I should see 4 visible tabs on the tab list "opened-tabs"
 
         When I focus the tab 3
         And I reload the tab 0
 
-        Then I should see 4 visible tabs on the workspace "opened-tabs"
-        And the tab 3 on the workspace "opened-tabs" should be visible in the viewport
+        Then I should see 4 visible tabs on the tab list "opened-tabs"
+        And the tab 3 on the tab list "opened-tabs" should be visible in the viewport

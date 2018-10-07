@@ -2,11 +2,11 @@ import { By, error as WebDriverError, WebDriver, WebElement } from 'selenium-web
 
 export class TabSupport {
     // TODO condition must not be optional
-    static async getTabAtPosition(webdriver: WebDriver, workspaceId: string, tabPosition: number, condition?: 'visible'|'filtered') {
+    static async getTabAtPosition(webdriver: WebDriver, tabListId: string, tabPosition: number, condition?: 'visible'|'filtered') {
         let excludePinnedSelector = '';
         let includeTabSelector = '';
 
-        if ('pinned-tabs' != workspaceId) {
+        if ('pinned-tabs' != tabListId) {
             excludePinnedSelector = ':not(.pinned)';
         }
 
@@ -18,11 +18,11 @@ export class TabSupport {
 
         let tab: WebElement;
         await webdriver.wait(async () => {
-            const tabList = await webdriver.findElements(By.css(`.tab-list [data-workspace-id="${workspaceId}"] .tab${includeTabSelector}${excludePinnedSelector}`));
+            const tabList = await webdriver.findElements(By.css(`.tab-list [data-tab-list-id="${tabListId}"] .tab${includeTabSelector}${excludePinnedSelector}`));
             tab = tabList[tabPosition];
 
             return !!tab;
-        }, 10000, `Tab at position ${tabPosition} on workspace "${workspaceId}" does not exists`);
+        }, 10000, `Tab at position ${tabPosition} on tab list "${tabListId}" does not exists`);
 
         return tab;
     }

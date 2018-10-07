@@ -1,18 +1,17 @@
-// TODO rename to CurrentWorkspaceIndicator
-export class CurrentWorkspace {
+export class CurrentTabListIndicator {
     private isEnabled = false;
     private numberOfTabs = 0;
     private nameElement: HTMLElement;
     private numberOfTabsElement: HTMLElement;
 
-    constructor(containerElement: HTMLElement, private workspaceLabel: string) {
+    constructor(containerElement: HTMLElement, private tabListLabel: string) {
         this.nameElement = containerElement.querySelector('.name');
         this.numberOfTabsElement = containerElement.querySelector('.number-of-tabs');
     }
 
     enable() {
         this.isEnabled = true;
-        this.nameElement.textContent = this.workspaceLabel;
+        this.nameElement.textContent = this.tabListLabel;
         this.setNumberOfTabs(this.numberOfTabs);
     }
 

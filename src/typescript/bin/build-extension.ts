@@ -18,7 +18,7 @@ const relativePathToIncludeList = [
 const relativePathToRemoveList = [
     'dist/css/ui.css.map',
     'dist/js/background.js.map',
-    'dist/js/settings.js.map',
+    'dist/js/ui-settings.js.map',
     'dist/js/ui-small.js.map',
 ];
 

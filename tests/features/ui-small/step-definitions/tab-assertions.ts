@@ -143,6 +143,16 @@ Then('I should see the tab {int} as selected on the workspace {string}', async f
     await TabAssertions.assertTabIsMarkedAsSelected(world, workspaceId, tabPosition);
 });
 
+Then('I should not see the filtered tab {int} as selected on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertFilteredTabIsNotMarkedAsSelected(world, workspaceId, tabPosition);
+});
+
+Then('I should see the filtered tab {int} as selected on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
+    const world = this as World;
+    await TabAssertions.assertFilteredTabIsMarkedAsSelected(world, workspaceId, tabPosition);
+});
+
 Then('I should not see the tab {int} as discarded on the workspace {string}', async function(tabPosition: number, workspaceId: string) {
     const world = this as World;
     await TabAssertions.assertTabIsNotMarkedAsDiscarded(world, workspaceId, tabPosition);
@@ -328,8 +338,9 @@ class TabAssertions {
         await this.assertTabFavicon(webdriverHelper, tab, testPageDescriptor.faviconUrl);
     }
 
+    // TODO remove
     static async getTabAtPosition(webdriver: WebDriver, workspaceId: string, tabPosition: number) {
-        return TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition);
+        return TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition, 'visible');
     }
 
     private static async isTabTitleEqualTo(tab: WebElement, expectedTitle: string) {
@@ -580,6 +591,26 @@ class TabAssertions {
 
         await webdriver.wait(async () => {
             return !await tabSelectorContainerElement.isDisplayed() && !await checkboxElement.isSelected();
+        }, 10000, 'Tab is marked as selected');
+    }
+
+    static async assertFilteredTabIsMarkedAsSelected(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition, 'filtered');
+        const checkboxElement = tab.findElement(By.css('.tab-selector input'));
+
+        await webdriver.wait(async () => {
+            return await checkboxElement.isSelected();
+        }, 10000, 'Tab is not marked as selected');
+    }
+
+    static async assertFilteredTabIsNotMarkedAsSelected(world: World, workspaceId: string, tabPosition: number) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await TabSupport.getTabAtPosition(webdriver, workspaceId, tabPosition, 'filtered');
+        const checkboxElement = tab.findElement(By.css('.tab-selector input'));
+
+        await webdriver.wait(async () => {
+            return !await checkboxElement.isSelected();
         }, 10000, 'Tab is marked as selected');
     }
 

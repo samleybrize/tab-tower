@@ -21,6 +21,7 @@ export class Tab {
     private contextMenu: TabContextMenu;
     private position: number;
     private focused: boolean;
+    private hidden: boolean = false;
     private isMiddleClickAllowed = false;
     private beingMoved = false;
     readonly id: string;
@@ -132,10 +133,16 @@ export class Tab {
 
     hide() {
         this.htmlElement.classList.add('hide');
+        this.hidden = true;
     }
 
     unhide() {
         this.htmlElement.classList.remove('hide');
+        this.hidden = false;
+    }
+
+    isHidden() {
+        return this.hidden;
     }
 
     setFaviconUrl(faviconUrl: string) {

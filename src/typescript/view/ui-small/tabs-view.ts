@@ -209,8 +209,8 @@ export class TabsView {
 
     private onGeneralTabSelectorStateChange(selectorId: string, isChecked: boolean) {
         if (isChecked) {
-            this.workspaceInUse.selectAllTabs();
-            this.pinnedTabList.selectAllTabs();
+            this.workspaceInUse.selectAllVisibleTabs();
+            this.pinnedTabList.selectAllVisibleTabs();
             this.selectedTabsActions.showContextMenuOpener();
         } else {
             this.workspaceInUse.unselectAllTabs();

@@ -263,9 +263,11 @@ export class TabList {
         }
     }
 
-    selectAllTabs() {
+    selectAllVisibleTabs() {
         for (const tab of this.sortedTabList) {
-            tab.markAsSelected();
+            if (!tab.isHidden()) {
+                tab.markAsSelected();
+            }
         }
     }
 
@@ -533,7 +535,9 @@ export class TabList {
         const tabList = this.getTabsBetweenTwoId(openedTabId, this.lastSelectorClicked.id);
 
         for (const tab of tabList) {
-            if (isClickedTabSelected) {
+            if (tab.isHidden()) {
+                continue;
+            } else if (isClickedTabSelected) {
                 tab.markAsSelected();
             } else {
                 tab.markAsUnselected();

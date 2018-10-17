@@ -1,16 +1,24 @@
 import { By, error as WebDriverError, WebDriver, WebElement } from 'selenium-webdriver';
 
 export class TabSupport {
-    static async getTabAtPosition(webdriver: WebDriver, workspaceId: string, tabPosition: number) {
+    // TODO condition must not be optional
+    static async getTabAtPosition(webdriver: WebDriver, workspaceId: string, tabPosition: number, condition?: 'visible'|'filtered') {
         let excludePinnedSelector = '';
+        let includeTabSelector = '';
 
         if ('pinned-tabs' != workspaceId) {
             excludePinnedSelector = ':not(.pinned)';
         }
 
+        if ('filtered' == condition) {
+            includeTabSelector = '.hide';
+        } else {
+            includeTabSelector = ':not(.hide)';
+        }
+
         let tab: WebElement;
         await webdriver.wait(async () => {
-            const tabList = await webdriver.findElements(By.css(`.tab-list [data-workspace-id="${workspaceId}"] .tab:not(.hide)${excludePinnedSelector}`));
+            const tabList = await webdriver.findElements(By.css(`.tab-list [data-workspace-id="${workspaceId}"] .tab${includeTabSelector}${excludePinnedSelector}`));
             tab = tabList[tabPosition];
 
             return !!tab;

@@ -139,7 +139,7 @@ async function main() {
         const tabsViewFactory = new TabsViewFactory(tabListFactory, tabFilterFactory, newTabButtonFactory, selectedTabsActionsFactory, taskSchedulerFactory, commandBus, eventBus, queryBus);
 
         const tabTagContextMenuFactory = new TabTagContextMenuFactory(commandBus, contextMenuFactory);
-        const tabTagEntryFactory = new TabTagEntryFactory(tabTagContextMenuFactory, colorManipulator);
+        const tabTagEntryFactory = new TabTagEntryFactory(commandBus, tabTagContextMenuFactory, colorManipulator);
         const sidenavTabTagFilterFactory = new SidenavTabTagFilterFactory(queryBus);
         const sidenavTabTagListFactory = new SidenavTabTagListFactory(commandBus, eventBus, queryBus, sidenavTabTagFilterFactory, tabTagEntryFactory, taskSchedulerFactory);
         const sidenavFactory = new SidenavFactory(commandBus, eventBus, queryBus, sidenavTabTagListFactory, taskSchedulerFactory);

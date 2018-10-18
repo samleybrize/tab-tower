@@ -1,12 +1,15 @@
+import { CommandBus } from '../../../bus/command-bus';
 import { ColorManipulator } from '../../../utils/color-maniplator';
+import { ShowTagTabs } from '../tabs-view/command/show-tag-tabs';
 import { SidenavEntry } from './sidenav-entry';
-import { TabTagContextMenu, TabTagContextMenuFactory } from './tab-tag-context-menu';
+import { TabTagContextMenuFactory } from './tab-tag-context-menu';
 
 export class TabTagEntry extends SidenavEntry {
     private labelElement: HTMLElement;
     private colorElement: HTMLElement;
 
     constructor(
+        private commandBus: CommandBus,
         tabTagContextMenuFactory: TabTagContextMenuFactory,
         private colorManipulator: ColorManipulator,
         public readonly id: string,
@@ -40,9 +43,6 @@ export class TabTagEntry extends SidenavEntry {
         const contextMenu = tabTagContextMenuFactory.create(this.htmlElement, this.id);
         this.htmlElement.appendChild(contextMenu.htmlElement);
 
-        this.htmlElement.addEventListener('click', (event: MouseEvent) => {
-            // TODO
-        });
         this.htmlElement.addEventListener('contextmenu', (event: MouseEvent) => {
             event.preventDefault();
             contextMenu.open({x: event.clientX, y: event.clientY});
@@ -86,10 +86,10 @@ export class TabTagEntry extends SidenavEntry {
 }
 
 export class TabTagEntryFactory {
-    constructor(private tabTagContextMenuFactory: TabTagContextMenuFactory, private colorManipulator: ColorManipulator) {
+    constructor(private commandBus: CommandBus, private tabTagContextMenuFactory: TabTagContextMenuFactory, private colorManipulator: ColorManipulator) {
     }
 
     create(id: string, label: string, hexColor?: string) {
-        return new TabTagEntry(this.tabTagContextMenuFactory, this.colorManipulator, id, label, hexColor);
+        return new TabTagEntry(this.commandBus, this.tabTagContextMenuFactory, this.colorManipulator, id, label, hexColor);
     }
 }

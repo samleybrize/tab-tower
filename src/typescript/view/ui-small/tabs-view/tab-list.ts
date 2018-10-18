@@ -34,12 +34,10 @@ export class TabList {
         private eventBus: EventBus,
         private tabFactory: TabFactory,
         private taskScheduler: TaskScheduler,
-        private tabCounter: Counter,
         disableScrollAnimation: boolean,
     ) {
         this.isScrollAnimationEnabled = !disableScrollAnimation;
 
-        eventBus.subscribe(OpenedTabClosed, this.onTabClose, this);
         eventBus.subscribe(OpenedTabIsLoading, this.onTabLoading, this);
         eventBus.subscribe(OpenedTabLoadingIsComplete, this.onTabLoadingComplete, this);
         eventBus.subscribe(OpenedTabAudibleStateUpdated, this.onTabAudibleStateUpdate, this);
@@ -53,24 +51,6 @@ export class TabList {
         eventBus.subscribe(OpenedTabTitleUpdated, this.onTabTitleUpdate, this);
         eventBus.subscribe(OpenedTabUnfocused, this.onTabUnfocus, this);
         eventBus.subscribe(OpenedTabUrlUpdated, this.onTabUrlUpdate, this);
-    }
-
-    shutdown() {
-        // TODO will not work
-        this.eventBus.unsubscribe(OpenedTabClosed, this.onTabClose);
-        this.eventBus.unsubscribe(OpenedTabIsLoading, this.onTabLoading);
-        this.eventBus.unsubscribe(OpenedTabLoadingIsComplete, this.onTabLoadingComplete);
-        this.eventBus.unsubscribe(OpenedTabAudibleStateUpdated, this.onTabAudibleStateUpdate);
-        this.eventBus.unsubscribe(OpenedTabAudioMuteStateUpdated, this.onTabAudioMuteStateUpdate);
-        this.eventBus.unsubscribe(OpenedTabDiscardStateUpdated, this.onTabDiscardStateUpdate);
-        this.eventBus.unsubscribe(OpenedTabFaviconUrlUpdated, this.onTabFaviconUrlUpdate);
-        this.eventBus.unsubscribe(OpenedTabFocused, this.onTabFocus);
-        this.eventBus.unsubscribe(OpenedTabMoved, this.onTabMove);
-        this.eventBus.unsubscribe(OpenedTabPinStateUpdated, this.onTabPinStateUpdate);
-        this.eventBus.unsubscribe(OpenedTabPositionUpdated, this.onTabPositionUpdate);
-        this.eventBus.unsubscribe(OpenedTabTitleUpdated, this.onTabTitleUpdate);
-        this.eventBus.unsubscribe(OpenedTabUnfocused, this.onTabUnfocus);
-        this.eventBus.unsubscribe(OpenedTabUrlUpdated, this.onTabUrlUpdate);
     }
 
     async init(openTabList: OpenedTab[]) {
@@ -121,6 +101,8 @@ export class TabList {
         openedTab.isLoading ? tab.markAsLoading() : tab.markAsNotLoading();
         openedTab.isPinned ? tab.markAsPinned() : tab.markAsNotPinned();
 
+        // TODO tags
+
         return tab;
     }
 
@@ -135,7 +117,6 @@ export class TabList {
             this.insertTabAsLastTab(tabToInsert);
         }
 
-        this.tabCounter.increment();
         tabToInsert.observeSelectStateChange(this.onTabSelectStateChange.bind(this));
         tabToInsert.observeShiftClick(this.onTabSelectorShiftClick.bind(this));
 
@@ -202,7 +183,6 @@ export class TabList {
         const tabToRemove = this.tabMap.get(openedTabId);
         tabToRemove.htmlElement.remove();
         this.tabMap.delete(openedTabId);
-        this.tabCounter.decrement();
 
         this.removeTabFromSortedTabList(tabToRemove);
 
@@ -226,9 +206,9 @@ export class TabList {
 
         for (const tab of this.sortedTabList) {
             if (showableTabIdList.indexOf(tab.id) >= 0) {
-                tab.unhide();
+                tab.markAsNotFilteredOut();
             } else {
-                tab.hide();
+                tab.markAsFilteredOut();
             }
         }
 
@@ -243,7 +223,7 @@ export class TabList {
         this.noTabMatchesSearchElement.classList.add('hide');
 
         for (const tab of this.sortedTabList) {
-            tab.unhide();
+            tab.markAsNotFilteredOut();
         }
     }
 
@@ -251,7 +231,7 @@ export class TabList {
         const tab = this.tabMap.get(tabId);
 
         if (tab) {
-            tab.hide();
+            tab.markAsFilteredOut();
         }
     }
 
@@ -259,7 +239,35 @@ export class TabList {
         const tab = this.tabMap.get(tabId);
 
         if (tab) {
-            tab.unhide();
+            tab.markAsNotFilteredOut();
+        }
+    }
+
+    addTagToTab(tabId: string, tagId: string) {
+        const tab = this.tabMap.get(tabId);
+
+        if (tab) {
+            tab.addTag(tagId);
+        }
+    }
+
+    removeTagFromTab(tabId: string, tagId: string) {
+        const tab = this.tabMap.get(tabId);
+
+        if (tab) {
+            tab.removeTag(tagId);
+        }
+    }
+
+    showOnlyTabsThatHaveTag(tagId: string) {
+        for (const tab of this.sortedTabList) {
+            tab.showOnlyIfHasTag(tagId);
+        }
+    }
+
+    showTabsRegardlessOfTag() {
+        for (const tab of this.sortedTabList) {
+            tab.showRegardlessOfTag();
         }
     }
 
@@ -358,12 +366,6 @@ export class TabList {
                 tab.disableMiddleClick();
             }
         }
-    }
-
-    async onTabClose(event: OpenedTabClosed) {
-        await this.taskScheduler.add(async () => {
-            this.removeTab(event.closedTab.id);
-        }).executeAll();
     }
 
     async onTabLoading(event: OpenedTabIsLoading) {
@@ -572,7 +574,7 @@ export class TabListFactory {
     constructor(private eventBus: EventBus, private tabFactory: TabFactory, private disableScrollAnimation: boolean) {
     }
 
-    create(tabListId: string, containerElement: HTMLElement, taskScheduler: TaskScheduler, tabCounter: Counter) {
-        return new TabList(tabListId, containerElement, this.eventBus, this.tabFactory, taskScheduler, tabCounter, this.disableScrollAnimation);
+    create(tabListId: string, containerElement: HTMLElement, taskScheduler: TaskScheduler) {
+        return new TabList(tabListId, containerElement, this.eventBus, this.tabFactory, taskScheduler, this.disableScrollAnimation);
     }
 }

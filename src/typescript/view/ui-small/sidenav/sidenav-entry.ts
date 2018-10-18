@@ -1,7 +1,15 @@
+type ClickObserver = (entry: SidenavEntry) => void;
+
 export class SidenavEntry {
     private active: boolean;
+    private clickObserverList: ClickObserver[] = [];
 
     constructor(public readonly htmlElement: HTMLElement) {
+        this.htmlElement.addEventListener('click', () => {
+            for (const observer of this.clickObserverList) {
+                observer(this);
+            }
+        });
     }
 
     hide() {
@@ -24,5 +32,9 @@ export class SidenavEntry {
 
     isActive() {
         return this.active;
+    }
+
+    observeClick(observer: ClickObserver) {
+        this.clickObserverList.push(observer);
     }
 }

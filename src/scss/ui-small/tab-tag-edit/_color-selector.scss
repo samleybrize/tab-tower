@@ -1,6 +1,8 @@
 .tab-tag-edit {
     .color-selector {
         margin-bottom: $form-input-margin-bottom;
+        user-select: none;
+        -moz-user-select: none;
 
         span {
             display: block;
@@ -29,10 +31,14 @@
                 border-radius: 4px;
 
                 i {
+                    position: relative;
+                    top: 3px;
+                    width: 19px;
+                    height: 19px;
                     font-size: 18px;
                     font-weight: bold;
-                    line-height: 25px;
                     color: white;
+                    border-radius: 19px;
                     opacity: 0;
                     transform: scale(0.2);
                     transition: opacity 0.2s ease, transform 0.2s ease;

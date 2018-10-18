@@ -12,6 +12,8 @@
         .sidenav-button {
             margin-right: $header-icon-margin-right;
             cursor: pointer;
+            user-select: none;
+            -moz-user-select: none;
 
             i {
                 position: relative;

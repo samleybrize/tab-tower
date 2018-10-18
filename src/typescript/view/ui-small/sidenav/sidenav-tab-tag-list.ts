@@ -8,13 +8,19 @@ import { GetTabTags } from '../../../tab/tab-tag/query';
 import { TabTag } from '../../../tab/tab-tag/tab-tag';
 import { TaskScheduler, TaskSchedulerFactory } from '../../../utils/task-scheduler';
 import { ShowCreateTabTagForm } from '../tab-tag-edit-form/command/show-create-tab-tag-form.ts';
+import { ShowTagTabs } from '../tabs-view/command/show-tag-tabs';
+import { HideSidenav } from './command/hide-sidenav';
+import { SidenavEntry } from './sidenav-entry';
 import { SidenavTabTagFilter, SidenavTabTagFilterFactory } from './sidenav-tab-tag-filter';
 import { TabTagEntry, TabTagEntryFactory } from './tab-tag-entry';
+
+type ActiveEntryChangeObserver = (newActiveEntry: SidenavEntry) => void;
 
 export class SidenavTabTagList {
     private tabTagFilter: SidenavTabTagFilter;
     private tabTagMap = new Map<string, TabTagEntry>();
     private tabTagList: TabTagEntry[] = [];
+    private activeEntryChangeObserverList: ActiveEntryChangeObserver[] = [];
 
     constructor(
         private containerElement: HTMLElement,
@@ -52,6 +58,13 @@ export class SidenavTabTagList {
 
     private addTabTag(tag: TabTag, sort: boolean) {
         const tagEntry = this.tabTagEntryFactory.create(tag.id, tag.label, tag.hexColor);
+        tagEntry.observeClick(() => {
+            this.commandBus.handle(new ShowTagTabs(tag.id));
+            this.commandBus.handle(new HideSidenav());
+
+            tagEntry.markAsActive();
+            this.notifyActiveEntryChanged(tagEntry);
+        });
 
         if (sort) {
             this.insertTagEntryElement(tagEntry);
@@ -131,6 +144,16 @@ export class SidenavTabTagList {
                 this.insertTagEntryElement(tagEntry);
             }
         }).executeAll();
+    }
+
+    observeActiveEntryChange(observer: ActiveEntryChangeObserver) {
+        this.activeEntryChangeObserverList.push(observer);
+    }
+
+    private notifyActiveEntryChanged(newActiveEntry: SidenavEntry) {
+        for (const observer of this.activeEntryChangeObserverList) {
+            observer(newActiveEntry);
+        }
     }
 
     async onTabTagDelete(event: TabTagDeleted) {

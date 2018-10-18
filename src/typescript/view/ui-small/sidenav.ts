@@ -2,12 +2,15 @@ import { CommandBus } from '../../bus/command-bus';
 import { EventBus } from '../../bus/event-bus';
 import { QueryBus } from '../../bus/query-bus';
 import { TaskScheduler, TaskSchedulerFactory } from '../../utils/task-scheduler';
+import { HideSidenav } from './sidenav/command/hide-sidenav';
 import { ShowSidenav } from './sidenav/command/show-sidenav';
 import { SidenavEntry } from './sidenav/sidenav-entry';
 import { SidenavTabTagListFactory } from './sidenav/sidenav-tab-tag-list';
+import { ShowAllOpenedTabs } from './tabs-view/command/show-all-opened-tabs';
 
 export class Sidenav {
     private allOpenedTabsEntry: SidenavEntry;
+    private activeEntry: SidenavEntry;
 
     constructor(
         private containerElement: HTMLElement,
@@ -18,26 +21,46 @@ export class Sidenav {
         private taskScheduler: TaskScheduler, // TODO still needed?
     ) {
         const tabTagListElement = this.containerElement.querySelector('.tab-tag-list') as HTMLElement;
-        sidenavTabTagListFactory.create(tabTagListElement);
+        const sidenavTabTagList = sidenavTabTagListFactory.create(tabTagListElement);
+        sidenavTabTagList.observeActiveEntryChange((newActiveEntry) => {
+            this.onActiveEntryChange(newActiveEntry);
+        });
 
         this.allOpenedTabsEntry = new SidenavEntry(this.containerElement.querySelector('.row.all-opened-tabs'));
-        this.allOpenedTabsEntry.markAsActive();
+        this.onActiveEntryChange(this.allOpenedTabsEntry);
+        this.allOpenedTabsEntry.observeClick(() => {
+            this.commandBus.handle(new ShowAllOpenedTabs());
+            this.hide(null);
+            this.onActiveEntryChange(this.allOpenedTabsEntry);
+        });
 
         this.containerElement.querySelector('.close-sidenav-button').addEventListener('click', () => {
-            this.containerElement.classList.remove('show');
+            this.hide(null);
         });
 
         this.commandBus.register(ShowSidenav, this.show, this);
-
-        // TODO all opened tabs
+        this.commandBus.register(HideSidenav, this.hide, this);
 
         this.containerElement.querySelector('.settings').addEventListener('click', () => {
             browser.runtime.openOptionsPage();
         });
     }
 
+    private onActiveEntryChange(newActiveEntry: SidenavEntry) {
+        if (this.activeEntry) {
+            this.activeEntry.markAsNotActive();
+        }
+
+        newActiveEntry.markAsActive();
+        this.activeEntry = newActiveEntry;
+    }
+
     async show(command: ShowSidenav) {
         this.containerElement.classList.add('show');
+    }
+
+    async hide(command: HideSidenav) {
+        this.containerElement.classList.remove('show');
     }
 }
 

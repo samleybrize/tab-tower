@@ -62,6 +62,7 @@ export class TabTagEditForm {
             const labelElement = document.createElement('label');
             labelElement.setAttribute('for', elementId);
             labelElement.innerHTML = '<i class="material-icons">done</i>';
+            const iconElement = labelElement.querySelector('i');
 
             const inputElement = document.createElement('input');
             inputElement.id = elementId;
@@ -73,7 +74,7 @@ export class TabTagEditForm {
                 inputElement.setAttribute('value', hexColor);
                 labelElement.style.backgroundColor = `#${hexColor}`;
                 labelElement.style.border = `1px solid #${strokeColor}`;
-                labelElement.style.textShadow = `-1px -1px 0 #${strokeColor}bb, 1px -1px 0 #${strokeColor}bb, -1px 1px 0 #${strokeColor}bb, 1px 1px 0 #${strokeColor}bb`;
+                iconElement.style.backgroundColor = `#${strokeColor}`;
             }
 
             this.colorContainer.appendChild(inputElement);

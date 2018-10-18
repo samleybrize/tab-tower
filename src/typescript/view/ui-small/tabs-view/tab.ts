@@ -21,6 +21,9 @@ export class Tab {
     private contextMenu: TabContextMenu;
     private position: number;
     private focused: boolean;
+    private tagIdList: string[] = [];
+    private showOnlyIfTag: string = null;
+    private isFilteredOut: boolean = false;
     private hidden: boolean = false;
     private isMiddleClickAllowed = false;
     private beingMoved = false;
@@ -131,14 +134,40 @@ export class Tab {
         }
     }
 
-    hide() {
+    markAsFilteredOut() {
+        this.isFilteredOut = true;
+        this.updateVisibility();
+    }
+
+    private updateVisibility() {
+        let show = true;
+
+        if (this.isFilteredOut) {
+            show = false;
+        } else if (this.showOnlyIfTag && this.tagIdList.indexOf(this.showOnlyIfTag) < 0) {
+            show = false;
+        }
+
+        if (show) {
+            this.unhide();
+        } else {
+            this.hide();
+        }
+    }
+
+    private hide() {
         this.htmlElement.classList.add('hide');
         this.hidden = true;
     }
 
-    unhide() {
+    private unhide() {
         this.htmlElement.classList.remove('hide');
         this.hidden = false;
+    }
+
+    markAsNotFilteredOut() {
+        this.isFilteredOut = false;
+        this.updateVisibility();
     }
 
     isHidden() {
@@ -163,6 +192,32 @@ export class Tab {
     setTitle(title: string) {
         this.titleElement.textContent = title;
         this.titleElement.setAttribute('title', title);
+    }
+
+    addTag(tagId: string) {
+        if (this.tagIdList.indexOf(tagId) < 0) {
+            this.tagIdList.push(tagId);
+            this.updateVisibility();
+        }
+    }
+
+    removeTag(tagId: string) {
+        const index = this.tagIdList.indexOf(tagId);
+
+        if (index) {
+            this.tagIdList.splice(index, 1);
+            this.updateVisibility();
+        }
+    }
+
+    showOnlyIfHasTag(tagId: string) {
+        this.showOnlyIfTag = tagId;
+        this.updateVisibility();
+    }
+
+    showRegardlessOfTag() {
+        this.showOnlyIfTag = null;
+        this.updateVisibility();
     }
 
     setPosition(position: number) {

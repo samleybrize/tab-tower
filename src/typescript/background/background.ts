@@ -30,6 +30,7 @@ import { OpenedTabMover } from '../tab/opened-tab/browser/opened-tab-mover';
 import { OpenedTabMuter } from '../tab/opened-tab/browser/opened-tab-muter';
 import { OpenedTabPinner } from '../tab/opened-tab/browser/opened-tab-pinner';
 import { OpenedTabReloader } from '../tab/opened-tab/browser/opened-tab-reloader';
+import { OpenedTabTagAssociationBackendFirefox } from '../tab/opened-tab/browser/opened-tab-tag-association-backend-firefox';
 import { OpenedTabUnmuter } from '../tab/opened-tab/browser/opened-tab-unmuter';
 import { OpenedTabUnpinner } from '../tab/opened-tab/browser/opened-tab-unpinner';
 import { TabOpener } from '../tab/opened-tab/browser/tab-opener';
@@ -37,6 +38,7 @@ import * as openedTabCommands from '../tab/opened-tab/command';
 import * as openedTabEvents from '../tab/opened-tab/event';
 import { OpenedTabFilterer } from '../tab/opened-tab/opened-tab-filterer';
 import { OpenedTabRetriever } from '../tab/opened-tab/opened-tab-retriever';
+import { OpenedTabTagAssociationMaintainer } from '../tab/opened-tab/opened-tab-tag-association-maintainer';
 import * as openedTabQueries from '../tab/opened-tab/query';
 import * as tabTagCommands from '../tab/tab-tag/command';
 import * as tabTagEvents from '../tab/tab-tag/event';
@@ -63,7 +65,9 @@ async function main() {
     await postUpdateMigrator.migrate();
 
     const nativeTabIdAssociationMaintainer = new NativeTabIdAssociationMaintainerFirefox();
-    const nativeTabEventHandler = new NativeTabEventHandler(eventBus, queryBus, nativeTabIdAssociationMaintainer, new TaskScheduler(logger), logger);
+    const openedTabTagAssociationBackend = new OpenedTabTagAssociationBackendFirefox(nativeTabIdAssociationMaintainer);
+    const openedTabTagAssociationMaintainer = new OpenedTabTagAssociationMaintainer(eventBus, openedTabTagAssociationBackend, new TaskScheduler(logger));
+    const nativeTabEventHandler = new NativeTabEventHandler(eventBus, queryBus, nativeTabIdAssociationMaintainer, openedTabTagAssociationMaintainer, new TaskScheduler(logger), logger);
     const openedTabFilterer = new OpenedTabFilterer(queryBus);
     const openedTabRetriever = new OpenedTabRetriever(nativeTabEventHandler, openedTabFilterer, new TaskScheduler(logger));
 
@@ -118,6 +122,7 @@ async function main() {
     function initCommandBus() {
         commandBus.register(generalCommands.OpenUiSmall, uiSmallOpener.openUiSmall, uiSmallOpener);
 
+        commandBus.register(openedTabCommands.AddTabTagToOpenedTab, openedTabTagAssociationMaintainer.addTabTagToOpenedTab, openedTabTagAssociationMaintainer);
         commandBus.register(openedTabCommands.CloseOpenedTab, openedTabCloser.closeTab, openedTabCloser);
         commandBus.register(openedTabCommands.CloseOpenedTabsToTheRight, openedTabCloser.closeTabsToTheRight, openedTabCloser);
         commandBus.register(openedTabCommands.CloseOtherOpenedTabs, openedTabCloser.closeOtherTabs, openedTabCloser);
@@ -129,6 +134,7 @@ async function main() {
         commandBus.register(openedTabCommands.OpenTab, tabOpener.openTab, tabOpener);
         commandBus.register(openedTabCommands.PinOpenedTab, openedTabPinner.pinTab, openedTabPinner);
         commandBus.register(openedTabCommands.ReloadOpenedTab, openedTabReloader.reloadTab, openedTabReloader);
+        commandBus.register(openedTabCommands.RemoveTabTagFromOpenedTab, openedTabTagAssociationMaintainer.removeTabTagFromOpenedTab, openedTabTagAssociationMaintainer);
         commandBus.register(openedTabCommands.UnmuteOpenedTab, openedTabUnmuter.unmuteTab, openedTabUnmuter);
         commandBus.register(openedTabCommands.UnpinOpenedTab, openedTabUnpinner.unpinTab, openedTabUnpinner);
 
@@ -147,6 +153,7 @@ async function main() {
         queryBus.register(openedTabQueries.GetOpenedTabById, openedTabRetriever.queryById, openedTabRetriever);
         queryBus.register(openedTabQueries.GetOpenedTabs, openedTabRetriever.queryAll, openedTabRetriever);
         queryBus.register(openedTabQueries.GetOpenedTabIdsThatMatchFilter, openedTabFilterer.queryOpenedTabIdsThatMatchFilter, openedTabFilterer);
+        queryBus.register(openedTabQueries.GetTabCountForAllTags, openedTabTagAssociationMaintainer.queryTabCountForAllTags, openedTabTagAssociationMaintainer);
 
         queryBus.register(settingsQueries.GetSettings, settingsRetriever.querySettings, settingsRetriever);
 
@@ -161,6 +168,7 @@ async function main() {
         eventBus.subscribe(openedTabEvents.OpenedTabAudioMuteStateUpdated, openedTabRetriever.onTabAudioMuteStateUpdate, openedTabRetriever);
         eventBus.subscribe(openedTabEvents.OpenedTabAudioMuteStateUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(openedTabEvents.OpenedTabClosed, openedTabRetriever.onTabClose, openedTabRetriever);
+        eventBus.subscribe(openedTabEvents.OpenedTabClosed, openedTabTagAssociationMaintainer.onTabClose, openedTabTagAssociationMaintainer);
         eventBus.subscribe(openedTabEvents.OpenedTabClosed, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(openedTabEvents.OpenedTabDiscardStateUpdated, openedTabRetriever.onTabDiscardStateUpdate, openedTabRetriever);
         eventBus.subscribe(openedTabEvents.OpenedTabDiscardStateUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
@@ -185,7 +193,12 @@ async function main() {
         eventBus.subscribe(openedTabEvents.OpenedTabUrlUpdated, openedTabRetriever.onTabUrlUpdate, openedTabRetriever);
         eventBus.subscribe(openedTabEvents.OpenedTabUrlUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(openedTabEvents.TabOpened, openedTabRetriever.onTabOpen, openedTabRetriever);
+        eventBus.subscribe(openedTabEvents.TabOpened, openedTabTagAssociationMaintainer.onTabOpen, openedTabTagAssociationMaintainer);
         eventBus.subscribe(openedTabEvents.TabOpened, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(openedTabEvents.TabTagAddedToOpenedTab, openedTabRetriever.onTabTagAddedToOpenedTab, openedTabRetriever);
+        eventBus.subscribe(openedTabEvents.TabTagAddedToOpenedTab, sendMessageEventHandler.onEvent, sendMessageEventHandler);
+        eventBus.subscribe(openedTabEvents.TabTagRemovedFromOpenedTab, openedTabRetriever.onTabTagRemovedFromOpenedTab, openedTabRetriever);
+        eventBus.subscribe(openedTabEvents.TabTagRemovedFromOpenedTab, sendMessageEventHandler.onEvent, sendMessageEventHandler);
 
         eventBus.subscribe(settingsEvents.CloseTabOnMiddleClickConfigured, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(settingsEvents.ShowCloseButtonOnTabHoverConfigured, sendMessageEventHandler.onEvent, sendMessageEventHandler);
@@ -195,6 +208,7 @@ async function main() {
 
         eventBus.subscribe(tabTagEvents.TabTagCreated, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(tabTagEvents.TabTagCreated, tabTagRetriever.onTabTagCreate, tabTagRetriever);
+        eventBus.subscribe(tabTagEvents.TabTagDeleted, openedTabTagAssociationMaintainer.onTabTagDelete, openedTabTagAssociationMaintainer);
         eventBus.subscribe(tabTagEvents.TabTagDeleted, sendMessageEventHandler.onEvent, sendMessageEventHandler);
         eventBus.subscribe(tabTagEvents.TabTagDeleted, tabTagRetriever.onTabTagDelete, tabTagRetriever);
         eventBus.subscribe(tabTagEvents.TabTagUpdated, sendMessageEventHandler.onEvent, sendMessageEventHandler);

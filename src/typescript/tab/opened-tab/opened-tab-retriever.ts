@@ -15,6 +15,8 @@ import { OpenedTabTitleUpdated } from './event/opened-tab-title-updated';
 import { OpenedTabUnfocused } from './event/opened-tab-unfocused';
 import { OpenedTabUrlUpdated } from './event/opened-tab-url-updated';
 import { TabOpened } from './event/tab-opened';
+import { TabTagAddedToOpenedTab } from './event/tab-tag-added-to-opened-tab';
+import { TabTagRemovedFromOpenedTab } from './event/tab-tag-removed-from-opened-tab';
 import { OpenedTab } from './opened-tab';
 import { OpenedTabBackend } from './opened-tab-backend';
 import { OpenedTabFilterer } from './opened-tab-filterer';
@@ -27,7 +29,11 @@ export class OpenedTabRetriever {
     private tabList: OpenedTab[] = null;
     private isInitCompleted = false;
 
-    constructor(private openedTabBackend: OpenedTabBackend, private openedTabFilterer: OpenedTabFilterer, private taskScheduler: TaskScheduler) {
+    constructor(
+        private openedTabBackend: OpenedTabBackend,
+        private openedTabFilterer: OpenedTabFilterer,
+        private taskScheduler: TaskScheduler,
+    ) {
     }
 
     async init() {
@@ -242,6 +248,32 @@ export class OpenedTabRetriever {
 
             if (tab) {
                 tab.url = event.url;
+            }
+        }).executeAll();
+    }
+
+    async onTabTagAddedToOpenedTab(event: TabTagAddedToOpenedTab) {
+        await this.taskScheduler.add(async () => {
+            const tab = this.tabMap.get(event.tabId);
+
+            if (tab) {
+                tab.tabTagIdList.push(event.tagId);
+            }
+        }).executeAll();
+    }
+
+    async onTabTagRemovedFromOpenedTab(event: TabTagRemovedFromOpenedTab) {
+        await this.taskScheduler.add(async () => {
+            const tab = this.tabMap.get(event.tabId);
+
+            if (null == tab) {
+                return;
+            }
+
+            const index = tab.tabTagIdList.indexOf(event.tagId);
+
+            if (index >= 0) {
+                tab.tabTagIdList.splice(index, 1);
             }
         }).executeAll();
     }

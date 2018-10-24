@@ -43,7 +43,7 @@ rules:
     - 2
     - allow-leading-underscore: false
       convention: hyphenatedlowercase
-  hex-length: 1
+  hex-length: 0
   hex-notation:
     - 2
     - style: lowercase

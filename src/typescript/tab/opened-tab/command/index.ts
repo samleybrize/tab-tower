@@ -1,3 +1,4 @@
+export * from './add-tab-tag-to-opened-tab.ts';
 export * from './close-opened-tab';
 export * from './close-opened-tabs-to-the-right';
 export * from './close-other-opened-tabs';
@@ -9,5 +10,6 @@ export * from './mute-opened-tab';
 export * from './open-tab';
 export * from './pin-opened-tab';
 export * from './reload-opened-tab';
+export * from './remove-tab-tag-from-opened-tab';
 export * from './unmute-opened-tab';
 export * from './unpin-opened-tab';

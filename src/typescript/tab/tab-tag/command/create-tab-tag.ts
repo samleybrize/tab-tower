@@ -1,4 +1,4 @@
 export class CreateTabTag {
-    constructor(public readonly label: string, public readonly hexColor: string) {
+    constructor(public readonly label: string, public readonly colorId: number) {
     }
 }

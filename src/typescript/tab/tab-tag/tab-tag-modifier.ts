@@ -27,7 +27,7 @@ export class TabTagModifier {
             const tag = new TabTag();
             tag.id = uuid.v1();
             tag.label = command.label;
-            tag.hexColor = command.hexColor;
+            tag.colorId = command.colorId;
 
             await this.tagPersister.store(tag);
             this.eventBus.publish(new TabTagCreated(tag));
@@ -56,7 +56,7 @@ export class TabTagModifier {
             }
 
             tag.label = command.label;
-            tag.hexColor = command.hexColor;
+            tag.colorId = command.colorId;
 
             await this.tagPersister.store(tag);
             this.eventBus.publish(new TabTagUpdated(tag));

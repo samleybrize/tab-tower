@@ -63,11 +63,23 @@ $tag-default-color: #444;
 $active-tag-background-color: $tag-hover-background-color;
 $active-tag-border-left-color: $active-tab-border-left-color;
 $tag-filter-focus-background-color: #edfaff;
+$tag-color-list: (
+    (id: 0, color: #444444, border: #444444),
+    (id: 1, color: #ff0000, border: #6c0000),
+    (id: 2, color: #00ff00, border: #029c02),
+    (id: 3, color: #ffa500, border: #cc8400),
+    (id: 4, color: #ff00ff, border: #8c008c),
+    (id: 5, color: #00ffff, border: #00b4b4),
+    (id: 6, color: #ffff00, border: #ffa500),
+    (id: 7, color: #6495ed, border: #3f5f99),
+    (id: 8, color: #da70d6, border: #873184),
+    (id: 9, color: #cd953f, border: #a47732),
+);
 
 // tab tag edit
 $tag-edit-background-color: white;
 $tag-edit-submit-text-color: white;
-$tag-edit-submit-background-color: #64dd17;
+$tag-edit-submit-background-color: #00c853;
 $tag-edit-submit-icon-size: 18px;
 $tag-edit-submit-padding: 8px;
 

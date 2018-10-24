@@ -34,6 +34,7 @@ export class TabContextMenu {
         this.content.style.overflowY = 'auto';
         this.content.innerHTML = `
             <ul>
+                <li class="clickable manage-tags-button"><i class="material-icons">label</i> Manage tags...</li>
                 <li class="clickable reload-button"><i class="material-icons">autorenew</i> Reload</li>
                 <li class="clickable mute-button"><i class="material-icons">volume_off</i> Mute</li>
                 <li class="clickable unmute-button hide"><i class="material-icons">volume_up</i> Unmute</li>
@@ -54,6 +55,7 @@ export class TabContextMenu {
 
         this.contextMenu.observeClose(this.onClose.bind(this));
 
+        this.initManageTagsButton(this.content.querySelector('.manage-tags-button'));
         this.initReloadButton(this.content.querySelector('.reload-button'));
         this.initMuteButton(this.content.querySelector('.mute-button'));
         this.initUnmuteButton(this.content.querySelector('.unmute-button'));
@@ -63,6 +65,13 @@ export class TabContextMenu {
         this.initDiscardButton(this.content.querySelector('.discard-button'));
         this.initMoveButton(this.content.querySelector('.move-button'));
         this.initCloseButton(this.content.querySelector('.close-button'));
+    }
+
+    private initManageTagsButton(buttonElement: HTMLElement) {
+        buttonElement.addEventListener('click', () => {
+            // this.commandBus.handle(new ReloadOpenedTab(this.openedTabId)); // TODO
+            this.contextMenu.close();
+        });
     }
 
     private initReloadButton(buttonElement: HTMLElement) {

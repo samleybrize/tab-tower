@@ -101,7 +101,9 @@ export class TabList {
         openedTab.isLoading ? tab.markAsLoading() : tab.markAsNotLoading();
         openedTab.isPinned ? tab.markAsPinned() : tab.markAsNotPinned();
 
-        // TODO tags
+        for (const tagId of openedTab.tabTagIdList) {
+            tab.addTag(tagId);
+        }
 
         return tab;
     }

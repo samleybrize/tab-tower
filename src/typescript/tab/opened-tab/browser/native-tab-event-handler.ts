@@ -22,6 +22,7 @@ import { OpenedTabUrlUpdated } from '../event/opened-tab-url-updated';
 import { TabOpened } from '../event/tab-opened';
 import { OpenedTab } from '../opened-tab';
 import { OpenedTabBackend } from '../opened-tab-backend';
+import { OpenedTabTagAssociationMaintainer } from '../opened-tab-tag-association-maintainer';
 import { GetOpenedTabById } from '../query/get-opened-tab-by-id';
 import { NativeTabIdAssociationMaintainer } from './native-tab-id-association-maintainer';
 
@@ -33,6 +34,7 @@ export class NativeTabEventHandler implements OpenedTabBackend {
         private eventBus: EventBus,
         private queryBus: QueryBus,
         private nativeTabIdAssociationMaintainer: NativeTabIdAssociationMaintainer,
+        private openedTabTagAssociationMaintainer: OpenedTabTagAssociationMaintainer,
         private taskScheduler: TaskScheduler,
         private logger: Logger,
     ) {
@@ -90,6 +92,7 @@ export class NativeTabEventHandler implements OpenedTabBackend {
         openedTab.isLoading = 'loading' == nativeTab.status;
         openedTab.isPinned = !!nativeTab.pinned;
         openedTab.lastAccess = new Date(nativeTab.lastAccessed);
+        openedTab.tabTagIdList = await this.openedTabTagAssociationMaintainer.getAssociatedTabTagIdList(openedTab.id);
 
         return openedTab;
     }

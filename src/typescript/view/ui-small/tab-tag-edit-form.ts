@@ -2,22 +2,16 @@ import { CommandBus } from '../../bus/command-bus';
 import { QueryBus } from '../../bus/query-bus';
 import { CreateTabTag, UpdateTabTag } from '../../tab/tab-tag/command';
 import { GetTabTagById } from '../../tab/tab-tag/query/get-tab-tag-by-id';
-import { ColorManipulator } from '../../utils/color-maniplator';
 import { ShowCreateTabTagForm } from './tab-tag-edit-form/command/show-create-tab-tag-form.ts';
 import { ShowEditTabTagForm } from './tab-tag-edit-form/command/show-edit-tab-tag-form.ts';
 
-const hexColorList: string[] = [
-    null,
-    'ff0000',
-    '00ff00',
-    'ffa500',
-    'ff00ff',
-    '00ffff',
-    'ffff00',
-    '6495ed',
-    'da70d6',
-    'cd953f',
-];
+interface TagColor {
+    id: number;
+    color: string;
+    borderColor: string;
+}
+
+const numberOfColors = 10;
 
 export class TabTagEditForm {
     private labelInput: HTMLInputElement;
@@ -29,7 +23,6 @@ export class TabTagEditForm {
         private containerElement: HTMLElement,
         private commandBus: CommandBus,
         private queryBus: QueryBus,
-        private colorManipulator: ColorManipulator,
     ) {
         this.commandBus.register(ShowCreateTabTagForm, this.showCreateForm, this);
         this.commandBus.register(ShowEditTabTagForm, this.showEditForm, this);
@@ -56,26 +49,18 @@ export class TabTagEditForm {
     }
 
     private createColorButtons() {
-        for (const hexColor of hexColorList) {
+        for (let colorId = 0; colorId < numberOfColors; colorId++) {
             const elementId = 'tab-tag-edit-color-' + Math.random();
 
             const labelElement = document.createElement('label');
             labelElement.setAttribute('for', elementId);
-            labelElement.innerHTML = '<i class="material-icons">done</i>';
-            const iconElement = labelElement.querySelector('i');
+            labelElement.classList.add(`color-${colorId}`);
 
             const inputElement = document.createElement('input');
             inputElement.id = elementId;
             inputElement.setAttribute('type', 'radio');
             inputElement.setAttribute('name', 'color');
-
-            if (hexColor) {
-                const strokeColor = this.colorManipulator.darken(hexColor, 20);
-                inputElement.setAttribute('value', hexColor);
-                labelElement.style.backgroundColor = `#${hexColor}`;
-                labelElement.style.border = `1px solid #${strokeColor}`;
-                iconElement.style.backgroundColor = `#${strokeColor}`;
-            }
+            inputElement.setAttribute('value', '' + colorId);
 
             this.colorContainer.appendChild(inputElement);
             this.colorContainer.appendChild(labelElement);
@@ -99,12 +84,11 @@ export class TabTagEditForm {
     }
 
     private selectDefaultColor() {
-        const colorButton = this.colorContainer.querySelector('input ') as HTMLSelectElement;
-        colorButton.click();
+        this.selectColor(0);
     }
 
-    private selectColor(hexColor: string) {
-        const colorButton = this.colorContainer.querySelector(`input[value="${hexColor}"]`) as HTMLSelectElement;
+    private selectColor(colorId: number) {
+        const colorButton = this.colorContainer.querySelector(`input[value="${colorId}"]`) as HTMLSelectElement;
 
         if (colorButton) {
             colorButton.click();
@@ -121,7 +105,7 @@ export class TabTagEditForm {
         if (tag) {
             this.containerElement.setAttribute('data-tag-id', command.tagId);
             this.labelInput.value = tag.label;
-            tag.hexColor ? this.selectColor(tag.hexColor) : this.selectDefaultColor();
+            this.selectColor(tag.colorId);
 
             this.titleEditLabelElement.classList.remove('hide');
             this.titleCreateLabelElement.classList.add('hide');
@@ -135,12 +119,12 @@ export class TabTagEditForm {
     private async save() {
         const tagId = this.containerElement.getAttribute('data-tag-id');
         const label = this.labelInput.value;
-        const hexColor = this.getSelectedColorValue();
+        const colorId = this.getSelectedColorValue();
 
         if (tagId) {
-            this.commandBus.handle(new UpdateTabTag(tagId, label, hexColor));
+            this.commandBus.handle(new UpdateTabTag(tagId, label, colorId));
         } else {
-            this.commandBus.handle(new CreateTabTag(label, hexColor));
+            this.commandBus.handle(new CreateTabTag(label, colorId));
         }
 
         this.hide();
@@ -153,10 +137,10 @@ export class TabTagEditForm {
             return;
         }
 
-        const hexColor = selectedColorElement.value;
+        const colorId = selectedColorElement.value;
 
-        if ('string' == typeof hexColor && hexColor.length > 0) {
-            return hexColor;
+        if ('string' == typeof colorId && colorId.length > 0) {
+            return +colorId;
         } else {
             return null;
         }
@@ -164,10 +148,10 @@ export class TabTagEditForm {
 }
 
 export class TabTagEditFormFactory {
-    constructor(private commandBus: CommandBus, private queryBus: QueryBus, private colorManipulator: ColorManipulator) {
+    constructor(private commandBus: CommandBus, private queryBus: QueryBus) {
     }
 
     create(containerElement: HTMLElement) {
-        return new TabTagEditForm(containerElement, this.commandBus, this.queryBus, this.colorManipulator);
+        return new TabTagEditForm(containerElement, this.commandBus, this.queryBus);
     }
 }

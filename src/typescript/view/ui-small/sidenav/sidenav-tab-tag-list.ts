@@ -14,6 +14,8 @@ import { SidenavEntry } from './sidenav-entry';
 import { SidenavTabTagFilter, SidenavTabTagFilterFactory } from './sidenav-tab-tag-filter';
 import { TabTagEntry, TabTagEntryFactory } from './tab-tag-entry';
 
+import { AddTabTagToOpenedTab } from '../../../tab/opened-tab/command'; // TODO todel
+
 type ActiveEntryChangeObserver = (newActiveEntry: SidenavEntry) => void;
 
 export class SidenavTabTagList {
@@ -32,6 +34,16 @@ export class SidenavTabTagList {
         private taskScheduler: TaskScheduler,
     ) {
         this.tabTagFilter = sidenavTabTagFilterFactory.create(containerElement.querySelector('.filter'));
+
+        // TODO ===
+        const todel = this.tabTagEntryFactory.create('aaa', 'todel', 2);
+        todel.observeClick(() => {
+            const openedTabId = 'b22dcca0-9484-11e8-a1ac-a19a8794983f';
+            const tagId = 'b5b11b60-dc1f-11e8-98c5-b9bfbebb4102';
+            commandBus.handle(new AddTabTagToOpenedTab(openedTabId, tagId));
+        });
+        this.containerElement.appendChild(todel.htmlElement);
+        // TODO ===
 
         this.taskScheduler.add(async () => {
             eventBus.subscribe(TabTagCreated, this.onTabTagCreate, this);
@@ -57,7 +69,7 @@ export class SidenavTabTagList {
     }
 
     private addTabTag(tag: TabTag, sort: boolean) {
-        const tagEntry = this.tabTagEntryFactory.create(tag.id, tag.label, tag.hexColor);
+        const tagEntry = this.tabTagEntryFactory.create(tag.id, tag.label, tag.colorId);
         tagEntry.observeClick(() => {
             this.commandBus.handle(new ShowTagTabs(tag.id));
             this.commandBus.handle(new HideSidenav());
@@ -140,7 +152,7 @@ export class SidenavTabTagList {
 
             if (tagEntry) {
                 tagEntry.updateLabel(event.tag.label);
-                tagEntry.updateColor(event.tag.hexColor);
+                tagEntry.updateColor(event.tag.colorId);
                 this.insertTagEntryElement(tagEntry);
             }
         }).executeAll();

@@ -93,7 +93,7 @@ export class TabTagRetriever {
 
             if (tag) {
                 tag.label = event.tag.label;
-                tag.hexColor = event.tag.hexColor;
+                tag.colorId = event.tag.colorId;
 
                 this.sortTabTags();
             }

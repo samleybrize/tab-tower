@@ -13,3 +13,5 @@ export * from './opened-tab-title-updated';
 export * from './opened-tab-unfocused';
 export * from './opened-tab-url-updated';
 export * from './tab-opened';
+export * from './tab-tag-added-to-opened-tab';
+export * from './tab-tag-removed-from-opened-tab';

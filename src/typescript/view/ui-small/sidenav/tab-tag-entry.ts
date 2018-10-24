@@ -11,10 +11,9 @@ export class TabTagEntry extends SidenavEntry {
     constructor(
         private commandBus: CommandBus,
         tabTagContextMenuFactory: TabTagContextMenuFactory,
-        private colorManipulator: ColorManipulator,
         public readonly id: string,
         private label: string,
-        private hexColor?: string,
+        private colorId: number,
     ) {
         super(TabTagEntry.createElement());
 
@@ -22,7 +21,7 @@ export class TabTagEntry extends SidenavEntry {
         this.colorElement = this.htmlElement.querySelector('.color');
 
         this.updateLabel(label);
-        this.updateColor(hexColor);
+        this.updateColor(colorId);
 
         this.initElement(tabTagContextMenuFactory);
     }
@@ -53,8 +52,8 @@ export class TabTagEntry extends SidenavEntry {
         return this.label;
     }
 
-    getHexColor() {
-        return this.hexColor;
+    getColorId() {
+        return this.colorId;
     }
 
     updateLabel(label: string) {
@@ -63,17 +62,10 @@ export class TabTagEntry extends SidenavEntry {
         this.labelElement.setAttribute('title', label);
     }
 
-    updateColor(hexColor?: string) {
-        if (hexColor) {
-            const strokeColor = this.colorManipulator.darken(hexColor, 20);
-            this.hexColor = hexColor;
-            this.colorElement.style.color = `#${hexColor}`;
-            this.colorElement.style.webkitTextStroke = `1px #${strokeColor}`;
-        } else {
-            this.hexColor = null;
-            this.colorElement.style.color = null;
-            this.colorElement.style.webkitTextStroke = null;
-        }
+    updateColor(colorId: number) {
+        this.colorElement.classList.remove(`color-${this.colorId}`);
+        this.colorId = colorId;
+        this.colorElement.classList.add(`color-${colorId}`);
     }
 
     hide() {
@@ -89,7 +81,7 @@ export class TabTagEntryFactory {
     constructor(private commandBus: CommandBus, private tabTagContextMenuFactory: TabTagContextMenuFactory, private colorManipulator: ColorManipulator) {
     }
 
-    create(id: string, label: string, hexColor?: string) {
-        return new TabTagEntry(this.commandBus, this.tabTagContextMenuFactory, this.colorManipulator, id, label, hexColor);
+    create(id: string, label: string, colorId: number) {
+        return new TabTagEntry(this.commandBus, this.tabTagContextMenuFactory, id, label, colorId);
     }
 }

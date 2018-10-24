@@ -1,3 +1,5 @@
+import { TabTag } from '../tab-tag/tab-tag';
+
 export class OpenedTab {
     id: string = null;
     position: number = null;
@@ -11,4 +13,5 @@ export class OpenedTab {
     isLoading: boolean = false;
     isPinned: boolean = false;
     lastAccess: Date = null;
+    tabTagIdList: string[] = [];
 }

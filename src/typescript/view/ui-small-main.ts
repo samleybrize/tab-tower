@@ -97,6 +97,7 @@ async function main() {
     }
 
     function initCommandBus() {
+        commandBus.register(tabCommands.AddTabTagToOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
         commandBus.register(tabCommands.CloseOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
         commandBus.register(tabCommands.DiscardOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
         commandBus.register(tabCommands.DuplicateOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
@@ -106,6 +107,7 @@ async function main() {
         commandBus.register(tabCommands.OpenTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
         commandBus.register(tabCommands.PinOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
         commandBus.register(tabCommands.ReloadOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
+        commandBus.register(tabCommands.RemoveTabTagFromOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
         commandBus.register(tabCommands.UnpinOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
         commandBus.register(tabCommands.UnmuteOpenedTab, sendMessageCommandHandler.onCommand, sendMessageCommandHandler);
 
@@ -144,7 +146,7 @@ async function main() {
         const sidenavTabTagListFactory = new SidenavTabTagListFactory(commandBus, eventBus, queryBus, sidenavTabTagFilterFactory, tabTagEntryFactory, taskSchedulerFactory);
         const sidenavFactory = new SidenavFactory(commandBus, eventBus, queryBus, sidenavTabTagListFactory, taskSchedulerFactory);
 
-        const tabTagEditFormFactory = new TabTagEditFormFactory(commandBus, queryBus, colorManipulator);
+        const tabTagEditFormFactory = new TabTagEditFormFactory(commandBus, queryBus);
 
         const uiSmall = new UiSmall(tabsViewFactory, sidenavFactory, tabTagEditFormFactory);
     }

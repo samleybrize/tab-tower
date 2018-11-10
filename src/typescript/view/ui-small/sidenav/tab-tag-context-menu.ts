@@ -1,7 +1,7 @@
 import { CommandBus } from '../../../bus/command-bus';
 import { DeleteTabTag } from '../../../tab/tab-tag/command/delete-tab-tag';
 import { BoundingRectangle, ContextMenu, ContextMenuDimensions, ContextMenuFactory, ContextMenuPosition, ContextMenuPositionArrowEdge, ContextMenuPositionCalculator } from '../../components/context-menu';
-import { ShowEditTabTagForm } from '../tab-tag-edit-form/command/show-edit-tab-tag-form.ts';
+import { ShowEditTabTagForm } from '../tab-tag-edit-form/command/show-edit-tab-tag-form';
 
 interface Position {
     x: number;

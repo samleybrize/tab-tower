@@ -45,6 +45,15 @@ export class ContextMenu {
         this.arrowElement = document.createElement('div');
         this.arrowElement.classList.add('arrow');
         this.htmlElement.appendChild(this.arrowElement);
+
+        this.htmlElement.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+        });
+        this.htmlElement.addEventListener('contextmenu', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+        });
     }
 
     setArrowEdge(arrowEdge: ContextMenuPositionArrowEdge) {

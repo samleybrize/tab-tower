@@ -4,17 +4,15 @@ import { QueryBus } from '../../../bus/query-bus';
 import { TabTagCreated } from '../../../tab/tab-tag/event/tab-tag-created';
 import { TabTagDeleted } from '../../../tab/tab-tag/event/tab-tag-deleted';
 import { TabTagUpdated } from '../../../tab/tab-tag/event/tab-tag-updated';
-import { GetTabTags } from '../../../tab/tab-tag/query';
+import { GetTabTags } from '../../../tab/tab-tag/query/get-tab-tags';
 import { TabTag } from '../../../tab/tab-tag/tab-tag';
 import { TaskScheduler, TaskSchedulerFactory } from '../../../utils/task-scheduler';
-import { ShowCreateTabTagForm } from '../tab-tag-edit-form/command/show-create-tab-tag-form.ts';
+import { ShowCreateTabTagForm } from '../tab-tag-edit-form/command/show-create-tab-tag-form';
 import { ShowTagTabs } from '../tabs-view/command/show-tag-tabs';
 import { HideSidenav } from './command/hide-sidenav';
 import { SidenavEntry } from './sidenav-entry';
 import { SidenavTabTagFilter, SidenavTabTagFilterFactory } from './sidenav-tab-tag-filter';
 import { TabTagEntry, TabTagEntryFactory } from './tab-tag-entry';
-
-import { AddTabTagToOpenedTab } from '../../../tab/opened-tab/command'; // TODO todel
 
 type ActiveEntryChangeObserver = (newActiveEntry: SidenavEntry) => void;
 
@@ -34,16 +32,6 @@ export class SidenavTabTagList {
         private taskScheduler: TaskScheduler,
     ) {
         this.tabTagFilter = sidenavTabTagFilterFactory.create(containerElement.querySelector('.filter'));
-
-        // TODO ===
-        const todel = this.tabTagEntryFactory.create('aaa', 'todel', 2);
-        todel.observeClick(() => {
-            const openedTabId = 'b22dcca0-9484-11e8-a1ac-a19a8794983f';
-            const tagId = 'b5b11b60-dc1f-11e8-98c5-b9bfbebb4102';
-            commandBus.handle(new AddTabTagToOpenedTab(openedTabId, tagId));
-        });
-        this.containerElement.appendChild(todel.htmlElement);
-        // TODO ===
 
         this.taskScheduler.add(async () => {
             eventBus.subscribe(TabTagCreated, this.onTabTagCreate, this);

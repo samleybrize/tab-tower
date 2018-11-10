@@ -1,0 +1,55 @@
+.tab-tag-assign {
+    .checkbox {
+        position: relative;
+        margin-right: 30px;
+        user-select: none;
+        -moz-user-select: none;
+
+        .checked-icon,
+        .unchecked-icon,
+        .indeterminate-icon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: block;
+            margin-top: -2px;
+            margin-left: -2px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .checked-icon {
+            color: $tab-checkbox-checked-color;
+        }
+
+        .unchecked-icon,
+        .indeterminate-icon {
+            color: $tab-checkbox-unchecked-color;
+        }
+
+        &:not([state='checked']):not([state='indeterminate']) {
+            .checked-icon,
+            .indeterminate-icon {
+                pointer-events: none;
+                opacity: 0;
+            }
+        }
+
+        &[state='checked'] {
+            .unchecked-icon,
+            .indeterminate-icon {
+                pointer-events: none;
+                opacity: 0;
+            }
+        }
+
+        &[state='indeterminate'] {
+            .checked-icon,
+            .unchecked-icon {
+                pointer-events: none;
+                opacity: 0;
+            }
+        }
+    }
+}

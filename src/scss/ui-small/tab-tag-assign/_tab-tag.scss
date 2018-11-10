@@ -1,0 +1,73 @@
+.tab-tag-assign {
+    .row {
+        position: relative;
+        padding: 10px 15px;
+        overflow-x: hidden;
+        font-weight: 500;
+        color: $tag-label-color;
+        white-space: nowrap;
+        background: $tag-background-color;
+        border-left: $tag-border-left-width solid $tag-border-left-color;
+        transition: background-color 0.2s ease, border-left-color 0.2s ease;
+
+        &::after {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: block;
+            width: 30px;
+            height: 100%;
+            pointer-events: none;
+            background-color: $tag-background-color;
+            content: '';
+            transition: background-color 0.2s ease;
+            mask-image: linear-gradient(to right, transparent, black 75%);
+        }
+
+        &:hover {
+            background-color: $tag-hover-background-color;
+
+            &::after {
+                background-color: $tab-hover-background-color;
+            }
+        }
+
+        > span > i,
+        > i {
+            margin-right: 7px;
+            font-size: 18px;
+            color: $tag-label-color;
+            vertical-align: middle;
+        }
+
+        &.hide {
+            display: none;
+        }
+
+        .color {
+            color: $tag-default-color;
+
+            i {
+                font-size: 14px;
+                color: inherit;
+            }
+        }
+
+        @each $tag-color in $tag-color-list {
+            $id: map-get($tag-color, id);
+            $color: map-get($tag-color, color);
+            $stroke: map-get($tag-color, border);
+
+            &[data-color='#{$id}'] {
+                .color {
+                    color: $color;
+                    -webkit-text-stroke: 1px $stroke;
+                }
+            }
+        }
+
+        &.new-tag-button {
+            cursor: pointer;
+        }
+    }
+}

@@ -8,6 +8,7 @@ import { ReloadOpenedTab } from '../../../../tab/opened-tab/command/reload-opene
 import { UnmuteOpenedTab } from '../../../../tab/opened-tab/command/unmute-opened-tab';
 import { UnpinOpenedTab } from '../../../../tab/opened-tab/command/unpin-opened-tab';
 import { BoundingRectangle, ContextMenu, ContextMenuDimensions, ContextMenuFactory, ContextMenuPosition, ContextMenuPositionArrowEdge, ContextMenuPositionCalculator } from '../../../components/context-menu';
+import { ManageTabTagAssignment } from '../../tab-tab-assign/command/manage-tab-tag-assignment';
 import { MarkTabsAsBeingMoved } from '../command/mark-tabs-as-being-moved';
 
 interface Position {
@@ -69,7 +70,7 @@ export class TabContextMenu {
 
     private initManageTagsButton(buttonElement: HTMLElement) {
         buttonElement.addEventListener('click', () => {
-            // this.commandBus.handle(new ReloadOpenedTab(this.openedTabId)); // TODO
+            this.commandBus.handle(new ManageTabTagAssignment([this.openedTabId]));
             this.contextMenu.close();
         });
     }

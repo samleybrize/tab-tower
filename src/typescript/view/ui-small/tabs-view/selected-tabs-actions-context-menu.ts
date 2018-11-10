@@ -8,7 +8,8 @@ import { PinOpenedTab } from '../../../tab/opened-tab/command/pin-opened-tab';
 import { ReloadOpenedTab } from '../../../tab/opened-tab/command/reload-opened-tab';
 import { UnmuteOpenedTab } from '../../../tab/opened-tab/command/unmute-opened-tab';
 import { UnpinOpenedTab } from '../../../tab/opened-tab/command/unpin-opened-tab';
-import { BoundingRectangle, ContextMenu, ContextMenuDimensions, ContextMenuFactory, ContextMenuPosition, ContextMenuPositionArrowEdge, ContextMenuPositionCalculator } from '../../components/context-menu';
+import { BoundingRectangle, ContextMenu, ContextMenuDimensions, ContextMenuFactory, ContextMenuPosition, ContextMenuPositionCalculator } from '../../components/context-menu';
+import { ManageTabTagAssignment } from '../tab-tab-assign/command/manage-tab-tag-assignment';
 import { MarkTabsAsBeingMoved } from './command/mark-tabs-as-being-moved';
 import { GetCurrentTabListSelectedTabs } from './query/get-current-tab-list-selected-tabs';
 
@@ -63,12 +64,7 @@ export class SelectedTabsActionsContextMenu {
 
     private initManageTagsButton(buttonElement: HTMLElement) {
         buttonElement.addEventListener('click', async () => {
-            const tabIdList = await this.getSelectedTabIdList();
-
-            for (const tabId of tabIdList) {
-                // this.commandBus.handle(new ReloadOpenedTab(tabId)); // TODO
-            }
-
+            this.commandBus.handle(new ManageTabTagAssignment(await this.getSelectedTabIdList()));
             this.contextMenu.close();
         });
     }

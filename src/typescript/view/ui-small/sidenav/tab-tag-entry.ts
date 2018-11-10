@@ -1,6 +1,3 @@
-import { CommandBus } from '../../../bus/command-bus';
-import { ColorManipulator } from '../../../utils/color-maniplator';
-import { ShowTagTabs } from '../tabs-view/command/show-tag-tabs';
 import { SidenavEntry } from './sidenav-entry';
 import { TabTagContextMenuFactory } from './tab-tag-context-menu';
 
@@ -9,7 +6,6 @@ export class TabTagEntry extends SidenavEntry {
     private colorElement: HTMLElement;
 
     constructor(
-        private commandBus: CommandBus,
         tabTagContextMenuFactory: TabTagContextMenuFactory,
         public readonly id: string,
         private label: string,
@@ -78,10 +74,10 @@ export class TabTagEntry extends SidenavEntry {
 }
 
 export class TabTagEntryFactory {
-    constructor(private commandBus: CommandBus, private tabTagContextMenuFactory: TabTagContextMenuFactory, private colorManipulator: ColorManipulator) {
+    constructor(private tabTagContextMenuFactory: TabTagContextMenuFactory) {
     }
 
     create(id: string, label: string, colorId: number) {
-        return new TabTagEntry(this.commandBus, this.tabTagContextMenuFactory, id, label, colorId);
+        return new TabTagEntry(this.tabTagContextMenuFactory, id, label, colorId);
     }
 }

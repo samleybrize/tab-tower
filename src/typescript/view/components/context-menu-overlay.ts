@@ -13,9 +13,14 @@ export class ContextMenuOverlay {
         overlayElement.classList.add('hide');
         document.querySelector('body').appendChild(overlayElement);
 
-        overlayElement.addEventListener('click', this.closeContextMenus.bind(this));
+        overlayElement.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.closeContextMenus();
+        });
         overlayElement.addEventListener('contextmenu', (event) => {
             event.preventDefault();
+            event.stopPropagation();
             this.closeContextMenus();
         });
 

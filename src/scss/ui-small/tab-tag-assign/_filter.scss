@@ -1,0 +1,30 @@
+.tab-tag-assign {
+    .filter {
+        position: relative;
+
+        input {
+            display: block;
+            width: 100%;
+            padding: 10px 15px;
+            padding-left: 47px;
+            color: $tag-label-color;
+            background: $tag-background-color;
+            border: none;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease;
+
+            &:focus,
+            &.active {
+                background: $tag-filter-focus-background-color;
+            }
+        }
+
+        i {
+            position: absolute;
+            top: 6px;
+            left: 16px;
+            color: $tag-default-color;
+            pointer-events: none;
+        }
+    }
+}

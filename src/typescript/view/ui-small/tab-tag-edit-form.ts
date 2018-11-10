@@ -1,15 +1,10 @@
 import { CommandBus } from '../../bus/command-bus';
 import { QueryBus } from '../../bus/query-bus';
-import { CreateTabTag, UpdateTabTag } from '../../tab/tab-tag/command';
+import { CreateTabTag } from '../../tab/tab-tag/command/create-tab-tag';
+import { UpdateTabTag } from '../../tab/tab-tag/command/update-tab-tag';
 import { GetTabTagById } from '../../tab/tab-tag/query/get-tab-tag-by-id';
-import { ShowCreateTabTagForm } from './tab-tag-edit-form/command/show-create-tab-tag-form.ts';
-import { ShowEditTabTagForm } from './tab-tag-edit-form/command/show-edit-tab-tag-form.ts';
-
-interface TagColor {
-    id: number;
-    color: string;
-    borderColor: string;
-}
+import { ShowCreateTabTagForm } from './tab-tag-edit-form/command/show-create-tab-tag-form';
+import { ShowEditTabTagForm } from './tab-tag-edit-form/command/show-edit-tab-tag-form';
 
 const numberOfColors = 10;
 

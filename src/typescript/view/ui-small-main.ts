@@ -36,6 +36,8 @@ import { SidenavTabTagFilterFactory } from './ui-small/sidenav/sidenav-tab-tag-f
 import { SidenavTabTagListFactory } from './ui-small/sidenav/sidenav-tab-tag-list';
 import { TabTagContextMenuFactory } from './ui-small/sidenav/tab-tag-context-menu';
 import { TabTagEntryFactory } from './ui-small/sidenav/tab-tag-entry';
+import { TabTagAssignEntryFactory } from './ui-small/tab-tab-assign/tab-tag-assign-entry';
+import { TabTagAssignFactory } from './ui-small/tab-tag-assign';
 import { TabTagEditFormFactory } from './ui-small/tab-tag-edit-form';
 import { TabsViewFactory } from './ui-small/tabs-view';
 import { NewTabButtonFactory } from './ui-small/tabs-view/new-tab-button';
@@ -141,14 +143,16 @@ async function main() {
         const tabsViewFactory = new TabsViewFactory(tabListFactory, tabFilterFactory, newTabButtonFactory, selectedTabsActionsFactory, taskSchedulerFactory, commandBus, eventBus, queryBus);
 
         const tabTagContextMenuFactory = new TabTagContextMenuFactory(commandBus, contextMenuFactory);
-        const tabTagEntryFactory = new TabTagEntryFactory(commandBus, tabTagContextMenuFactory, colorManipulator);
+        const tabTagEntryFactory = new TabTagEntryFactory(tabTagContextMenuFactory);
         const sidenavTabTagFilterFactory = new SidenavTabTagFilterFactory(queryBus);
         const sidenavTabTagListFactory = new SidenavTabTagListFactory(commandBus, eventBus, queryBus, sidenavTabTagFilterFactory, tabTagEntryFactory, taskSchedulerFactory);
         const sidenavFactory = new SidenavFactory(commandBus, eventBus, queryBus, sidenavTabTagListFactory, taskSchedulerFactory);
 
         const tabTagEditFormFactory = new TabTagEditFormFactory(commandBus, queryBus);
+        const tabTagAssignEntryFactory = new TabTagAssignEntryFactory();
+        const tabTagAssignFactory = new TabTagAssignFactory(commandBus, eventBus, queryBus, tabTagAssignEntryFactory, taskSchedulerFactory);
 
-        const uiSmall = new UiSmall(tabsViewFactory, sidenavFactory, tabTagEditFormFactory);
+        const uiSmall = new UiSmall(tabsViewFactory, sidenavFactory, tabTagEditFormFactory, tabTagAssignFactory);
     }
 
     async function waitBackgroundReady() {

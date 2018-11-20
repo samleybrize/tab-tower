@@ -177,6 +177,21 @@ When('I focus the tab {int}', async function(tabPositionToFocus: number) {
     }, [tabPositionToFocus]);
 });
 
+When('I use the tab {int}', async function(tabPositionToFocus: number) {
+    const world = this as World;
+    const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
+
+    await webdriverHelper.executeScript(async (index: number) => {
+        const tabToFocus = await browser.tabs.query({index});
+
+        if (tabToFocus) {
+            await browser.tabs.update(tabToFocus[0].id, {active: true});
+        }
+    }, [tabPositionToFocus]);
+
+    await webdriverHelper.switchToWindowHandle(tabPositionToFocus);
+});
+
 When('I close the tab {int}', async function(tabPositionToClose: number) {
     const world = this as World;
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();

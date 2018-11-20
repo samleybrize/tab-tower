@@ -3,6 +3,19 @@ import { By, Key, WebDriver, WebElement } from 'selenium-webdriver';
 import { TabSupport } from '../support/tab-support';
 import { World } from '../support/world';
 
+When('I click on the "go to sidenav" button', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+
+    const button = webdriver.findElement(By.css('.tab-list .sidenav-button'));
+
+    await TabSupport.clickElementOnceAvailable(
+        webdriver,
+        button,
+        '"go to sidenav" button is not clickable',
+    );
+});
+
 When('I type {string} in the tab filter input', async function(filterText: string) {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
@@ -39,7 +52,7 @@ When('I click on the new tab button', async function() {
     await newTabButtonElement.click();
 });
 
-When('I click outside of the context menu', async function() {
+When('I click outside of the tab context menu', async function() {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
 
@@ -166,6 +179,15 @@ When('I click on the selected tabs actions close button', async function() {
 
     const buttonElement = webdriver.findElement(By.css('.tab-list .selected-tabs-actions-context-menu-container .close-button'));
     await TabSupport.clickElementOnceAvailable(webdriver, buttonElement, 'Selected tabs actions close button is not clickable');
+});
+
+When('I click on the selected tabs actions manage tags button', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    await clickOnSelectedTabsActionsButton(webdriver);
+
+    const buttonElement = webdriver.findElement(By.css('.tab-list .selected-tabs-actions-context-menu-container .manage-tags-button'));
+    await TabSupport.clickElementOnceAvailable(webdriver, buttonElement, 'Selected tabs actions manage tags button is not clickable');
 });
 
 When('I click on the selected tabs actions move button', async function() {

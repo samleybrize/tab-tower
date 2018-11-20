@@ -11,13 +11,16 @@ import { TabTag } from '../../tab/tab-tag/tab-tag';
 import { TaskScheduler, TaskSchedulerFactory } from '../../utils/task-scheduler';
 import { ManageTabTagAssignment } from './tab-tab-assign/command/manage-tab-tag-assignment';
 import { CheckboxState, TabTagAssignEntry, TabTagAssignEntryFactory } from './tab-tab-assign/tab-tag-assign-entry';
+import { TabTagAssignFilter, TabTagAssignFilterFactory } from './tab-tab-assign/tab-tag-assign-filter';
 import { ShowCreateTabTagForm } from './tab-tag-edit-form/command/show-create-tab-tag-form';
 
 // TODO rename (TabTagAssignmentManager ?)
 export class TabTagAssign {
+    private tabTagFilter: TabTagAssignFilter;
     private tabTagList: TabTagAssignEntry[] = [];
     private tabTagMap = new Map<string, TabTagAssignEntry>();
     private tabTagListContainer: HTMLElement;
+    private noTagMatchesSearchElement: HTMLElement;
     private assignToTabIdList: string[] = [];
     private tagCheckState: Map<string, CheckboxState>;
 
@@ -26,6 +29,7 @@ export class TabTagAssign {
         private commandBus: CommandBus,
         private eventBus: EventBus,
         private queryBus: QueryBus,
+        tabTagAssignFilterFactory: TabTagAssignFilterFactory,
         private tabTagAssignEntryFactory: TabTagAssignEntryFactory,
         private taskScheduler: TaskScheduler,
     ) {
@@ -45,6 +49,9 @@ export class TabTagAssign {
             this.eventBus.subscribe(TabTagDeleted, this.onTabTagDelete, this);
             this.eventBus.subscribe(TabTagUpdated, this.onTabTagUpdate, this);
 
+            this.noTagMatchesSearchElement = this.createNoTagMatchesSearchElement();
+            this.containerElement.appendChild(this.noTagMatchesSearchElement);
+
             const tagList = await this.queryBus.query(new GetTabTags());
             tagList.sort((a, b) => {
                 return a.label.localeCompare(b.label);
@@ -53,7 +60,20 @@ export class TabTagAssign {
             for (const tag of tagList) {
                 this.addTabTag(tag, false);
             }
+
+            this.tabTagFilter = tabTagAssignFilterFactory.create(containerElement.querySelector('.filter'));
+            this.tabTagFilter.observeFilterResultRetrieval(this.onTagFilterResultRetrieve.bind(this));
+            this.tabTagFilter.observeFilterClear(this.onTagFilterClear.bind(this));
         }).executeAll();
+    }
+
+    private createNoTagMatchesSearchElement() {
+        const element = document.createElement('div');
+        element.classList.add('no-tag-matches-search');
+        element.classList.add('hide');
+        element.textContent = 'No tag matches your search';
+
+        return element;
     }
 
     private addTabTag(tag: TabTag, sort: boolean) {
@@ -78,6 +98,8 @@ export class TabTagAssign {
         } else {
             this.insertTagEntryAsLastElement(tagEntry);
         }
+
+        return tagEntry;
     }
 
     private insertTagEntryElement(tagEntryToInsert: TabTagAssignEntry) {
@@ -176,7 +198,13 @@ export class TabTagAssign {
 
     async onTabTagCreate(event: TabTagCreated) {
         this.taskScheduler.add(async () => {
-            this.addTabTag(event.tag, true);
+            const tagEntry = this.addTabTag(event.tag, true);
+
+            if (await this.tabTagFilter.isTabTagSatisfiesFilter(tagEntry.id)) {
+                tagEntry.unhide();
+            } else {
+                tagEntry.hide();
+            }
         }).executeAll();
     }
 
@@ -188,6 +216,12 @@ export class TabTagAssign {
                 tagEntry.updateLabel(event.tag.label);
                 tagEntry.updateColor(event.tag.colorId);
                 this.insertTagEntryElement(tagEntry);
+
+                if (await this.tabTagFilter.isTabTagSatisfiesFilter(tagEntry.id)) {
+                    tagEntry.unhide();
+                } else {
+                    tagEntry.hide();
+                }
             }
         }).executeAll();
     }
@@ -197,6 +231,30 @@ export class TabTagAssign {
             this.removeTabTag(event.tag.id);
         }).executeAll();
     }
+
+    private onTagFilterResultRetrieve(matchingTagIds: string[]) {
+        for (const tagEntry of this.tabTagList) {
+            if (matchingTagIds.indexOf(tagEntry.id) >= 0) {
+                tagEntry.unhide();
+            } else {
+                tagEntry.hide();
+            }
+        }
+
+        if (matchingTagIds.length > 0) {
+            this.noTagMatchesSearchElement.classList.add('hide');
+        } else {
+            this.noTagMatchesSearchElement.classList.remove('hide');
+        }
+    }
+
+    private onTagFilterClear() {
+        this.noTagMatchesSearchElement.classList.add('hide');
+
+        for (const tagEntry of this.tabTagList) {
+            tagEntry.unhide();
+        }
+    }
 }
 
 export class TabTagAssignFactory {
@@ -204,11 +262,12 @@ export class TabTagAssignFactory {
         private commandBus: CommandBus,
         private eventBus: EventBus,
         private queryBus: QueryBus,
+        private tabTagAssignFilterFactory: TabTagAssignFilterFactory,
         private tabTagAssignEntryFactory: TabTagAssignEntryFactory,
         private taskSchedulerFactory: TaskSchedulerFactory) {
     }
 
     create(containerElement: HTMLElement) {
-        return new TabTagAssign(containerElement, this.commandBus, this.eventBus, this.queryBus, this.tabTagAssignEntryFactory, this.taskSchedulerFactory.create());
+        return new TabTagAssign(containerElement, this.commandBus, this.eventBus, this.queryBus, this.tabTagAssignFilterFactory, this.tabTagAssignEntryFactory, this.taskSchedulerFactory.create());
     }
 }

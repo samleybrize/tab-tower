@@ -32,6 +32,8 @@ export class Sidenav {
             this.commandBus.handle(new ShowAllOpenedTabs());
             this.hide(null);
             this.onActiveEntryChange(this.allOpenedTabsEntry);
+
+            browser.storage.local.remove('active-tab-tag'); // TODO
         });
 
         this.containerElement.querySelector('.close-sidenav-button').addEventListener('click', () => {

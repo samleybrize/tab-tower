@@ -205,6 +205,15 @@ When('I click on the tab context menu close button of the tab {int} on the tab l
     await clickOnTabContextMenuButton(webdriver, tab, buttonElement, `Tab context menu close button of tab at position ${tabPosition} of tab list "${tabListId}" is not clickable`);
 });
 
+When('I click on the tab context menu manage tags button of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const tab = await TabSupport.getTabAtPosition(webdriver, tabListId, tabPosition);
+    const buttonElement = tab.findElement(By.css('.context-menu .manage-tags-button'));
+
+    await clickOnTabContextMenuButton(webdriver, tab, buttonElement, `Tab context menu manage tags button of tab at position ${tabPosition} of tab list "${tabListId}" is not clickable`);
+});
+
 When('I click on the tab context menu move button of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();

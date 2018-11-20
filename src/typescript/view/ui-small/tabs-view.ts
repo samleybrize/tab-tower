@@ -18,7 +18,7 @@ import { TabOpened } from '../../tab/opened-tab/event/tab-opened';
 import { TabTagAddedToOpenedTab } from '../../tab/opened-tab/event/tab-tag-added-to-opened-tab';
 import { TabTagRemovedFromOpenedTab } from '../../tab/opened-tab/event/tab-tag-removed-from-opened-tab';
 import { OpenedTab } from '../../tab/opened-tab/opened-tab';
-import { GetOpenedTabs } from '../../tab/opened-tab/query';
+import { GetOpenedTabs, GetTabCountForAllTags } from '../../tab/opened-tab/query';
 import { TabTagCreated } from '../../tab/tab-tag/event/tab-tag-created';
 import { TabTagDeleted } from '../../tab/tab-tag/event/tab-tag-deleted';
 import { TabTagUpdated } from '../../tab/tab-tag/event/tab-tag-updated';
@@ -105,8 +105,9 @@ export class TabsView {
 
             await this.createOpenedTabList();
             this.enableCurrentTabListIndicator(TabListIds.OPENED_TABS);
-            this.toto();
+            await this.initTabTagLists();
 
+            this.tabFilter.init();
             this.tabFilter.observeFilterResultRetrieval(this.onTabFilterResultRetrieve.bind(this));
             this.tabFilter.observeFilterClear(this.onTabFilterClear.bind(this));
             this.generalTabSelector.observeStateChange(this.onGeneralTabSelectorStateChange.bind(this));
@@ -205,13 +206,21 @@ export class TabsView {
         }
     }
 
-    private async toto() {
+    private async initTabTagLists() {
         const tagList = await this.queryBus.query(new GetTabTags());
 
         for (const tag of tagList) {
-            const tabListIndicator = this.createCurrentTabListIndicator(tag.id, tag.label);
-            // TODO set number of tabs?
+            this.createCurrentTabListIndicator(tag.id, tag.label);
         }
+
+        const tabCountList = await this.queryBus.query(new GetTabCountForAllTags());
+        tabCountList.forEach((numberOfTabs, tagId) => {
+            const tagIndicator = this.currentTabListIndicatorMap.get(tagId);
+
+            if (tagIndicator) {
+                tagIndicator.setNumberOfTabs(numberOfTabs);
+            }
+        });
     }
 
     private onTabFilterResultRetrieve(matchingTabs: OpenedTab[]) {
@@ -311,6 +320,14 @@ export class TabsView {
             this.closeContextMenus();
             this.currentTabListIndicatorMap.get(TabListIds.OPENED_TABS).incrementNumberOfTabs();
             this.applySettings(event.tab.id);
+
+            for (const tagId of event.tab.tabTagIdList) {
+                const tagIndicator = this.currentTabListIndicatorMap.get(tagId);
+
+                if (tagIndicator) {
+                    tagIndicator.incrementNumberOfTabs();
+                }
+            }
         }).executeAll();
     }
 
@@ -339,7 +356,15 @@ export class TabsView {
             }
 
             this.currentTabListIndicatorMap.get(TabListIds.OPENED_TABS).decrementNumberOfTabs();
-            // TODO decrement necessary current tab list indicators
+            const tabTagIdList = event.closedTab.tabTagIdList.filter((v, i, a) => a.indexOf(v) === i); // TODO unique values, due to a bug in firefox
+
+            for (const tagId of tabTagIdList) {
+                const tagIndicator = this.currentTabListIndicatorMap.get(tagId);
+
+                if (tagIndicator) {
+                    tagIndicator.decrementNumberOfTabs();
+                }
+            }
         }).executeAll();
     }
 
@@ -366,6 +391,7 @@ export class TabsView {
 
         if (existingTab) {
             existingTab.markAsPinned();
+            existingTab.showRegardlessOfTag();
 
             this.openedTabsTabList.removeTab(openedTabId);
             this.pinnedTabsTabList.addTab(existingTab);
@@ -481,10 +507,10 @@ export class TabsView {
     }
 
     async showTagTabs(command: ShowTagTabs) {
-        this.openedTabsTabList.showOnlyTabsThatHaveTag(command.tagId);
-        this.enableCurrentTabListIndicator(command.tagId);
-
-        // TODO update number of tabs?
+        await this.taskScheduler.add(async () => {
+            this.openedTabsTabList.showOnlyTabsThatHaveTag(command.tagId);
+            this.enableCurrentTabListIndicator(command.tagId);
+        }).executeAll();
     }
 
     async onTabTagCreate(event: TabTagCreated) {
@@ -492,6 +518,12 @@ export class TabsView {
     }
 
     async onTabTagDelete(event: TabTagDeleted) {
+        const associatedCurrentTabListIndicator = this.currentTabListIndicatorMap.get(event.tag.id);
+
+        if (associatedCurrentTabListIndicator === this.enabledCurrentTabListIndicator) {
+            this.showAllOpenedTabs(null);
+        }
+
         this.currentTabListIndicatorMap.delete(event.tag.id);
     }
 

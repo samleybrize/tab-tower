@@ -11,7 +11,11 @@
             border: none;
             border-bottom: 1px solid $form-input-border-bottom-color;
             box-sizing: border-box;
-            transition: background-color 0.3s ease;
+            transition: border-bottom-color 0.3s ease;
+
+            &.invalid {
+                border-bottom-color: $form-input-invalid-border-bottom-color;
+            }
 
             &:focus {
                 border-bottom-color: $form-input-focus-border-bottom-color;
@@ -26,6 +30,10 @@
             font-size: $form-label-font-size;
             color: $form-label-color;
             transition: color 0.3s ease;
+        }
+
+        input.invalid ~ label {
+            color: $form-label-invalid-color;
         }
 
         input:focus ~ label {

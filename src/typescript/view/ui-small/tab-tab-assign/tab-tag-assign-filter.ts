@@ -1,24 +1,24 @@
 import { EventBus } from '../../../bus/event-bus';
 import { QueryBus } from '../../../bus/query-bus';
-import { OpenedTab } from '../../../tab/opened-tab/opened-tab';
-import { GetOpenedTabIdsThatMatchFilter } from '../../../tab/opened-tab/query/get-opened-tab-ids-that-match-filter';
-import { GetOpenedTabs } from '../../../tab/opened-tab/query/get-opened-tabs';
+import { GetTabTagIdsThatMatchFilter } from '../../../tab/tab-tag/query';
 import { sleep } from '../../../utils/sleep';
 
-type TabFilterResultObserver = (matchingTabs: OpenedTab[]) => void;
-type TabFilterClearObserver = () => void;
+type TabTagFilterResultObserver = (matchingTagIds: string[]) => void;
+type TabTagFilterClearObserver = () => void;
 
-export class TabFilter {
+// TODO duplicate of SidenavTabTagFilter
+export class TabTagAssignFilter {
     private filterInputElement: HTMLInputElement;
-    private filterClearObserverList: TabFilterClearObserver[] = [];
-    private filterResultObserverList: TabFilterResultObserver[] = [];
+    private filterClearObserverList: TabTagFilterClearObserver[] = [];
+    private filterResultObserverList: TabTagFilterResultObserver[] = [];
     private previousFilterText: string = '';
 
     constructor(containerElement: HTMLElement, private queryBus: QueryBus) {
         this.filterInputElement = containerElement.querySelector('.filter-input');
+        this.initInput();
     }
 
-    public async init() {
+    private async initInput() {
         let timeoutReference: number = null;
 
         this.filterInputElement.addEventListener('input', (event) => {
@@ -53,12 +53,7 @@ export class TabFilter {
             return;
         }
 
-        // TODO use GetOpenedTabIdsThatMatchFilter
-        const matchingTabs = await this.queryBus.query(new GetOpenedTabs({
-            filterText,
-            matchOnTitle: true,
-            matchOnUrl: true,
-        }));
+        const matchingTabs = await this.queryBus.query(new GetTabTagIdsThatMatchFilter({filterText}));
         this.notifyFilterResultRetrieved(matchingTabs);
     }
 
@@ -68,43 +63,39 @@ export class TabFilter {
         }
     }
 
-    private notifyFilterResultRetrieved(matchingTabs: OpenedTab[]) {
+    private notifyFilterResultRetrieved(matchingTagIds: string[]) {
         for (const notifyObserver of this.filterResultObserverList) {
-            notifyObserver(matchingTabs);
+            notifyObserver(matchingTagIds);
         }
     }
 
-    async isTabSatisfiesFilter(tabId: string): Promise<boolean> {
+    async isTabTagSatisfiesFilter(tagId: string): Promise<boolean> {
         const filterText = '' + this.filterInputElement.value;
 
         if ('' == filterText) {
             return true;
         }
 
-        const filter = {
-            filterText,
-            matchOnTitle: true,
-            matchOnUrl: true,
-        };
-        const matchingTabIdList = await this.queryBus.query(new GetOpenedTabIdsThatMatchFilter(filter, [tabId]));
+        const filter = {filterText};
+        const matchingTagIdList = await this.queryBus.query(new GetTabTagIdsThatMatchFilter(filter, [tagId]));
 
-        return matchingTabIdList.length > 0;
+        return matchingTagIdList.length > 0;
     }
 
-    observeFilterClear(observer: TabFilterClearObserver) {
+    observeFilterClear(observer: TabTagFilterClearObserver) {
         this.filterClearObserverList.push(observer);
     }
 
-    observeFilterResultRetrieval(observer: TabFilterResultObserver) {
+    observeFilterResultRetrieval(observer: TabTagFilterResultObserver) {
         this.filterResultObserverList.push(observer);
     }
 }
 
-export class TabFilterFactory {
+export class TabTagAssignFilterFactory {
     constructor(private queryBus: QueryBus) {
     }
 
     create(containerElement: HTMLElement) {
-        return new TabFilter(containerElement, this.queryBus);
+        return new TabTagAssignFilter(containerElement, this.queryBus);
     }
 }

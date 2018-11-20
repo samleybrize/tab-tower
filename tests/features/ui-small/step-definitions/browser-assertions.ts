@@ -1,4 +1,5 @@
 import { Then } from 'cucumber';
+import { By } from 'selenium-webdriver';
 import { World } from '../support/world';
 
 Then("I should see the browser's tab {int} as focused", async function(expectedFocusedTabPosition: number) {
@@ -30,4 +31,19 @@ Then('I should see {int} browser tabs', async function(expectedNumberOfTabs: num
 
         return actualNumberOfTabs === expectedNumberOfTabs;
     }, 10000, () => `Actual number of browser tabs "${actualNumberOfTabs}" is different than expected "${expectedNumberOfTabs}"`);
+});
+
+Then('I should see the settings page on the tab {int}', async function(tabIndex: number) {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
+
+    await webdriverHelper.wait(async () => {
+        await webdriverHelper.switchToWindowHandle(tabIndex);
+        const iconElement = webdriver.findElement(By.css('#detail-icon'));
+        const iconSrc = await iconElement.getAttribute('src');
+        const optionsElement = webdriver.findElement(By.css('browser#addon-options'));
+
+        return await optionsElement.isDisplayed() && iconSrc.endsWith('/icons/tab-tower.svg');
+    }, 10000, `The tab "${tabIndex}" is not the settings page`);
 });

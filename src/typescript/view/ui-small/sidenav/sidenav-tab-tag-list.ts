@@ -20,6 +20,7 @@ export class SidenavTabTagList {
     private tabTagFilter: SidenavTabTagFilter;
     private tabTagMap = new Map<string, TabTagEntry>();
     private tabTagList: TabTagEntry[] = [];
+    private noTagMatchesSearchElement: HTMLElement;
     private activeEntryChangeObserverList: ActiveEntryChangeObserver[] = [];
 
     constructor(
@@ -31,12 +32,13 @@ export class SidenavTabTagList {
         private tabTagEntryFactory: TabTagEntryFactory,
         private taskScheduler: TaskScheduler,
     ) {
-        this.tabTagFilter = sidenavTabTagFilterFactory.create(containerElement.querySelector('.filter'));
-
         this.taskScheduler.add(async () => {
             eventBus.subscribe(TabTagCreated, this.onTabTagCreate, this);
             eventBus.subscribe(TabTagDeleted, this.onTabTagDelete, this);
             eventBus.subscribe(TabTagUpdated, this.onTabTagUpdate, this);
+
+            this.noTagMatchesSearchElement = this.createNoTagMatchesSearchElement();
+            this.containerElement.appendChild(this.noTagMatchesSearchElement);
 
             const tagList = await this.queryBus.query(new GetTabTags());
             tagList.sort((a, b) => {
@@ -47,8 +49,17 @@ export class SidenavTabTagList {
                 this.addTabTag(tag, false);
             }
 
+            this.tabTagFilter = sidenavTabTagFilterFactory.create(containerElement.querySelector('.filter'));
             this.tabTagFilter.observeFilterResultRetrieval(this.onTagFilterResultRetrieve.bind(this));
             this.tabTagFilter.observeFilterClear(this.onTagFilterClear.bind(this));
+
+            // TODO
+            const activeTabTagId = (await browser.storage.local.get('active-tab-tag'))['active-tab-tag'] as string;
+            const activeTag = this.tabTagMap.get(activeTabTagId);
+
+            if (activeTag) {
+                await this.enableTag(activeTag);
+            }
         }).executeAll();
 
         containerElement.querySelector('.new-tag-button').addEventListener('click', () => {
@@ -56,14 +67,20 @@ export class SidenavTabTagList {
         });
     }
 
+    private createNoTagMatchesSearchElement() {
+        const element = document.createElement('div');
+        element.classList.add('no-tag-matches-search');
+        element.classList.add('hide');
+        element.textContent = 'No tag matches your search';
+
+        return element;
+    }
+
     private addTabTag(tag: TabTag, sort: boolean) {
         const tagEntry = this.tabTagEntryFactory.create(tag.id, tag.label, tag.colorId);
         tagEntry.observeClick(() => {
-            this.commandBus.handle(new ShowTagTabs(tag.id));
+            this.enableTag(tagEntry);
             this.commandBus.handle(new HideSidenav());
-
-            tagEntry.markAsActive();
-            this.notifyActiveEntryChanged(tagEntry);
         });
 
         if (sort) {
@@ -71,6 +88,17 @@ export class SidenavTabTagList {
         } else {
             this.insertTagEntryAsLastElement(tagEntry);
         }
+
+        return tagEntry;
+    }
+
+    // TODO rename
+    private async enableTag(tagEntry: TabTagEntry) {
+        this.commandBus.handle(new ShowTagTabs(tagEntry.id));
+
+        tagEntry.markAsActive();
+        this.notifyActiveEntryChanged(tagEntry);
+        await browser.storage.local.set({'active-tab-tag': tagEntry.id});
     }
 
     private insertTagEntryElement(tagEntryToInsert: TabTagEntry) {
@@ -130,7 +158,13 @@ export class SidenavTabTagList {
 
     async onTabTagCreate(event: TabTagCreated) {
         this.taskScheduler.add(async () => {
-            this.addTabTag(event.tag, true);
+            const tagEntry = this.addTabTag(event.tag, true);
+
+            if (await this.tabTagFilter.isTabTagSatisfiesFilter(tagEntry.id)) {
+                tagEntry.unhide();
+            } else {
+                tagEntry.hide();
+            }
         }).executeAll();
     }
 
@@ -142,6 +176,12 @@ export class SidenavTabTagList {
                 tagEntry.updateLabel(event.tag.label);
                 tagEntry.updateColor(event.tag.colorId);
                 this.insertTagEntryElement(tagEntry);
+
+                if (await this.tabTagFilter.isTabTagSatisfiesFilter(tagEntry.id)) {
+                    tagEntry.unhide();
+                } else {
+                    tagEntry.hide();
+                }
             }
         }).executeAll();
     }
@@ -170,9 +210,17 @@ export class SidenavTabTagList {
                 tagEntry.hide();
             }
         }
+
+        if (matchingTagIds.length > 0) {
+            this.noTagMatchesSearchElement.classList.add('hide');
+        } else {
+            this.noTagMatchesSearchElement.classList.remove('hide');
+        }
     }
 
     private onTagFilterClear() {
+        this.noTagMatchesSearchElement.classList.add('hide');
+
         for (const tagEntry of this.tabTagList) {
             tagEntry.unhide();
         }

@@ -48,7 +48,7 @@ Feature: Selected tabs actions
 
         Then the selected tabs actions context menu should be visible
 
-        When I click outside of the context menu
+        When I click outside of the tab context menu
 
         Then the selected tabs actions context menu should not be visible
 

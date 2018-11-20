@@ -59,9 +59,8 @@ export class TabTagEntry extends SidenavEntry {
     }
 
     updateColor(colorId: number) {
-        this.colorElement.classList.remove(`color-${this.colorId}`);
         this.colorId = colorId;
-        this.colorElement.classList.add(`color-${colorId}`);
+        this.htmlElement.setAttribute('data-color', '' + colorId);
     }
 
     hide() {

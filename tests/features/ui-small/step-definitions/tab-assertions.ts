@@ -335,7 +335,7 @@ class TabAssertions {
         await this.assertTabTitleTooltip(webdriver, webdriverHelper, tab, testPageDescriptor.title);
         await this.assertTabUrl(webdriver, webdriverHelper, tab, testPageDescriptor.url);
         await this.assertTabDomain(webdriver, webdriverHelper, tab, testPageDescriptor.domain);
-        await this.assertTabFavicon(webdriverHelper, tab, testPageDescriptor.faviconUrl);
+        await this.assertTabFavicon(world, webdriverHelper, tab, testPageDescriptor.faviconUrl);
     }
 
     // TODO remove
@@ -376,6 +376,10 @@ class TabAssertions {
                 return document.querySelector(`#${elementId} .url`).textContent;
             }, tabElementId) as string;
 
+            if ('about:blank' == actualUrl) {
+                actualUrl = 'about:newtab';
+            }
+
             return expectedUrl == actualUrl;
         }, 10000, () => `Tab url "${actualUrl}" is different than expected "${expectedUrl}"`);
     }
@@ -410,6 +414,10 @@ class TabAssertions {
                 return document.querySelector(`#${elementId} .domain`).textContent;
             }, tabElementId) as string;
 
+            if ('about:blank' == actualDomain) {
+                actualDomain = 'about:newtab';
+            }
+
             return expectedDomain == actualDomain;
         }, 10000, () => `Tab domain "${actualDomain}" is different than expected "${expectedDomain}"`);
     }
@@ -436,11 +444,14 @@ class TabAssertions {
         }, 10000, 'Tab url domain is visible');
     }
 
-    static async assertTabFavicon(webdriverHelper: WebdriverHelper, tab: WebElement, expectedFaviconUrl: string) {
+    static async assertTabFavicon(world: World, webdriverHelper: WebdriverHelper, tab: WebElement, expectedFaviconUrl: string) {
         let actualFaviconUrl: string;
         const faviconElement = tab.findElement(By.css('.favicon img'));
+        const testPageDescriptorRetriever = world.testPageDescriptorRetriever;
+
         await webdriverHelper.wait(async () => {
-            actualFaviconUrl = await faviconElement.getAttribute('src');
+            const actualFaviconDataUri = await faviconElement.getAttribute('src');
+            actualFaviconUrl = await testPageDescriptorRetriever.getFaviconUrlFromDataUri(actualFaviconDataUri);
 
             return expectedFaviconUrl == actualFaviconUrl;
         }, 10000, () => `Tab favicon url "${actualFaviconUrl}" is different than expected "${expectedFaviconUrl}"`);

@@ -1630,6 +1630,15 @@ data-uri-to-buffer@1:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/data-uri-to-buffer/-/data-uri-to-buffer-1.2.0.tgz#77163ea9c20d8641b4707e8f18abdf9a78f34835"
 
+datauri@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/datauri/-/datauri-1.1.0.tgz#c6184ff6b928ede4e41ccc23ab954c7839c4fb39"
+  integrity sha512-0q+cTTKx7q8eDteZRIQLTFJuiIsVing17UbWTPssY4JLSMaYsk/VKpNulBDo9NSgQWcvlPrkEHW8kUO67T/7mQ==
+  dependencies:
+    image-size "^0.6.2"
+    mimer "^0.3.2"
+    semver "^5.5.0"
+
 date-fns@^1.23.0:
   version "1.29.0"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.29.0.tgz#12e609cdcb935127311d04d33334e2960a2a54e6"
@@ -3151,6 +3160,11 @@ ignore@^3.1.2, ignore@^3.2.0, ignore@^3.3.3:
   version "3.3.7"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.3.7.tgz#612289bfb3c220e186a58118618d5be8c1bab021"
 
+image-size@^0.6.2:
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/image-size/-/image-size-0.6.3.tgz#e7e5c65bb534bd7cdcedd6cb5166272a85f75fb2"
+  integrity sha512-47xSUiQioGaB96nqtp5/q55m0aBQSQdyIloMOc/x+QVTDZLNmXE892IIDrJ0hM1A5vcNUDD5tDffkSP5lCaIIA==
+
 immediate@~3.0.5:
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/immediate/-/immediate-3.0.6.tgz#9db1dbd0faf8de6fbe0f5dd5e56bb606280de69b"
@@ -4099,6 +4113,11 @@ mime-types@~2.1.18:
 mime@1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.4.1.tgz#121f9ebc49e3766f311a76e1fa1c8003c4b03aa6"
+
+mimer@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/mimer/-/mimer-0.3.2.tgz#0b83aabdf48eaacfd2e093ed4c0ed3d38eda8073"
+  integrity sha512-N6NcgDQAevhP/02DQ/epK6daLy4NKrIHyTlJcO6qBiYn98q+Y4a/knNsAATCe1xLS2F0nEmJp+QYli2s8vKwyQ==
 
 mimic-fn@^1.0.0:
   version "1.1.0"

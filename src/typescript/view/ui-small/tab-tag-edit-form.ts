@@ -74,8 +74,7 @@ export class TabTagEditForm {
         this.titleEditLabelElement.classList.add('hide');
         this.titleCreateLabelElement.classList.remove('hide');
 
-        this.containerElement.classList.add('show');
-        this.labelInput.focus();
+        this.show();
     }
 
     private selectDefaultColor() {
@@ -92,6 +91,12 @@ export class TabTagEditForm {
         }
     }
 
+    private show() {
+        this.containerElement.classList.add('show');
+        this.labelInput.focus();
+        this.labelInput.classList.remove('invalid');
+    }
+
     async showEditForm(command: ShowEditTabTagForm) {
         this.containerElement.classList.add('show');
 
@@ -105,7 +110,7 @@ export class TabTagEditForm {
             this.titleEditLabelElement.classList.remove('hide');
             this.titleCreateLabelElement.classList.add('hide');
 
-            this.labelInput.focus();
+            this.show();
         } else {
             this.hide();
         }
@@ -115,6 +120,12 @@ export class TabTagEditForm {
         const tagId = this.containerElement.getAttribute('data-tag-id');
         const label = this.labelInput.value;
         const colorId = this.getSelectedColorValue();
+
+        if ('' == label) {
+            this.labelInput.classList.add('invalid');
+
+            return;
+        }
 
         if (tagId) {
             this.commandBus.handle(new UpdateTabTag(tagId, label, colorId));

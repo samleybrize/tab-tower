@@ -70,7 +70,6 @@ export class OpenedTabTagAssociationMaintainer {
 
             this.addTagIdListToOpenedTab(command.tabId, [command.tagId]);
             this.addOpenedTabIdToTagIdList(command.tabId, [command.tagId]);
-            console.log('AAA addTabTagToOpenedTab', this.openedTabToTagMap, this.tagToOpenedTabMap); // TODO
             await this.backend.addTabTagToOpenedTab(command.tabId, command.tagId);
 
             this.eventBus.publish(new TabTagAddedToOpenedTab(command.tabId, command.tagId));

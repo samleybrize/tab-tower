@@ -27,6 +27,7 @@ export class TabList {
     private lastSelectorClicked: Tab = null;
     private isScrollAnimationEnabled = true;
     private numberOfSelectedTabsChangeObserverList: NumberOfSelectedTabsChangeObserver[] = [];
+    private requiredTagId: string = null;
 
     constructor(
         public readonly tabListId: string,
@@ -124,6 +125,10 @@ export class TabList {
 
         if (tabToInsert.isSelected()) {
             this.onTabSelectStateChange(tabToInsert.id, true);
+        }
+
+        if (this.requiredTagId) {
+            tabToInsert.showOnlyIfHasTag(this.requiredTagId);
         }
     }
 
@@ -262,12 +267,17 @@ export class TabList {
     }
 
     showOnlyTabsThatHaveTag(tagId: string) {
+        this.requiredTagId = tagId;
+
         for (const tab of this.sortedTabList) {
             tab.showOnlyIfHasTag(tagId);
+            tab.markAsUnselected();
         }
     }
 
     showTabsRegardlessOfTag() {
+        this.requiredTagId = null;
+
         for (const tab of this.sortedTabList) {
             tab.showRegardlessOfTag();
         }

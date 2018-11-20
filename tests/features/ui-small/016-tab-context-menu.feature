@@ -25,7 +25,7 @@ Feature: Tab context menu
 
         Then the context menu of the tab 1 on the tab list "opened-tabs" should be visible
 
-        When I click outside of the context menu
+        When I click outside of the tab context menu
 
         Then the context menu of the tab 1 on the tab list "opened-tabs" should not be visible
 

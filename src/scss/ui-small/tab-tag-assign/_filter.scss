@@ -27,4 +27,15 @@
             pointer-events: none;
         }
     }
+
+    .no-tag-matches-search {
+        padding: 10px 15px;
+        font-size: $tab-title-font-size;
+        color: $tag-label-color;
+        text-align: center;
+
+        &.hide {
+            display: none;
+        }
+    }
 }

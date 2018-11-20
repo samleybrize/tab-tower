@@ -37,6 +37,7 @@ import { SidenavTabTagListFactory } from './ui-small/sidenav/sidenav-tab-tag-lis
 import { TabTagContextMenuFactory } from './ui-small/sidenav/tab-tag-context-menu';
 import { TabTagEntryFactory } from './ui-small/sidenav/tab-tag-entry';
 import { TabTagAssignEntryFactory } from './ui-small/tab-tab-assign/tab-tag-assign-entry';
+import { TabTagAssignFilterFactory } from './ui-small/tab-tab-assign/tab-tag-assign-filter';
 import { TabTagAssignFactory } from './ui-small/tab-tag-assign';
 import { TabTagEditFormFactory } from './ui-small/tab-tag-edit-form';
 import { TabsViewFactory } from './ui-small/tabs-view';
@@ -56,7 +57,6 @@ async function main() {
     const commandBus = new CommandBus(logger);
     const eventBus = new EventBus(logger);
     const queryBus = new QueryBus(logger);
-    const colorManipulator = new ColorManipulator();
 
     let sendMessageCommandHandler: SendMessageCommandHandler;
     let bidirectionalQueryMessageHandler: BidirectionalQueryMessageHandler;
@@ -89,6 +89,7 @@ async function main() {
         queryBus.register(tabQueries.GetOpenedTabById, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
         queryBus.register(tabQueries.GetOpenedTabIdsThatMatchFilter, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
         queryBus.register(tabQueries.GetOpenedTabs, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
+        queryBus.register(tabQueries.GetTabCountForAllTags, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
 
         queryBus.register(tabTagQueries.GetTabTagById, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
         queryBus.register(tabTagQueries.GetTabTagIdsThatMatchFilter, bidirectionalQueryMessageHandler.onQuery, bidirectionalQueryMessageHandler);
@@ -150,7 +151,8 @@ async function main() {
 
         const tabTagEditFormFactory = new TabTagEditFormFactory(commandBus, queryBus);
         const tabTagAssignEntryFactory = new TabTagAssignEntryFactory();
-        const tabTagAssignFactory = new TabTagAssignFactory(commandBus, eventBus, queryBus, tabTagAssignEntryFactory, taskSchedulerFactory);
+        const tabTagAssignFilterFactory = new TabTagAssignFilterFactory(queryBus);
+        const tabTagAssignFactory = new TabTagAssignFactory(commandBus, eventBus, queryBus, tabTagAssignFilterFactory, tabTagAssignEntryFactory, taskSchedulerFactory);
 
         const uiSmall = new UiSmall(tabsViewFactory, sidenavFactory, tabTagEditFormFactory, tabTagAssignFactory);
     }

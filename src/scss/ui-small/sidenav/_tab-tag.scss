@@ -6,13 +6,15 @@
             i {
                 color: inherit;
             }
+        }
 
-            @each $tag-color in $tag-color-list {
-                $id: map-get($tag-color, id);
-                $color: map-get($tag-color, color);
-                $stroke: map-get($tag-color, border);
+        @each $tag-color in $tag-color-list {
+            $id: map-get($tag-color, id);
+            $color: map-get($tag-color, color);
+            $stroke: map-get($tag-color, border);
 
-                &.color-#{$id} {
+            &[data-color='#{$id}'] {
+                .color {
                     color: $color;
                     -webkit-text-stroke: 1px $stroke;
                 }

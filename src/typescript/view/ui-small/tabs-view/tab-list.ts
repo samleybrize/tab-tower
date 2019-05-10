@@ -453,8 +453,12 @@ export class TabList {
             }
 
             const tab = this.tabMap.get(event.tabId);
-            tab.markAsFocused();
 
+            if (tab.isFocused()) {
+                return;
+            }
+
+            tab.markAsFocused();
             this.scrollToTab(tab);
         }).executeAll();
     }

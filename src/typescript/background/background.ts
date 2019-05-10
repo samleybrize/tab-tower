@@ -61,7 +61,7 @@ async function main() {
     const backgroundStateRetriever = new BackgroundStateRetriever();
     queryBus.register(GetBackgroundState, backgroundStateRetriever.queryBackgroundState, backgroundStateRetriever);
 
-    const postUpdateMigrator = new PostUpdateMigrator();
+    const postUpdateMigrator = new PostUpdateMigrator(logger);
     await postUpdateMigrator.migrate();
 
     const nativeTabIdAssociationMaintainer = new NativeTabIdAssociationMaintainerFirefox();

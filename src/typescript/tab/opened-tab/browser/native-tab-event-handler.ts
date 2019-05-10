@@ -87,7 +87,7 @@ export class NativeTabEventHandler implements OpenedTabBackend {
         openedTab.faviconUrl = nativeTab.favIconUrl;
         openedTab.isAudible = !!nativeTab.audible;
         openedTab.isAudioMuted = this.getMutedStateFromNativeMutedInfo(nativeTab.mutedInfo);
-        openedTab.isDiscarded = !!nativeTab.discarded;
+        openedTab.isDiscarded = !!nativeTab.discarded || undefined === nativeTab.isArticle;
         openedTab.isFocused = !!nativeTab.active;
         openedTab.isLoading = 'loading' == nativeTab.status;
         openedTab.isPinned = !!nativeTab.pinned;

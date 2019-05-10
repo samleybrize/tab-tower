@@ -955,6 +955,7 @@ declare namespace browser.tabs {
         id?: number;
         incognito: boolean;
         index: number;
+        isArticle: boolean;
         isInReaderMode: boolean;
         lastAccessed: number;
         mutedInfo?: MutedInfo;

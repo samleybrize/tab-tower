@@ -459,6 +459,7 @@ export class TabList {
             }
 
             tab.markAsFocused();
+            tab.markAsNotDiscarded();
             this.scrollToTab(tab);
         }).executeAll();
     }

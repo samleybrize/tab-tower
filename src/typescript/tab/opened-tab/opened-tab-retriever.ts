@@ -183,6 +183,7 @@ export class OpenedTabRetriever {
 
             if (tab) {
                 tab.isFocused = true;
+                tab.isDiscarded = false;
                 tab.lastAccess = new Date();
             }
         }).executeAll();

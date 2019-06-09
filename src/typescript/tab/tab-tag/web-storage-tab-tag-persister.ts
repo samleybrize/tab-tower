@@ -8,10 +8,11 @@ export class WebStorageTabTagPersister implements TabTagPersister {
         const rawTagsObject = await this.getRawTagsFromStorage();
         const tagList: TabTag[] = [];
 
-        for (const rawTag of rawTagsObject) {
+        for (const entry of Object.entries(rawTagsObject)) {
+            const rawTag = entry[1] as any;
             const settings = new TabTag();
             Object.assign(settings, rawTag);
-            tagList.push(rawTag);
+            tagList.push(rawTag as any);
         }
 
         return tagList;
@@ -20,7 +21,7 @@ export class WebStorageTabTagPersister implements TabTagPersister {
     private async getRawTagsFromStorage(): Promise<any> {
         const storageObject = await browser.storage.local.get(storageKey);
 
-        return storageObject[storageKey] || [];
+        return storageObject[storageKey] || {};
     }
 
     async store(tag: TabTag): Promise<void> {

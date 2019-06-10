@@ -88,7 +88,7 @@ export class NativeTabEventHandler implements OpenedTabBackend {
         openedTab.isAudible = !!nativeTab.audible;
         openedTab.isAudioMuted = this.getMutedStateFromNativeMutedInfo(nativeTab.mutedInfo);
         openedTab.isFocused = !!nativeTab.active;
-        openedTab.isDiscarded = !!nativeTab.discarded || openedTab.isFocused;
+        openedTab.isDiscarded = !!nativeTab.discarded || !openedTab.isFocused;
         openedTab.isLoading = 'loading' == nativeTab.status;
         openedTab.isPinned = !!nativeTab.pinned;
         openedTab.lastAccess = new Date(nativeTab.lastAccessed);

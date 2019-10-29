@@ -21,6 +21,7 @@
     transition: opacity 0.15s ease, transform 0.15s ease;
 
     &.hide {
+        display: none;
         pointer-events: none;
         opacity: 0;
         transform: scaleY(0.2);

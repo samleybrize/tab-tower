@@ -18,6 +18,7 @@
             position: relative;
             display: flex;
             align-items: flex-start;
+            flex-shrink: 0;
             flex-wrap: nowrap;
             padding: $tab-padding;
             overflow-x: hidden;

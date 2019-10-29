@@ -3,7 +3,6 @@ import * as uuid from 'uuid';
 import { EventBus } from '../../../bus/event-bus';
 import { QueryBus } from '../../../bus/query-bus';
 import { Logger } from '../../../logger/logger';
-import { sleep } from '../../../utils/sleep';
 import { TaskScheduler } from '../../../utils/task-scheduler';
 import { OpenedTabAudibleStateUpdated } from '../event/opened-tab-audible-state-updated';
 import { OpenedTabAudioMuteStateUpdated } from '../event/opened-tab-audio-mute-state-updated';
@@ -250,6 +249,17 @@ export class NativeTabEventHandler implements OpenedTabBackend {
                 await this.eventBus.publish(new OpenedTabIsLoading(tabId));
             } else if ('complete' == updateInfo.status) {
                 await this.eventBus.publish(new OpenedTabLoadingIsComplete(tabId));
+
+                // empty favicons seems to not emit an event
+                try {
+                    const faviconUrl = (await browser.tabs.get(nativeTabId)).favIconUrl;
+
+                    if (undefined === faviconUrl) {
+                        updateInfo.favIconUrl = null;
+                    }
+                } catch (error) {
+                    // an error is thrown when the tab is not found
+                }
             }
 
             if (updateInfo.title) {

@@ -1,7 +1,6 @@
 import { EventBus } from '../../../bus/event-bus';
 import { OpenedTabAudibleStateUpdated } from '../../../tab/opened-tab/event/opened-tab-audible-state-updated';
 import { OpenedTabAudioMuteStateUpdated } from '../../../tab/opened-tab/event/opened-tab-audio-mute-state-updated';
-import { OpenedTabClosed } from '../../../tab/opened-tab/event/opened-tab-closed';
 import { OpenedTabDiscardStateUpdated } from '../../../tab/opened-tab/event/opened-tab-discard-state-updated';
 import { OpenedTabFaviconUrlUpdated } from '../../../tab/opened-tab/event/opened-tab-favicon-url-updated';
 import { OpenedTabFocused } from '../../../tab/opened-tab/event/opened-tab-focused';
@@ -14,7 +13,6 @@ import { OpenedTabTitleUpdated } from '../../../tab/opened-tab/event/opened-tab-
 import { OpenedTabUnfocused } from '../../../tab/opened-tab/event/opened-tab-unfocused';
 import { OpenedTabUrlUpdated } from '../../../tab/opened-tab/event/opened-tab-url-updated';
 import { OpenedTab } from '../../../tab/opened-tab/opened-tab';
-import { Counter } from '../../../utils/counter';
 import { TaskScheduler } from '../../../utils/task-scheduler';
 import { Tab, TabFactory } from './tab';
 
@@ -22,7 +20,7 @@ export type NumberOfSelectedTabsChangeObserver = (tabListId: string) => void;
 
 export class TabList {
     private tabMap = new Map<string, Tab>();
-    private sortedTabList: Tab[] = [];
+    private subContainerElement: HTMLElement;
     private noTabMatchesSearchElement: HTMLElement;
     private lastSelectorClicked: Tab = null;
     private isScrollAnimationEnabled = true;
@@ -56,8 +54,17 @@ export class TabList {
 
     async init(openTabList: OpenedTab[]) {
         await this.taskScheduler.add(async () => {
+            this.subContainerElement = document.createElement('div');
+            this.subContainerElement.classList.add('tabs-container');
+            this.containerElement.insertAdjacentElement('afterbegin', this.subContainerElement);
+            const tabPlaceholder = this.containerElement.querySelector('.tab-placeholder');
+
+            if (tabPlaceholder) {
+                this.subContainerElement.insertAdjacentElement('beforeend', tabPlaceholder);
+            }
+
             this.noTabMatchesSearchElement = this.createNoTabMatchesSearchElement();
-            this.containerElement.appendChild(this.noTabMatchesSearchElement);
+            this.subContainerElement.appendChild(this.noTabMatchesSearchElement);
             let focusedTab: Tab;
 
             for (const openedTab of openTabList) {
@@ -75,8 +82,6 @@ export class TabList {
                     this.scrollToTab(focusedTab);
                 }, 1);
             }
-
-            this.reorderSortedTabList();
         }).executeAll();
     }
 
@@ -114,11 +119,8 @@ export class TabList {
             return;
         }
 
-        if (insertAtTabPosition) {
-            this.insertTabAtPosition(tabToInsert, tabToInsert.getPosition());
-        } else {
-            this.insertTabAsLastTab(tabToInsert);
-        }
+        this.tabMap.set(tabToInsert.id, tabToInsert);
+        this.subContainerElement.insertAdjacentElement('beforeend', tabToInsert.htmlElement);
 
         tabToInsert.observeSelectStateChange(this.onTabSelectStateChange.bind(this));
         tabToInsert.observeShiftClick(this.onTabSelectorShiftClick.bind(this));
@@ -132,41 +134,10 @@ export class TabList {
         }
     }
 
-    private insertTabAtPosition(tabToInsert: Tab, targetPosition: number) {
-        this.tabMap.set(tabToInsert.id, tabToInsert);
-        let insertAtTheEnd = true;
-
-        const insertAtIndex = this.sortedTabList.findIndex((tab) => {
-            return tab.id !== tabToInsert.id && tab.getPosition() >= targetPosition;
-        });
-
-        if (insertAtIndex >= 0) {
-            this.sortedTabList[insertAtIndex].htmlElement.insertAdjacentElement('beforebegin', tabToInsert.htmlElement);
-            this.sortedTabList.splice(insertAtIndex, 0, tabToInsert);
-            insertAtTheEnd = false;
-        }
-
-        if (insertAtTheEnd) {
-            this.insertTabAsLastTab(tabToInsert);
-        }
-    }
-
-    private insertTabAsLastTab(tabToInsert: Tab) {
-        this.containerElement.insertAdjacentElement('beforeend', tabToInsert.htmlElement);
-        this.tabMap.set(tabToInsert.id, tabToInsert);
-        this.sortedTabList.push(tabToInsert);
-    }
-
     private scrollToTab(tab: Tab) {
         tab.htmlElement.scrollIntoView({
             behavior: this.isScrollAnimationEnabled ? 'smooth' : 'instant',
             block: 'nearest',
-        });
-    }
-
-    private reorderSortedTabList() {
-        this.sortedTabList.sort((a, b) => {
-            return a.getPosition() > b.getPosition() ? 1 : -1;
         });
     }
 
@@ -191,17 +162,7 @@ export class TabList {
         tabToRemove.htmlElement.remove();
         this.tabMap.delete(openedTabId);
 
-        this.removeTabFromSortedTabList(tabToRemove);
-
         this.onTabSelectStateChange(openedTabId, false);
-    }
-
-    private removeTabFromSortedTabList(tabToRemove: Tab) {
-        const indexInSortedTabList = this.sortedTabList.indexOf(tabToRemove);
-
-        if (indexInSortedTabList >= 0) {
-            this.sortedTabList.splice(indexInSortedTabList, 1);
-        }
     }
 
     filterTabs(tabsToShow: OpenedTab[]) {
@@ -211,7 +172,7 @@ export class TabList {
             showableTabIdList.push(tab.id);
         }
 
-        for (const tab of this.sortedTabList) {
+        for (const tab of this.tabMap.values()) {
             if (showableTabIdList.indexOf(tab.id) >= 0) {
                 tab.markAsNotFilteredOut();
             } else {
@@ -229,7 +190,7 @@ export class TabList {
     unfilterAllTabs() {
         this.noTabMatchesSearchElement.classList.add('hide');
 
-        for (const tab of this.sortedTabList) {
+        for (const tab of this.tabMap.values()) {
             tab.markAsNotFilteredOut();
         }
     }
@@ -269,7 +230,7 @@ export class TabList {
     showOnlyTabsThatHaveTag(tagId: string) {
         this.requiredTagId = tagId;
 
-        for (const tab of this.sortedTabList) {
+        for (const tab of this.tabMap.values()) {
             tab.showOnlyIfHasTag(tagId);
             tab.markAsUnselected();
         }
@@ -278,13 +239,13 @@ export class TabList {
     showTabsRegardlessOfTag() {
         this.requiredTagId = null;
 
-        for (const tab of this.sortedTabList) {
+        for (const tab of this.tabMap.values()) {
             tab.showRegardlessOfTag();
         }
     }
 
     selectAllVisibleTabs() {
-        for (const tab of this.sortedTabList) {
+        for (const tab of this.tabMap.values()) {
             if (!tab.isHidden()) {
                 tab.markAsSelected();
             }
@@ -292,7 +253,7 @@ export class TabList {
     }
 
     unselectAllTabs() {
-        for (const tab of this.sortedTabList) {
+        for (const tab of this.tabMap.values()) {
             tab.markAsUnselected();
         }
     }
@@ -300,7 +261,7 @@ export class TabList {
     getSelectedTabIdList() {
         const tabIdList: string[] = [];
 
-        for (const tab of this.sortedTabList) {
+        for (const tab of this.tabMap.values()) {
             if (tab.isSelected()) {
                 tabIdList.push(tab.id);
             }
@@ -313,7 +274,7 @@ export class TabList {
         // TODO cache
         let numberOfSelectedTabs = 0;
 
-        for (const tab of this.sortedTabList) {
+        for (const tab of this.tabMap.values()) {
             if (tab.isSelected()) {
                 numberOfSelectedTabs++;
             }
@@ -335,7 +296,7 @@ export class TabList {
     }
 
     markAllTabsAsNotBeingMoved() {
-        for (const tab of this.sortedTabList) {
+        for (const tab of this.tabMap.values()) {
             tab.markAsNotBeingMoved();
         }
     }
@@ -343,7 +304,7 @@ export class TabList {
     getBeingMovedTabIdList() {
         const tabIdList: string[] = [];
 
-        for (const tab of this.sortedTabList) {
+        for (const tab of this.tabMap.values()) {
             if (tab.isBeingMoved()) {
                 tabIdList.push(tab.id);
             }
@@ -360,7 +321,7 @@ export class TabList {
                 tab.enableMiddleClick();
             }
         } else {
-            for (const tab of this.sortedTabList) {
+            for (const tab of this.tabMap.values()) {
                 tab.enableMiddleClick();
             }
         }
@@ -374,7 +335,7 @@ export class TabList {
                 tab.disableMiddleClick();
             }
         } else {
-            for (const tab of this.sortedTabList) {
+            for (const tab of this.tabMap.values()) {
                 tab.disableMiddleClick();
             }
         }
@@ -482,8 +443,6 @@ export class TabList {
             }
 
             const tabToMove = this.tabMap.get(event.tabId);
-            this.removeTabFromSortedTabList(tabToMove);
-            this.insertTabAtPosition(tabToMove, event.position);
             tabToMove.setPosition(event.position);
         }).executeAll();
     }
@@ -567,20 +526,28 @@ export class TabList {
     }
 
     private getTabsBetweenTwoId(fromTabId: string, toTabId: string): Tab[] {
-        const fromTab = this.tabMap.get(fromTabId);
-        const toTab = this.tabMap.get(toTabId);
-        let fromIndex = this.sortedTabList.indexOf(fromTab);
-        let toIndex = this.sortedTabList.indexOf(toTab);
+        let fromTab = this.tabMap.get(fromTabId);
+        let toTab = this.tabMap.get(toTabId);
+        let fromPosition = fromTab.getPosition();
+        let toPosition = toTab.getPosition();
         const tabList: Tab[] = [];
 
-        if (fromIndex > toIndex) {
-            const tmpToIndex = toIndex;
-            toIndex = fromIndex;
-            fromIndex = tmpToIndex;
+        if (fromPosition > toPosition) {
+            const tmpToposition = toPosition;
+            const tmpToTab = toTab;
+            toPosition = fromPosition;
+            fromPosition = tmpToposition;
+            toTab = fromTab;
+            fromTab = tmpToTab;
         }
 
-        for (let i = fromIndex; i <= toIndex; i++) {
-            tabList.push(this.sortedTabList[i]);
+        for (const tab of this.tabMap.values()) {
+            if (
+                tab.getPosition() >= fromTab.getPosition()
+                && tab.getPosition() <= toTab.getPosition()
+            ) {
+                tabList.push(tab);
+            }
         }
 
         return tabList;

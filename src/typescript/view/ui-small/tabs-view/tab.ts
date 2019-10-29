@@ -222,6 +222,7 @@ export class Tab {
 
     setPosition(position: number) {
         this.position = position;
+        this.htmlElement.style.order = '' + position;
     }
 
     getPosition() {

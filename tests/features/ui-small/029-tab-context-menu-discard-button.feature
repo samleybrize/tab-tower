@@ -5,6 +5,8 @@ Feature: Tab context menu - Discard button
 
     Scenario: Clicking on a tab context menu discard button should discard the tab
         When I open an empty tab
+        And I focus the tab 1
+        And I focus the tab 0
 
         Then I should see 2 visible tabs on the tab list "opened-tabs"
         And I should not see the tab 0 as discarded on the tab list "opened-tabs"
@@ -18,6 +20,8 @@ Feature: Tab context menu - Discard button
 
     Scenario: Clicking on a pinned tab context menu discard button should discard the tab
         When I open an empty tab
+        And I focus the tab 1
+        And I focus the tab 0
         And I pin the tab 1
 
         Then I should see 1 visible tab on the tab list "opened-tabs"

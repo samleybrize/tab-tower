@@ -130,6 +130,9 @@ Feature: Settings - Tab middle click close
         Given I use the settings UI
 
         When I click on the checkbox of the tab middle click close setting
+
+        Then the tab middle click close setting should not be checked
+
         And I click on the checkbox of the tab middle click close setting
 
         Then the tab middle click close setting should be checked

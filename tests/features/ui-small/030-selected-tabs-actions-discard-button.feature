@@ -6,6 +6,9 @@ Feature: Selected tabs actions - Discard button
     Scenario: Clicking on the selected tabs actions discard button should discard selected tabs
         When I open an empty tab
         And I open an empty tab
+        And I focus the tab 1
+        And I focus the tab 2
+        And I focus the tab 0
 
         Then I should see 3 visible tabs on the tab list "opened-tabs"
         And I should not see the tab 0 as discarded on the tab list "opened-tabs"

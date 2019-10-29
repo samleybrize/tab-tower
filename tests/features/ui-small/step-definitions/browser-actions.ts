@@ -47,17 +47,17 @@ When('I focus the settings UI', async function() {
 });
 
 async function switchToTabWithUrl(webdriver: WebDriver, url: string) {
-    const windowHandleList = await webdriver.getAllWindowHandles();
+    await webdriver.wait(async () => {
+        const windowHandleList = await webdriver.getAllWindowHandles();
 
-    for (const windowHandle of windowHandleList) {
-        await webdriver.switchTo().window(windowHandle);
+        for (const windowHandle of windowHandleList) {
+            await webdriver.switchTo().window(windowHandle);
 
-        if (url == await webdriver.getCurrentUrl()) {
-            return;
+            if (url == await webdriver.getCurrentUrl()) {
+                return true;
+            }
         }
-    }
-
-    throw new Error(`Unable to find a tab with url "${url}"`);
+    }, 10000, `Unable to find a tab with url "${url}"`);
 }
 
 When('I open the small UI', async function() {

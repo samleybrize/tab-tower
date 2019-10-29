@@ -40,10 +40,10 @@ Then('I should see the settings page on the tab {int}', async function(tabIndex:
 
     await webdriverHelper.wait(async () => {
         await webdriverHelper.switchToWindowHandle(tabIndex);
-        const iconElement = webdriver.findElement(By.css('#detail-icon'));
-        const iconSrc = await iconElement.getAttribute('src');
-        const optionsElement = webdriver.findElement(By.css('browser#addon-options'));
+        const param = await webdriver.findElement(By.css('vbox#html-view')).getAttribute('param');
+        const extensionId = world.webdriverRetriever.getFirefoxConfig().getExtensionId();
+        const expectedUrl = `${extensionId}/preferences`;
 
-        return await optionsElement.isDisplayed() && iconSrc.endsWith('/icons/tab-tower.svg');
+        return expectedUrl === param;
     }, 10000, `The tab "${tabIndex}" is not the settings page`);
 });

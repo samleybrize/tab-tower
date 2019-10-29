@@ -42,7 +42,7 @@ Then('the tab middle click close setting should not be checked', async function(
 
     await webdriver.wait(async () => {
         return !await checkboxElement.isSelected();
-    }, 10000, 'The tab middle click close setting is not checked');
+    }, 10000, 'The tab middle click close setting is checked');
 });
 
 Then('the tab close button on hover setting should be checked', async function() {

@@ -64,7 +64,7 @@ Then('the tab close button on hover setting should not be checked', async functi
 
     await webdriver.wait(async () => {
         return !await checkboxElement.isSelected();
-    }, 10000, 'The tab close button on hover setting is not checked');
+    }, 10000, 'The tab close button on hover setting is checked');
 });
 
 Then('the show tab title on several lines setting should be checked', async function() {
@@ -86,7 +86,7 @@ Then('the show tab title on several lines setting should not be checked', async 
 
     await webdriver.wait(async () => {
         return !await checkboxElement.isSelected();
-    }, 10000, 'The show tab title on several lines setting is not checked');
+    }, 10000, 'The show tab title on several lines setting is checked');
 });
 
 Then('the show tab url on several lines setting should be checked', async function() {
@@ -108,7 +108,7 @@ Then('the show tab url on several lines setting should not be checked', async fu
 
     await webdriver.wait(async () => {
         return !await checkboxElement.isSelected();
-    }, 10000, 'The show tab url on several lines setting is not checked');
+    }, 10000, 'The show tab url on several lines setting is checked');
 });
 
 Then('the show tab url setting should be set to "domain only"', async function() {

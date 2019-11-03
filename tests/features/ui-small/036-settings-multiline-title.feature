@@ -24,6 +24,7 @@ Feature: Settings - Multiline title
 
     Scenario: Tab title should be on several lines when the show tab title on several lines setting is checked
         Given I use the settings UI
+        And the show tab title on several lines setting should not be checked
 
         When I open the test page "test-page-with-long-title1"
         And I open the small UI
@@ -33,6 +34,8 @@ Feature: Settings - Multiline title
 
         When I focus the settings UI
         And I click on the checkbox of the show tab title on several lines setting
+
+        Then the show tab title on several lines setting should be checked
 
         When I focus the small UI
 
@@ -44,6 +47,7 @@ Feature: Settings - Multiline title
 
     Scenario: Pinned tab title should be on one line when the show tab title on several lines setting is checked
         Given I use the settings UI
+        And the show tab title on several lines setting should not be checked
 
         When I open the test page "test-page-with-long-title1"
         And I open the small UI
@@ -54,6 +58,8 @@ Feature: Settings - Multiline title
 
         When I focus the settings UI
         And I click on the checkbox of the show tab title on several lines setting
+
+        Then the show tab title on several lines setting should be checked
 
         When I focus the small UI
 
@@ -66,6 +72,7 @@ Feature: Settings - Multiline title
 
     Scenario: Tab title should be on one line when the show tab title on several lines setting is unchecked
         Given I use the settings UI
+        And the show tab title on several lines setting should not be checked
 
         When I open the test page "test-page-with-long-title1"
         And I open the small UI
@@ -75,7 +82,12 @@ Feature: Settings - Multiline title
 
         When I focus the settings UI
         And I click on the checkbox of the show tab title on several lines setting
-        And I click on the checkbox of the show tab title on several lines setting
+
+        Then the show tab title on several lines setting should be checked
+
+        When I click on the checkbox of the show tab title on several lines setting
+
+        Then the show tab title on several lines setting should not be checked
 
         When I focus the small UI
 
@@ -87,6 +99,7 @@ Feature: Settings - Multiline title
 
     Scenario: Pinned tab title should be on one line when the show tab title on several lines setting is unchecked
         Given I use the settings UI
+        And the show tab title on several lines setting should not be checked
 
         When I open the test page "test-page-with-long-title1"
         And I open the small UI
@@ -97,7 +110,12 @@ Feature: Settings - Multiline title
 
         When I focus the settings UI
         And I click on the checkbox of the show tab title on several lines setting
-        And I click on the checkbox of the show tab title on several lines setting
+
+        Then the show tab title on several lines setting should be checked
+
+        When I click on the checkbox of the show tab title on several lines setting
+
+        Then the show tab title on several lines setting should not be checked
 
         When I focus the small UI
 
@@ -110,6 +128,7 @@ Feature: Settings - Multiline title
 
     Scenario: Show tab title on several lines should be checked at startup
         Given I use the settings UI
+        And the show tab title on several lines setting should not be checked
 
         When I click on the checkbox of the show tab title on several lines setting
 
@@ -121,9 +140,13 @@ Feature: Settings - Multiline title
 
     Scenario: Show tab title on several lines should be unchecked at startup
         Given I use the settings UI
+        And the show tab title on several lines setting should not be checked
 
         When I click on the checkbox of the show tab title on several lines setting
-        And I click on the checkbox of the show tab title on several lines setting
+
+        Then the show tab title on several lines setting should be checked
+
+        When I click on the checkbox of the show tab title on several lines setting
 
         Then the show tab title on several lines setting should not be checked
 
@@ -133,6 +156,7 @@ Feature: Settings - Multiline title
 
     Scenario: Show tab title on several lines should be checked on another instance of the settings page
         Given I use the settings UI
+        And the show tab title on several lines setting should not be checked
 
         When I open the settings UI
         And I click on the checkbox of the show tab title on several lines setting
@@ -142,10 +166,14 @@ Feature: Settings - Multiline title
 
     Scenario: Show tab title on several lines should be unchecked on another instance of the settings page
         Given I use the settings UI
+        And the show tab title on several lines setting should not be checked
 
         When I open the settings UI
         And I click on the checkbox of the show tab title on several lines setting
-        And I click on the checkbox of the show tab title on several lines setting
+
+        Then the show tab title on several lines setting should be checked
+
+        When I click on the checkbox of the show tab title on several lines setting
         And I focus the tab 1
 
         Then the show tab title on several lines setting should not be checked

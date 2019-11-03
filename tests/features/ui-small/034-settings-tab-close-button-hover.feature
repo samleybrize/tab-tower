@@ -30,6 +30,7 @@ Feature: Settings - Tab close button on hover
 
     Scenario: Uncheck tab close button on hover setting should prevent the tab close button to be shown on hover
         Given I use the settings UI
+        And the tab close button on hover setting should be checked
 
         When I open the test page "test-page1"
         And I open the small UI
@@ -39,6 +40,8 @@ Feature: Settings - Tab close button on hover
 
         When I focus the settings UI
         And I click on the checkbox of the tab close button on hover setting
+
+        Then the tab close button on hover setting should not be checked
 
         When I focus the small UI
         And I hover the tab 1 on the tab list "opened-tabs"
@@ -52,6 +55,7 @@ Feature: Settings - Tab close button on hover
 
     Scenario: Check tab close button on hover setting should allow the tab close button to be shown on hover
         Given I use the settings UI
+        And the tab close button on hover setting should be checked
 
         When I open the test page "test-page1"
         And I open the small UI
@@ -61,7 +65,12 @@ Feature: Settings - Tab close button on hover
 
         When I focus the settings UI
         And I click on the checkbox of the tab close button on hover setting
-        And I click on the checkbox of the tab close button on hover setting
+
+        Then the tab close button on hover setting should not be checked
+
+        When I click on the checkbox of the tab close button on hover setting
+
+        Then the tab close button on hover setting should be checked
 
         When I focus the small UI
         And I hover the tab 1 on the tab list "opened-tabs"
@@ -75,6 +84,7 @@ Feature: Settings - Tab close button on hover
 
     Scenario: Check tab close button on hover setting should prevent the pinned tab close button to be shown on hover
         Given I use the settings UI
+        And the tab close button on hover setting should be checked
 
         When I open the test page "test-page1"
         And I open the small UI
@@ -85,7 +95,12 @@ Feature: Settings - Tab close button on hover
 
         When I focus the settings UI
         And I click on the checkbox of the tab close button on hover setting
-        And I click on the checkbox of the tab close button on hover setting
+
+        Then the tab close button on hover setting should not be checked
+
+        When I click on the checkbox of the tab close button on hover setting
+
+        Then the tab close button on hover setting should be checked
 
         When I focus the small UI
         And I hover the tab 0 on the tab list "pinned-tabs"
@@ -100,9 +115,13 @@ Feature: Settings - Tab close button on hover
 
     Scenario: Tab close button on hover setting should be checked at startup
         Given I use the settings UI
+        And the tab close button on hover setting should be checked
 
         When I click on the checkbox of the tab close button on hover setting
-        And I click on the checkbox of the tab close button on hover setting
+
+        Then the tab close button on hover setting should not be checked
+
+        When I click on the checkbox of the tab close button on hover setting
 
         Then the tab close button on hover setting should be checked
 
@@ -112,6 +131,7 @@ Feature: Settings - Tab close button on hover
 
     Scenario: Tab close button on hover setting should be unchecked at startup
         Given I use the settings UI
+        And the tab close button on hover setting should be checked
 
         When I click on the checkbox of the tab close button on hover setting
 
@@ -123,16 +143,21 @@ Feature: Settings - Tab close button on hover
 
     Scenario: Tab close button on hover setting should be checked on another instance of the settings page
         Given I use the settings UI
+        And the tab close button on hover setting should be checked
 
         When I open the settings UI
         And I click on the checkbox of the tab close button on hover setting
-        And I click on the checkbox of the tab close button on hover setting
+
+        Then the tab close button on hover setting should not be checked
+
+        When I click on the checkbox of the tab close button on hover setting
         And I focus the tab 1
 
         Then the tab close button on hover setting should be checked
 
     Scenario: Tab close button on hover setting should be unchecked on another instance of the settings page
         Given I use the settings UI
+        And the tab close button on hover setting should be checked
 
         When I open the settings UI
         And I click on the checkbox of the tab close button on hover setting

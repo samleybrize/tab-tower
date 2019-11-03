@@ -32,6 +32,7 @@ Feature: Settings - Tab middle click close
 
     Scenario: Uncheck tab middle click close setting should disable tab middle click close
         Given I use the settings UI
+        And the tab middle click close setting should be checked
 
         When I open the test page "test-page1"
         And I open the small UI
@@ -41,6 +42,8 @@ Feature: Settings - Tab middle click close
 
         When I focus the settings UI
         And I click on the checkbox of the tab middle click close setting
+
+        Then the tab middle click close setting should not be checked
 
         When I focus the small UI
         And I middle click on the tab 1 on the tab list "opened-tabs"
@@ -54,6 +57,7 @@ Feature: Settings - Tab middle click close
 
     Scenario: Uncheck tab middle click close setting should disable pinned tab middle click close
         Given I use the settings UI
+        And the tab middle click close setting should be checked
 
         When I open the test page "test-page1"
         And I open the small UI
@@ -65,6 +69,8 @@ Feature: Settings - Tab middle click close
 
         When I focus the settings UI
         And I click on the checkbox of the tab middle click close setting
+
+        Then the tab middle click close setting should not be checked
 
         When I focus the small UI
         And I middle click on the tab 0 on the tab list "pinned-tabs"
@@ -79,6 +85,7 @@ Feature: Settings - Tab middle click close
 
     Scenario: Check tab middle click close setting should enable tab middle click close
         Given I use the settings UI
+        And the tab middle click close setting should be checked
 
         When I open the test page "test-page1"
         And I open the small UI
@@ -88,7 +95,12 @@ Feature: Settings - Tab middle click close
 
         When I focus the settings UI
         And I click on the checkbox of the tab middle click close setting
-        And I click on the checkbox of the tab middle click close setting
+
+        Then the tab middle click close setting should not be checked
+
+        When I click on the checkbox of the tab middle click close setting
+
+        Then the tab middle click close setting should be checked
 
         When I focus the small UI
         And I middle click on the tab 1 on the tab list "opened-tabs"
@@ -102,6 +114,7 @@ Feature: Settings - Tab middle click close
 
     Scenario: Check tab middle click close setting should enable pinned tab middle click close
         Given I use the settings UI
+        And the tab middle click close setting should be checked
 
         When I open the test page "test-page1"
         And I open the small UI
@@ -113,7 +126,12 @@ Feature: Settings - Tab middle click close
 
         When I focus the settings UI
         And I click on the checkbox of the tab middle click close setting
-        And I click on the checkbox of the tab middle click close setting
+
+        Then the tab middle click close setting should not be checked
+
+        When I click on the checkbox of the tab middle click close setting
+
+        Then the tab middle click close setting should be checked
 
         When I focus the small UI
         And I middle click on the tab 0 on the tab list "pinned-tabs"
@@ -128,6 +146,7 @@ Feature: Settings - Tab middle click close
 
     Scenario: Tab middle click close setting should be checked at startup
         Given I use the settings UI
+        And the tab middle click close setting should be checked
 
         When I click on the checkbox of the tab middle click close setting
 
@@ -143,6 +162,7 @@ Feature: Settings - Tab middle click close
 
     Scenario: Tab middle click close setting should be unchecked at startup
         Given I use the settings UI
+        And the tab middle click close setting should be checked
 
         When I click on the checkbox of the tab middle click close setting
 
@@ -154,16 +174,24 @@ Feature: Settings - Tab middle click close
 
     Scenario: Tab middle click close setting should be checked on another instance of the settings page
         Given I use the settings UI
+        And the tab middle click close setting should be checked
 
         When I open the settings UI
         And I click on the checkbox of the tab middle click close setting
-        And I click on the checkbox of the tab middle click close setting
-        And I focus the tab 1
+
+        Then the tab middle click close setting should not be checked
+
+        When I click on the checkbox of the tab middle click close setting
+
+        Then the tab middle click close setting should be checked
+
+        When I focus the tab 1
 
         Then the tab middle click close setting should be checked
 
     Scenario: Tab middle click close setting should be unchecked on another instance of the settings page
         Given I use the settings UI
+        And the tab middle click close setting should be checked
 
         When I open the settings UI
         And I click on the checkbox of the tab middle click close setting

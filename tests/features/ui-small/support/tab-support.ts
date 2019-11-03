@@ -16,16 +16,28 @@ export class TabSupport {
             includeTabSelector = ':not(.hide)';
         }
 
-        let tab: WebElement;
+        let matchingTab: WebElement;
         await webdriver.wait(async () => {
             let tabList = await webdriver.findElements(By.css(`.tab-list [data-tab-list-id="${tabListId}"] .tab${includeTabSelector}${excludePinnedSelector}`));
             tabList = await this.sortByCssOrder(tabList);
-            tab = tabList[tabPosition];
+            let position = 0;
 
-            return !!tab;
+            for (const tab of tabList) {
+                if ('visible' === condition && !await tab.isDisplayed()) {
+                    continue;
+                } else if (position === tabPosition) {
+                    matchingTab = tab;
+
+                    break;
+                }
+
+                position++;
+            }
+
+            return !!matchingTab;
         }, 10000, `Tab at position ${tabPosition} on tab list "${tabListId}" does not exists`);
 
-        return tab;
+        return matchingTab;
     }
 
     private static async sortByCssOrder(elementList: WebElement[]): Promise<WebElement[]> {

@@ -56,6 +56,7 @@ export class TabsView {
     private currentTabListIndicatorMap = new Map<string, CurrentTabListIndicator>();
     private enabledCurrentTabListIndicator: CurrentTabListIndicator;
     private currentTabListIndicatorContainerElement: HTMLElement;
+    private tabListStylesMap = new Map<string, HTMLElement>();
 
     constructor(
         private containerElement: HTMLElement,
@@ -146,6 +147,16 @@ export class TabsView {
     private createCurrentTabListIndicator(tabListId: string, tabListLabel: string) {
         const currentTabListIndicator = new CurrentTabListIndicator(this.currentTabListIndicatorContainerElement, tabListLabel);
         this.currentTabListIndicatorMap.set(tabListId, currentTabListIndicator);
+
+        const styleElement = document.createElement('style');
+        const headElement = document.querySelector('head');
+        headElement.appendChild(styleElement);
+        styleElement.textContent = `
+            .ui-small [data-show-tag="${tabListId}"] .unpinned-tabs .tab.with-tag-${tabListId} {
+                display: flex;
+            }
+        `;
+        this.tabListStylesMap.set(tabListId, styleElement);
 
         return currentTabListIndicator;
     }
@@ -391,7 +402,6 @@ export class TabsView {
 
         if (existingTab) {
             existingTab.markAsPinned();
-            existingTab.showRegardlessOfTag();
 
             this.openedTabsTabList.removeTab(openedTabId);
             this.pinnedTabsTabList.addTab(existingTab);
@@ -502,15 +512,17 @@ export class TabsView {
     }
 
     async showAllOpenedTabs(command: ShowAllOpenedTabs) {
-        this.openedTabsTabList.showTabsRegardlessOfTag();
+        this.containerElement.classList.remove('tagged-tabs');
+        this.containerElement.removeAttribute('data-show-tag');
         this.enableCurrentTabListIndicator(TabListIds.OPENED_TABS);
     }
 
     async showTagTabs(command: ShowTagTabs) {
-        await this.taskScheduler.add(async () => {
-            this.openedTabsTabList.showOnlyTabsThatHaveTag(command.tagId);
-            this.enableCurrentTabListIndicator(command.tagId);
-        }).executeAll();
+        this.containerElement.classList.add('tagged-tabs');
+        this.containerElement.setAttribute('data-show-tag', command.tagId);
+        this.enableCurrentTabListIndicator(command.tagId);
+        this.openedTabsTabList.unselectAllTabs();
+        this.pinnedTabsTabList.unselectAllTabs();
     }
 
     async onTabTagCreate(event: TabTagCreated) {
@@ -525,6 +537,8 @@ export class TabsView {
         }
 
         this.currentTabListIndicatorMap.delete(event.tag.id);
+        this.tabListStylesMap.get(event.tag.id).remove();
+        this.tabListStylesMap.delete(event.tag.id);
     }
 
     async onTabTagUpdate(event: TabTagUpdated) {

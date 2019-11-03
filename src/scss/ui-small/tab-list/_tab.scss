@@ -129,5 +129,14 @@
                 pointer-events: none;
             }
         }
+
+        &.tagged-tabs {
+            .unpinned-tabs .tab {
+                &,
+                &.hide {
+                    display: none;
+                }
+            }
+        }
     }
 }

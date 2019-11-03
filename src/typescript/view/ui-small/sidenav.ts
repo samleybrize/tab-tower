@@ -15,10 +15,7 @@ export class Sidenav {
     constructor(
         private containerElement: HTMLElement,
         private commandBus: CommandBus,
-        eventBus: EventBus,
-        private queryBus: QueryBus, // TODO still needed?
         sidenavTabTagListFactory: SidenavTabTagListFactory,
-        private taskScheduler: TaskScheduler, // TODO still needed?
     ) {
         const tabTagListElement = this.containerElement.querySelector('.tab-tag-list') as HTMLElement;
         const sidenavTabTagList = sidenavTabTagListFactory.create(tabTagListElement);
@@ -69,10 +66,7 @@ export class Sidenav {
 export class SidenavFactory {
     constructor(
         private commandBus: CommandBus,
-        private eventBus: EventBus,
-        private queryBus: QueryBus,
         private sidenavTabTagListFactory: SidenavTabTagListFactory,
-        private taskSchedulerFactory: TaskSchedulerFactory,
     ) {
     }
 
@@ -80,10 +74,7 @@ export class SidenavFactory {
         return new Sidenav(
             containerElement,
             this.commandBus,
-            this.eventBus,
-            this.queryBus,
             this.sidenavTabTagListFactory,
-            this.taskSchedulerFactory.create(),
         );
     }
 }

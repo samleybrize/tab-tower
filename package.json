@@ -21,12 +21,12 @@
     "awesome-typescript-loader": "^4.0.1",
     "child-process-promise": "^2.2.1",
     "concurrently": "^3.6.0",
-    "cucumber": "^4.2.1",
+    "cucumber": "^5.1.0",
     "express": "^4.16.3",
     "fs-extra": "^6.0.1",
     "node-sass": "^4.13.0",
     "sass-lint": "^1.12.1",
-    "selenium-webdriver": "^4.0.0-alpha.1",
+    "selenium-webdriver": "^4.0.0-alpha.5",
     "semver": "^5.5.0",
     "ts-node": "^6.2.0",
     "tslint": "^5.10.0",
@@ -50,8 +50,11 @@
     "lint:ts": "tslint -p tsconfig.json",
     "lint:sass": "sass-lint -v -q",
     "pretest": "NODE_ENV=test yarn build-extension:firefox",
+    "pretest:rerun": "NODE_ENV=test yarn build-extension:firefox",
     "test": "yarn test:functional",
-    "test:functional": "TS_NODE_PROJECT=tsconfig.test.json cucumber-js --fail-fast -r 'tests/features/ui-small/**/*.ts' --require-module ts-node/register tests/features/ui-small"
+    "test:rerun": "yarn test:functional:rerun",
+    "test:functional": "TS_NODE_PROJECT=tsconfig.test.json cucumber-js -r 'tests/features/ui-small/**/*.ts' -f progress-bar -f summary:functional-tests.log -f rerun:@failed-scenarios --require-module ts-node/register tests/features/ui-small",
+    "test:functional:rerun": "TS_NODE_PROJECT=tsconfig.test.json cucumber-js -r 'tests/features/ui-small/**/*.ts' -f progress-bar --require-module ts-node/register @failed-scenarios"
   },
   "dependencies": {
     "@types/node": "^10.3.6",

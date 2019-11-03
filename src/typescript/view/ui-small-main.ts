@@ -147,7 +147,7 @@ async function main() {
         const tabTagEntryFactory = new TabTagEntryFactory(tabTagContextMenuFactory);
         const sidenavTabTagFilterFactory = new SidenavTabTagFilterFactory(queryBus);
         const sidenavTabTagListFactory = new SidenavTabTagListFactory(commandBus, eventBus, queryBus, sidenavTabTagFilterFactory, tabTagEntryFactory, taskSchedulerFactory);
-        const sidenavFactory = new SidenavFactory(commandBus, eventBus, queryBus, sidenavTabTagListFactory, taskSchedulerFactory);
+        const sidenavFactory = new SidenavFactory(commandBus, sidenavTabTagListFactory);
 
         const tabTagEditFormFactory = new TabTagEditFormFactory(commandBus, queryBus);
         const tabTagAssignEntryFactory = new TabTagAssignEntryFactory();

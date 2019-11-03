@@ -1,5 +1,7 @@
 /.vscode
 /dist
+/@failed-scenarios
+/functional-tests*.log
 /node_modules
 /tests/screenshots/*
 !/tests/screenshots/.gitkeep

@@ -326,10 +326,13 @@ class TabAssertions {
             tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
 
             return this.isTabTitleEqualTo(tab, expectedTitle);
-        }, 10000, async () => {
-            const actualTitle = await this.getTabTitle(tab);
+        }, 15000, async () => {
+            const actualTitle = !!tab && await this.getTabTitle(tab);
 
-            return `Tab title "${actualTitle}" is different than expected "${expectedTitle}"`;
+            return !!tab
+                ? `Tab title "${actualTitle}" is different than expected "${expectedTitle}"`
+                : `Tab at position ${tabPosition} on tab list "${tabListId}" does not exists`
+            ;
         });
 
         await this.assertTabTitleTooltip(webdriver, webdriverHelper, tab, testPageDescriptor.title);

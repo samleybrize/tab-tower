@@ -25,7 +25,6 @@ export class TabList {
     private lastSelectorClicked: Tab = null;
     private isScrollAnimationEnabled = true;
     private numberOfSelectedTabsChangeObserverList: NumberOfSelectedTabsChangeObserver[] = [];
-    private requiredTagId: string = null;
 
     constructor(
         public readonly tabListId: string,
@@ -128,10 +127,6 @@ export class TabList {
         if (tabToInsert.isSelected()) {
             this.onTabSelectStateChange(tabToInsert.id, true);
         }
-
-        if (this.requiredTagId) {
-            tabToInsert.showOnlyIfHasTag(this.requiredTagId);
-        }
     }
 
     private scrollToTab(tab: Tab) {
@@ -224,23 +219,6 @@ export class TabList {
 
         if (tab) {
             tab.removeTag(tagId);
-        }
-    }
-
-    showOnlyTabsThatHaveTag(tagId: string) {
-        this.requiredTagId = tagId;
-
-        for (const tab of this.tabMap.values()) {
-            tab.showOnlyIfHasTag(tagId);
-            tab.markAsUnselected();
-        }
-    }
-
-    showTabsRegardlessOfTag() {
-        this.requiredTagId = null;
-
-        for (const tab of this.tabMap.values()) {
-            tab.showRegardlessOfTag();
         }
     }
 

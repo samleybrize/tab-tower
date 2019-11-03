@@ -196,6 +196,7 @@ export class Tab {
 
     addTag(tagId: string) {
         if (this.tagIdList.indexOf(tagId) < 0) {
+            this.htmlElement.classList.add(`with-tag-${tagId}`); // TODO
             this.tagIdList.push(tagId);
             this.updateVisibility();
         }
@@ -205,19 +206,10 @@ export class Tab {
         const index = this.tagIdList.indexOf(tagId);
 
         if (index) {
+            this.htmlElement.classList.remove(`with-tag-${tagId}`); // TODO
             this.tagIdList.splice(index, 1);
             this.updateVisibility();
         }
-    }
-
-    showOnlyIfHasTag(tagId: string) {
-        this.showOnlyIfTag = tagId;
-        this.updateVisibility();
-    }
-
-    showRegardlessOfTag() {
-        this.showOnlyIfTag = null;
-        this.updateVisibility();
     }
 
     setPosition(position: number) {

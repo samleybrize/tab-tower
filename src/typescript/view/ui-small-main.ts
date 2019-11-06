@@ -21,8 +21,8 @@ import * as tabQueries from '../tab/opened-tab/query';
 import * as tabTagCommands from '../tab/tab-tag/command';
 import * as tabTagEvents from '../tab/tab-tag/event';
 import * as tabTagQueries from '../tab/tab-tag/query';
-import { ColorManipulator } from '../utils/color-maniplator';
 import { ObjectUnserializer } from '../utils/object-unserializer';
+import { PerGroupTaskSchedulerFactory } from '../utils/per-group-task-scheduler';
 import { sleep } from '../utils/sleep';
 import { TaskSchedulerFactory } from '../utils/task-scheduler';
 import { CloseContextMenus } from './components/command/close-context-menus';
@@ -133,6 +133,7 @@ async function main() {
         const detectedBrowser = new DetectedBrowser();
         const contextMenuFactory = new ContextMenuFactory(eventBus);
         const taskSchedulerFactory = new TaskSchedulerFactory(logger);
+        const perTabTaskSchedulerFactory = new PerGroupTaskSchedulerFactory(logger);
 
         const tabContextMenuFactory = new TabContextMenuFactory(commandBus, contextMenuFactory);
         const tabFactory = new TabFactory(detectedBrowser, commandBus, tabContextMenuFactory, defaultFaviconUrl);
@@ -141,7 +142,7 @@ async function main() {
         const newTabButtonFactory = new NewTabButtonFactory(commandBus);
         const selectedTabsActionsContextMenuFactory = new SelectedTabsActionsContextMenuFactory(commandBus, queryBus, contextMenuFactory, document.querySelector('.selected-tabs-actions-context-menu-container'));
         const selectedTabsActionsFactory = new SelectedTabsActionsFactory(selectedTabsActionsContextMenuFactory);
-        const tabsViewFactory = new TabsViewFactory(tabListFactory, tabFilterFactory, newTabButtonFactory, selectedTabsActionsFactory, taskSchedulerFactory, commandBus, eventBus, queryBus);
+        const tabsViewFactory = new TabsViewFactory(tabListFactory, tabFilterFactory, newTabButtonFactory, selectedTabsActionsFactory, perTabTaskSchedulerFactory, commandBus, eventBus, queryBus);
 
         const tabTagContextMenuFactory = new TabTagContextMenuFactory(commandBus, contextMenuFactory);
         const tabTagEntryFactory = new TabTagEntryFactory(tabTagContextMenuFactory);

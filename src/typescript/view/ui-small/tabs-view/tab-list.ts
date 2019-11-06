@@ -13,7 +13,7 @@ import { OpenedTabTitleUpdated } from '../../../tab/opened-tab/event/opened-tab-
 import { OpenedTabUnfocused } from '../../../tab/opened-tab/event/opened-tab-unfocused';
 import { OpenedTabUrlUpdated } from '../../../tab/opened-tab/event/opened-tab-url-updated';
 import { OpenedTab } from '../../../tab/opened-tab/opened-tab';
-import { TaskScheduler } from '../../../utils/task-scheduler';
+import { PerGroupTaskScheduler } from '../../../utils/per-group-task-scheduler';
 import { Tab, TabFactory } from './tab';
 
 export type NumberOfSelectedTabsChangeObserver = (tabListId: string) => void;
@@ -31,7 +31,7 @@ export class TabList {
         public readonly containerElement: HTMLElement,
         private eventBus: EventBus,
         private tabFactory: TabFactory,
-        private taskScheduler: TaskScheduler,
+        private taskScheduler: PerGroupTaskScheduler,
         disableScrollAnimation: boolean,
     ) {
         this.isScrollAnimationEnabled = !disableScrollAnimation;
@@ -52,7 +52,7 @@ export class TabList {
     }
 
     async init(openTabList: OpenedTab[]) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add('init', async () => {
             this.subContainerElement = document.createElement('div');
             this.subContainerElement.classList.add('tabs-container');
             this.containerElement.insertAdjacentElement('afterbegin', this.subContainerElement);
@@ -81,7 +81,7 @@ export class TabList {
                     this.scrollToTab(focusedTab);
                 }, 1);
             }
-        }).executeAll();
+        }).executeAll('init');
     }
 
     private createNoTabMatchesSearchElement() {
@@ -320,73 +320,73 @@ export class TabList {
     }
 
     async onTabLoading(event: OpenedTabIsLoading) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add(event.tabId, async () => {
             if (!this.tabMap.has(event.tabId)) {
                 return;
             }
 
             const tab = this.tabMap.get(event.tabId);
             tab.markAsLoading();
-        }).executeAll();
+        }).executeAll(event.tabId);
     }
 
     async onTabLoadingComplete(event: OpenedTabLoadingIsComplete) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add(event.tabId, async () => {
             if (!this.tabMap.has(event.tabId)) {
                 return;
             }
 
             const tab = this.tabMap.get(event.tabId);
             tab.markAsNotLoading();
-        }).executeAll();
+        }).executeAll(event.tabId);
     }
 
     async onTabAudibleStateUpdate(event: OpenedTabAudibleStateUpdated) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add(event.tabId, async () => {
             if (!this.tabMap.has(event.tabId)) {
                 return;
             }
 
             const tab = this.tabMap.get(event.tabId);
             event.isAudible ? tab.markAsAudible() : tab.markAsNotAudible();
-        }).executeAll();
+        }).executeAll(event.tabId);
     }
 
     async onTabAudioMuteStateUpdate(event: OpenedTabAudioMuteStateUpdated) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add(event.tabId, async () => {
             if (!this.tabMap.has(event.tabId)) {
                 return;
             }
 
             const tab = this.tabMap.get(event.tabId);
             event.isAudioMuted ? tab.markAsAudioMuted() : tab.markAsNotAudioMuted();
-        }).executeAll();
+        }).executeAll(event.tabId);
     }
 
     async onTabDiscardStateUpdate(event: OpenedTabDiscardStateUpdated) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add(event.tabId, async () => {
             if (!this.tabMap.has(event.tabId)) {
                 return;
             }
 
             const tab = this.tabMap.get(event.tabId);
             event.isDiscarded ? tab.markAsDiscarded() : tab.markAsNotDiscarded();
-        }).executeAll();
+        }).executeAll(event.tabId);
     }
 
     async onTabFaviconUrlUpdate(event: OpenedTabFaviconUrlUpdated) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add(event.tabId, async () => {
             if (!this.tabMap.has(event.tabId)) {
                 return;
             }
 
             const tab = this.tabMap.get(event.tabId);
             tab.setFaviconUrl(event.faviconUrl);
-        }).executeAll();
+        }).executeAll(event.tabId);
     }
 
     async onTabFocus(event: OpenedTabFocused) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add(event.tabId, async () => {
             if (!this.tabMap.has(event.tabId)) {
                 return;
             }
@@ -400,73 +400,73 @@ export class TabList {
             tab.markAsFocused();
             tab.markAsNotDiscarded();
             this.scrollToTab(tab);
-        }).executeAll();
+        }).executeAll(event.tabId);
     }
 
     async onTabUnfocus(event: OpenedTabUnfocused) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add(event.tabId, async () => {
             if (!this.tabMap.has(event.tabId)) {
                 return;
             }
 
             const tab = this.tabMap.get(event.tabId);
             tab.markAsNotFocused();
-        }).executeAll();
+        }).executeAll(event.tabId);
     }
 
     async onTabMove(event: OpenedTabMoved) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add(event.tabId, async () => {
             if (!this.tabMap.has(event.tabId)) {
                 return;
             }
 
             const tabToMove = this.tabMap.get(event.tabId);
             tabToMove.setPosition(event.position);
-        }).executeAll();
+        }).executeAll(event.tabId);
     }
 
     async onTabPositionUpdate(event: OpenedTabPositionUpdated) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add(event.tabId, async () => {
             if (!this.tabMap.has(event.tabId)) {
                 return;
             }
 
             const tab = this.tabMap.get(event.tabId);
             tab.setPosition(event.position);
-        }).executeAll();
+        }).executeAll(event.tabId);
     }
 
     async onTabPinStateUpdate(event: OpenedTabPinStateUpdated) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add(event.tabId, async () => {
             if (!this.tabMap.has(event.tabId)) {
                 return;
             }
 
             const tab = this.tabMap.get(event.tabId);
             event.isPinned ? tab.markAsPinned() : tab.markAsNotPinned();
-        }).executeAll();
+        }).executeAll(event.tabId);
     }
 
     async onTabTitleUpdate(event: OpenedTabTitleUpdated) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add(event.tabId, async () => {
             if (!this.tabMap.has(event.tabId)) {
                 return;
             }
 
             const tab = this.tabMap.get(event.tabId);
             tab.setTitle(event.title);
-        }).executeAll();
+        }).executeAll(event.tabId);
     }
 
     async onTabUrlUpdate(event: OpenedTabUrlUpdated) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add(event.tabId, async () => {
             if (!this.tabMap.has(event.tabId)) {
                 return;
             }
 
             const tab = this.tabMap.get(event.tabId);
             tab.setTabUrl(event.url);
-        }).executeAll();
+        }).executeAll(event.tabId);
     }
 
     onTabSelectStateChange(openedTabId: string, isSelected: boolean) {
@@ -536,7 +536,7 @@ export class TabListFactory {
     constructor(private eventBus: EventBus, private tabFactory: TabFactory, private disableScrollAnimation: boolean) {
     }
 
-    create(tabListId: string, containerElement: HTMLElement, taskScheduler: TaskScheduler) {
+    create(tabListId: string, containerElement: HTMLElement, taskScheduler: PerGroupTaskScheduler) {
         return new TabList(tabListId, containerElement, this.eventBus, this.tabFactory, taskScheduler, this.disableScrollAnimation);
     }
 }

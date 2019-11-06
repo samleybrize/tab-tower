@@ -23,7 +23,7 @@ import { TabTagCreated } from '../../tab/tab-tag/event/tab-tag-created';
 import { TabTagDeleted } from '../../tab/tab-tag/event/tab-tag-deleted';
 import { TabTagUpdated } from '../../tab/tab-tag/event/tab-tag-updated';
 import { GetTabTags } from '../../tab/tab-tag/query/get-tab-tags';
-import { TaskScheduler, TaskSchedulerFactory } from '../../utils/task-scheduler';
+import { PerGroupTaskScheduler, PerGroupTaskSchedulerFactory } from '../../utils/per-group-task-scheduler';
 import { Checkbox } from '../components/checkbox';
 import { CloseContextMenus } from '../components/command/close-context-menus';
 import { ShowSidenav } from './sidenav/command/show-sidenav';
@@ -67,7 +67,7 @@ export class TabsView {
         private commandBus: CommandBus,
         eventBus: EventBus,
         private queryBus: QueryBus,
-        private taskScheduler: TaskScheduler,
+        private taskScheduler: PerGroupTaskScheduler,
     ) {
         this.tabFilter = tabFilterFactory.create(containerElement.querySelector('.filter'));
         this.generalTabSelector = new Checkbox(containerElement.querySelector('.general-tab-selector'), 'general-tab-selector', 'unchecked');
@@ -84,7 +84,7 @@ export class TabsView {
         commandBus.register(ShowAllOpenedTabs, this.showAllOpenedTabs, this);
         commandBus.register(ShowTagTabs, this.showTagTabs, this);
 
-        this.taskScheduler.add(async () => {
+        this.taskScheduler.add('init', async () => {
             eventBus.subscribe(TabOpened, this.onTabOpen, this);
             eventBus.subscribe(OpenedTabClosed, this.onTabClose, this);
             eventBus.subscribe(OpenedTabMoved, this.onTabMove, this);
@@ -114,7 +114,7 @@ export class TabsView {
             this.generalTabSelector.observeStateChange(this.onGeneralTabSelectorStateChange.bind(this));
 
             this.applySettings();
-        }).executeAll();
+        }).executeAll('init');
 
         const moveBelowAllButton = containerElement.querySelector('.move-below-all-button');
         moveBelowAllButton.addEventListener('click', () => {
@@ -315,7 +315,7 @@ export class TabsView {
     }
 
     async onTabOpen(event: TabOpened) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add(event.tab.id, async () => {
             if (event.tab.isPinned) {
                 this.pinnedTabsTabList.addTab(event.tab);
             } else {
@@ -339,7 +339,7 @@ export class TabsView {
                     tagIndicator.incrementNumberOfTabs();
                 }
             }
-        }).executeAll();
+        }).executeAll(event.tab.id);
     }
 
     private filterTabOnAllTabLists(tabId: string) {
@@ -359,7 +359,7 @@ export class TabsView {
     }
 
     async onTabClose(event: OpenedTabClosed) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add(event.closedTab.id, async () => {
             this.closeContextMenus();
 
             for (const tabList of this.tabLists) {
@@ -376,17 +376,17 @@ export class TabsView {
                     tagIndicator.decrementNumberOfTabs();
                 }
             }
-        }).executeAll();
+        }).executeAll(event.closedTab.id);
     }
 
     async onTabMove(event: OpenedTabMoved) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add(event.tabId, async () => {
             this.closeContextMenus();
-        }).executeAll();
+        }).executeAll(event.tabId);
     }
 
     async onTabPinStateUpdate(event: OpenedTabPinStateUpdated) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add(event.tabId, async () => {
             if (event.isPinned) {
                 this.addToPinnedTabs(event.tabId);
             } else {
@@ -394,7 +394,7 @@ export class TabsView {
             }
 
             this.closeContextMenus();
-        }).executeAll();
+        }).executeAll(event.tabId);
     }
 
     private addToPinnedTabs(openedTabId: string) {
@@ -420,53 +420,53 @@ export class TabsView {
     }
 
     async onTabTitleUpdate(event: OpenedTabTitleUpdated) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add(event.tabId, async () => {
             if (await this.tabFilter.isTabSatisfiesFilter(event.tabId)) {
                 this.unfilterTabOnAllTabLists(event.tabId);
             } else {
                 this.filterTabOnAllTabLists(event.tabId);
             }
-        }).executeAll();
+        }).executeAll(event.tabId);
     }
 
     async onTabUrlUpdate(event: OpenedTabUrlUpdated) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add(event.tabId, async () => {
             if (await this.tabFilter.isTabSatisfiesFilter(event.tabId)) {
                 this.unfilterTabOnAllTabLists(event.tabId);
             } else {
                 this.filterTabOnAllTabLists(event.tabId);
             }
-        }).executeAll();
+        }).executeAll(event.tabId);
     }
 
     async onCloseTabOnMiddleClickConfigure(event: CloseTabOnMiddleClickConfigured) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add('0', async () => {
             this.setCloseTabOnMiddleClickStatus(event.closeTabOnMiddleClick);
-        }).executeAll();
+        }).executeAll('0');
     }
 
     async onShowCloseButtonOnTabHoverConfigure(event: ShowCloseButtonOnTabHoverConfigured) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add('0', async () => {
             this.setShowCloseButtonOnHoverStatus(event.showCloseButton);
-        }).executeAll();
+        }).executeAll('0');
     }
 
     async onShowTabTitleOnSeveralLinesConfigure(event: ShowTabTitleOnSeveralLinesConfigured) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add('0', async () => {
             this.setShowTabTitleOnSeveralLinesStatus(event.showTabTitleOnSeveralLines);
-        }).executeAll();
+        }).executeAll('0');
     }
 
     async onShowTabUrlOnSeveralLinesConfigure(event: ShowTabUrlOnSeveralLinesConfigured) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add('0', async () => {
             this.setShowTabUrlOnSeveralLinesStatus(event.showTabUrlOnSeveralLines);
-        }).executeAll();
+        }).executeAll('0');
     }
 
     async onTabAddressToShowConfigure(event: TabAddressToShowConfigured) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add('0', async () => {
             this.setTabAddressToShow(event.tabAddressToShow);
-        }).executeAll();
+        }).executeAll('0');
     }
 
     async queryCurrentTabListSelectedTabs(query: GetCurrentTabListSelectedTabs): Promise<string[]> {
@@ -480,9 +480,9 @@ export class TabsView {
     }
 
     async markAllTabsAsNotBeingMoved(command: MarkAllTabsAsNotBeingMoved) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add('0', async () => {
             this.cancelMoveMode();
-        }).executeAll();
+        }).executeAll('0');
     }
 
     private cancelMoveMode() {
@@ -492,23 +492,23 @@ export class TabsView {
     }
 
     async moveTabsMarkedAsBeingMovedAboveTab(command: MoveTabsMarkedAsBeingMovedAboveTab) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add('0', async () => {
             const tabIdListToMove = this.openedTabsTabList.getBeingMovedTabIdList().concat(this.pinnedTabsTabList.getBeingMovedTabIdList());
             this.cancelMoveMode();
             const targetTab = this.openedTabsTabList.getTab(command.tabId) || this.pinnedTabsTabList.getTab(command.tabId);
 
             this.commandBus.handle(new MoveOpenedTabs(tabIdListToMove, targetTab.getPosition()));
-        }).executeAll();
+        }).executeAll('0');
     }
 
     async moveTabsMarkedAsBeingMovedBelowAll(command: MoveTabsMarkedAsBeingMovedBelowAll) {
-        await this.taskScheduler.add(async () => {
+        await this.taskScheduler.add('0', async () => {
             const tabIdListToMove = this.openedTabsTabList.getBeingMovedTabIdList().concat(this.pinnedTabsTabList.getBeingMovedTabIdList());
             this.cancelMoveMode();
             const targetPosition = -1;
 
             this.commandBus.handle(new MoveOpenedTabs(tabIdListToMove, targetPosition));
-        }).executeAll();
+        }).executeAll('0');
     }
 
     async showAllOpenedTabs(command: ShowAllOpenedTabs) {
@@ -574,7 +574,7 @@ export class TabsViewFactory {
         private tabFilterFactory: TabFilterFactory,
         private newTabButtonFactory: NewTabButtonFactory,
         private selectedTabsActionsFactory: SelectedTabsActionsFactory,
-        private taskSchedulerFactory: TaskSchedulerFactory,
+        private taskSchedulerFactory: PerGroupTaskSchedulerFactory,
         private commandBus: CommandBus,
         private eventBus: EventBus,
         private queryBus: QueryBus,
@@ -591,7 +591,7 @@ export class TabsViewFactory {
             this.commandBus,
             this.eventBus,
             this.queryBus,
-            this.taskSchedulerFactory.create(),
+            this.taskSchedulerFactory.create(true),
         );
     }
 }

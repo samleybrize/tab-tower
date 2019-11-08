@@ -1,9 +1,11 @@
 import * as uuid from 'uuid';
 
+import { CommandBus } from '../../../bus/command-bus';
 import { EventBus } from '../../../bus/event-bus';
 import { QueryBus } from '../../../bus/query-bus';
 import { Logger } from '../../../logger/logger';
 import { TaskScheduler } from '../../../utils/task-scheduler';
+import { AddTabTagToOpenedTab } from '../command';
 import { OpenedTabAudibleStateUpdated } from '../event/opened-tab-audible-state-updated';
 import { OpenedTabAudioMuteStateUpdated } from '../event/opened-tab-audio-mute-state-updated';
 import { OpenedTabClosed } from '../event/opened-tab-closed';
@@ -30,6 +32,7 @@ export class NativeTabEventHandler implements OpenedTabBackend {
     private focusedTabMap = new Map<number, string>();
 
     constructor(
+        private commandBus: CommandBus,
         private eventBus: EventBus,
         private queryBus: QueryBus,
         private nativeTabIdAssociationMaintainer: NativeTabIdAssociationMaintainer,
@@ -92,6 +95,16 @@ export class NativeTabEventHandler implements OpenedTabBackend {
         openedTab.isPinned = !!nativeTab.pinned;
         openedTab.lastAccess = new Date(nativeTab.lastAccessed);
         openedTab.tabTagIdList = await this.openedTabTagAssociationMaintainer.getAssociatedTabTagIdList(openedTab.id);
+
+        if (0 === openedTab.tabTagIdList.length && nativeTab.openerTabId) {
+            // add parent's tags to the newly opened tab
+            const parentTabId = await this.getTabIdFromNativeId(nativeTab.openerTabId);
+            openedTab.tabTagIdList = await this.openedTabTagAssociationMaintainer.getAssociatedTabTagIdList(parentTabId);
+
+            for (const tagId of openedTab.tabTagIdList) {
+                this.commandBus.handle(new AddTabTagToOpenedTab(openedTab.id, tagId));
+            }
+        }
 
         return openedTab;
     }

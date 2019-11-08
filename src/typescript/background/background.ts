@@ -67,7 +67,7 @@ async function main() {
     const nativeTabIdAssociationMaintainer = new NativeTabIdAssociationMaintainerFirefox();
     const openedTabTagAssociationBackend = new OpenedTabTagAssociationBackendFirefox(nativeTabIdAssociationMaintainer);
     const openedTabTagAssociationMaintainer = new OpenedTabTagAssociationMaintainer(eventBus, openedTabTagAssociationBackend, new TaskScheduler(logger));
-    const nativeTabEventHandler = new NativeTabEventHandler(eventBus, queryBus, nativeTabIdAssociationMaintainer, openedTabTagAssociationMaintainer, new TaskScheduler(logger), logger);
+    const nativeTabEventHandler = new NativeTabEventHandler(commandBus, eventBus, queryBus, nativeTabIdAssociationMaintainer, openedTabTagAssociationMaintainer, new TaskScheduler(logger), logger);
     const openedTabFilterer = new OpenedTabFilterer(queryBus);
     const openedTabRetriever = new OpenedTabRetriever(nativeTabEventHandler, openedTabFilterer, new TaskScheduler(logger));
 

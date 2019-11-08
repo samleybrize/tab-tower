@@ -152,6 +152,34 @@ Feature: Opened Tab List - By Tag
         And I should see the test page "test-page2" as tab 1 on the tab list "opened-tabs"
         And I should see the test page "test-filter1" as tab 2 on the tab list "opened-tabs"
 
+    Scenario: A newly opened tab should inherit tags from its parent tab
+        When I click on the "go to sidenav" button
+        And I click on the tag 1 on the sidenav
+
+        Then I should see 1 visible tab on the tab list "opened-tabs"
+
+        When I use the tab 2
+        And I click on the link 0
+        And I focus the small UI
+
+        Then I should see 2 visible tabs on the tab list "opened-tabs"
+
+        When I click on the "go to sidenav" button
+        And I click on the tag 0 on the sidenav
+
+        Then I should see 3 visible tabs on the tab list "opened-tabs"
+
+        When I reload the tab 0
+
+        Then I should see 3 visible tabs on the tab list "opened-tabs"
+
+        When I click on the "go to sidenav" button
+        And I click on the tag 1 on the sidenav
+
+        Then I should see 2 visible tabs on the tab list "opened-tabs"
+        And I should see the test page "test-page2" as tab 0 on the tab list "opened-tabs"
+        And I should see the test page "test-filter-with-some-text" as tab 1 on the tab list "opened-tabs"
+
     Scenario: Should show all opened tabs when "All opened tabs" is clicked after selecting a tab
         When I click on the "go to sidenav" button
         And I click on the tag 0 on the sidenav

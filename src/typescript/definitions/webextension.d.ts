@@ -959,7 +959,7 @@ declare namespace browser.tabs {
         isInReaderMode: boolean;
         lastAccessed: number;
         mutedInfo?: MutedInfo;
-        // not supported: openerTabId?: number;
+        openerTabId?: number;
         pinned: boolean;
         selected: boolean;
         sessionId?: string;

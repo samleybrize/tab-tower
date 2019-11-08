@@ -1,5 +1,5 @@
 import { Given, When } from 'cucumber';
-import { WebDriver } from 'selenium-webdriver';
+import { By, WebDriver } from 'selenium-webdriver';
 
 import { TestPageNames } from '../../../webdriver/test-page-descriptor';
 import { World } from '../support/world';
@@ -308,4 +308,12 @@ When('I restore the last recently closed tab', async function() {
             await browser.sessions.restore(sessionId);
         }
     });
+});
+
+When('I click on the link {int}', async function(linkIndex: number) {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const linkElements = await webdriver.findElements(By.css('a'));
+
+    await linkElements[linkIndex].click();
 });

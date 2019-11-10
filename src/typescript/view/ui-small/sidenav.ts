@@ -1,7 +1,4 @@
 import { CommandBus } from '../../bus/command-bus';
-import { EventBus } from '../../bus/event-bus';
-import { QueryBus } from '../../bus/query-bus';
-import { TaskScheduler, TaskSchedulerFactory } from '../../utils/task-scheduler';
 import { HideSidenav } from './sidenav/command/hide-sidenav';
 import { ShowSidenav } from './sidenav/command/show-sidenav';
 import { SidenavEntry } from './sidenav/sidenav-entry';

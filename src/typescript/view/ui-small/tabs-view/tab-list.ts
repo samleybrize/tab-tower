@@ -136,6 +136,10 @@ export class TabList {
         });
     }
 
+    getTotalNumberOfTabs(): number {
+        return this.tabMap.size;
+    }
+
     getTab(openedTabId: string): Tab {
         return this.tabMap.get(openedTabId);
     }
@@ -239,13 +243,22 @@ export class TabList {
     getSelectedTabIdList() {
         const tabIdList: string[] = [];
 
-        for (const tab of this.tabMap.values()) {
+        for (const tab of this.getAllTabsSortedByPosition()) {
             if (tab.isSelected()) {
                 tabIdList.push(tab.id);
             }
         }
 
         return tabIdList;
+    }
+
+    private getAllTabsSortedByPosition() {
+        const tabList = Array.from(this.tabMap.values());
+        tabList.sort((a, b) => {
+            return a.getPosition() > b.getPosition() ? 1 : -1;
+        });
+
+        return tabList;
     }
 
     getNumberOfSelectedTabs() {
@@ -282,7 +295,7 @@ export class TabList {
     getBeingMovedTabIdList() {
         const tabIdList: string[] = [];
 
-        for (const tab of this.tabMap.values()) {
+        for (const tab of this.getAllTabsSortedByPosition()) {
             if (tab.isBeingMoved()) {
                 tabIdList.push(tab.id);
             }

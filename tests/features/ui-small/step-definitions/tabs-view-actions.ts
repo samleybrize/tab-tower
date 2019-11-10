@@ -6,13 +6,15 @@ import { World } from '../support/world';
 When('I click on the "go to sidenav" button', async function() {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
+    const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
 
-    const button = webdriver.findElement(By.css('.tab-list .sidenav-button'));
+    const button = await webdriverHelper.getElementOnceAvailable('.tab-list .sidenav-button');
 
     await TabSupport.clickElementOnceAvailable(
         webdriver,
         button,
         '"go to sidenav" button is not clickable',
+        {name: 'data-init', value: '1'},
     );
 });
 

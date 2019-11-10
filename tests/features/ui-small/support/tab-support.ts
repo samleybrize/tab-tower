@@ -47,14 +47,25 @@ export class TabSupport {
         return comparableArray.map(x => x[1]) as WebElement[];
     }
 
-    static async clickElementOnceAvailable(webdriver: WebDriver, element: WebElement, failMessage: string) {
+    static async clickElementOnceAvailable(webdriver: WebDriver, element: WebElement, failMessage: string, expectedAttribute?: {name: string, value: string}) {
+        if (expectedAttribute) {
+            await webdriver.wait(async () => {
+                const attributeValue = await element.getAttribute(expectedAttribute.name);
+
+                return expectedAttribute.value === attributeValue;
+            }, 10000);
+        }
+
         await webdriver.wait(async () => {
             try {
                 await element.click();
 
                 return true;
             } catch (error) {
-                if (error instanceof WebDriverError.ElementClickInterceptedError) {
+                if (
+                    error instanceof WebDriverError.ElementClickInterceptedError
+                    || error instanceof WebDriverError.ElementNotInteractableError
+                ) {
                     return false;
                 }
             }

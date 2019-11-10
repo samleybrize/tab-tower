@@ -14,6 +14,24 @@ export class WebdriverHelper {
         return webElement.findElement(By.css('option:checked')).getAttribute('value');
     }
 
+    async getElementOnceAvailable(cssSelector: string): Promise<WebElement> {
+        let element: WebElement = null;
+
+        await this.wait(async () => {
+            try {
+                element = await this.webdriver.findElement(By.css(cssSelector));
+
+                return true;
+            } catch (error) {
+                if (error instanceof WebDriverError.NoSuchElementError) {
+                    return false;
+                }
+            }
+        }, 10000);
+
+        return element;
+    }
+
     // allow to use a function that constructs the fail message, this is needed to include some values retrieved from within the wait function
     async wait(condition: any, timeout?: number, errorMessage?: (() => string|Promise<string>)|string) {
         const errorMessageString: string = ('string' == typeof errorMessage) ? errorMessage : null;

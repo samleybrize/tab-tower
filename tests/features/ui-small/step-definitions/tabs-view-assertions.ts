@@ -8,11 +8,10 @@ Then('I should see the current tab list with label {string} and {int} tab(s) ind
     const webdriver = world.webdriverRetriever.getDriver();
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
 
-    const labelElement = webdriver.findElement(By.css('.current-tab-list .name'));
-    const numberOfTabsElement = webdriver.findElement(By.css('.current-tab-list .number-of-tabs'));
 
     let actualLabel: string;
     await webdriverHelper.wait(async () => {
+        const labelElement = webdriver.findElement(By.css('.current-tab-list .name'));
         actualLabel = await labelElement.getText();
 
         return actualLabel === expectedLabel;
@@ -20,6 +19,7 @@ Then('I should see the current tab list with label {string} and {int} tab(s) ind
 
     let actualNumberOfTabs: string;
     await webdriverHelper.wait(async () => {
+        const numberOfTabsElement = webdriver.findElement(By.css('.current-tab-list .number-of-tabs'));
         actualNumberOfTabs = await numberOfTabsElement.getText();
 
         return actualNumberOfTabs === '' + expectedNumberOfTabs;

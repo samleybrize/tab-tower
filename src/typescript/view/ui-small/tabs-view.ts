@@ -130,6 +130,7 @@ export class TabsView {
         showSidenavButton.addEventListener('click', () => {
             this.commandBus.handle(new ShowSidenav());
         });
+        showSidenavButton.setAttribute('data-init', '1'); // needed for functional tests
     }
 
     private async createOpenedTabList() {
@@ -367,7 +368,7 @@ export class TabsView {
             }
 
             this.currentTabListIndicatorMap.get(TabListIds.OPENED_TABS).decrementNumberOfTabs();
-            const tabTagIdList = event.closedTab.tabTagIdList.filter((v, i, a) => a.indexOf(v) === i); // TODO unique values, due to a bug in firefox
+            const tabTagIdList = event.closedTab.tabTagIdList.filter((v, i, a) => a.indexOf(v) === i); // unique values, due to a bug in firefox
 
             for (const tagId of tabTagIdList) {
                 const tagIndicator = this.currentTabListIndicatorMap.get(tagId);
@@ -496,6 +497,11 @@ export class TabsView {
             const tabIdListToMove = this.openedTabsTabList.getBeingMovedTabIdList().concat(this.pinnedTabsTabList.getBeingMovedTabIdList());
             this.cancelMoveMode();
             const targetTab = this.openedTabsTabList.getTab(command.tabId) || this.pinnedTabsTabList.getTab(command.tabId);
+            const totalNumberOfTabs = this.openedTabsTabList.getTotalNumberOfTabs() + this.pinnedTabsTabList.getTotalNumberOfTabs();
+
+            if (totalNumberOfTabs === tabIdListToMove.length) {
+                return;
+            }
 
             this.commandBus.handle(new MoveOpenedTabs(tabIdListToMove, targetTab.getPosition()));
         }).executeAll('0');
@@ -506,23 +512,32 @@ export class TabsView {
             const tabIdListToMove = this.openedTabsTabList.getBeingMovedTabIdList().concat(this.pinnedTabsTabList.getBeingMovedTabIdList());
             this.cancelMoveMode();
             const targetPosition = -1;
+            const totalNumberOfTabs = this.openedTabsTabList.getTotalNumberOfTabs() + this.pinnedTabsTabList.getTotalNumberOfTabs();
+
+            if (totalNumberOfTabs === tabIdListToMove.length) {
+                return;
+            }
 
             this.commandBus.handle(new MoveOpenedTabs(tabIdListToMove, targetPosition));
         }).executeAll('0');
     }
 
     async showAllOpenedTabs(command: ShowAllOpenedTabs) {
-        this.containerElement.classList.remove('tagged-tabs');
-        this.containerElement.removeAttribute('data-show-tag');
-        this.enableCurrentTabListIndicator(TabListIds.OPENED_TABS);
+        this.taskScheduler.add('0', async () => {
+            this.containerElement.classList.remove('tagged-tabs');
+            this.containerElement.removeAttribute('data-show-tag');
+            this.enableCurrentTabListIndicator(TabListIds.OPENED_TABS);
+        }).executeAll('0');
     }
 
     async showTagTabs(command: ShowTagTabs) {
-        this.containerElement.classList.add('tagged-tabs');
-        this.containerElement.setAttribute('data-show-tag', command.tagId);
-        this.enableCurrentTabListIndicator(command.tagId);
-        this.openedTabsTabList.unselectAllTabs();
-        this.pinnedTabsTabList.unselectAllTabs();
+        this.taskScheduler.add('0', async () => {
+            this.containerElement.classList.add('tagged-tabs');
+            this.containerElement.setAttribute('data-show-tag', command.tagId);
+            this.enableCurrentTabListIndicator(command.tagId);
+            this.openedTabsTabList.unselectAllTabs();
+            this.pinnedTabsTabList.unselectAllTabs();
+        }).executeAll('0');
     }
 
     async onTabTagCreate(event: TabTagCreated) {

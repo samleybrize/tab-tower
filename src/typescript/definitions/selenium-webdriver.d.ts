@@ -5,6 +5,7 @@ declare module 'selenium-webdriver' {
 
     namespace error {
         class ElementClickInterceptedError {}
+        class ElementNotInteractableError {}
     }
 
     interface ActionMoveOptions {

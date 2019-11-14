@@ -88,9 +88,13 @@
                 }
             }
 
+            > .audible-icon,
+            > .muted-icon {
+                padding-right: 23px;
+            }
+
             &.audible:not(.muted) {
                 > .audible-icon {
-                    padding-right: 23px;
                     pointer-events: all;
                     opacity: 1;
                     transform: translateX(0);
@@ -99,7 +103,6 @@
 
             &.muted {
                 > .muted-icon {
-                    padding-right: 23px;
                     pointer-events: all;
                     opacity: 1;
                     transform: translateX(0);
@@ -117,16 +120,12 @@
         }
 
         &.no-close-button .unpinned-tabs .tab {
-            &.audible:not(.muted) {
-                > .audible-icon {
-                    padding-right: 5px;
-                }
+            > .audible-icon {
+                padding-right: 5px;
             }
 
-            &.muted {
-                > .muted-icon {
-                    padding-right: 5px;
-                }
+            > .muted-icon {
+                padding-right: 5px;
             }
         }
 

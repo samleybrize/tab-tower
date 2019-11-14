@@ -3,11 +3,6 @@ import { Button, WebElement } from 'selenium-webdriver';
 declare module 'selenium-webdriver' {
     type Origin = 'pointer'|'viewport';
 
-    namespace error {
-        class ElementClickInterceptedError {}
-        class ElementNotInteractableError {}
-    }
-
     interface ActionMoveOptions {
         x?: number;
         y?: number;

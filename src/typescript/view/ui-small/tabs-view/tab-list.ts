@@ -131,7 +131,7 @@ export class TabList {
 
     private scrollToTab(tab: Tab) {
         tab.htmlElement.scrollIntoView({
-            behavior: this.isScrollAnimationEnabled ? 'smooth' : 'instant',
+            behavior: (this.isScrollAnimationEnabled ? 'smooth' : 'instant') as any, // workaround, TypeScript does not allow "instant"
             block: 'nearest',
         });
     }

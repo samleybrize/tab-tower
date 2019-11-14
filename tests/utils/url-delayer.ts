@@ -26,7 +26,7 @@ export class UrlDelayer {
         const app = express();
 
         app.get('/:delay(\\d+)', (request, response) => {
-            const delay = request.params.delay;
+            const delay = +request.params.delay;
 
             setTimeout(() => {
                 response.status(200);

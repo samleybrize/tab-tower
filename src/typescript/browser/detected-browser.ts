@@ -1,14 +1,14 @@
-import { BrowserName, detect as detectBrowser } from 'detect-browser';
+import { Browser, BrowserInfo, detect as detectBrowser } from 'detect-browser';
 
 export class DetectedBrowser {
-    readonly name: BrowserName | 'node';
+    readonly name: Browser | 'node';
     readonly version: string;
     readonly majorVersion: number;
     readonly minorVersion: number;
     readonly patchVersion: number;
 
     constructor() {
-        const detectedBrowser = detectBrowser();
+        const detectedBrowser = detectBrowser() as BrowserInfo;
         this.name = detectedBrowser.name;
         this.version = detectedBrowser.version;
 

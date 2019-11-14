@@ -21,8 +21,9 @@ module.exports = [
             extensions: ['.ts', '.tsx', '.js', '.jsx'],
         },
         devtool: 'sourcemap',
+        mode: 'development',
         module: {
-            loaders: [
+            rules: [
                 {
                     test: /\.tsx?$/,
                     loader: 'awesome-typescript-loader',
@@ -43,8 +44,9 @@ module.exports = [
             extensions: ['.ts', '.tsx', '.js', '.jsx'],
         },
         devtool: 'sourcemap',
+        mode: 'development',
         module: {
-            loaders: [
+            rules: [
                 {
                     test: /\.tsx?$/,
                     loader: 'awesome-typescript-loader',
@@ -65,8 +67,9 @@ module.exports = [
             extensions: ['.ts', '.tsx', '.js', '.jsx'],
         },
         devtool: 'sourcemap',
+        mode: 'development',
         module: {
-            loaders: [
+            rules: [
                 {
                     test: /\.tsx?$/,
                     loader: 'awesome-typescript-loader',

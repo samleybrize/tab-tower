@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Binary, Options, Profile } from 'selenium-webdriver/firefox';
+import { Options } from 'selenium-webdriver/firefox';
 import * as which from 'which';
 
 import { TestsConfig } from '../tests-config';

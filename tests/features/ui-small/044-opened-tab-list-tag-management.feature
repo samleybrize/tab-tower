@@ -185,3 +185,20 @@ Feature: Opened Tab List - Tag Management
         And I click on the selected tabs actions manage tags button
 
         And the tag 0 in the tab tag management view should be checked
+
+    Scenario: Clicking on an unchecked tag should add it to the sticky focused tab
+        When I focus the tab 1
+        And I click on the tab context menu manage tags button of the sticky focused tab
+        And I click on the tag 1 checkbox in the tab tag management view
+        And I click on the tab tag management back button
+        And I click on the tab context menu manage tags button of the tab 1 on the tab list "opened-tabs"
+        When I focus the tab 0
+
+        Then the tag 0 in the tab tag management view should be unchecked
+        And the tag 1 in the tab tag management view should be checked
+
+        When I reload the tab 0
+        And I click on the tab context menu manage tags button of the tab 1 on the tab list "opened-tabs"
+
+        Then the tag 0 in the tab tag management view should be unchecked
+        And the tag 1 in the tab tag management view should be checked

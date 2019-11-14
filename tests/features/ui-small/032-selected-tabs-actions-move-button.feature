@@ -413,7 +413,7 @@ Feature: Selected tabs actions - Move button
         Then I should see the browser's tab 3 as focused
 
     Scenario: The tab list should be scrollable when tabs are being moved
-        Given window height is 300
+        Given window height is 360
 
         When I click on the tab selector of the tab 1 on tab list "opened-tabs"
         And I click on the selected tabs actions move button

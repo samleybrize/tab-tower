@@ -48,6 +48,36 @@ When('I click on the unmute button of the tab {int} on the tab list {string}', a
     );
 });
 
+When('I click on the mute button of the sticky focused tab', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+
+    const tab = await TabSupport.getStickyFocusedTab(webdriver);
+    await webdriver.actions().move({origin: tab}).perform();
+
+    const muteButton = tab.findElement(By.css('.audible-icon'));
+    await TabSupport.clickElementOnceAvailable(
+        webdriver,
+        muteButton,
+        `Mute button of the sticky focused tab is not clickable`,
+    );
+});
+
+When('I click on the unmute button of the sticky focused tab', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+
+    const tab = await TabSupport.getStickyFocusedTab(webdriver);
+    await webdriver.actions().move({origin: tab}).perform();
+
+    const unmuteButton = tab.findElement(By.css('.muted-icon'));
+    await TabSupport.clickElementOnceAvailable(
+        webdriver,
+        unmuteButton,
+        `Unmute button of sticky focused is not clickable`,
+    );
+});
+
 When('I click on the title of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();
@@ -212,6 +242,15 @@ When('I click on the tab context menu manage tags button of the tab {int} on the
     const buttonElement = tab.findElement(By.css('.context-menu .manage-tags-button'));
 
     await clickOnTabContextMenuButton(webdriver, tab, buttonElement, `Tab context menu manage tags button of tab at position ${tabPosition} of tab list "${tabListId}" is not clickable`);
+});
+
+When('I click on the tab context menu manage tags button of the sticky focused tab', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const tab = await TabSupport.getStickyFocusedTab(webdriver);
+    const buttonElement = tab.findElement(By.css('.context-menu .manage-tags-button'));
+
+    await clickOnTabContextMenuButton(webdriver, tab, buttonElement, `Tab context menu manage tags button of the sticky focused tab is not clickable`);
 });
 
 When('I click on the tab context menu move button of the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {

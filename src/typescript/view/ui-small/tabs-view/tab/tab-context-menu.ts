@@ -142,6 +142,10 @@ export class TabContextMenu {
         return this.contextMenu.htmlElement;
     }
 
+    setTabId(openedTabId: string) {
+        this.openedTabId = openedTabId;
+    }
+
     open(targetPosition: Position) {
         this.content.style.maxHeight = (window.innerHeight * 0.33) + 'px';
         this.positionCalculator.setTargetPosition(targetPosition);

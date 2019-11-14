@@ -16,6 +16,7 @@ Feature: Tab context menu - Move button
         And I should see the move above button on the tab 1 on the tab list "opened-tabs"
         And I should see the move above button on the tab 2 on the tab list "opened-tabs"
         And I should see the move above button on the tab 3 on the tab list "opened-tabs"
+        And I should not see the move above button on the sticky focused tab
         And the move below all button should be visible
         And the selected tabs actions button should not be visible
         And the cancel tab move button should be visible
@@ -33,6 +34,7 @@ Feature: Tab context menu - Move button
         And I should see the move above button on the tab 1 on the tab list "pinned-tabs"
         And I should see the move above button on the tab 2 on the tab list "pinned-tabs"
         And I should see the move above button on the tab 0 on the tab list "opened-tabs"
+        And I should not see the move above button on the sticky focused tab
         And the move below all button should be visible
 
     Scenario: Clicking on a tab context menu move button should highlight the tab being moved
@@ -278,7 +280,7 @@ Feature: Tab context menu - Move button
         And I should see the test page "test-filter1" as tab 3 on the tab list "opened-tabs"
 
     Scenario: The tab list should be scrollable when a tab is being moved
-        Given window height is 300
+        Given window height is 360
 
         When I click on the tab context menu move button of the tab 1 on the tab list "opened-tabs"
         And I scroll the unpinned tabs list down

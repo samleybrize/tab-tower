@@ -47,6 +47,10 @@ export class TabSupport {
         return comparableArray.map(x => x[1]) as WebElement[];
     }
 
+    static async getStickyFocusedTab(webdriver: WebDriver) {
+        return webdriver.findElement(By.css('.focused-tab .tab'));
+    }
+
     static async clickElementOnceAvailable(webdriver: WebDriver, element: WebElement, failMessage: string, expectedAttribute?: {name: string, value: string}) {
         if (expectedAttribute) {
             await webdriver.wait(async () => {

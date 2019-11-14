@@ -8,7 +8,6 @@ Then('I should see the current tab list with label {string} and {int} tab(s) ind
     const webdriver = world.webdriverRetriever.getDriver();
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
 
-
     let actualLabel: string;
     await webdriverHelper.wait(async () => {
         const labelElement = webdriver.findElement(By.css('.current-tab-list .name'));

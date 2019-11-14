@@ -46,6 +46,10 @@ export class Checkbox {
         }
     }
 
+    setId(id: string) {
+        this.id = id;
+    }
+
     isChecked() {
         return this.checked;
     }

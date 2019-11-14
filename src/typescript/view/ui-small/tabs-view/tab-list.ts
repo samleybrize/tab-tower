@@ -14,6 +14,7 @@ import { OpenedTabUnfocused } from '../../../tab/opened-tab/event/opened-tab-unf
 import { OpenedTabUrlUpdated } from '../../../tab/opened-tab/event/opened-tab-url-updated';
 import { OpenedTab } from '../../../tab/opened-tab/opened-tab';
 import { PerGroupTaskScheduler } from '../../../utils/per-group-task-scheduler';
+import { ScrollManipulator } from '../../utils/scroll-manipulator';
 import { Tab, TabFactory } from './tab';
 
 export type NumberOfSelectedTabsChangeObserver = (tabListId: string) => void;
@@ -23,19 +24,16 @@ export class TabList {
     private subContainerElement: HTMLElement;
     private noTabMatchesSearchElement: HTMLElement;
     private lastSelectorClicked: Tab = null;
-    private isScrollAnimationEnabled = true;
     private numberOfSelectedTabsChangeObserverList: NumberOfSelectedTabsChangeObserver[] = [];
 
     constructor(
         public readonly tabListId: string,
         public readonly containerElement: HTMLElement,
-        private eventBus: EventBus,
+        eventBus: EventBus,
         private tabFactory: TabFactory,
+        private scrollManipulator: ScrollManipulator,
         private taskScheduler: PerGroupTaskScheduler,
-        disableScrollAnimation: boolean,
     ) {
-        this.isScrollAnimationEnabled = !disableScrollAnimation;
-
         eventBus.subscribe(OpenedTabIsLoading, this.onTabLoading, this);
         eventBus.subscribe(OpenedTabLoadingIsComplete, this.onTabLoadingComplete, this);
         eventBus.subscribe(OpenedTabAudibleStateUpdated, this.onTabAudibleStateUpdate, this);
@@ -78,7 +76,7 @@ export class TabList {
             if (focusedTab) {
                 // avoid incomplete scroll at startup
                 setTimeout(() => {
-                    this.scrollToTab(focusedTab);
+                    this.scrollManipulator.scrollToElement(focusedTab.htmlElement);
                 }, 1);
             }
         }).executeAll('init');
@@ -127,13 +125,6 @@ export class TabList {
         if (tabToInsert.isSelected()) {
             this.onTabSelectStateChange(tabToInsert.id, true);
         }
-    }
-
-    private scrollToTab(tab: Tab) {
-        tab.htmlElement.scrollIntoView({
-            behavior: (this.isScrollAnimationEnabled ? 'smooth' : 'instant') as any, // workaround, TypeScript does not allow "instant"
-            block: 'nearest',
-        });
     }
 
     getTotalNumberOfTabs(): number {
@@ -412,7 +403,6 @@ export class TabList {
 
             tab.markAsFocused();
             tab.markAsNotDiscarded();
-            this.scrollToTab(tab);
         }).executeAll(event.tabId);
     }
 
@@ -546,10 +536,10 @@ export class TabList {
 }
 
 export class TabListFactory {
-    constructor(private eventBus: EventBus, private tabFactory: TabFactory, private disableScrollAnimation: boolean) {
+    constructor(private eventBus: EventBus, private tabFactory: TabFactory, private scrollManipulator: ScrollManipulator) {
     }
 
     create(tabListId: string, containerElement: HTMLElement, taskScheduler: PerGroupTaskScheduler) {
-        return new TabList(tabListId, containerElement, this.eventBus, this.tabFactory, taskScheduler, this.disableScrollAnimation);
+        return new TabList(tabListId, containerElement, this.eventBus, this.tabFactory, this.scrollManipulator, taskScheduler);
     }
 }

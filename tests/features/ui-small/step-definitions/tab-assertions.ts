@@ -25,6 +25,16 @@ Then('I should not see that no tab matches tab search on the tab list {string}',
     await TabAssertions.assertNoTabMatchesTabSearchIsNotVisible(webdriver, tabListId);
 });
 
+Then('I should see the small UI as sticky focused tab', async function() {
+    const world = this as World;
+    await TabAssertions.assertStickyFocusedTab(world, TestPageNames.UI_SMALL);
+});
+
+Then('I should see the test page {string} as sticky focused tab', async function(expectedTestPageName: string) {
+    const world = this as World;
+    await TabAssertions.assertStickyFocusedTab(world, expectedTestPageName);
+});
+
 Then('I should see the small UI as tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
     await TabAssertions.assertTab(world, tabListId, tabPosition, TestPageNames.UI_SMALL);
@@ -93,6 +103,16 @@ Then('I should see the tab {int} as audible on the tab list {string}', async fun
     await TabAssertions.assertTabAudibleIconIsVisible(world, tabListId, tabPosition);
 });
 
+Then('I should not see the sticky focused tab as audible', async function() {
+    const world = this as World;
+    await TabAssertions.assertStickyFocusedTabAudibleIconIsNotVisible(world);
+});
+
+Then('I should see the sticky focused tab as audible', async function() {
+    const world = this as World;
+    await TabAssertions.assertStickyFocusedTabAudibleIconIsVisible(world);
+});
+
 Then('I should not see the tab {int} as muted on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
     await TabAssertions.assertTabMutedIconIsNotVisible(world, tabListId, tabPosition);
@@ -101,6 +121,16 @@ Then('I should not see the tab {int} as muted on the tab list {string}', async f
 Then('I should see the tab {int} as muted on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
     await TabAssertions.assertTabMutedIconIsVisible(world, tabListId, tabPosition);
+});
+
+Then('I should not see the sticky focused tab as muted', async function() {
+    const world = this as World;
+    await TabAssertions.assertStickyFocusedTabMutedIconIsNotVisible(world);
+});
+
+Then('I should see the sticky focused tab as muted', async function() {
+    const world = this as World;
+    await TabAssertions.assertStickyFocusedTabMutedIconIsVisible(world);
 });
 
 Then('I should not see the tab {int} as focused on the tab list {string}', async function(tabPosition: number, tabListId: string) {
@@ -123,6 +153,16 @@ Then('I should see the tab {int} as loading on the tab list {string}', async fun
     await TabAssertions.assertTabIsMarkedAsLoading(world, tabListId, tabPosition);
 });
 
+Then('I should not see the sticky focused tab as loading', async function() {
+    const world = this as World;
+    await TabAssertions.assertStickyFocusedTabIsNotMarkedAsLoading(world);
+});
+
+Then('I should see the sticky focused tab as loading', async function() {
+    const world = this as World;
+    await TabAssertions.assertStickyFocusedTabIsMarkedAsLoading(world);
+});
+
 Then('I should not see the tab {int} as being moved on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
     await TabAssertions.assertTabIsNotMarkedAsBeingMoved(world, tabListId, tabPosition);
@@ -141,6 +181,11 @@ Then('I should not see the tab {int} as selected on the tab list {string}', asyn
 Then('I should see the tab {int} as selected on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
     await TabAssertions.assertTabIsMarkedAsSelected(world, tabListId, tabPosition);
+});
+
+Then('there should not be a visible tab selector on the sticky focused tab', async function() {
+    const world = this as World;
+    await TabAssertions.assertTabSelectorIsNotVisibleOnStickyFocusedTab(world);
 });
 
 Then('I should not see the filtered tab {int} as selected on the tab list {string}', async function(tabPosition: number, tabListId: string) {
@@ -171,6 +216,11 @@ Then('there should not be a visible close button on the tab {int} on the tab lis
 Then('there should be a visible close button on the tab {int} on the tab list {string}', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
     await TabAssertions.assertCloseButtonIsVisible(world, tabListId, tabPosition);
+});
+
+Then('there should not be a visible close button on the sticky focused tab', async function() {
+    const world = this as World;
+    await TabAssertions.assertCloseButtonIsNotVisibleOnStickyFocusedTab(world);
 });
 
 Then('the tab selector of the tab {int} on the tab list {string} should not be visible', async function(tabPosition: number, tabListId: string) {
@@ -248,6 +298,11 @@ Then('I should see the move above button on the tab {int} on the tab list {strin
     await TabAssertions.assertTabMoveAboveButtonIsVisible(world, tabListId, tabPosition);
 });
 
+Then('I should not see the move above button on the sticky focused tab', async function() {
+    const world = this as World;
+    await TabAssertions.assertTabMoveAboveButtonIsNotVisibleOnTheStickyFocusedTab(world);
+});
+
 Then('the tab {int} on the tab list {string} should be visible in the viewport', async function(tabPosition: number, tabListId: string) {
     const world = this as World;
     await TabAssertions.assertUnpinnedTabFullyVisibleInViewport(world, tabListId, tabPosition);
@@ -313,6 +368,30 @@ class TabAssertions {
         await webdriver.wait(async () => {
             return !await noTabMatchesSearchElement.isDisplayed();
         }, 10000, 'The no tab matches tab search message is visible');
+    }
+
+    static async assertStickyFocusedTab(world: World, expectedTestPageName: string) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
+        const testPageDescriptor = world.testPageDescriptorRetriever.getDescriptor(expectedTestPageName as TestPageNames);
+
+        let tab: WebElement;
+        const expectedTitle = testPageDescriptor.title;
+        await webdriverHelper.wait(async () => {
+            tab = await TabSupport.getStickyFocusedTab(webdriver);
+
+            return this.isTabTitleEqualTo(tab, expectedTitle);
+        }, 15000, async () => {
+            const actualTitle = !!tab && await this.getTabTitle(tab);
+
+            return !!tab
+                ? `Sticky focused tab title "${actualTitle}" is different than expected "${expectedTitle}"`
+                : `Sticky focused tab does not exists`
+            ;
+        });
+
+        await this.assertTabTitleTooltip(webdriver, webdriverHelper, tab, testPageDescriptor.title);
+        await this.assertTabFavicon(world, webdriverHelper, tab, testPageDescriptor.faviconUrl);
     }
 
     static async assertTab(world: World, tabListId: string, tabPosition: number, expectedTestPageName: string) {
@@ -504,6 +583,28 @@ class TabAssertions {
         }, 10000, 'Tab audible icon is visible');
     }
 
+    static async assertStickyFocusedTabAudibleIconIsVisible(world: World) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await TabSupport.getStickyFocusedTab(webdriver);
+
+        const audibleElement = tab.findElement(By.css('.audible-icon'));
+
+        await webdriver.wait(async () => {
+            return await audibleElement.isDisplayed();
+        }, 10000, 'Sticky focused tab audible icon is not visible');
+    }
+
+    static async assertStickyFocusedTabAudibleIconIsNotVisible(world: World) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await TabSupport.getStickyFocusedTab(webdriver);
+
+        const audibleElement = tab.findElement(By.css('.audible-icon'));
+
+        await webdriver.wait(async () => {
+            return !await audibleElement.isDisplayed();
+        }, 10000, 'Sticky focused tab audible icon is visible');
+    }
+
     static async assertTabMutedIconIsVisible(world: World, tabListId: string, tabPosition: number) {
         const webdriver = world.webdriverRetriever.getDriver();
         const tab = await this.getTabAtPosition(webdriver, tabListId, tabPosition);
@@ -524,6 +625,28 @@ class TabAssertions {
         await webdriver.wait(async () => {
             return !await mutedElement.isDisplayed();
         }, 10000, 'Tab muted icon is visible');
+    }
+
+    static async assertStickyFocusedTabMutedIconIsVisible(world: World) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await TabSupport.getStickyFocusedTab(webdriver);
+
+        const mutedElement = tab.findElement(By.css('.muted-icon'));
+
+        await webdriver.wait(async () => {
+            return await mutedElement.isDisplayed();
+        }, 10000, 'Sticky focused tab muted icon is not visible');
+    }
+
+    static async assertStickyFocusedTabMutedIconIsNotVisible(world: World) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await TabSupport.getStickyFocusedTab(webdriver);
+
+        const mutedElement = tab.findElement(By.css('.muted-icon'));
+
+        await webdriver.wait(async () => {
+            return !await mutedElement.isDisplayed();
+        }, 10000, 'Sticky focused tab muted icon is visible');
     }
 
     static async assertTabIsMarkedAsFocused(world: World, tabListId: string, tabPosition: number) {
@@ -560,6 +683,24 @@ class TabAssertions {
         await webdriver.wait(async () => {
             return !await TabSupport.hasCssClass(tab, 'loading');
         }, 10000, 'Tab is marked as loading');
+    }
+
+    static async assertStickyFocusedTabIsMarkedAsLoading(world: World) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await TabSupport.getStickyFocusedTab(webdriver);
+
+        await webdriver.wait(async () => {
+            return await TabSupport.hasCssClass(tab, 'loading');
+        }, 10000, 'Sticky focused tab is not marked as loading');
+    }
+
+    static async assertStickyFocusedTabIsNotMarkedAsLoading(world: World) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await TabSupport.getStickyFocusedTab(webdriver);
+
+        await webdriver.wait(async () => {
+            return !await TabSupport.hasCssClass(tab, 'loading');
+        }, 10000, 'Sticky focused tab is marked as loading');
     }
 
     static async assertTabIsMarkedAsBeingMoved(world: World, tabListId: string, tabPosition: number) {
@@ -606,6 +747,20 @@ class TabAssertions {
         await webdriver.wait(async () => {
             return !await tabSelectorContainerElement.isDisplayed() && !await checkboxElement.isSelected();
         }, 10000, 'Tab is marked as selected');
+    }
+
+    static async assertTabSelectorIsNotVisibleOnStickyFocusedTab(world: World) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await TabSupport.getStickyFocusedTab(webdriver);
+        const checkboxElement = tab.findElement(By.css('.tab-selector input'));
+        const tabSelectorContainerElement = tab.findElement(By.css('.tab-selector .checkbox-icon'));
+
+        await webdriver.actions().move({x: 0, y: 0}).perform();
+        await sleep(200);
+
+        if (await tabSelectorContainerElement.isDisplayed()) {
+            throw new Error(`Tab selector of sticky focused tab is visible`);
+        }
     }
 
     static async assertFilteredTabIsMarkedAsSelected(world: World, tabListId: string, tabPosition: number) {
@@ -671,6 +826,20 @@ class TabAssertions {
 
         if (!await closeButton.isDisplayed()) {
             throw new Error(`Close button of tab at position ${tabPosition} of tab list "${tabListId}" is not visible`);
+        }
+    }
+
+    static async assertCloseButtonIsNotVisibleOnStickyFocusedTab(world: World) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await TabSupport.getStickyFocusedTab(webdriver);
+
+        await webdriver.actions().move({origin: tab}).perform();
+        await sleep(200);
+
+        const closeButton = tab.findElement(By.css('.close-button'));
+
+        if (await closeButton.isDisplayed()) {
+            throw new Error(`Close button of sticky focused tab is visible`);
         }
     }
 
@@ -873,6 +1042,16 @@ class TabAssertions {
         await webdriver.wait(async () => {
             return await buttonElement.isDisplayed();
         }, 10000, 'Tab move above button is not visible');
+    }
+
+    static async assertTabMoveAboveButtonIsNotVisibleOnTheStickyFocusedTab(world: World) {
+        const webdriver = world.webdriverRetriever.getDriver();
+        const tab = await TabSupport.getStickyFocusedTab(webdriver);
+        const buttonElement = tab.findElement(By.css('.move-above-button'));
+
+        await webdriver.wait(async () => {
+            return !await buttonElement.isDisplayed();
+        }, 10000, 'Sticky focused tab move above button is visible');
     }
 
     static async assertTabTitleIsNotClickable(world: World, tabListId: string, tabPosition: number) {

@@ -130,6 +130,12 @@
             }
         }
 
+        .focused-tab {
+            .tab {
+                background-color: $focused-tab-background-color;
+            }
+        }
+
         &.tagged-tabs {
             .unpinned-tabs .tab {
                 &,

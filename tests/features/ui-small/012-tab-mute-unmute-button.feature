@@ -62,3 +62,27 @@ Feature: Tab mute and unmute buttons
         Then I should see the tab 0 as audible on the tab list "pinned-tabs"
         Then I should not see the tab 1 as muted on the tab list "pinned-tabs"
         Then I should not see the tab 1 as audible on the tab list "pinned-tabs"
+
+    Scenario: Clicking on the sticky focused tab mute button should mute its associated tab
+        When I focus the tab 1
+        And I click on the mute button of the sticky focused tab
+        And I focus the tab 0
+
+        Then I should not see the tab 0 as muted on the tab list "opened-tabs"
+        And I should see the tab 1 as muted on the tab list "opened-tabs"
+        And I should not see the tab 2 as muted on the tab list "opened-tabs"
+
+    Scenario: Clicking on the sticky focused tab unmute button should unmute its associated tab
+        When I focus the tab 1
+        And I click on the mute button of the sticky focused tab
+        And I focus the tab 0
+
+        Then I should see the tab 1 as muted on the tab list "opened-tabs"
+
+        When I focus the tab 1
+        And I click on the unmute button of the sticky focused tab
+        And I focus the tab 0
+
+        Then I should not see the tab 0 as muted on the tab list "opened-tabs"
+        And I should not see the tab 1 as muted on the tab list "opened-tabs"
+        And I should not see the tab 2 as muted on the tab list "opened-tabs"

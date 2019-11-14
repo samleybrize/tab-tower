@@ -4,7 +4,8 @@
             > .close-button,
             > .audible-icon,
             > .muted-icon,
-            > .pin-icon {
+            > .pin-icon,
+            > .focused-tab-icon {
                 position: absolute;
                 top: 0;
                 right: 0;
@@ -40,7 +41,8 @@
 
             > .audible-icon,
             > .muted-icon,
-            > .pin-icon {
+            > .pin-icon,
+            > .focused-tab-icon {
                 background-color: $tab-background-color;
 
                 i {
@@ -56,7 +58,8 @@
             &.context-menu-visible {
                 > .audible-icon,
                 > .muted-icon,
-                > .pin-icon {
+                > .pin-icon,
+                > .focused-tab-icon {
                     background-color: $tab-hover-background-color;
                 }
             }
@@ -65,7 +68,8 @@
                 > .close-button,
                 > .audible-icon,
                 > .muted-icon,
-                > .pin-icon {
+                > .pin-icon,
+                > .focused-tab-icon {
                     background-color: $active-tab-background-color;
                 }
             }
@@ -74,7 +78,8 @@
                 > .close-button,
                 > .audible-icon,
                 > .muted-icon,
-                > .pin-icon {
+                > .pin-icon,
+                > .focused-tab-icon {
                     background-color: $selected-tab-background-color;
                 }
             }
@@ -83,7 +88,8 @@
                 > .close-button,
                 > .audible-icon,
                 > .muted-icon,
-                > .pin-icon {
+                > .pin-icon,
+                > .focused-tab-icon {
                     background-color: $highlighted-tab-background-color;
                 }
             }
@@ -129,7 +135,7 @@
             }
         }
 
-        &:not(.no-close-button):not(.move-mode) .tab:not(.context-menu-visible):hover {
+        &:not(.no-close-button):not(.move-mode) :not(.focused-tab) > .tab:not(.context-menu-visible):hover {
             > .close-button {
                 pointer-events: all;
                 opacity: 1;
@@ -147,6 +153,20 @@
             > .pin-icon {
                 opacity: 1;
                 transform: translateX(0);
+            }
+        }
+
+        .focused-tab .tab {
+            > .focused-tab-icon {
+                background-color: $focused-tab-background-color;
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            > .audible-icon,
+            > .muted-icon {
+                padding-right: 29px;
+                background-color: $focused-tab-background-color;
             }
         }
 

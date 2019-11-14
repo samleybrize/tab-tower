@@ -238,3 +238,7 @@ Feature: Tab selecting
         And I hover the tab 1 on the tab list "opened-tabs"
 
         Then I should not see the favicon of the tab 1 on the tab list "opened-tabs"
+
+    Scenario: Tab selector should not be visible on the sticky focused tab
+        Then I should see 1 visible tab on the tab list "opened-tabs"
+        And there should not be a visible tab selector on the sticky focused tab

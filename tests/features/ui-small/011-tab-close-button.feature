@@ -39,3 +39,7 @@ Feature: Tab close button
         Then I should see 1 visible tab on the tab list "opened-tabs"
         And I should see 1 visible tab on the tab list "pinned-tabs"
         And there should not be a visible close button on the tab 0 on the tab list "pinned-tabs"
+
+    Scenario: Sticky focused tab should not have a close button
+        Then I should see 1 visible tab on the tab list "opened-tabs"
+        And there should not be a visible close button on the sticky focused tab

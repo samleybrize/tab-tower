@@ -49,6 +49,7 @@ import { TabFilterFactory } from './ui-small/tabs-view/tab-filter';
 import { TabListFactory } from './ui-small/tabs-view/tab-list';
 import { TabContextMenuFactory } from './ui-small/tabs-view/tab/tab-context-menu';
 import { UiSmall } from './ui-small/ui-small';
+import { ScrollManipulator } from './utils/scroll-manipulator';
 
 const defaultFaviconUrl = '/ui/images/default-favicon.svg';
 
@@ -134,15 +135,16 @@ async function main() {
         const contextMenuFactory = new ContextMenuFactory(eventBus);
         const taskSchedulerFactory = new TaskSchedulerFactory(logger);
         const perTabTaskSchedulerFactory = new PerGroupTaskSchedulerFactory(logger);
+        const scrollManipulator = new ScrollManipulator(!window.isTestEnvironment);
 
         const tabContextMenuFactory = new TabContextMenuFactory(commandBus, contextMenuFactory);
         const tabFactory = new TabFactory(detectedBrowser, commandBus, tabContextMenuFactory, defaultFaviconUrl);
         const tabFilterFactory = new TabFilterFactory(queryBus);
-        const tabListFactory = new TabListFactory(eventBus, tabFactory, !!window.isTestEnvironment);
+        const tabListFactory = new TabListFactory(eventBus, tabFactory, scrollManipulator);
         const newTabButtonFactory = new NewTabButtonFactory(commandBus);
         const selectedTabsActionsContextMenuFactory = new SelectedTabsActionsContextMenuFactory(commandBus, queryBus, contextMenuFactory, document.querySelector('.selected-tabs-actions-context-menu-container'));
         const selectedTabsActionsFactory = new SelectedTabsActionsFactory(selectedTabsActionsContextMenuFactory);
-        const tabsViewFactory = new TabsViewFactory(tabListFactory, tabFilterFactory, newTabButtonFactory, selectedTabsActionsFactory, perTabTaskSchedulerFactory, commandBus, eventBus, queryBus);
+        const tabsViewFactory = new TabsViewFactory(tabListFactory, tabFactory, tabFilterFactory, newTabButtonFactory, selectedTabsActionsFactory, perTabTaskSchedulerFactory, commandBus, eventBus, queryBus, scrollManipulator);
 
         const tabTagContextMenuFactory = new TabTagContextMenuFactory(commandBus, contextMenuFactory);
         const tabTagEntryFactory = new TabTagEntryFactory(tabTagContextMenuFactory);

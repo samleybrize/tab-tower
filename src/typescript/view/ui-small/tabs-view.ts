@@ -9,7 +9,13 @@ import { TabAddressToShowConfigured } from '../../settings/event/tab-address-to-
 import { GetSettings } from '../../settings/query/get-settings';
 import { TabAddressTypes } from '../../settings/settings';
 import { MoveOpenedTabs } from '../../tab/opened-tab/command/move-opened-tabs';
+import { OpenedTabAudibleStateUpdated } from '../../tab/opened-tab/event/opened-tab-audible-state-updated';
+import { OpenedTabAudioMuteStateUpdated } from '../../tab/opened-tab/event/opened-tab-audio-mute-state-updated';
 import { OpenedTabClosed } from '../../tab/opened-tab/event/opened-tab-closed';
+import { OpenedTabFaviconUrlUpdated } from '../../tab/opened-tab/event/opened-tab-favicon-url-updated';
+import { OpenedTabFocused } from '../../tab/opened-tab/event/opened-tab-focused';
+import { OpenedTabIsLoading } from '../../tab/opened-tab/event/opened-tab-is-loading';
+import { OpenedTabLoadingIsComplete } from '../../tab/opened-tab/event/opened-tab-loading-is-complete';
 import { OpenedTabMoved } from '../../tab/opened-tab/event/opened-tab-moved';
 import { OpenedTabPinStateUpdated } from '../../tab/opened-tab/event/opened-tab-pin-state-updated';
 import { OpenedTabTitleUpdated } from '../../tab/opened-tab/event/opened-tab-title-updated';
@@ -26,6 +32,7 @@ import { GetTabTags } from '../../tab/tab-tag/query/get-tab-tags';
 import { PerGroupTaskScheduler, PerGroupTaskSchedulerFactory } from '../../utils/per-group-task-scheduler';
 import { Checkbox } from '../components/checkbox';
 import { CloseContextMenus } from '../components/command/close-context-menus';
+import { ScrollManipulator } from '../utils/scroll-manipulator';
 import { ShowSidenav } from './sidenav/command/show-sidenav';
 import { MarkAllTabsAsNotBeingMoved } from './tabs-view/command/mark-all-tabs-as-not-being-moved';
 import { MarkTabsAsBeingMoved } from './tabs-view/command/mark-tabs-as-being-moved';
@@ -37,6 +44,7 @@ import { CurrentTabListIndicator } from './tabs-view/current-tab-list';
 import { NewTabButton, NewTabButtonFactory } from './tabs-view/new-tab-button';
 import { GetCurrentTabListSelectedTabs } from './tabs-view/query/get-current-tab-list-selected-tabs';
 import { SelectedTabsActions, SelectedTabsActionsFactory } from './tabs-view/selected-tabs-actions';
+import { Tab, TabFactory } from './tabs-view/tab';
 import { TabFilter, TabFilterFactory } from './tabs-view/tab-filter';
 import { TabList, TabListFactory } from './tabs-view/tab-list';
 
@@ -52,6 +60,7 @@ export class TabsView {
     private selectedTabsActions: SelectedTabsActions;
     private openedTabsTabList: TabList;
     private pinnedTabsTabList: TabList;
+    private stickyFocusedTab: Tab;
     private tabLists: TabList[] = [];
     private currentTabListIndicatorMap = new Map<string, CurrentTabListIndicator>();
     private enabledCurrentTabListIndicator: CurrentTabListIndicator;
@@ -61,6 +70,7 @@ export class TabsView {
     constructor(
         private containerElement: HTMLElement,
         private tabListFactory: TabListFactory,
+        tabFactory: TabFactory,
         tabFilterFactory: TabFilterFactory,
         newTabButtonFactory: NewTabButtonFactory,
         selectedTabsActionsFactory: SelectedTabsActionsFactory,
@@ -68,6 +78,7 @@ export class TabsView {
         eventBus: EventBus,
         private queryBus: QueryBus,
         private taskScheduler: PerGroupTaskScheduler,
+        private scrollManipulator: ScrollManipulator,
     ) {
         this.tabFilter = tabFilterFactory.create(containerElement.querySelector('.filter'));
         this.generalTabSelector = new Checkbox(containerElement.querySelector('.general-tab-selector'), 'general-tab-selector', 'unchecked');
@@ -86,7 +97,13 @@ export class TabsView {
 
         this.taskScheduler.add('init', async () => {
             eventBus.subscribe(TabOpened, this.onTabOpen, this);
+            eventBus.subscribe(OpenedTabIsLoading, this.onTabLoading, this);
+            eventBus.subscribe(OpenedTabLoadingIsComplete, this.onTabLoadingComplete, this);
+            eventBus.subscribe(OpenedTabAudibleStateUpdated, this.onTabAudibleStateUpdate, this);
+            eventBus.subscribe(OpenedTabAudioMuteStateUpdated, this.onTabAudioMuteStateUpdate, this);
             eventBus.subscribe(OpenedTabClosed, this.onTabClose, this);
+            eventBus.subscribe(OpenedTabFaviconUrlUpdated, this.onTabFaviconUrlUpdate, this);
+            eventBus.subscribe(OpenedTabFocused, this.onTabFocus, this);
             eventBus.subscribe(OpenedTabMoved, this.onTabMove, this);
             eventBus.subscribe(OpenedTabPinStateUpdated, this.onTabPinStateUpdate, this);
             eventBus.subscribe(OpenedTabTitleUpdated, this.onTabTitleUpdate, this);
@@ -103,6 +120,12 @@ export class TabsView {
             eventBus.subscribe(ShowTabTitleOnSeveralLinesConfigured, this.onShowTabTitleOnSeveralLinesConfigure, this);
             eventBus.subscribe(ShowTabUrlOnSeveralLinesConfigured, this.onShowTabUrlOnSeveralLinesConfigure, this);
             eventBus.subscribe(TabAddressToShowConfigured, this.onTabAddressToShowConfigure, this);
+
+            this.stickyFocusedTab = tabFactory.create('focused');
+            this.stickyFocusedTab.observeClickOnTitle(() => {
+                this.scrollToFocusedTab();
+            });
+            containerElement.querySelector('.focused-tab').append(this.stickyFocusedTab.htmlElement);
 
             await this.createOpenedTabList();
             this.enableCurrentTabListIndicator(TabListIds.OPENED_TABS);
@@ -172,6 +195,15 @@ export class TabsView {
                 pinnedTabsTabList.push(openedTab);
             } else {
                 unpinnedTabsTabList.push(openedTab);
+            }
+
+            if (openedTab.isFocused) {
+                this.stickyFocusedTab.id = openedTab.id;
+                this.stickyFocusedTab.setTitle(openedTab.title);
+                this.stickyFocusedTab.setFaviconUrl(openedTab.faviconUrl);
+                openedTab.isAudible ? this.stickyFocusedTab.markAsAudible() : this.stickyFocusedTab.markAsNotAudible();
+                openedTab.isAudioMuted ? this.stickyFocusedTab.markAsAudioMuted() : this.stickyFocusedTab.markAsNotAudioMuted();
+                openedTab.isLoading ? this.stickyFocusedTab.markAsLoading() : this.stickyFocusedTab.markAsNotLoading();
             }
         }
 
@@ -394,6 +426,10 @@ export class TabsView {
                 this.removeFromPinnedTabs(event.tabId);
             }
 
+            if (event.tabId === this.stickyFocusedTab.id) {
+                event.isPinned ? this.stickyFocusedTab.markAsPinned() : this.stickyFocusedTab.markAsNotPinned();
+            }
+
             this.closeContextMenus();
         }).executeAll(event.tabId);
     }
@@ -420,6 +456,22 @@ export class TabsView {
         }
     }
 
+    async onTabLoading(event: OpenedTabIsLoading) {
+        await this.taskScheduler.add('focused-tab', async () => {
+            if (event.tabId === this.stickyFocusedTab.id) {
+                this.stickyFocusedTab.markAsLoading();
+            }
+        }).executeAll('focused-tab');
+    }
+
+    async onTabLoadingComplete(event: OpenedTabLoadingIsComplete) {
+        await this.taskScheduler.add('focused-tab', async () => {
+            if (event.tabId === this.stickyFocusedTab.id) {
+                this.stickyFocusedTab.markAsNotLoading();
+            }
+        }).executeAll('focused-tab');
+    }
+
     async onTabTitleUpdate(event: OpenedTabTitleUpdated) {
         await this.taskScheduler.add(event.tabId, async () => {
             if (await this.tabFilter.isTabSatisfiesFilter(event.tabId)) {
@@ -428,6 +480,48 @@ export class TabsView {
                 this.filterTabOnAllTabLists(event.tabId);
             }
         }).executeAll(event.tabId);
+
+        await this.taskScheduler.add('focused-tab', async () => {
+            if (event.tabId === this.stickyFocusedTab.id) {
+                this.stickyFocusedTab.setTitle(event.title);
+            }
+        }).executeAll('focused-tab');
+    }
+
+    async onTabFaviconUrlUpdate(event: OpenedTabFaviconUrlUpdated) {
+        await this.taskScheduler.add('focused-tab', async () => {
+            if (event.tabId === this.stickyFocusedTab.id) {
+                this.stickyFocusedTab.setFaviconUrl(event.faviconUrl);
+            }
+        }).executeAll('focused-tab');
+    }
+
+    async onTabFocus(event: OpenedTabFocused) {
+        await this.taskScheduler.add(event.tabId, async () => {
+            const tab = this.openedTabsTabList.getTab(event.tabId) || this.pinnedTabsTabList.getTab(event.tabId);
+
+            if (tab) {
+                this.scrollManipulator.scrollToElement(tab.htmlElement);
+            }
+        }).executeAll(event.tabId);
+
+        await this.taskScheduler.add('focused-tab', async () => {
+            const focusedTab = this.openedTabsTabList.getTab(event.tabId) || this.pinnedTabsTabList.getTab(event.tabId);
+            this.stickyFocusedTab.id = event.tabId;
+            this.stickyFocusedTab.setTitle(focusedTab.getTitle());
+            this.stickyFocusedTab.setFaviconUrl(focusedTab.getFaviconUrl());
+            focusedTab.isAudible() ? this.stickyFocusedTab.markAsAudible() : this.stickyFocusedTab.markAsNotAudible();
+            focusedTab.isAudioMuted() ? this.stickyFocusedTab.markAsAudioMuted() : this.stickyFocusedTab.markAsNotAudioMuted();
+            focusedTab.isLoading() ? this.stickyFocusedTab.markAsLoading() : this.stickyFocusedTab.markAsNotLoading();
+        }).executeAll('focused-tab');
+    }
+
+    private scrollToFocusedTab() {
+        const tab = this.openedTabsTabList.getTab(this.stickyFocusedTab.id);
+
+        if (tab) {
+            this.scrollManipulator.scrollToElement(tab.htmlElement);
+        }
     }
 
     async onTabUrlUpdate(event: OpenedTabUrlUpdated) {
@@ -438,6 +532,18 @@ export class TabsView {
                 this.filterTabOnAllTabLists(event.tabId);
             }
         }).executeAll(event.tabId);
+    }
+
+    async onTabAudibleStateUpdate(event: OpenedTabAudibleStateUpdated) {
+        await this.taskScheduler.add('focused-tab', async () => {
+            event.isAudible ? this.stickyFocusedTab.markAsAudible() : this.stickyFocusedTab.markAsNotAudible();
+        }).executeAll('focused-tab');
+    }
+
+    async onTabAudioMuteStateUpdate(event: OpenedTabAudioMuteStateUpdated) {
+        await this.taskScheduler.add('focused-tab', async () => {
+            event.isAudioMuted ? this.stickyFocusedTab.markAsAudioMuted() : this.stickyFocusedTab.markAsNotAudioMuted();
+        }).executeAll('focused-tab');
     }
 
     async onCloseTabOnMiddleClickConfigure(event: CloseTabOnMiddleClickConfigured) {
@@ -586,6 +692,7 @@ export class TabsView {
 export class TabsViewFactory {
     constructor(
         private tabListFactory: TabListFactory,
+        private tabFactory: TabFactory,
         private tabFilterFactory: TabFilterFactory,
         private newTabButtonFactory: NewTabButtonFactory,
         private selectedTabsActionsFactory: SelectedTabsActionsFactory,
@@ -593,6 +700,7 @@ export class TabsViewFactory {
         private commandBus: CommandBus,
         private eventBus: EventBus,
         private queryBus: QueryBus,
+        private scrollManipulator: ScrollManipulator,
     ) {
     }
 
@@ -600,6 +708,7 @@ export class TabsViewFactory {
         return new TabsView(
             containerElement,
             this.tabListFactory,
+            this.tabFactory,
             this.tabFilterFactory,
             this.newTabButtonFactory,
             this.selectedTabsActionsFactory,
@@ -607,6 +716,7 @@ export class TabsViewFactory {
             this.eventBus,
             this.queryBus,
             this.taskSchedulerFactory.create(true),
+            this.scrollManipulator,
         );
     }
 }

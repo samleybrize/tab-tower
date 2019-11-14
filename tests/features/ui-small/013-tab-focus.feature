@@ -17,7 +17,7 @@ Feature: Tab focus
         And I should not see the tab 2 as focused on the tab list "opened-tabs"
 
     Scenario: Clicking on a tab title should scroll it in the viewport
-        Given window height is 300
+        Given window height is 360
 
         When I open the test page "test-filter1"
 

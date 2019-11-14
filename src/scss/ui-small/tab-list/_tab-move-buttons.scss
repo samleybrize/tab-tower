@@ -57,7 +57,7 @@
 
         &.move-mode {
             .move-below-all-button,
-            .move-above-button {
+            :not(.focused-tab) > .tab .move-above-button {
                 pointer-events: all;
                 opacity: 1;
                 transform: scale(1);

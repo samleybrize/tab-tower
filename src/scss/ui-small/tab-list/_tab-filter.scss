@@ -2,21 +2,41 @@
     .filter {
         position: relative;
 
-        .search-icon {
+        .search-icon,
+        .clear-icon {
             position: absolute;
             bottom: 4px;
             left: 5px;
             color: $tab-filter-icon-color;
-            cursor: pointer;
 
             i {
                 font-size: 20px;
             }
+        }
 
-            .arrow {
-                position: relative;
-                left: -4px;
-                font-size: 10px;
+        .clear-icon {
+            right: 5px;
+            left: auto;
+            transform: translateX(0);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+
+            i {
+                display: inline-block;
+                padding: 1px;
+                font-size: 16px;
+                cursor: pointer;
+                border-radius: 3px;
+                transition: background-color 0.3s ease;
+
+                &:hover {
+                    background-color: $tab-filter-icon-hover-background-color;
+                }
+            }
+
+            &.hide {
+                pointer-events: none;
+                opacity: 0;
+                transform: translateX(20px);
             }
         }
 
@@ -25,7 +45,8 @@
             width: 100%;
             height: 35px;
             padding: 5px;
-            padding-left: 40px;
+            padding-right: 30px;
+            padding-left: 30px;
             background: $tab-filter-background-color;
             border: none;
             border-bottom: 1px solid $tab-filter-border-bottom-color;

@@ -34,6 +34,19 @@ When('I delete all characters in the tab filter input', async function() {
     await inputElement.clear();
 });
 
+When('I click on the clear tab filter button', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+
+    const inputElement = webdriver.findElement(By.css('.tab-list .filter .clear-icon'));
+
+    await TabSupport.clickElementOnceAvailable(
+        webdriver,
+        inputElement,
+        'Clear tab filter button is not clickable',
+    );
+});
+
 When('I click on the general tab selector', async function() {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();

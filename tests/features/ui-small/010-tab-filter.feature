@@ -61,6 +61,19 @@ Feature: Tab filter
         And I should not see that no tab matches tab search on the tab list "pinned-tabs"
         And I should see the current tab list with label "All opened tabs" and 5 tabs indicated
 
+    Scenario: Should ignore tabs with an empty title
+        When I open the test page "test-filter-without-title"
+
+        Then I should see 6 visible tabs on the tab list "opened-tabs"
+
+        When I type "azerty qwerty" in the tab filter input
+
+        Then I should see 2 visible tabs on the tab list "opened-tabs"
+        And I should see the test page "test-filter-with-some-text" as tab 0 on the tab list "opened-tabs"
+        And I should see the test page "test-filter-with-other-text" as tab 1 on the tab list "opened-tabs"
+        And I should not see that no tab matches tab search on the tab list "opened-tabs"
+        And I should see the current tab list with label "All opened tabs" and 6 tabs indicated
+
     Scenario: Should filter opened tabs by url on input with one word
         When I type "some" in the tab filter input
 

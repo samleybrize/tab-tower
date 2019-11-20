@@ -16,6 +16,7 @@ export enum TestPageNames {
     TEST_FILTER_1 = 'test-filter1',
     TEST_PAGE_WITH_NOT_FOUND_FAVICON = 'test-page-with-not-found-favicon',
     TEST_PAGE_WITHOUT_FAVICON = 'test-page-without-favicon',
+    TEST_FILTER_WITHOUT_TITLE = 'test-filter-without-title',
     TEST_PAGE_WITH_FAVICON_401 = 'test-page-with-favicon-401',
     TEST_PAGE_WITH_LONG_TITLE1 = 'test-page-with-long-title1',
     TEST_PAGE_WITH_LONG_TITLE2 = 'test-page-with-long-title2',
@@ -116,6 +117,13 @@ export class TestPageDescriptorRetriever {
             name: TestPageNames.TEST_PAGE_WITHOUT_FAVICON,
             title: 'Test page without favicon',
             url: firefoxConfig.getExtensionUrl('/tests/resources/test-page-without-favicon.html'),
+            domain: firefoxConfig.getExtensionInternalId(),
+            faviconUrl: this.firefoxConfig.getExtensionUrl(TestPageFavicons.DEFAULT),
+        });
+        this.addDescriptor({
+            name: TestPageNames.TEST_FILTER_WITHOUT_TITLE,
+            title: '',
+            url: firefoxConfig.getExtensionUrl('/tests/resources/test-filter-without-title.html'),
             domain: firefoxConfig.getExtensionInternalId(),
             faviconUrl: this.firefoxConfig.getExtensionUrl(TestPageFavicons.DEFAULT),
         });

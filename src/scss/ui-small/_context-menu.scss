@@ -29,6 +29,7 @@
     }
 
     &.instant-show {
+        display: block;
         opacity: 0.01;
         transform: none;
         transition: none;

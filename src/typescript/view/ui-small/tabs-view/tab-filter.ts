@@ -1,4 +1,3 @@
-import { EventBus } from '../../../bus/event-bus';
 import { QueryBus } from '../../../bus/query-bus';
 import { OpenedTab } from '../../../tab/opened-tab/opened-tab';
 import { GetOpenedTabIdsThatMatchFilter } from '../../../tab/opened-tab/query/get-opened-tab-ids-that-match-filter';
@@ -10,18 +9,20 @@ type TabFilterClearObserver = () => void;
 
 export class TabFilter {
     private filterInputElement: HTMLInputElement;
+    private clearInputElement: HTMLElement;
     private filterClearObserverList: TabFilterClearObserver[] = [];
     private filterResultObserverList: TabFilterResultObserver[] = [];
     private previousFilterText: string = '';
 
     constructor(containerElement: HTMLElement, private queryBus: QueryBus) {
         this.filterInputElement = containerElement.querySelector('.filter-input');
+        this.clearInputElement = containerElement.querySelector('.clear-icon');
     }
 
     public async init() {
         let timeoutReference: number = null;
 
-        this.filterInputElement.addEventListener('input', (event) => {
+        this.filterInputElement.addEventListener('input', () => {
             if (timeoutReference) {
                 clearTimeout(timeoutReference);
             }
@@ -29,6 +30,11 @@ export class TabFilter {
             timeoutReference = setTimeout(this.onFilterInputChange.bind(this), 300);
         });
         this.filterInputElement.addEventListener('change', this.onFilterInputChange.bind(this));
+
+        this.clearInputElement.addEventListener('click', () => {
+            this.filterInputElement.value = '';
+            this.onFilterInputChange();
+        });
 
         // needed, otherwise the prefilled-text might not be found at browser start
         await sleep(100);
@@ -49,6 +55,7 @@ export class TabFilter {
 
         if ('' === filterText) {
             this.notifyFilterClear();
+            this.clearInputElement.classList.add('hide');
 
             return;
         }
@@ -60,6 +67,7 @@ export class TabFilter {
             matchOnUrl: true,
         }));
         this.notifyFilterResultRetrieved(matchingTabs);
+        this.clearInputElement.classList.remove('hide');
     }
 
     private notifyFilterClear() {

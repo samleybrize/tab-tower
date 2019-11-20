@@ -25,6 +25,26 @@ Then('I should see the current tab list with label {string} and {int} tab(s) ind
     }, 10000, () => `Current tab list number of tabs "${actualNumberOfTabs}" is different than expected "${expectedNumberOfTabs}"`);
 });
 
+Then('I should see the clear tab filter button', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const clearInputElement = webdriver.findElement(By.css('.tab-list .filter .clear-icon'));
+
+    await webdriver.wait(async () => {
+        return await clearInputElement.isDisplayed();
+    }, 10000, 'Tab filter button is not visible');
+});
+
+Then('I should not see the clear tab filter button', async function() {
+    const world = this as World;
+    const webdriver = world.webdriverRetriever.getDriver();
+    const clearInputElement = webdriver.findElement(By.css('.tab-list .filter .clear-icon'));
+
+    await webdriver.wait(async () => {
+        return !await clearInputElement.isDisplayed();
+    }, 10000, 'Tab filter button is visible');
+});
+
 Then('the general tab selector should not be checked', async function() {
     const world = this as World;
     const webdriver = world.webdriverRetriever.getDriver();

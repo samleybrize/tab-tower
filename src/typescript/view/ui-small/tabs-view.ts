@@ -663,11 +663,13 @@ export class TabsView {
     }
 
     async onTabTagUpdate(event: TabTagUpdated) {
-        const tabListIndicator = this.currentTabListIndicatorMap.get(event.tag.id);
+        this.taskScheduler.add(event.tag.id, async () => {
+            const tabListIndicator = this.currentTabListIndicatorMap.get(event.tag.id);
 
-        if (tabListIndicator) {
-            tabListIndicator.setLabel(event.tag.label);
-        }
+            if (tabListIndicator) {
+                tabListIndicator.setLabel(event.tag.label);
+            }
+        }).executeAll(event.tag.id);
     }
 
     async onTabTagAddedToOpenedTab(event: TabTagAddedToOpenedTab) {

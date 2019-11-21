@@ -14,9 +14,13 @@ export class TabFilter {
     private filterResultObserverList: TabFilterResultObserver[] = [];
     private previousFilterText: string = '';
 
-    constructor(containerElement: HTMLElement, private queryBus: QueryBus) {
+    constructor(containerElement: HTMLElement, private queryBus: QueryBus, private filterValueStorageKey?: string) {
         this.filterInputElement = containerElement.querySelector('.filter-input');
         this.clearInputElement = containerElement.querySelector('.clear-icon');
+
+        if (undefined === this.filterValueStorageKey) {
+            this.filterValueStorageKey = 'tab-filter';
+        }
     }
 
     public async init() {
@@ -41,11 +45,14 @@ export class TabFilter {
 
         if (this.filterInputElement.value) {
             this.onFilterInputChange();
+        } else {
+            await this.setInputValueFromLocalStorage();
         }
     }
 
     private async onFilterInputChange() {
         const filterText = '' + this.filterInputElement.value;
+        this.setLocalStorageFilterText(filterText);
 
         if (filterText == this.previousFilterText) {
             return;
@@ -105,6 +112,28 @@ export class TabFilter {
 
     observeFilterResultRetrieval(observer: TabFilterResultObserver) {
         this.filterResultObserverList.push(observer);
+    }
+
+    private async setInputValueFromLocalStorage() {
+        const savedValue = await this.getFilterTextFromLocalStorage();
+
+        if (savedValue) {
+            this.filterInputElement.value = savedValue;
+            this.onFilterInputChange();
+        }
+    }
+
+    private async getFilterTextFromLocalStorage() {
+        const storageObject = await browser.storage.local.get(this.filterValueStorageKey);
+
+        return storageObject[this.filterValueStorageKey] as string;
+    }
+
+    private async setLocalStorageFilterText(filterText: string) {
+        const persistObject: any = {};
+        persistObject[this.filterValueStorageKey] = filterText;
+
+        await browser.storage.local.set(persistObject);
     }
 }
 

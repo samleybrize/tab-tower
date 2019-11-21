@@ -118,19 +118,26 @@ When('the tab {int} navigates to the test page {string}', async function(tabPosi
 });
 
 When('I reload the tab {int}', async function(tabPositionToReload: number) {
-    const world = this as World;
+    await reloadTab(this as World, tabPositionToReload, false);
+});
+
+When('I reload the tab {int} with no cache', async function(tabPositionToReload: number) {
+    await reloadTab(this as World, tabPositionToReload, true);
+});
+
+async function reloadTab(world: World, tabPositionToReload: number, bypassCache: boolean) {
     const webdriver = world.webdriverRetriever.getDriver();
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
 
-    const tabIdToReload = await webdriverHelper.executeScript(async (index: number) => {
+    const tabIdToReload = await webdriverHelper.executeScript(async (index: number, reloadProperties: any) => {
         const tabToReload = await browser.tabs.query({index});
 
         if (tabToReload) {
-            await browser.tabs.reload(tabToReload[0].id, {bypassCache: false});
+            await browser.tabs.reload(tabToReload[0].id, reloadProperties);
         }
 
         return tabToReload[0].id;
-    }, [tabPositionToReload]);
+    }, [tabPositionToReload, {bypassCache}]);
 
     await webdriver.wait(async () => {
         const tab = await webdriverHelper.executeScript(async (tabId: number) => {
@@ -141,7 +148,7 @@ When('I reload the tab {int}', async function(tabPositionToReload: number) {
             return true;
         }
     }, 10000, `Tab at position "${tabPositionToReload}" is still loading`);
-});
+}
 
 When('the tab {int} is not loading anymore', async function(tabPosition: number) {
     const world = this as World;

@@ -58,6 +58,7 @@ Feature: Opened Tab List - By Tag With Filter
         And I use the tab 4
         And I click on the "go to sidenav" button
         And I click on "all opened tabs" on the sidenav
+        And I delete all characters in the tab filter input
 
         Then I should not see the sidenav
 
@@ -78,6 +79,7 @@ Feature: Opened Tab List - By Tag With Filter
         And I use the tab 4
         And I click on the "go to sidenav" button
         And I click on "all opened tabs" on the sidenav
+        And I delete all characters in the tab filter input
 
         Then I should not see the sidenav
 

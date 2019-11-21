@@ -281,6 +281,39 @@ Feature: Tab filter
         And I should see the current tab list with label "All opened tabs" and 5 tabs indicated
         And I should see the clear tab filter button
 
+    Scenario: Should filter opened tabs at startup when an input was saved
+        When I type "some" in the tab filter input
+
+        Then I should see 1 visible tab on the tab list "opened-tabs"
+
+        When I reload the tab 0 with no cache
+
+        Then I should see 1 visible tab on the tab list "opened-tabs"
+        And I should see the test page "test-filter-with-some-text" as tab 0 on the tab list "opened-tabs"
+        And I should not see that no tab matches tab search on the tab list "opened-tabs"
+        And I should see the current tab list with label "All opened tabs" and 5 tabs indicated
+        And I should see the clear tab filter button
+
+    Scenario: Should filter pinned tabs at startup when an input was saved
+        When I pin the tab 1
+        And I pin the tab 2
+        And I pin the tab 3
+        And I pin the tab 4
+
+        Then I should see 4 visible tabs on the tab list "pinned-tabs"
+
+        When I type "some" in the tab filter input
+
+        Then I should see 1 visible tab on the tab list "opened-tabs"
+
+        When I reload the tab 0 with no cache
+
+        Then I should see 1 visible tab on the tab list "pinned-tabs"
+        And I should see the test page "test-filter-with-some-text" as tab 0 on the tab list "pinned-tabs"
+        And I should not see that no tab matches tab search on the tab list "pinned-tabs"
+        And I should see the current tab list with label "All opened tabs" and 5 tabs indicated
+        And I should see the clear tab filter button
+
     Scenario: Should update shown tabs when their url change
         When I type "some favicon" in the tab filter input
 
@@ -319,4 +352,3 @@ Feature: Tab filter
         And I should see the test page "test-page-without-favicon" as tab 1 on the tab list "opened-tabs"
         And I should see the current tab list with label "All opened tabs" and 6 tabs indicated
         And I should see the clear tab filter button
- 

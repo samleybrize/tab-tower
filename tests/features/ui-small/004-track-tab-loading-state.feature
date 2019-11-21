@@ -18,9 +18,11 @@ Feature: Track tab loading state
 
     Scenario: Loading tabs should be indicated as loading
         When I open the test page "test-delayed1"
-        And I focus the tab 1
 
         Then I should see 2 visible tabs on the tab list "opened-tabs"
+
+        And I focus the tab 1
+
         And I should not see the tab 0 as loading on the tab list "opened-tabs"
         And I should see the tab 1 as loading on the tab list "opened-tabs"
         And I should see the sticky focused tab as loading

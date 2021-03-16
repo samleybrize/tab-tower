@@ -1,5 +1,7 @@
 import { By, error as WebDriverError, WebDriver, WebElement } from 'selenium-webdriver';
 
+import { sleep } from '../../../../src/typescript/utils/sleep';
+
 export class TabSupport {
     // TODO condition must not be optional
     static async getTabAtPosition(webdriver: WebDriver, tabListId: string, tabPosition: number, condition?: 'visible'|'filtered') {
@@ -41,10 +43,36 @@ export class TabSupport {
     }
 
     private static async sortByCssOrder(elementList: WebElement[]): Promise<WebElement[]> {
-        const comparableArray = await Promise.all(elementList.map(async x => [await x.getCssValue('order'), x]));
-        comparableArray.sort((a, b) => +(a[0] > b[0]) || -(a[0] < b[0]));
+        for (let attempt = 1; attempt <= 50; attempt++) {
+            try {
+                // remove missing tabs in case tabs were just closed
+                elementList = await this.removeUnavailableElements(elementList);
+                const comparableArray = await Promise.all(elementList.map(async (x) => [await x.getCssValue('order'), x]));
+                comparableArray.sort((a, b) => +(a[0] > b[0]) || -(a[0] < b[0]));
 
-        return comparableArray.map(x => x[1]) as WebElement[];
+                return comparableArray.map(x => x[1]) as WebElement[];
+            } catch (error) {
+                if (attempt >= 50) {
+                    throw error;
+                }
+
+                await sleep(100);
+            }
+        };
+    }
+
+    private static async removeUnavailableElements(elementList: WebElement[]): Promise<WebElement[]> {
+        const filteredList: WebElement[] = [];
+
+        for (const element of elementList) {
+            try {
+                await element.getCssValue('order');
+                filteredList.push(element);
+            } catch (error) {
+            }
+        }
+
+        return filteredList;
     }
 
     static async getStickyFocusedTab(webdriver: WebDriver) {

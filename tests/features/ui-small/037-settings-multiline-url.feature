@@ -10,10 +10,16 @@ Feature: Settings - Multiline url
     Scenario: Tab url should be on one line
         When I open the small UI
         And I focus the small UI
+
+        Then I should see 2 visible tabs on the tab list "opened-tabs"
+        And I should see the small UI as tab 1 on the tab list "opened-tabs"
+
         And I close the tab 0
         And I open the test page "test-page-with-long-title1"
 
         Then I should see 2 visible tabs on the tab list "opened-tabs"
+        And I should see the small UI as tab 0 on the tab list "opened-tabs"
+        And I should see the test page "test-page-with-long-title1" as tab 1 on the tab list "opened-tabs"
         And the url of the tab 1 on the tab list "opened-tabs" should be on one line
 
     Scenario: Tab url should be on several lines when the show tab url on several lines setting is checked

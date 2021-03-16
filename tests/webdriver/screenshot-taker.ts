@@ -5,7 +5,7 @@ import { WebDriver, WebElement } from 'selenium-webdriver';
 export class ScreenshotTaker {
     private static instance: ScreenshotTaker = null;
 
-    private screenshotDirectory = path.join(__dirname, '../../../..', 'tests/screenshots');
+    private screenshotDirectory = path.join(__dirname, '../..', 'tests/screenshots');
 
     static getInstance() {
         if (null == this.instance) {

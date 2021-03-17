@@ -4,7 +4,7 @@ import { By, WebDriver } from 'selenium-webdriver';
 import { TestPageNames } from '../../../webdriver/test-page-descriptor';
 import { World } from '../support/world';
 
-Given('I use the small UI', {timeout: 20000}, async function() {
+Given('I use the small UI', async function() {
     const world = this as World;
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
     const uiSmallDescriptor = world.testPageDescriptorRetriever.getDescriptor(TestPageNames.UI_SMALL);
@@ -12,7 +12,7 @@ Given('I use the small UI', {timeout: 20000}, async function() {
     await webdriverHelper.resetBrowserState(uiSmallDescriptor.url);
 });
 
-Given('I use the settings UI', {timeout: 20000}, async function() {
+Given('I use the settings UI', async function() {
     const world = this as World;
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
     const uiSettingsDescriptor = world.testPageDescriptorRetriever.getDescriptor(TestPageNames.UI_SETTINGS);
@@ -32,33 +32,17 @@ Given('window height is {int}', async function(height: number) {
 
 When('I focus the small UI', async function() {
     const world = this as World;
-    const webdriver = world.webdriverRetriever.getDriver();
     const uiSmallDescriptor = world.testPageDescriptorRetriever.getDescriptor(TestPageNames.UI_SMALL);
 
-    await switchToTabWithUrl(webdriver, uiSmallDescriptor.url);
+    await switchToTabWithUrl(world, uiSmallDescriptor.url);
 });
 
 When('I focus the settings UI', async function() {
     const world = this as World;
-    const webdriver = world.webdriverRetriever.getDriver();
     const uiSettingsDescriptor = world.testPageDescriptorRetriever.getDescriptor(TestPageNames.UI_SETTINGS);
 
-    await switchToTabWithUrl(webdriver, uiSettingsDescriptor.url);
+    await switchToTabWithUrl(world, uiSettingsDescriptor.url);
 });
-
-async function switchToTabWithUrl(webdriver: WebDriver, url: string) {
-    await webdriver.wait(async () => {
-        const windowHandleList = await webdriver.getAllWindowHandles();
-
-        for (const windowHandle of windowHandleList) {
-            await webdriver.switchTo().window(windowHandle);
-
-            if (url == await webdriver.getCurrentUrl()) {
-                return true;
-            }
-        }
-    }, 10000, `Unable to find a tab with url "${url}"`);
-}
 
 When('I open the small UI', async function() {
     const world = this as World;
@@ -108,13 +92,10 @@ When('the tab {int} navigates to the test page {string}', async function(tabPosi
     const newTestPageDescriptor = testPageDescriptorRetriever.getDescriptor(newTestPageName as TestPageNames);
     const newTestPageUrl = newTestPageDescriptor.url;
 
-    await webdriverHelper.executeScript(async (index: number, url: string) => {
-        const tabToUpdate = await browser.tabs.query({index});
-
-        if (tabToUpdate) {
-            await browser.tabs.update(tabToUpdate[0].id, {url, active: false});
-        }
-    }, [tabPosition, newTestPageUrl]);
+    const tabId = await getTabIdFromIndex(world, tabPosition);
+    await webdriverHelper.executeScript(async (id: number, url: string) => {
+        await browser.tabs.update(id, {url, active: false});
+    }, [tabId, newTestPageUrl]);
 });
 
 When('I reload the tab {int}', async function(tabPositionToReload: number) {
@@ -125,76 +106,34 @@ When('I reload the tab {int} with no cache', async function(tabPositionToReload:
     await reloadTab(this as World, tabPositionToReload, true);
 });
 
-async function reloadTab(world: World, tabPositionToReload: number, bypassCache: boolean) {
-    const webdriver = world.webdriverRetriever.getDriver();
-    const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
-
-    const tabIdToReload = await webdriverHelper.executeScript(async (index: number, reloadProperties: any) => {
-        const tabToReload = await browser.tabs.query({index});
-
-        if (tabToReload) {
-            await browser.tabs.reload(tabToReload[0].id, reloadProperties);
-        }
-
-        return tabToReload[0].id;
-    }, [tabPositionToReload, {bypassCache}]);
-
-    await webdriver.wait(async () => {
-        const tab = await webdriverHelper.executeScript(async (tabId: number) => {
-            return browser.tabs.get(tabId);
-        }, [tabIdToReload]);
-
-        if (tab && 'complete' == tab.status) {
-            return true;
-        }
-    }, 10000, `Tab at position "${tabPositionToReload}" is still loading`);
-}
-
 When('the tab {int} is not loading anymore', async function(tabPosition: number) {
     const world = this as World;
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
 
-    const tabId = await webdriverHelper.executeScript(async (index: number) => {
-        const tab = await browser.tabs.query({index});
-
-        return tab[0].id;
-    }, [tabPosition]);
-
+    const tabId = await getTabIdFromIndex(world, tabPosition);
     await webdriverHelper.wait(async () => {
-        const tab = await webdriverHelper.executeScript(async (id: number) => {
-            return browser.tabs.get(id);
-        }, [tabId]);
-
-        if (tab && 'complete' == tab.status) {
-            return true;
-        }
-    }, 10000, () => `Tab at position "${tabPosition}" is still loading`);
+        return await isTabLoadingComplete(world, tabId);
+    }, world.defaultWaitTimeout, () => `Tab at position "${tabPosition}" is still loading`);
 });
 
 When('I focus the tab {int}', async function(tabPositionToFocus: number) {
     const world = this as World;
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
 
-    await webdriverHelper.executeScript(async (index: number) => {
-        const tabToFocus = await browser.tabs.query({index});
-
-        if (tabToFocus) {
-            await browser.tabs.update(tabToFocus[0].id, {active: true});
-        }
-    }, [tabPositionToFocus]);
+    const tabId = await getTabIdFromIndex(world, tabPositionToFocus);
+    await webdriverHelper.executeScript(async (id: number) => {
+        await browser.tabs.update(id, {active: true});
+    }, [tabId]);
 });
 
 When('I use the tab {int}', async function(tabPositionToFocus: number) {
     const world = this as World;
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
 
-    await webdriverHelper.executeScript(async (index: number) => {
-        const tabToFocus = await browser.tabs.query({index});
-
-        if (tabToFocus) {
-            await browser.tabs.update(tabToFocus[0].id, {active: true});
-        }
-    }, [tabPositionToFocus]);
+    const tabId = await getTabIdFromIndex(world, tabPositionToFocus);
+    await webdriverHelper.executeScript(async (id: number) => {
+        await browser.tabs.update(id, {active: true});
+    }, [tabId]);
 
     await webdriverHelper.switchToWindowHandle(tabPositionToFocus);
 });
@@ -203,104 +142,80 @@ When('I close the tab {int}', async function(tabPositionToClose: number) {
     const world = this as World;
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
 
-    await webdriverHelper.executeScript(async (index: number) => {
-        const tabToClose = await browser.tabs.query({index});
-
-        if (tabToClose) {
-            await browser.tabs.remove(tabToClose[0].id);
-        }
-    }, [tabPositionToClose]);
+    const tabId = await getTabIdFromIndex(world, tabPositionToClose);
+    await webdriverHelper.executeScript(async (id: number) => {
+        await browser.tabs.remove(id);
+    }, [tabId]);
 });
 
 When('I move the tab {int} to position {int}', async function(fromPosition: number, toPosition: number) {
     const world = this as World;
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
 
-    await webdriverHelper.executeScript(async (sourceIndex: number, targetIndex: number) => {
-        const tabToMove = await browser.tabs.query({index: sourceIndex});
-
-        if (tabToMove) {
-            await browser.tabs.move(tabToMove[0].id, {index: targetIndex});
-        }
-    }, [fromPosition, toPosition]);
+    const tabId = await getTabIdFromIndex(world, fromPosition);
+    await webdriverHelper.executeScript(async (id: number, targetIndex: number) => {
+        await browser.tabs.move(id, {index: targetIndex});
+    }, [tabId, toPosition]);
 });
 
 When('I mute the tab {int}', async function(tabPositionToMute: number) {
     const world = this as World;
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
 
-    await webdriverHelper.executeScript(async (index: number) => {
-        const tabToMute = await browser.tabs.query({index});
-
-        if (tabToMute) {
-            await browser.tabs.update(tabToMute[0].id, {muted: true});
-        }
-    }, [tabPositionToMute]);
+    const tabId = await getTabIdFromIndex(world, tabPositionToMute);
+    await webdriverHelper.executeScript(async (id: number) => {
+        await browser.tabs.update(id, {muted: true});
+    }, [tabId]);
 });
 
 When('I unmute the tab {int}', async function(tabPositionToUnmute: number) {
     const world = this as World;
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
 
-    await webdriverHelper.executeScript(async (index: number) => {
-        const tabToUnmute = await browser.tabs.query({index});
-
-        if (tabToUnmute) {
-            await browser.tabs.update(tabToUnmute[0].id, {muted: false});
-        }
-    }, [tabPositionToUnmute]);
+    const tabId = await getTabIdFromIndex(world, tabPositionToUnmute);
+    await webdriverHelper.executeScript(async (id: number) => {
+        await browser.tabs.update(id, {muted: false});
+    }, [tabId]);
 });
 
 When('I pin the tab {int}', async function(tabPositionToPin: number) {
     const world = this as World;
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
 
-    await webdriverHelper.executeScript(async (index: number) => {
-        const tabToPin = await browser.tabs.query({index});
-
-        if (tabToPin) {
-            await browser.tabs.update(tabToPin[0].id, {pinned: true});
-        }
-    }, [tabPositionToPin]);
+    const tabId = await getTabIdFromIndex(world, tabPositionToPin);
+    await webdriverHelper.executeScript(async (id: number) => {
+        await browser.tabs.update(id, {pinned: true});
+    }, [tabId]);
 });
 
 When('I unpin the tab {int}', async function(tabPositionToUnpin: number) {
     const world = this as World;
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
 
-    await webdriverHelper.executeScript(async (index: number) => {
-        const tabToUnpin = await browser.tabs.query({index});
-
-        if (tabToUnpin) {
-            await browser.tabs.update(tabToUnpin[0].id, {pinned: false});
-        }
-    }, [tabPositionToUnpin]);
+    const tabId = await getTabIdFromIndex(world, tabPositionToUnpin);
+    await webdriverHelper.executeScript(async (id: number) => {
+        await browser.tabs.update(id, {pinned: false});
+    }, [tabId]);
 });
 
 When('I duplicate the tab {int}', async function(tabPositionToDuplicate: number) {
     const world = this as World;
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
 
-    await webdriverHelper.executeScript(async (index: number) => {
-        const tabToDuplicate = await browser.tabs.query({index});
-
-        if (tabToDuplicate) {
-            await browser.tabs.duplicate(tabToDuplicate[0].id);
-        }
-    }, [tabPositionToDuplicate]);
+    const tabId = await getTabIdFromIndex(world, tabPositionToDuplicate);
+    await webdriverHelper.executeScript(async (id: number) => {
+        await browser.tabs.duplicate(id);
+    }, [tabId]);
 });
 
-When('I discard the tab {int}', async function(tabPositionToDuplicate: number) {
+When('I discard the tab {int}', async function(tabPositionToDiscard: number) {
     const world = this as World;
     const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
 
-    await webdriverHelper.executeScript(async (index: number) => {
-        const tabToDiscard = await browser.tabs.query({index});
-
-        if (tabToDiscard) {
-            await browser.tabs.discard(tabToDiscard[0].id);
-        }
-    }, [tabPositionToDuplicate]);
+    const tabId = await getTabIdFromIndex(world, tabPositionToDiscard);
+    await webdriverHelper.executeScript(async (id: number) => {
+        await browser.tabs.discard(id);
+    }, [tabId]);
 });
 
 When('I restore the last recently closed tab', async function() {
@@ -324,3 +239,59 @@ When('I click on the link {int}', async function(linkIndex: number) {
 
     await linkElements[linkIndex].click();
 });
+
+async function switchToTabWithUrl(world: World, url: string) {
+    const webdriver = world.webdriverRetriever.getDriver();
+    await webdriver.wait(async () => {
+        const windowHandleList = await webdriver.getAllWindowHandles();
+
+        for (const windowHandle of windowHandleList) {
+            await webdriver.switchTo().window(windowHandle);
+
+            if (url == await webdriver.getCurrentUrl()) {
+                return true;
+            }
+        }
+    }, 10000, `Unable to find a tab with url "${url}"`);
+}
+
+async function reloadTab(world: World, tabPositionToReload: number, bypassCache: boolean) {
+    const webdriver = world.webdriverRetriever.getDriver();
+    const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
+
+    const tabIdToReload = await getTabIdFromIndex(world, tabPositionToReload);
+    await webdriverHelper.executeScript(async (id: number, reloadProperties: any) => {
+        await browser.tabs.reload(id, reloadProperties);
+    }, [tabIdToReload, {bypassCache}]);
+
+    await webdriver.wait(async () => {
+        return await isTabLoadingComplete(world, tabIdToReload);
+    }, world.defaultWaitTimeout, `Tab at position "${tabPositionToReload}" is still loading`);
+}
+
+async function getTabIdFromIndex(world: World, tabIndex: number) {
+    const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
+
+    const tabId = await webdriverHelper.executeScript(async (index: number) => {
+        const tab = await browser.tabs.query({index});
+
+        if (tab) {
+            return tab[0].id;
+        }
+    }, [tabIndex]);
+
+    if (null == tabId) {
+        throw new Error(`Unable to find a browser tab at index ${tabIndex}`);
+    }
+
+    return tabId;
+}
+
+async function isTabLoadingComplete(world: World, tabId: number) {
+    const webdriverHelper = world.webdriverRetriever.getWebdriverHelper();
+    const tab = await webdriverHelper.executeScript(async (id: number) => {
+        return browser.tabs.get(id);
+    }, [tabId]);
+
+    return tab && 'complete' == tab.status;
+}

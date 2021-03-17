@@ -95,8 +95,10 @@ Feature: Sidenav - Tab tag filter
         When I type "azerty" in the tag filter input on the sidenav
         And I open the small UI
         And I use the tab 1
-        And I click on the "go to sidenav" button
 
+        Then I should see 2 visible tabs on the tab list "opened-tabs"
+
+        When I click on the "go to sidenav" button
         And I click on the tag context menu edit button of the tag 2 on the sidenav
         And I type "not matching" in the tag label input
         And I click on the tag save button

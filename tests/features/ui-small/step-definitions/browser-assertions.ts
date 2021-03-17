@@ -1,5 +1,5 @@
 import { Then } from 'cucumber';
-import { By } from 'selenium-webdriver';
+
 import { World } from '../support/world';
 
 Then("I should see the browser's tab {int} as focused", async function(expectedFocusedTabPosition: number) {
@@ -15,7 +15,7 @@ Then("I should see the browser's tab {int} as focused", async function(expectedF
         });
 
         return actualFocusedTabPosition === expectedFocusedTabPosition;
-    }, 10000, () => `Actual focused tab position "${actualFocusedTabPosition}" is different than expected "${expectedFocusedTabPosition}"`);
+    }, world.defaultWaitTimeout, () => `Actual focused tab position "${actualFocusedTabPosition}" is different than expected "${expectedFocusedTabPosition}"`);
 });
 
 Then('I should see {int} browser tabs', async function(expectedNumberOfTabs: number) {
@@ -30,7 +30,7 @@ Then('I should see {int} browser tabs', async function(expectedNumberOfTabs: num
         actualNumberOfTabs = nativeTabList.length;
 
         return actualNumberOfTabs === expectedNumberOfTabs;
-    }, 10000, () => `Actual number of browser tabs "${actualNumberOfTabs}" is different than expected "${expectedNumberOfTabs}"`);
+    }, world.defaultWaitTimeout, () => `Actual number of browser tabs "${actualNumberOfTabs}" is different than expected "${expectedNumberOfTabs}"`);
 });
 
 Then('I should see the settings page on the tab {int}', async function(tabIndex: number) {
@@ -44,5 +44,5 @@ Then('I should see the settings page on the tab {int}', async function(tabIndex:
         const expectedUrl = `about:addons`;
 
         return expectedUrl === tabUrl;
-    }, 10000, `The tab "${tabIndex}" is not the settings page`);
+    }, world.defaultWaitTimeout, `The tab "${tabIndex}" is not the settings page`);
 });

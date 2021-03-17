@@ -22,17 +22,17 @@ Feature: Opened Tab List - By Tag
         Then I should see 4 visible tabs on the tab list "opened-tabs"
 
         When I click on the tab context menu manage tags button of the tab 2 on the tab list "opened-tabs"
-        And I click on the tag 0 checkbox in the tab tag management view
-        And I click on the tag 1 checkbox in the tab tag management view
-        And I click on the tab tag management back button
+        And I click on the tag 0 checkbox in the tab tag assignment view
+        And I click on the tag 1 checkbox in the tab tag assignment view
+        And I click on the tab tag assignment back button
 
-        Then I should not see the tab tag management view
+        Then I should not see the tab tag assignment view
 
         When I click on the tab context menu manage tags button of the tab 3 on the tab list "opened-tabs"
-        And I click on the tag 0 checkbox in the tab tag management view
-        And I click on the tab tag management back button
+        And I click on the tag 0 checkbox in the tab tag assignment view
+        And I click on the tab tag assignment back button
 
-        Then I should not see the tab tag management view
+        Then I should not see the tab tag assignment view
 
     Scenario: "All opened tabs" should be active by default
         When I click on the "go to sidenav" button
@@ -121,7 +121,10 @@ Feature: Opened Tab List - By Tag
 
         When I open the small UI
         And I use the tab 4
-        And I click on the "go to sidenav" button
+
+        Then I should see 5 visible tabs on the tab list "opened-tabs"
+
+        When I click on the "go to sidenav" button
 
         Then I should see that the tag 0 is marked as active on the sidenav
 
@@ -141,10 +144,13 @@ Feature: Opened Tab List - By Tag
 
         When I open the small UI
         And I use the tab 4
-        And I click on the "go to sidenav" button
+
+        Then I should see 5 visible tabs on the tab list "opened-tabs"
+
+        When I click on the "go to sidenav" button
         And I click on "all opened tabs" on the sidenav
         And I click on the tab context menu manage tags button of the tab 1 on the tab list "opened-tabs"
-        And I click on the tag 0 checkbox in the tab tag management view
+        And I click on the tag 0 checkbox in the tab tag assignment view
         And I use the tab 0
 
         Then I should see 3 visible tabs on the tab list "opened-tabs"
@@ -226,7 +232,10 @@ Feature: Opened Tab List - By Tag
         When I restore the last recently closed tab
         And I open the small UI
         And I use the tab 4
-        And I click on the "go to sidenav" button
+
+        Then I should see 5 visible tabs on the tab list "opened-tabs"
+
+        When I click on the "go to sidenav" button
         And I click on "all opened tabs" on the sidenav
 
         Then I should see 5 visible tabs on the tab list "opened-tabs"
@@ -368,13 +377,16 @@ Feature: Opened Tab List - By Tag
 
         When I open the small UI
         And I use the tab 4
-        And I click on the "go to sidenav" button
+
+        Then I should see 5 visible tabs on the tab list "opened-tabs"
+
+        When I click on the "go to sidenav" button
         And I click on "all opened tabs" on the sidenav
 
         Then I should not see the sidenav
 
         When I click on the tab context menu manage tags button of the tab 1 on the tab list "opened-tabs"
-        And I click on the tag 1 checkbox in the tab tag management view
+        And I click on the tag 1 checkbox in the tab tag assignment view
         And I use the tab 0
 
         Then I should see the current tab list with label "label two" and 2 tabs indicated

@@ -2,6 +2,7 @@ import { By, error as WebDriverError, WebDriver, WebElement } from 'selenium-web
 
 import { sleep } from '../../../../src/typescript/utils/sleep';
 
+// TODO todel
 export class TabSupport {
     // TODO condition must not be optional
     static async getTabAtPosition(webdriver: WebDriver, tabListId: string, tabPosition: number, condition?: 'visible'|'filtered') {

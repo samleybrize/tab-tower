@@ -18,16 +18,16 @@ Feature: Opened Tab List - By Tag With Filter
         Then I should see 4 visible tabs on the tab list "opened-tabs"
 
         When I click on the tab context menu manage tags button of the tab 2 on the tab list "opened-tabs"
-        And I click on the tag 0 checkbox in the tab tag management view
-        And I click on the tab tag management back button
+        And I click on the tag 0 checkbox in the tab tag assignment view
+        And I click on the tab tag assignment back button
 
-        Then I should not see the tab tag management view
+        Then I should not see the tab tag assignment view
 
         When I click on the tab context menu manage tags button of the tab 3 on the tab list "opened-tabs"
-        And I click on the tag 0 checkbox in the tab tag management view
-        And I click on the tab tag management back button
+        And I click on the tag 0 checkbox in the tab tag assignment view
+        And I click on the tab tag assignment back button
 
-        Then I should not see the tab tag management view
+        Then I should not see the tab tag assignment view
 
         When I click on the "go to sidenav" button
         And I click on the tag 0 on the sidenav
@@ -56,14 +56,17 @@ Feature: Opened Tab List - By Tag With Filter
 
         When I open the small UI
         And I use the tab 4
-        And I click on the "go to sidenav" button
+
+        Then I should see 1 visible tabs on the tab list "opened-tabs"
+
+        When I click on the "go to sidenav" button
         And I click on "all opened tabs" on the sidenav
         And I delete all characters in the tab filter input
 
         Then I should not see the sidenav
 
         When I click on the tab context menu manage tags button of the tab 1 on the tab list "opened-tabs"
-        And I click on the tag 0 checkbox in the tab tag management view
+        And I click on the tag 0 checkbox in the tab tag assignment view
         And I use the tab 0
 
         Then I should see 2 visible tabs on the tab list "opened-tabs"
@@ -77,14 +80,17 @@ Feature: Opened Tab List - By Tag With Filter
 
         When I open the small UI
         And I use the tab 4
-        And I click on the "go to sidenav" button
+
+        Then I should see 1 visible tabs on the tab list "opened-tabs"
+
+        When I click on the "go to sidenav" button
         And I click on "all opened tabs" on the sidenav
         And I delete all characters in the tab filter input
 
         Then I should not see the sidenav
 
         When I click on the tab context menu manage tags button of the tab 1 on the tab list "opened-tabs"
-        And I click on the tag 0 checkbox in the tab tag management view
+        And I click on the tag 0 checkbox in the tab tag assignment view
         And I use the tab 0
 
         Then I should see 1 visible tab on the tab list "opened-tabs"

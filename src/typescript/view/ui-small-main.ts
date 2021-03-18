@@ -157,7 +157,7 @@ async function main() {
         const tabTagAssignFilterFactory = new TabTagAssignFilterFactory(queryBus);
         const tabTagAssignFactory = new TabTagAssignFactory(commandBus, eventBus, queryBus, tabTagAssignFilterFactory, tabTagAssignEntryFactory, taskSchedulerFactory);
 
-        const uiSmall = new UiSmall(tabsViewFactory, sidenavFactory, tabTagEditFormFactory, tabTagAssignFactory);
+        UiSmall.init(tabsViewFactory, sidenavFactory, tabTagEditFormFactory, tabTagAssignFactory);
     }
 
     async function waitBackgroundReady() {

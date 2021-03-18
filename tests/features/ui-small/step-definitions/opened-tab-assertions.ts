@@ -1,5 +1,5 @@
 import { Then } from 'cucumber';
-import { error as WebDriverError, WebElement } from 'selenium-webdriver';
+import { WebElement } from 'selenium-webdriver';
 import { sleep } from '../../../../src/typescript/utils/sleep';
 import { TestPageNames } from '../../../webdriver/test-page-descriptor';
 import { TabContextMenuButtons } from '../support/opened-tab-list-support';
@@ -716,7 +716,7 @@ class TabAssertions {
                     ? `Sticky focused tab title "${actualTitle}" is different than expected "${expectedTitle}"`
                     : `Sticky focused tab does not exists`
                 ;
-            }
+            },
         );
 
         await this.assertTabTitleTooltip(world, tab, testPageDescriptor.title);

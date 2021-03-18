@@ -1,5 +1,3 @@
-import { TabTag } from '../tab-tag/tab-tag';
-
 export class OpenedTab {
     id: string = null;
     position: number = null;

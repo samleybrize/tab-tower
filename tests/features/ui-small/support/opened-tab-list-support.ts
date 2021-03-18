@@ -17,7 +17,7 @@ export enum TabContextMenuButtons {
 }
 
 export class OpenedTabListSupport {
-    constructor(private webdriverRetriever: WebDriverRetriever, private browserSupport: BrowserSupport, private waitTimeout: number) {
+    constructor(private webdriverRetriever: WebDriverRetriever, private browserSupport: BrowserSupport) {
     }
 
     getAllTabElements(tabListId: string) {
@@ -93,7 +93,7 @@ export class OpenedTabListSupport {
 
                 await sleep(100);
             }
-        };
+        }
     }
 
     private async removeUnavailableElements(elementList: WebElement[]): Promise<WebElement[]> {
@@ -104,6 +104,7 @@ export class OpenedTabListSupport {
                 await element.getCssValue('order');
                 filteredList.push(element);
             } catch (error) {
+                // don't need to do anything as the element will not be pushed in the array when there is an error
             }
         }
 

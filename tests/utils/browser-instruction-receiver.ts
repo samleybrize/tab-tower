@@ -1,7 +1,3 @@
-import { TestsConfig } from '../tests-config';
-
-const testsConfig = TestsConfig.getInstance();
-
 async function initBrowserInstructionReceiver() {
     const storageObject = await browser.storage.local.get('_test.browserInstructionPort');
 

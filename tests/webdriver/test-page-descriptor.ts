@@ -178,7 +178,7 @@ export class TestPageDescriptorRetriever {
 
         if (this.faviconUrlMap.has(dataUri)) {
             return this.firefoxConfig.getExtensionUrl(
-                this.faviconUrlMap.get(dataUri)
+                this.faviconUrlMap.get(dataUri),
             );
         } else if (testPageFaviconList.indexOf(dataUri) >= 0) {
             return this.firefoxConfig.getExtensionUrl(dataUri);

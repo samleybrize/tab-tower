@@ -35,10 +35,10 @@ export class World {
         const tabTagListSupport = new TabTagListSupport(this.webdriverRetriever, this.defaultWaitTimeout);
         this.testPageDescriptorRetriever = new TestPageDescriptorRetriever(this.webdriverRetriever.getFirefoxConfig(), this.urlDelayer);
         this.browserSupport = new BrowserSupport(this.webdriverRetriever, this.defaultWaitTimeout);
-        this.openedTabListSupport = new OpenedTabListSupport(this.webdriverRetriever, this.browserSupport, this.defaultWaitTimeout);
+        this.openedTabListSupport = new OpenedTabListSupport(this.webdriverRetriever, this.browserSupport);
         this.settingsSupport = new SettingsSupport(this.webdriverRetriever);
         this.sidenavSupport = new SidenavSupport(this.webdriverRetriever, this.browserSupport, tabTagListSupport);
-        this.tabsViewSupport = new TabsViewSupport(this.webdriverRetriever, this.browserSupport, this.defaultWaitTimeout);
+        this.tabsViewSupport = new TabsViewSupport(this.webdriverRetriever);
         this.tabTagAssignmentSupport = new TabTagAssignmentSupport(this.webdriverRetriever, tabTagListSupport);
         this.tabTagEditSupport = new TabTagEditSupport(this.webdriverRetriever, this.browserSupport);
     }

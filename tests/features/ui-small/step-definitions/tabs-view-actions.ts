@@ -79,7 +79,6 @@ When('I click outside of the tab context menu', async function() {
 
 When('I click on the selected tabs actions button', async function() {
     const world = this as World;
-    const webdriver = world.webdriverRetriever.getDriver();
     const tabsViewSupport = world.tabsViewSupport;
 
     const selectedTabsActionsButton = tabsViewSupport.getSelectedTabsActionsButtonElement();
@@ -177,7 +176,6 @@ When('I click on the move below all button', async function() {
 
 When('I click on the cancel tab move button', async function() {
     const world = this as World;
-    const webdriver = world.webdriverRetriever.getDriver();
     const browserSupport = world.browserSupport;
     const tabsViewSupport = world.tabsViewSupport;
 

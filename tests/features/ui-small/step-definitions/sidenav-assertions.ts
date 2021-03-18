@@ -1,5 +1,4 @@
 import { Then } from 'cucumber';
-import { By, error as WebDriverError, WebDriver, WebElement } from 'selenium-webdriver';
 import { World } from '../support/world';
 
 Then('I should see the sidenav', async function() {

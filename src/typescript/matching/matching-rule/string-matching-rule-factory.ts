@@ -1,7 +1,6 @@
 import { StringExtractor } from '../../utils/string-extractor';
 import { StringListGetterDescriptor, StringListGetterFactory } from '../../utils/string-list-getter/string-list-getter-factory';
 import { StringMatcher } from '../matcher/string-matcher/string-matcher';
-import { MatchingRule } from './matching-rule';
 import { MatchingRuleDescriptor, MatchingRuleFactory } from './matching-rule-factory';
 import { StringMatchingRule } from './string-matching-rule';
 

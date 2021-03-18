@@ -41,7 +41,7 @@ import { MoveTabsMarkedAsBeingMovedBelowAll } from './tabs-view/command/move-tab
 import { ShowAllOpenedTabs } from './tabs-view/command/show-all-opened-tabs';
 import { ShowTagTabs } from './tabs-view/command/show-tag-tabs';
 import { CurrentTabListIndicator } from './tabs-view/current-tab-list';
-import { NewTabButton, NewTabButtonFactory } from './tabs-view/new-tab-button';
+import { NewTabButtonFactory } from './tabs-view/new-tab-button';
 import { GetCurrentTabListSelectedTabs } from './tabs-view/query/get-current-tab-list-selected-tabs';
 import { SelectedTabsActions, SelectedTabsActionsFactory } from './tabs-view/selected-tabs-actions';
 import { Tab, TabFactory } from './tabs-view/tab';
@@ -56,7 +56,6 @@ enum TabListIds {
 export class TabsView {
     private tabFilter: TabFilter;
     private generalTabSelector: Checkbox;
-    private newTabButton: NewTabButton;
     private selectedTabsActions: SelectedTabsActions;
     private openedTabsTabList: TabList;
     private pinnedTabsTabList: TabList;
@@ -82,7 +81,7 @@ export class TabsView {
     ) {
         this.tabFilter = tabFilterFactory.create(containerElement.querySelector('.filter'));
         this.generalTabSelector = new Checkbox(containerElement.querySelector('.general-tab-selector'), 'general-tab-selector', 'unchecked');
-        this.newTabButton = newTabButtonFactory.create(containerElement.querySelector('.new-tab-button i'));
+        newTabButtonFactory.create(containerElement.querySelector('.new-tab-button i'));
         this.selectedTabsActions = selectedTabsActionsFactory.create(containerElement.querySelector('.selected-tabs-actions-button i'));
         this.currentTabListIndicatorContainerElement = containerElement.querySelector('.current-tab-list');
 

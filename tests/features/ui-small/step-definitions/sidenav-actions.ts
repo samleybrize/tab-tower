@@ -1,5 +1,5 @@
 import { When } from 'cucumber';
-import { By, WebElement } from 'selenium-webdriver';
+import { WebElement } from 'selenium-webdriver';
 import { TagContextMenuButtons } from '../support/sidenav-support';
 import { World } from '../support/world';
 

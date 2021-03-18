@@ -1,6 +1,5 @@
 import { By, WebElement } from 'selenium-webdriver';
 import { WebDriverRetriever } from '../../../webdriver/webdriver-retriever';
-import { BrowserSupport } from './browser-support';
 
 export enum SelectedTabsContextMenuButtons {
     MANAGE_TAGS = 'manage-tags-button',
@@ -16,7 +15,7 @@ export enum SelectedTabsContextMenuButtons {
 }
 
 export class TabsViewSupport {
-    constructor(private webdriverRetriever: WebDriverRetriever, private browserSupport: BrowserSupport, private waitTimeout: number) {
+    constructor(private webdriverRetriever: WebDriverRetriever) {
     }
 
     getCurrentTabListElement(): WebElement {

@@ -1,4 +1,3 @@
-import { EventBus } from '../../../bus/event-bus';
 import { QueryBus } from '../../../bus/query-bus';
 import { GetTabTagIdsThatMatchFilter } from '../../../tab/tab-tag/query';
 import { sleep } from '../../../utils/sleep';

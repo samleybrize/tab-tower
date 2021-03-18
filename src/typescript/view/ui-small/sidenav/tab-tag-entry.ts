@@ -3,7 +3,6 @@ import { TabTagContextMenuFactory } from './tab-tag-context-menu';
 
 export class TabTagEntry extends SidenavEntry {
     private labelElement: HTMLElement;
-    private colorElement: HTMLElement;
 
     constructor(
         tabTagContextMenuFactory: TabTagContextMenuFactory,
@@ -14,7 +13,6 @@ export class TabTagEntry extends SidenavEntry {
         super(TabTagEntry.createElement());
 
         this.labelElement = this.htmlElement.querySelector('.label');
-        this.colorElement = this.htmlElement.querySelector('.color');
 
         this.updateLabel(label);
         this.updateColor(colorId);

@@ -1,5 +1,5 @@
 import { Given, When } from 'cucumber';
-import { By, WebDriver } from 'selenium-webdriver';
+import { By } from 'selenium-webdriver';
 
 import { TestPageNames } from '../../../webdriver/test-page-descriptor';
 import { World } from '../support/world';

@@ -1,5 +1,4 @@
 import { Then } from 'cucumber';
-import { By, error as WebDriverError } from 'selenium-webdriver';
 import { World } from '../support/world';
 
 Then('I should see the current tab list with label {string} and {int} tab(s) indicated', async function(expectedLabel: string, expectedNumberOfTabs: number) {

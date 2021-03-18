@@ -10,6 +10,7 @@
             font-size: $form-input-font-size;
             border: none;
             border-bottom: 1px solid $form-input-border-bottom-color;
+            outline: none;
             box-sizing: border-box;
             transition: border-bottom-color 0.3s ease;
 

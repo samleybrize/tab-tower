@@ -240,7 +240,7 @@ export class Tab {
     removeTag(tagId: string) {
         const index = this.tagIdList.indexOf(tagId);
 
-        if (index) {
+        if (index >= 0) {
             this.htmlElement.classList.remove(`with-tag-${tagId}`); // TODO
             this.tagIdList.splice(index, 1);
             this.updateVisibility();

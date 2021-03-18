@@ -158,6 +158,20 @@ Feature: Opened Tab List - By Tag
         And I should see the test page "test-page2" as tab 1 on the tab list "opened-tabs"
         And I should see the test page "test-filter1" as tab 2 on the tab list "opened-tabs"
 
+    Scenario: A tab that do have the selected tag should not be shown when the tag is removed from it
+        When I click on the "go to sidenav" button
+        And I click on the tag 0 on the sidenav
+
+        Then I should see 2 visible tabs on the tab list "opened-tabs"
+
+        When I click on the tab context menu manage tags button of the tab 1 on the tab list "opened-tabs"
+        And I click on the tag 0 checkbox in the tab tag assignment view
+        And I click on the tab tag assignment back button
+
+        Then I should not see the tab tag assignment view
+        And I should see 1 visible tab on the tab list "opened-tabs"
+        And I should see the test page "test-page2" as tab 0 on the tab list "opened-tabs"
+
     Scenario: A newly opened tab should inherit tags from its parent tab
         When I click on the "go to sidenav" button
         And I click on the tag 1 on the sidenav

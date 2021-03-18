@@ -25,7 +25,7 @@ export class Tab {
     private focused: boolean;
     private tagIdList: string[] = [];
     private showOnlyIfTag: string = null;
-    private isFilteredOut: boolean = false;
+    private _isFilteredOut: boolean = false;
     private hidden: boolean = false;
     private isMiddleClickAllowed = false;
     private beingMoved = false;
@@ -156,15 +156,19 @@ export class Tab {
         }
     }
 
+    isFilteredOut() {
+        return this._isFilteredOut;
+    }
+
     markAsFilteredOut() {
-        this.isFilteredOut = true;
+        this._isFilteredOut = true;
         this.updateVisibility();
     }
 
     private updateVisibility() {
         let show = true;
 
-        if (this.isFilteredOut) {
+        if (this._isFilteredOut) {
             show = false;
         } else if (this.showOnlyIfTag && this.tagIdList.indexOf(this.showOnlyIfTag) < 0) {
             show = false;
@@ -188,7 +192,7 @@ export class Tab {
     }
 
     markAsNotFilteredOut() {
-        this.isFilteredOut = false;
+        this._isFilteredOut = false;
         this.updateVisibility();
     }
 

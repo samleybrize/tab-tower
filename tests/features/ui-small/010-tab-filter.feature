@@ -168,6 +168,82 @@ Feature: Tab filter
         And I should see the current tab list with label "All opened tabs" and 5 tabs indicated
         And I should see the clear tab filter button
 
+    Scenario: Should hide the no tab row in opened tabs list when a new tab matches the filter
+        When I type "favicon" in the tab filter input
+
+        Then I should see 0 visible tab on the tab list "opened-tabs"
+        And I should see that no tab matches tab search on the tab list "opened-tabs"
+
+        When I open the test page "test-page-without-favicon"
+
+        Then I should see 1 visible tab on the tab list "opened-tabs"
+        And I should see the test page "test-page-without-favicon" as tab 0 on the tab list "opened-tabs"
+        And I should not see that no tab matches tab search on the tab list "opened-tabs"
+
+    Scenario: Should hide the no tab row in opened tabs list when a tab's title change and match the filter
+        When I close the tab 2
+        And I close the tab 3
+
+        Then I should see 3 visible tabs on the tab list "opened-tabs"
+
+        When I type "azerty" in the tab filter input
+
+        Then I should see 0 visible tab on the tab list "opened-tabs"
+        And I should see that no tab matches tab search on the tab list "opened-tabs"
+
+        When the tab 2 navigates to the test page "test-filter-with-some-text"
+
+        Then I should see 1 visible tab on the tab list "opened-tabs"
+        And I should see the test page "test-filter-with-some-text" as tab 0 on the tab list "opened-tabs"
+        And I should not see that no tab matches tab search on the tab list "opened-tabs"
+
+    Scenario: Should hide the no tab row in opened tabs list when a tab's url change and match the filter
+        When I close the tab 2
+        And I close the tab 3
+
+        Then I should see 3 visible tabs on the tab list "opened-tabs"
+
+        When I type "some" in the tab filter input
+
+        Then I should see 0 visible tab on the tab list "opened-tabs"
+        And I should see that no tab matches tab search on the tab list "opened-tabs"
+
+        When the tab 2 navigates to the test page "test-filter-with-some-text"
+
+        Then I should see 1 visible tab on the tab list "opened-tabs"
+        And I should see the test page "test-filter-with-some-text" as tab 0 on the tab list "opened-tabs"
+        And I should not see that no tab matches tab search on the tab list "opened-tabs"
+
+    Scenario: Should show the no tab row in opened tabs list when the last matching tab is closed
+        When I type "page" in the tab filter input
+
+        Then I should see 1 visible tab on the tab list "opened-tabs"
+
+        When I close the tab 4
+
+        Then I should see 0 visible tab on the tab list "opened-tabs"
+        And I should see that no tab matches tab search on the tab list "opened-tabs"
+
+    Scenario: Should show the no tab row in opened tabs list when a tab's title change and does not match the filter anymore
+        When I type "azerty" in the tab filter input
+
+        Then I should see 1 visible tab on the tab list "opened-tabs"
+
+        When the tab 2 navigates to the test page "test-page-without-favicon"
+
+        Then I should see 0 visible tab on the tab list "opened-tabs"
+        And I should see that no tab matches tab search on the tab list "opened-tabs"
+
+    Scenario: Should show the no tab row in opened tabs list when a tab's url change and does not match the filter anymore
+        When I type "some" in the tab filter input
+
+        Then I should see 1 visible tab on the tab list "opened-tabs"
+
+        When the tab 2 navigates to the test page "test-page-without-favicon"
+
+        Then I should see 0 visible tab on the tab list "opened-tabs"
+        And I should see that no tab matches tab search on the tab list "opened-tabs"
+
     Scenario: Should show all opened tabs when clearing the input
         When I type "some" in the tab filter input
 

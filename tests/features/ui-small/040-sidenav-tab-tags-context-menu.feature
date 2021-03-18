@@ -28,7 +28,6 @@ Feature: Sidenav - Tab tags context menu
 
         Then the context menu of the tag 1 on the sidenav should not be visible
 
-    @TODO
     Scenario: The context menu of a tab tag should be hidden when a tab tag is added
         When I right click on the tag 1 on the sidenav
         And I open the small UI

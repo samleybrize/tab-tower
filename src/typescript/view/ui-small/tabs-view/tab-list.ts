@@ -152,6 +152,10 @@ export class TabList {
         tabToRemove.htmlElement.remove();
         this.tabMap.delete(openedTabId);
 
+        if (!tabToRemove.isFilteredOut()) {
+            this.filterTab(openedTabId);
+        }
+
         this.onTabSelectStateChange(openedTabId, false);
     }
 
@@ -191,12 +195,21 @@ export class TabList {
         if (tab) {
             tab.markAsFilteredOut();
         }
+
+        for (const tabToCheck of this.tabMap.values()) {
+            if (!tabToCheck.isFilteredOut()) {
+                return;
+            }
+        }
+
+        this.noTabMatchesSearchElement.classList.remove('hide');
     }
 
     unfilterTab(tabId: string) {
         const tab = this.tabMap.get(tabId);
 
         if (tab) {
+            this.noTabMatchesSearchElement.classList.add('hide');
             tab.markAsNotFilteredOut();
         }
     }

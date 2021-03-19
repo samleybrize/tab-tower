@@ -24,7 +24,7 @@
     "cucumber": "^6.0.5",
     "express": "^4.16.3",
     "fs-extra": "^8.1.0",
-    "node-sass": "^4.13.0",
+    "node-sass": "^4.13.1",
     "sass-lint": "^1.12.1",
     "selenium-webdriver": "^4.0.0-alpha.5",
     "semver": "^6.3.0",

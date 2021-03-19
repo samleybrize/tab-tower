@@ -247,6 +247,10 @@ export class Tab {
         }
     }
 
+    hasTag(tagId: string) {
+        return this.tagIdList.indexOf(tagId) >= 0;
+    }
+
     setPosition(position: number) {
         this.position = position;
         this.htmlElement.style.order = '' + position;

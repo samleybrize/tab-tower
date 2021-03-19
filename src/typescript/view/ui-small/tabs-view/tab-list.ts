@@ -25,6 +25,7 @@ export class TabList {
     private noTabMatchesSearchElement: HTMLElement;
     private lastSelectorClicked: Tab = null;
     private numberOfSelectedTabsChangeObserverList: NumberOfSelectedTabsChangeObserver[] = [];
+    private tabTagToShow: string = null;
 
     constructor(
         public readonly tabListId: string,
@@ -230,9 +231,16 @@ export class TabList {
         }
     }
 
+    showTagTabs(tagId: string) {
+        this.tabTagToShow = tagId;
+    }
+
     selectAllVisibleTabs() {
         for (const tab of this.tabMap.values()) {
-            if (!tab.isHidden()) {
+            if (
+                !tab.isHidden()
+                && (null === this.tabTagToShow || tab.hasTag(this.tabTagToShow))
+            ) {
                 tab.markAsSelected();
             }
         }

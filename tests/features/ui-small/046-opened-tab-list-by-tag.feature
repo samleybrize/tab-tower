@@ -443,6 +443,22 @@ Feature: Opened Tab List - By Tag
         And I should not see the tab 2 as selected on the tab list "opened-tabs"
         And I should not see the tab 3 as selected on the tab list "opened-tabs"
 
+    Scenario: All tabs should be unselected when a tag is selected
+        When I click on the "go to sidenav" button
+        And I click on the tag 0 on the sidenav
+
+        Then I should see 2 visible tabs on the tab list "opened-tabs"
+
+        When I click on the general tab selector
+        And I click on the "go to sidenav" button
+        And I click on "all opened tabs" on the sidenav
+
+        Then I should see 4 visible tabs on the tab list "opened-tabs"
+        And I should not see the tab 0 as selected on the tab list "opened-tabs"
+        And I should not see the tab 1 as selected on the tab list "opened-tabs"
+        And I should see the tab 2 as selected on the tab list "opened-tabs"
+        And I should see the tab 3 as selected on the tab list "opened-tabs"
+
     Scenario: "All opened tabs" should be active when the selected tag is deleted
         When I click on the "go to sidenav" button
         And I click on the tag 0 on the sidenav

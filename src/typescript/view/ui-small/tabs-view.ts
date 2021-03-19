@@ -632,6 +632,8 @@ export class TabsView {
             this.containerElement.classList.remove('tagged-tabs');
             this.containerElement.removeAttribute('data-show-tag');
             this.enableCurrentTabListIndicator(TabListIds.OPENED_TABS);
+            this.openedTabsTabList.showTagTabs(null);
+            this.pinnedTabsTabList.showTagTabs(null);
         }).executeAll('0');
     }
 
@@ -642,6 +644,8 @@ export class TabsView {
             this.enableCurrentTabListIndicator(command.tagId);
             this.openedTabsTabList.unselectAllTabs();
             this.pinnedTabsTabList.unselectAllTabs();
+            this.openedTabsTabList.showTagTabs(command.tagId);
+            this.pinnedTabsTabList.showTagTabs(command.tagId);
         }).executeAll('0');
     }
 
